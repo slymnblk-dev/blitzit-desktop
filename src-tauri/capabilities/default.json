@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Lets the live Blitzit site (main window and mini timer) talk to the desktop app",
+  "windows": ["main", "mini"],
+  "remote": {
+    "urls": ["https://dulcet-daifuku-0fb870.netlify.app/*"]
+  },
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-close",
+    "core:window:allow-set-size"
+  ]
+}

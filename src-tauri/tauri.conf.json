@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Blitzit",
+  "version": "0.2.0",
+  "identifier": "app.blitzit.desktop",
+  "build": {
+    "frontendDist": "https://dulcet-daifuku-0fb870.netlify.app"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Blitzit",
+        "width": 1320,
+        "height": 840,
+        "minWidth": 400,
+        "minHeight": 560,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "publisher": "Blitzit",
+    "shortDescription": "Bold, focused to-do app",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDI5QzlGRkNEODkzNEM0NzYKUldSMnhEU0p6Zi9KS2J6b3VSWGF5b3kvZTFXVXVlOE52ZmpyU0xjeDhlY0htV2ZHYUdIdHRraGcK",
+      "endpoints": [
+        "https://github.com/slymnblk-dev/blitzit-desktop/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

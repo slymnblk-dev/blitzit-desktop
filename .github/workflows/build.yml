@@ -1,0 +1,40 @@
+name: Release Windows app
+
+# Builds the signed Windows installer in the cloud and publishes it as a GitHub release.
+# Installed Blitzit apps check the latest release and offer "Update now".
+# To ship a desktop update: bump "version" in src-tauri/tauri.conf.json and push to main.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src-tauri/**'
+      - 'package.json'
+      - '.github/workflows/build.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with: { workspaces: src-tauri }
+      - run: npm install
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+        with:
+          tagName: v__VERSION__
+          releaseName: Blitzit __VERSION__
+          releaseBody: Download the Blitzit setup .exe below to install. Installed apps update themselves.
+          releaseDraft: false
+          prerelease: false
