@@ -27,6 +27,11 @@ jobs:
       - uses: swatinem/rust-cache@v2
         with: { workspaces: src-tauri }
       - run: npm install
+      - name: Check signing key
+        shell: pwsh
+        env:
+          K: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: if (-not $env:K) { echo "::error::The TAURI_SIGNING_PRIVATE_KEY secret is missing"; exit 1 } else { echo "Signing key found ($($env:K.Length) characters)" }
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,3 +43,13 @@ jobs:
           releaseBody: Download the Blitzit setup .exe below to install. Installed apps update themselves.
           releaseDraft: false
           prerelease: false
+      - name: Show build error
+        if: failure()
+        shell: pwsh
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+        run: |
+          $out = npm run tauri build 2>&1 | Out-String
+          $tail = ($out -split "`n" | Select-Object -Last 40) -join '%0A'
+          echo "::error::$tail"
