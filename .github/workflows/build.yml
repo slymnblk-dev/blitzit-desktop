@@ -31,7 +31,7 @@ jobs:
         shell: pwsh
         env:
           K: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-        run: if (-not $env:K) { echo "::error::The TAURI_SIGNING_PRIVATE_KEY secret is missing"; exit 1 } else { echo "::notice::Signing key found ($($env:K.Trim().Length) characters, starts with $($env:K.Trim().Substring(0,6)))" }
+        run: if (-not $env:K) { echo "::error::The TAURI_SIGNING_PRIVATE_KEY secret is missing"; exit 1 } else { echo "::notice::Signing key found ($($env:K.Trim().Length) characters)" }
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
