@@ -1284,7 +1284,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=54; // bumped with every published update
+const APP_VERSION=55; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2066,6 +2066,7 @@ function step(){
         else{F.phase='work';F.left=POMO.work;F.round++}}
     } else {addFocus(d);d=0}
   }
+  if(F.mode!=='pomo'){const t=F.q[F.i];if(t&&t.est>0&&!F.upd&&F.sec>=t.est*60+(F.extra||0)){F.upd=true;if(deskMini||PIP){haptic([120,60,120]);chime()}}}
   if(switched){haptic([30,60,30]);chime();$('focus').classList.toggle('brk',F.phase==='break');drawFocus()}
   else drawTime();
 }
@@ -2080,8 +2081,8 @@ function drawTime(){
     $('fEst').textContent='';
   } else {
     $('fTime').textContent=mmss(F.sec);
-    $('fBar').style.width=Math.min(100,F.sec/(t.est*60)*100)+'%';
-    const left=t.est*60-F.sec;
+    $('fBar').style.width=Math.min(100,F.sec/(t.est*60+(F.extra||0))*100)+'%';
+    const left=t.est*60+(F.extra||0)-F.sec;
     $('fLeft').textContent=left>0?`${Math.ceil(left/60)}m left`:`${Math.floor(-left/60)}m over`;
     $('fEst').textContent='';
   }
@@ -2101,7 +2102,7 @@ $('fStep').onclick=()=>{const b=$('fStep');if(b.classList.contains('tick'))retur
 $('fMode').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.m===F.mode)return;
   step();F.last=Date.now();F.mode=b.dataset.m;S.cfg.focusMode=F.mode;save();F.phase='work';F.left=POMO.work;F.round=1;$('focus').classList.remove('brk');haptic(6);drawFocus()};
 function nextFocus(){
-  if(F.i<F.q.length-1){F.i++;F.sec=0;F.run=true;drawFocus()}
+  if(F.i<F.q.length-1){F.i++;F.sec=0;F.extra=0;F.upd=false;F.run=true;drawFocus()}
   else showSummary();
 }
 /* ---------- Tide focus style ---------- */
@@ -2252,11 +2253,17 @@ async function installUpdate(){
   catch(e){UPD.busy=false;if(b){b.disabled=false;b.textContent='Update'}if(settingsOpen())drawSettings();toast('Update failed. Try again later')}
 }
 function pipVars(){const cs=getComputedStyle(root);return{fbg:cs.getPropertyValue('--fbg').trim()||cs.getPropertyValue('--today').trim(),fink:cs.getPropertyValue('--fink').trim()||'#0F1013',font:cs.getPropertyValue('--font').trim(),dark:root.dataset.focusdark==='1'}}
+let deskZ='';
+function deskSize(st){const z={...DESK_SIZE[pipMode()]};if(pipMode()==='compact'&&st&&st.step&&!st.sum)z.height+=22;return z}
 function deskSend(){
   if(!deskMini)return;const st=pipState();
   if(!st){deskClose();return}
-  window.__TAURI__.event.emit('blitzit-state',{...st,mode:pipMode(),vars:pipVars()}).catch(()=>{});
+  const z=deskSize(st),k=z.width+'x'+z.height;
+  if(k!==deskZ){if(deskZ)window.__TAURI__.core.invoke('resize_mini',z).catch(()=>{});deskZ=k}
+  window.__TAURI__.event.emit('blitzit-state',{...st,mode:pipMode(),vars:{...pipVars(),fade:S.cfg.pipFade!==false}}).catch(()=>{});
 }
+/* finish screen "Close": hide the mini timer and leave the main window where it is */
+function deskDismiss(){clearInterval(deskT);deskMini=false;deskZ='';try{window.__TAURI__.core.invoke('close_mini',{restore:false}).catch(()=>{})}catch(_){}closeFocus()}
 /* desktop mini window sizes include room for its soft shadow */
 const DESK_SIZE={compact:{width:336,height:178},mini:{width:236,height:126}};
 const focusEl=()=>tideOn()?$('tide'):$('focus');
@@ -2271,22 +2278,26 @@ function growIn(){
 async function deskOpen(){
   if(deskMini)return deskClose();
   if(!F.on)return;
-  const z=DESK_SIZE[pipMode()];
+  const z=deskSize(pipState());
   await shrinkOut();
   try{await window.__TAURI__.core.invoke('open_mini',z)}catch(e){growIn();return toast('Couldn’t open the mini timer')}
+  deskZ=z.width+'x'+z.height;
   setTimeout(()=>{const el=focusEl();el&&el.classList.remove('to-mini')},400);
   deskMini=true;
   if(!deskUn)deskUn=await window.__TAURI__.event.listen('blitzit-act',e=>{
     const a=e.payload;
     if(a==='closed'){deskMini=false;clearInterval(deskT);return}
     if(a==='ready'){deskSend();return}
-    if(a==='size'){S.cfg.pipMode=pipMode()==='mini'?'compact':'mini';save();window.__TAURI__.core.invoke('resize_mini',DESK_SIZE[pipMode()]).catch(()=>{});deskSend();return}
+    if(a==='size'){S.cfg.pipMode=pipMode()==='mini'?'compact':'mini';save();deskSend();return}
+    if(a==='open'){closeFocus();return}
+    if(a==='dismiss'){deskDismiss();return}
+    if(a==='back'&&F.sum){closeFocus();return}
     if(a==='back'){deskClose();return}
     pipAct(a);setTimeout(deskSend,80);
   });
   clearInterval(deskT);deskT=setInterval(deskSend,300);deskSend();
 }
-function deskClose(){clearInterval(deskT);if(deskMini){deskMini=false;try{window.__TAURI__.core.invoke('close_mini').then(()=>setTimeout(growIn,60))}catch(_){}}}
+function deskClose(){clearInterval(deskT);deskZ='';if(deskMini){deskMini=false;try{window.__TAURI__.core.invoke('close_mini').then(()=>setTimeout(growIn,60))}catch(_){}}}
 window.blitzitStart=()=>{if(!F.on)$('goBtn').click()}; // tray menu + Ctrl+Shift+B
 const PIP_CSS=`html,body{margin:0;height:100%}
 body{background:var(--fbg,var(--today));color:var(--fink,#0F1013);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;user-select:none;transition:background .6s}
@@ -2320,16 +2331,20 @@ function syncPip(){
   [...root.attributes].forEach(a=>{if(a.name.startsWith('data-'))pd.setAttribute(a.name,a.value)});
   pd.dataset.pipmode=pipMode();
 }
+function pipStep(t){const nx=t&&t.subs&&t.subs.find(s=>!s.done);return nx?{t:nx.t,n:`${t.subs.filter(s=>s.done).length+1}/${t.subs.length}`}:null}
 function pipState(){ // read the live session from whichever focus view is running
-  if(!F.on)return null;const inT=tideOn(),t=inT?tCur():F.q&&F.q[F.i];if(!t)return null;
+  if(!F.on)return null;
+  if(F.sum)return {sum:true,n:F.done,time:fmt(Math.max(0,Math.round(F.focused/60)))};
+  const inT=tideOn(),t=inT?tCur():F.q&&F.q[F.i];if(!t)return null;
   if(inT){
     const pick=T.mode==='pick',left=pick?T.dur:T.mode==='end'?0:tLeft();
-    return {title:t.title,time:pick?tMmss(T.dur):tMmss(left),bar:pick?0:(1-left/T.dur)*100,run:T.mode==='run',pick,end:T.mode==='end'};
+    return {title:t.title,time:pick?tMmss(T.dur):tMmss(left),bar:pick?0:(1-left/T.dur)*100,run:T.mode==='run',pick,end:T.mode==='end',up:T.mode==='end',step:pipStep(t)};
   }
-  return {title:t.title,time:$('fTime').textContent,bar:parseFloat($('fBar').style.width)||0,run:F.run,pick:false,end:false};
+  const up=F.mode!=='pomo'&&t.est>0&&F.sec>=t.est*60+(F.extra||0);
+  return {title:t.title,time:$('fTime').textContent,bar:parseFloat($('fBar').style.width)||0,run:F.run,pick:false,end:false,up,step:pipStep(t)};
 }
 function drawPip(){
-  if(!PIP||PIP.closed)return;const d=PIP.document,st=pipState();if(!st)return closePip();
+  if(!PIP||PIP.closed)return;const d=PIP.document,st=pipState();if(!st||st.sum)return closePip();
   const q=id=>d.getElementById(id);
   q('pvT').textContent=st.title;q('pvTime').textContent=st.time;q('pvBar').style.width=Math.min(100,st.bar)+'%';
   q('pv').classList.toggle('paused',!st.run&&!st.end);
@@ -2340,6 +2355,8 @@ function pipAct(a){
   const inT=tideOn(),tb=k=>{const b=$('tide').querySelector(`[data-a="${k}"]`);b&&b.click()};
   if(a==='play'){if(inT)tb(T.mode==='run'?'pause':T.mode==='pick'?'go':T.mode==='end'?'more':'resume');else $('fPause').click()}
   else if(a==='done'){if(inT)tb(T.mode==='pick'?'go':'done');else $("fDone").click()}
+  else if(a==='more'){if(inT)tb('more');else{F.extra=(F.extra||0)+300;F.upd=false;drawTime()}}
+  else if(a==='step'){if(inT)tb('step');else $('fStep').click()}
   else if(a==='size'&&PIP){S.cfg.pipMode=pipMode()==='mini'?'compact':'mini';save();syncPip();const z=PIP_SIZE[pipMode()];try{PIP.resizeTo(z.width,z.height+(PIP.outerHeight-PIP.innerHeight||0))}catch(_){}}
   else if(a==='back')closePip();
   setTimeout(drawPip,60);
@@ -2369,7 +2386,8 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-pip]')){e.stopP
 function showSummary(){
   clearInterval(F.tick);unlockScreen();
   $('sDone').textContent=F.done;$('sTime').textContent=fmt(Math.max(0,Math.round(F.focused/60)));
-  closePip();$('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);
+  F.sum=true;if(deskMini)deskSend();else closePip(); // desktop: celebrate in the mini timer, don't pull the big window up
+  $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);
 }
 function closeFocus(){closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
 $('fPause').onclick=()=>{step();F.run=!F.run;F.last=Date.now();$('fPause').innerHTML=F.run?PAUSE:PLAY;haptic(5);fReveal()};
@@ -2715,7 +2733,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 S.cfg.names=Object.assign({},DEF_CFG.names,S.cfg.names);S.cfg.colors=Object.assign({},DEF_CFG.colors,S.cfg.colors);
@@ -2885,7 +2903,8 @@ function settingsPage(id){
     <p class="fc-name">${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).n}${(c.focusColor||'red')==='red'?' (default)':''}${c.focusShuffle?' · starting colour':''}</p>
     ${row('Shuffle colours',tg('focusShuffle'),'New colour after each finished step')}
     </div>${HAS_KEYS()?`<div class="set-sec"><h3>Pop-out window</h3>
-    ${row('Size',`<div class="segc">${sOpt('pipMode','compact','Compact')}${sOpt('pipMode','mini','Timer only')}</div>`,(c.pipMode||'compact')==='mini'?'Just the countdown, very small.':'Task name and timer.')}</div>`:''}<div class="set-sec"><h3>During a blitz</h3>
+    ${row('Size',`<div class="segc">${sOpt('pipMode','compact','Compact')}${sOpt('pipMode','mini','Timer only')}</div>`,(c.pipMode||'compact')==='mini'?'Just the countdown, very small.':'Task name and timer.')}
+    ${DESK()?row('Fade on hover',tg('pipFade'),'See what’s behind the mini timer'):''}</div>`:''}<div class="set-sec"><h3>During a blitz</h3>
     ${row('Sound at end of round',tg('sound'))}
     ${row('Keep screen awake',tg('wake'))}</div>`;
   if(id==='archive'){

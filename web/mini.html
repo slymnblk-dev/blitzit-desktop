@@ -9,72 +9,126 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
 /* Blitzit mini timer: a rounded card in a transparent, frameless, always-on-top window.
-   The window has a little room around the card for its shadow, and a bit more on top
-   so the hover controls can float on the card's top edge, just outside it. */
+   The window has room around the card for its shadow, and a bit more on top
+   so the controls can float on the card's top edge, just outside it. */
 :root{--fbg:#FF5B47;--fink:#0F1013;--font:"Bricolage Grotesque",ui-sans-serif,system-ui,"Segoe UI",sans-serif;--pt:24px;--p:12px}
 html,body{margin:0;height:100%;background:transparent}
 body{font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;user-select:none}
 .pv{position:absolute;top:var(--pt);left:var(--p);right:var(--p);bottom:var(--p);box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;
   padding:16px 20px 18px;border-radius:24px;background:var(--fbg);color:var(--fink);cursor:grab;
   box-shadow:0 10px 28px -8px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.08);
-  transition:background .6s,color .6s;animation:pvIn .42s cubic-bezier(.2,.9,.25,1.15) both;transform-origin:100% 100%}
+  transition:background .6s,color .6s,opacity .3s ease;animation:pvIn .42s cubic-bezier(.2,.9,.25,1.15) both;transform-origin:100% 100%}
 .pv:active{cursor:grabbing}
 .pv.out{animation:pvOut .26s cubic-bezier(.4,0,.6,1) both}
 @keyframes pvIn{from{opacity:0;transform:scale(.86) translateY(8px)}}
 @keyframes pvOut{to{opacity:0;transform:scale(.9) translateY(6px)}}
 
-/* task name: always visible, one line, never clipped */
+/* see-through on hover (setting): the card fades so you can read what's behind it,
+   and comes back as soon as you reach for the controls */
+[data-fade="1"] body:hover .pv:not(.up):not(.sum){opacity:.28;transition-delay:0s,0s,.25s}
+[data-fade="1"] body:has(.pv-ctl:hover) .pv{opacity:1!important}
+
+/* task name + current step */
 .pv-h{display:flex;align-items:center;gap:10px;min-width:0}
 .pv-t{flex:1;min-width:0;font-size:14px;font-weight:700;letter-spacing:-.01em;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.82}
-.pv-st{flex:none;display:none;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.14)}
-.pv.paused .pv-st{display:block}
+.pv-st{flex:none;display:none;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.14)}
+.pv.paused .pv-st,.pv.up .pv-st{display:block}
+.pv.up .pv-st{background:var(--fink);color:var(--fbg)}
+.pv-s{display:none;align-items:center;gap:8px;margin-top:5px;min-width:0;font-size:12.5px;font-weight:600;line-height:1.35;cursor:pointer;opacity:.75;transition:opacity .15s}
+.pv-s:hover{opacity:1}
+.pv.has-step .pv-s{display:flex}
+.pv-s i{flex:none;width:12px;height:12px;border-radius:50%;border:1.8px solid currentColor;box-sizing:border-box;transition:background .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
+.pv-s:hover i{background:rgba(0,0,0,.12)}
+.pv-s span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-s b{flex:none;font-weight:700;opacity:.65;font-variant-numeric:tabular-nums}
+.pv-s.tick i{background:currentColor;transform:scale(1.15)}
+.pv-s.tick span{text-decoration:line-through;opacity:.5}
+
 .pv-time{font-weight:800;letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;font-size:min(64px,19vw);margin-top:6px;white-space:nowrap;transition:opacity .25s}
 .pv-bar{height:4px;border-radius:4px;background:rgba(0,0,0,.14);overflow:hidden;margin-top:12px}
 .pv-bar span{display:block;height:100%;width:0;background:currentColor;border-radius:4px;transition:width .9s linear}
 .pv.paused .pv-time{opacity:.45}
 .pv-wait{font-size:14px;font-weight:600;opacity:.8}
 
+/* time's up: a slow glowing pulse until you choose Done or +5 min */
+.pv.up{animation:upPulse 1.6s ease-in-out infinite}
+@keyframes upPulse{0%,100%{box-shadow:0 10px 28px -8px rgba(0,0,0,.45),0 0 0 0 color-mix(in srgb,var(--fbg) 70%,transparent)}
+  50%{box-shadow:0 10px 28px -8px rgba(0,0,0,.45),0 0 0 7px color-mix(in srgb,var(--fbg) 0%,transparent)}}
+.pv.up .pv-time{animation:upBeat 1.6s ease-in-out infinite}
+@keyframes upBeat{50%{transform:scale(1.03)}}
+
+/* task done: a quick check before the next task slides in */
+.pv-tick{position:absolute;inset:0;display:grid;place-items:center;border-radius:inherit;background:var(--fbg);opacity:0;pointer-events:none}
+.pv-tick svg{width:44px;height:44px;padding:10px;border-radius:50%;background:var(--fink);color:var(--fbg);transform:scale(.4)}
+.pv.ticking .pv-tick{animation:tkFade .9s ease both}
+.pv.ticking .pv-tick svg{animation:tkPop .9s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes tkFade{0%{opacity:0}15%,70%{opacity:1}100%{opacity:0}}
+@keyframes tkPop{0%{transform:scale(.4)}25%,70%{transform:scale(1)}100%{transform:scale(.9)}}
+
+/* blitz complete */
+.pv-sum{display:none;align-items:center;gap:14px}
+.pv.sum .pv-sum{display:flex}
+.pv.sum>.pv-h,.pv.sum>.pv-s,.pv.sum>.pv-time,.pv.sum>.pv-bar{display:none!important}
+.pv-sum svg{flex:none;width:40px;height:40px;padding:9px;box-sizing:border-box;border-radius:50%;background:var(--fink);color:var(--fbg);animation:tkPop .7s cubic-bezier(.3,1.6,.5,1) both}
+.pv-sum b{display:block;font-size:22px;font-weight:800;letter-spacing:-.04em;line-height:1.05}
+.pv-sum span{display:block;margin-top:4px;font-size:13px;font-weight:600;opacity:.7}
+.pv.sum{animation:pvIn .42s cubic-bezier(.2,.9,.25,1.15) both}
+
 /* timer only */
 [data-pipmode="mini"] .pv{align-items:center;padding:8px 14px;border-radius:22px}
-[data-pipmode="mini"] .pv-h,[data-pipmode="mini"] .pv-bar{display:none}
+[data-pipmode="mini"] .pv-h,[data-pipmode="mini"] .pv-s,[data-pipmode="mini"] .pv-bar{display:none!important}
 [data-pipmode="mini"] .pv-time{font-size:min(56px,25vw);margin:0}
+[data-pipmode="mini"] .pv-sum{gap:10px}
+[data-pipmode="mini"] .pv-sum svg{width:32px;height:32px;padding:7px}
+[data-pipmode="mini"] .pv-sum b{font-size:17px}
+[data-pipmode="mini"] .pv-sum span{font-size:12px;margin-top:2px}
 
-/* hover controls: a dark pill sitting on the card's top edge, half outside */
+/* controls: a dark pill sitting on the card's top edge, mostly outside it */
 .pv-ctl{position:absolute;top:calc(var(--pt) - 20px);left:50%;z-index:2;display:flex;align-items:center;gap:2px;padding:3px;border-radius:999px;
-  background:var(--fink);color:var(--fbg);box-shadow:0 6px 16px -4px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06);
+  background:var(--fink);color:var(--fbg);box-shadow:0 6px 16px -4px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06);white-space:nowrap;
   opacity:0;transform:translate(-50%,6px) scale(.92);pointer-events:none;
   transition:opacity .18s ease,transform .26s cubic-bezier(.2,.9,.25,1.2),background .6s,color .6s}
-body:hover .pv-ctl,.pv.paused~.pv-ctl{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+body:hover .pv-ctl,.pv.paused~.pv-ctl,.pv.up~.pv-ctl,.pv.sum~.pv-ctl{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .pv-ctl button{height:26px;min-width:26px;padding:0;border:0;border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:12px;font-weight:800;
   display:grid;place-items:center;cursor:pointer;transition:background .15s,transform .15s}
 .pv-ctl button:hover{background:rgba(255,255,255,.12)}
 .pv-ctl button:active{transform:scale(.9)}
 .pv-ctl .pv-done{padding:0 12px;background:var(--fbg);color:var(--fink)}
 .pv-ctl .pv-done:hover{background:var(--fbg);filter:brightness(1.08)}
+.pv-ctl .pv-txt{padding:0 10px}
 .pv-ctl svg{width:13px;height:13px}
 .pv-ctl i{width:1px;height:14px;background:currentColor;opacity:.2;margin:0 2px}
+.pv-ctl [hidden]{display:none}
 
 /* dark focus colours: the pill turns light so it still stands out */
 [data-focusdark="1"] .pv-ctl{background:#F3F2EE;color:#0F1013}
 [data-focusdark="1"] .pv-ctl button:hover{background:rgba(0,0,0,.08)}
 [data-focusdark="1"] .pv-ctl .pv-done{background:#0F1013;color:#F3F2EE}
 [data-focusdark="1"] .pv-bar,[data-focusdark="1"] .pv-st{background:rgba(255,255,255,.14)}
+[data-focusdark="1"] .pv-s:hover i{background:rgba(255,255,255,.14)}
 [data-focusdark="1"] .pv{box-shadow:0 10px 28px -8px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,255,255,.14)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="pv" id="pv" data-tauri-drag-region>
-  <div class="pv-h" data-tauri-drag-region><div class="pv-t" id="pvT" data-tauri-drag-region></div><span class="pv-st" data-tauri-drag-region>Paused</span></div>
+  <div class="pv-h" data-tauri-drag-region><div class="pv-t" id="pvT" data-tauri-drag-region></div><span class="pv-st" id="pvSt" data-tauri-drag-region>Paused</span></div>
+  <div class="pv-s" id="pvS" data-pv="step" title="Tick off this step"><i></i><span id="pvSt2"></span><b id="pvSn"></b></div>
   <div class="pv-time" id="pvTime" data-tauri-drag-region><span class="pv-wait">Waiting for Blitzit…</span></div>
   <div class="pv-bar" data-tauri-drag-region><span id="pvBar"></span></div>
+  <div class="pv-sum" data-tauri-drag-region><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    <div data-tauri-drag-region><b data-tauri-drag-region>Blitz complete</b><span id="pvSum" data-tauri-drag-region></span></div></div>
+  <div class="pv-tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
 </div>
 <div class="pv-ctl" id="pvCtl">
   <button id="pvPlay" data-pv="play" aria-label="Pause" title="Pause (Space)"></button>
+  <button class="pv-txt" id="pvMore" data-pv="more" title="5 more minutes" hidden>+5 min</button>
   <button class="pv-done" id="pvDone" data-pv="done" title="Done (Enter)">Done</button>
-  <i></i>
+  <i id="pvSep"></i>
   <button data-pv="size" id="pvSize" aria-label="Switch size"></button>
-  <button data-pv="back" aria-label="Open Blitzit" title="Open Blitzit (double-click)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+  <button data-pv="back" id="pvOpen" aria-label="Open Blitzit" title="Open Blitzit (double-click)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+  <button class="pv-done" id="pvSumOpen" data-pv="open" hidden>Open Blitzit</button>
+  <button id="pvSumClose" data-pv="dismiss" aria-label="Close" title="Close" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
 </div>
 <script>
 const PAUSE='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>';
@@ -85,29 +139,51 @@ const $=id=>document.getElementById(id);
 const TAURI=window.__TAURI__&&window.__TAURI__.event;
 const send=a=>{if(TAURI)window.__TAURI__.event.emit('blitzit-act',a).catch(()=>{})};
 if(!TAURI)$('pvTime').innerHTML='<span class="pv-wait">Open this from the Blitzit desktop app.</span>';
+let last=null,ticking=false;
 function render(st){
-  const r=document.documentElement,mini=st.mode==='mini';
+  const r=document.documentElement,mini=st.mode==='mini',pv=$('pv');
   r.dataset.pipmode=mini?'mini':'compact';
-  if(st.vars){r.style.setProperty('--fbg',st.vars.fbg);r.style.setProperty('--fink',st.vars.fink);if(st.vars.font)r.style.setProperty('--font',st.vars.font);r.dataset.focusdark=st.vars.dark?'1':'0'}
+  if(st.vars){r.style.setProperty('--fbg',st.vars.fbg);r.style.setProperty('--fink',st.vars.fink);if(st.vars.font)r.style.setProperty('--font',st.vars.font);
+    r.dataset.focusdark=st.vars.dark?'1':'0';r.dataset.fade=st.vars.fade?'1':'0'}
+  pv.classList.toggle('sum',!!st.sum);
+  ['pvPlay','pvDone','pvSep','pvSize','pvOpen'].forEach(id=>$(id).hidden=!!st.sum);
+  $('pvSumOpen').hidden=$('pvSumClose').hidden=!st.sum;
+  if(st.sum){
+    pv.classList.remove('paused','up','has-step');$('pvMore').hidden=true;
+    $('pvSum').textContent=mini?`${st.n} ${st.n===1?'task':'tasks'} · ${st.time}`:`${st.n} ${st.n===1?'task':'tasks'} done · ${st.time} focused`;last=st;return;
+  }
+  // a task was finished: flash a check, then show the next one
+  if(last&&!last.sum&&last.title&&st.title!==last.title&&!ticking){ticking=true;pv.classList.add('ticking');setTimeout(()=>{pv.classList.remove('ticking');ticking=false},900)}
   $('pvT').textContent=st.title||'';$('pvT').title=st.title||'';$('pvTime').textContent=st.time||'';
   $('pvBar').style.width=Math.min(100,st.bar||0)+'%';
-  $('pv').classList.toggle('paused',!st.run&&!st.end&&!st.pick);
+  const up=!!st.up,paused=!st.run&&!st.end&&!st.pick&&!up;
+  pv.classList.toggle('paused',paused);pv.classList.toggle('up',up);
+  $('pvSt').textContent=up?'Time’s up':'Paused';
+  const step=st.step;pv.classList.toggle('has-step',!!step);
+  if(step&&!$('pvS').classList.contains('tick')){$('pvSt2').textContent=step.t;$('pvSn').textContent=step.n;$('pvS').title='Tick off: '+step.t}
+  // controls: +5 min replaces pause when time is up
+  $('pvMore').hidden=!up;$('pvPlay').hidden=up&&!!st.end;
   $('pvPlay').innerHTML=st.run?PAUSE:PLAY;$('pvPlay').title=st.run?'Pause (Space)':st.pick?'Begin':'Resume (Space)';
   $('pvDone').textContent=st.pick?'Begin':'Done';
   $('pvSize').innerHTML=mini?SHOW_TASK:TIMER_ONLY;$('pvSize').title=mini?'Show task name':'Timer only';
+  last=st;
 }
 if(TAURI){
   window.__TAURI__.event.listen('blitzit-state',e=>render(e.payload));
   send('ready');
   window.addEventListener('beforeunload',()=>send('closed'));
 }
-const back=()=>{$('pv').classList.add('out');setTimeout(()=>send('back'),220)};
+const back=()=>{$('pv').classList.add('out');setTimeout(()=>send(last&&last.sum?'open':'back'),220)};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-pv]');if(!b)return;
-  if(b.dataset.pv==='back')return back();
-  send(b.dataset.pv)});
-$('pv').addEventListener('dblclick',back);
+  const a=b.dataset.pv;
+  if(a==='back')return back();
+  if(a==='dismiss'||a==='open'){$('pv').classList.add('out');setTimeout(()=>send(a),220);return}
+  if(a==='step'){const s=$('pvS');if(s.classList.contains('tick'))return;s.classList.add('tick');setTimeout(()=>{send('step');setTimeout(()=>s.classList.remove('tick'),450)},380);return}
+  send(a)});
+$('pv').addEventListener('dblclick',e=>{if(!e.target.closest('[data-pv]'))back()});
 document.addEventListener('keydown',e=>{
-  if(e.key===' '){e.preventDefault();send('play')}
+  if(last&&last.sum){if(e.key==='Escape'||e.key==='Enter'){e.preventDefault();$('pv').classList.add('out');setTimeout(()=>send(e.key==='Enter'?'open':'dismiss'),220)}return}
+  if(e.key===' '){e.preventDefault();send(last&&last.up&&last.end?'more':'play')}
   else if(e.key==='Enter'){e.preventDefault();send('done')}
   else if(e.key==='Escape'){e.preventDefault();back()}
 });

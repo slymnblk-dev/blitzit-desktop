@@ -11,6 +11,66 @@ use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_updater::UpdaterExt;
 use std::sync::Mutex;
 
+/// Where the mini timer was last left: its bottom-right corner, in logical pixels.
+/// Kept in memory while it moves and saved to disk when it closes.
+#[derive(Default)]
+struct MiniSpot(Mutex<Option<(f64, f64)>>);
+
+fn spot_file(app: &AppHandle) -> Option<std::path::PathBuf> {
+    app.path().app_config_dir().ok().map(|d| d.join("mini-position.json"))
+}
+
+fn load_spot(app: &AppHandle) -> Option<(f64, f64)> {
+    let text = std::fs::read_to_string(spot_file(app)?).ok()?;
+    serde_json::from_str::<(f64, f64)>(&text).ok()
+}
+
+fn save_spot(app: &AppHandle) {
+    let spot = app.try_state::<MiniSpot>().and_then(|s| *s.0.lock().unwrap());
+    if let (Some(spot), Some(file)) = (spot, spot_file(app)) {
+        if let Some(dir) = file.parent() {
+            let _ = std::fs::create_dir_all(dir);
+        }
+        let _ = std::fs::write(file, serde_json::to_string(&spot).unwrap_or_default());
+    }
+}
+
+/// Remembers where the mini timer is now (ignores the off-screen spot Windows uses for minimised windows).
+fn track_spot(w: &tauri::Window) {
+    if let (Ok(pos), Ok(size), Ok(sf)) = (w.outer_position(), w.outer_size(), w.scale_factor()) {
+        if pos.x <= -30000 || pos.y <= -30000 {
+            return;
+        }
+        let right = (pos.x as f64 + size.width as f64) / sf;
+        let bottom = (pos.y as f64 + size.height as f64) / sf;
+        if let Some(state) = w.app_handle().try_state::<MiniSpot>() {
+            *state.0.lock().unwrap() = Some((right, bottom));
+        }
+    }
+}
+
+/// The last spot, if it is still on one of the connected screens.
+fn saved_position(app: &AppHandle, width: f64, height: f64) -> Option<(f64, f64)> {
+    let (right, bottom) = app
+        .try_state::<MiniSpot>()
+        .and_then(|s| *s.0.lock().unwrap())
+        .or_else(|| load_spot(app))?;
+    let (x, y) = (right - width, bottom - height);
+    let monitors = app.available_monitors().ok()?;
+    let visible = monitors.iter().any(|m| {
+        let sf = m.scale_factor();
+        let wa = m.work_area();
+        let (mx, my) = (wa.position.x as f64 / sf, wa.position.y as f64 / sf);
+        let (mw, mh) = (wa.size.width as f64 / sf, wa.size.height as f64 / sf);
+        x >= mx - 20.0 && y >= my - 20.0 && x + width <= mx + mw + 20.0 && y + height <= my + mh + 20.0
+    });
+    if visible {
+        Some((x, y))
+    } else {
+        None
+    }
+}
+
 /// A sign-in link (blitzit://auth#...) waiting for the web app to pick it up.
 #[derive(Default)]
 struct PendingLink(Mutex<Option<String>>);
@@ -85,7 +145,7 @@ async fn open_mini(app: AppHandle, width: f64, height: f64) -> Result<(), String
             .always_on_top(true)
             .resizable(true)
             .skip_taskbar(true);
-        if let Some((x, y)) = dock_position(&app, width, height) {
+        if let Some((x, y)) = saved_position(&app, width, height).or_else(|| dock_position(&app, width, height)) {
             b = b.position(x, y);
         }
         b.build().map_err(|e| e.to_string())?;
@@ -96,13 +156,15 @@ async fn open_mini(app: AppHandle, width: f64, height: f64) -> Result<(), String
     Ok(())
 }
 
-/// Closes the mini timer and brings the main window back.
+/// Closes the mini timer and (unless restore is false) brings the main window back.
 #[tauri::command]
-async fn close_mini(app: AppHandle) {
+async fn close_mini(app: AppHandle, restore: Option<bool>) {
     if let Some(w) = app.get_webview_window("mini") {
         let _ = w.close();
     }
-    show_main(&app);
+    if restore.unwrap_or(true) {
+        show_main(&app);
+    }
 }
 
 /// Resizes the mini timer, keeping its bottom-right corner where it is.
@@ -176,6 +238,17 @@ pub fn run() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingLink::default())
+        .manage(MiniSpot::default())
+        .on_window_event(|window, event| {
+            if window.label() != "mini" {
+                return;
+            }
+            match event {
+                tauri::WindowEvent::Moved(_) | tauri::WindowEvent::Resized(_) => track_spot(window),
+                tauri::WindowEvent::Destroyed => save_spot(window.app_handle()),
+                _ => {}
+            }
+        })
         .invoke_handler(tauri::generate_handler![
             open_mini,
             close_mini,
