@@ -31,7 +31,7 @@ jobs:
         shell: pwsh
         env:
           K: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-        run: if (-not $env:K) { echo "::error::The TAURI_SIGNING_PRIVATE_KEY secret is missing"; exit 1 } else { echo "Signing key found ($($env:K.Length) characters)" }
+        run: if (-not $env:K) { echo "::error::The TAURI_SIGNING_PRIVATE_KEY secret is missing"; exit 1 } else { echo "::notice::Signing key found ($($env:K.Trim().Length) characters, starts with $($env:K.Trim().Substring(0,6)))" }
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,6 +50,10 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
         run: |
-          $out = npm run tauri build 2>&1 | Out-String
-          $tail = ($out -split "`n" | Select-Object -Last 40) -join '%0A'
-          echo "::error::$tail"
+          $ErrorActionPreference = 'Continue'
+          $lines = (npm run tauri build 2>&1 | ForEach-Object { "$_" })
+          $hits = $lines | Where-Object { $_ -match 'error|failed|invalid|panicked' } | Select-Object -First 8
+          foreach ($l in $hits) { $m = $l -replace '::',' : '; echo "::error::$m" }
+          $last = ($lines | Select-Object -Last 6) -join ' || '
+          echo "::error::LAST: $($last -replace '::',' : ')"
+          exit 1
