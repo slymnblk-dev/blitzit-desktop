@@ -7,7 +7,13 @@ use tauri::{
     AppHandle, LogicalPosition, LogicalSize, Manager, WebviewUrl, WebviewWindowBuilder,
 };
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
+use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_updater::UpdaterExt;
+use std::sync::Mutex;
+
+/// A sign-in link (blitzit://auth#...) waiting for the web app to pick it up.
+#[derive(Default)]
+struct PendingLink(Mutex<Option<String>>);
 
 /// The live web app. Every Netlify upload updates the desktop app too.
 const SITE: &str = "https://dulcet-daifuku-0fb870.netlify.app";
@@ -36,6 +42,27 @@ fn dock_position(app: &AppHandle, width: f64, height: f64) -> Option<(f64, f64)>
     let right = (wa.position.x as f64 + wa.size.width as f64) / sf;
     let bottom = (wa.position.y as f64 + wa.size.height as f64) / sf;
     Some((right - width - 12.0, bottom - height - 12.0))
+}
+
+/// Called when the browser opens blitzit://auth#... after the user clicks the email link.
+/// Keeps the link until the web app takes it, and pokes the page in case it is already loaded.
+fn handle_link(app: &AppHandle, url: String) {
+    if !url.starts_with("blitzit://") {
+        return;
+    }
+    if let Some(state) = app.try_state::<PendingLink>() {
+        *state.0.lock().unwrap() = Some(url);
+    }
+    show_main(app);
+    if let Some(w) = app.get_webview_window("main") {
+        let _ = w.eval("window.blitzitLink && window.blitzitLink()");
+    }
+}
+
+/// The web app asks for a waiting sign-in link (returns it once).
+#[tauri::command]
+fn take_link(state: tauri::State<'_, PendingLink>) -> Option<String> {
+    state.0.lock().unwrap().take()
 }
 
 /// Opens the frameless, transparent, always-on-top mini timer docked bottom-right,
@@ -146,15 +173,32 @@ pub fn run() {
                 })
                 .build(),
         )
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .manage(PendingLink::default())
         .invoke_handler(tauri::generate_handler![
             open_mini,
             close_mini,
             resize_mini,
             check_update,
-            install_update
+            install_update,
+            take_link
         ])
         .setup(|app| {
+            // blitzit:// links (email sign-in) open this app
+            let _ = app.deep_link().register_all();
+            if let Ok(Some(urls)) = app.deep_link().get_current() {
+                if let Some(u) = urls.first() {
+                    handle_link(app.handle(), u.to_string());
+                }
+            }
+            let handle = app.handle().clone();
+            app.deep_link().on_open_url(move |event| {
+                if let Some(u) = event.urls().first() {
+                    handle_link(&handle, u.to_string());
+                }
+            });
+
             // tray icon: left click opens Blitzit, right click shows the menu
             let open = MenuItem::with_id(app, "open", "Open Blitzit", true, None::<&str>)?;
             let blitz = MenuItem::with_id(app, "blitz", "Start blitz   Ctrl+Shift+B", true, None::<&str>)?;
