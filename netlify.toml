@@ -1,0 +1,9 @@
+# Netlify publishes the web app straight from the web/ folder (no build step).
+[build]
+  publish = "web"
+  command = ""
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"

@@ -12,6 +12,10 @@ Your account, tasks and sync are the same as on the web and your phone.
 
 ---
 
+## Web app
+
+The live app (Netlify) is the `web/` folder. Every push to `main` that changes `web/` is published automatically.
+
 ## Updates
 
 - **App changes** (design, features, mini timer look) arrive automatically with every Netlify upload.
