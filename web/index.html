@@ -1284,7 +1284,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=53; // bumped with every published update
+const APP_VERSION=54; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2258,7 +2258,7 @@ function deskSend(){
   window.__TAURI__.event.emit('blitzit-state',{...st,mode:pipMode(),vars:pipVars()}).catch(()=>{});
 }
 /* desktop mini window sizes include room for its soft shadow */
-const DESK_SIZE={compact:{width:332,height:178},mini:{width:228,height:118}};
+const DESK_SIZE={compact:{width:336,height:178},mini:{width:236,height:126}};
 const focusEl=()=>tideOn()?$('tide'):$('focus');
 function shrinkOut(){ // the focus view flies into the bottom-right corner, where the mini timer appears
   const el=focusEl();if(!el||root.dataset.motion==='off')return Promise.resolve();
@@ -2291,7 +2291,7 @@ window.blitzitStart=()=>{if(!F.on)$('goBtn').click()}; // tray menu + Ctrl+Shift
 const PIP_CSS=`html,body{margin:0;height:100%}
 body{background:var(--fbg,var(--today));color:var(--fink,#0F1013);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;user-select:none;transition:background .6s}
 .pv{position:relative;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding:14px 18px}
-.pv-t{font-size:15px;font-weight:700;letter-spacing:-.02em;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;opacity:.85}
+.pv-t{font-size:15px;font-weight:700;letter-spacing:-.02em;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;opacity:.85}
 .pv-time{font-weight:800;letter-spacing:-.06em;line-height:1;font-variant-numeric:tabular-nums;font-size:clamp(40px,24vw,120px);margin-top:4px;white-space:nowrap}
 .pv-bar{height:4px;border-radius:4px;background:rgba(0,0,0,.14);overflow:hidden;margin-top:10px}
 .pv-bar span{display:block;height:100%;width:0;background:currentColor;transition:width .9s linear}
@@ -2917,7 +2917,6 @@ function settingsPage(id){
     <div class="set-sec"><h3>Help</h3><button class="link-row" id="replayIntro">Replay intro</button></div>
     <div class="set-sec"><h3>About</h3>
     ${row('Version',`<span class="acc-val">${VER}${BUILD?` <span class="build">(build ${BUILD})</span>`:''}</span>`)}
-    ${row('What’s new',`<span class="acc-val">Updates arrive automatically</span>`)}
     ${DESK()?`${row('Desktop app',`<span class="acc-val">${UPD.current||'…'}</span>`)}<button class="link-row" id="updCheck">${UPD.latest?`Update to ${UPD.latest}`:'Check for updates'}<span class="hint">${UPD.busy?'Updating…':UPD.latest?'Restarts Blitzit':UPD.checked?'Up to date':''}</span></button>`:''}</div>`;
   return head+body;
 }
