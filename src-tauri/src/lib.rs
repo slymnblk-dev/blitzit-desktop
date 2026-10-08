@@ -205,7 +205,7 @@ pub fn run() {
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&open, &blitz, &quit])?;
             let mut tray = TrayIconBuilder::new()
-                .tooltip("Blitzit")
+                .tooltip(format!("Blitzit {}", app.package_info().version))
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, e| match e.id.as_ref() {
