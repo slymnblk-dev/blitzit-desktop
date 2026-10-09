@@ -4,7 +4,7 @@ A small desktop app that opens your live Blitzit site and adds:
 
 - **Mini timer**: a frameless, always-on-top window (no browser bar). Start a blitz, then click the pop-out button next to ✕.
 - **Tray icon**: left-click opens Blitzit; right-click for Open / Start blitz / Quit.
-- **Ctrl+Shift+B**: starts a blitz from anywhere.
+- **Ctrl+Alt+Shift+B**: starts a blitz from anywhere.
 
 It loads `https://dulcet-daifuku-0fb870.netlify.app`, so **every Netlify upload updates the desktop app too**. You only rebuild this app if the desktop features themselves change.
 
@@ -29,5 +29,5 @@ The first time Windows may say "Windows protected your PC" (the app isn't code-s
 ## Good to know
 
 - The update signing key is stored as the GitHub secret `TAURI_SIGNING_PRIVATE_KEY`. Keep a backup copy: without it, updates can't be published.
-- If Ctrl+Shift+B is already used by another app, the shortcut is skipped. The tray menu still works.
+- If Ctrl+Alt+Shift+B is already used by another app, the shortcut is skipped. The tray menu still works.
 - To change the site address, edit `SITE` in `src-tauri/src/lib.rs`, `frontendDist` in `src-tauri/tauri.conf.json` and the URL in `src-tauri/capabilities/default.json`.

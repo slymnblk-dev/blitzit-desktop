@@ -4,7 +4,7 @@
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    AppHandle, LogicalPosition, LogicalSize, Manager, WebviewUrl, WebviewWindowBuilder,
+    AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, WebviewUrl, WebviewWindowBuilder,
 };
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 use tauri_plugin_deep_link::DeepLinkExt;
@@ -15,6 +15,10 @@ use std::sync::Mutex;
 /// Kept in memory while it moves and saved to disk when it closes.
 #[derive(Default)]
 struct MiniSpot(Mutex<Option<(f64, f64)>>);
+
+/// True while the app itself is closing the mini timer (so its own "closed" handling can be skipped).
+#[derive(Default)]
+struct MiniClosing(std::sync::atomic::AtomicBool);
 
 fn spot_file(app: &AppHandle) -> Option<std::path::PathBuf> {
     app.path().app_config_dir().ok().map(|d| d.join("mini-position.json"))
@@ -144,6 +148,8 @@ async fn open_mini(app: AppHandle, width: f64, height: f64) -> Result<(), String
             .shadow(false)
             .always_on_top(true)
             .resizable(true)
+            .maximizable(false)
+            .minimizable(false)
             .skip_taskbar(true);
         if let Some((x, y)) = saved_position(&app, width, height).or_else(|| dock_position(&app, width, height)) {
             b = b.position(x, y);
@@ -160,7 +166,14 @@ async fn open_mini(app: AppHandle, width: f64, height: f64) -> Result<(), String
 #[tauri::command]
 async fn close_mini(app: AppHandle, restore: Option<bool>) {
     if let Some(w) = app.get_webview_window("mini") {
-        let _ = w.close();
+        if let Some(flag) = app.try_state::<MiniClosing>() {
+            flag.0.store(true, std::sync::atomic::Ordering::SeqCst);
+        }
+        if w.close().is_err() {
+            if let Some(flag) = app.try_state::<MiniClosing>() {
+                flag.0.store(false, std::sync::atomic::Ordering::SeqCst);
+            }
+        }
     }
     if restore.unwrap_or(true) {
         show_main(&app);
@@ -239,13 +252,38 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingLink::default())
         .manage(MiniSpot::default())
+        .manage(MiniClosing::default())
         .on_window_event(|window, event| {
+            // closing the main window quits Blitzit, so the mini timer must not linger on its own
+            if window.label() == "main" {
+                if let tauri::WindowEvent::CloseRequested { .. } = event {
+                    if let Some(m) = window.app_handle().get_webview_window("mini") {
+                        if let Some(flag) = window.app_handle().try_state::<MiniClosing>() {
+                            flag.0.store(true, std::sync::atomic::Ordering::SeqCst);
+                        }
+                        let _ = m.close();
+                    }
+                }
+                return;
+            }
             if window.label() != "mini" {
                 return;
             }
             match event {
                 tauri::WindowEvent::Moved(_) | tauri::WindowEvent::Resized(_) => track_spot(window),
-                tauri::WindowEvent::Destroyed => save_spot(window.app_handle()),
+                tauri::WindowEvent::Destroyed => {
+                    let app = window.app_handle();
+                    save_spot(app);
+                    // closed some other way (e.g. Alt+F4): tell the page and bring Blitzit back
+                    let by_app = app
+                        .try_state::<MiniClosing>()
+                        .map(|f| f.0.swap(false, std::sync::atomic::Ordering::SeqCst))
+                        .unwrap_or(false);
+                    if !by_app {
+                        let _ = app.emit("blitzit-act", "closed");
+                        show_main(app);
+                    }
+                }
                 _ => {}
             }
         })
@@ -274,7 +312,7 @@ pub fn run() {
 
             // tray icon: left click opens Blitzit, right click shows the menu
             let open = MenuItem::with_id(app, "open", "Open Blitzit", true, None::<&str>)?;
-            let blitz = MenuItem::with_id(app, "blitz", "Start blitz   Ctrl+Shift+B", true, None::<&str>)?;
+            let blitz = MenuItem::with_id(app, "blitz", "Start blitz   Ctrl+Alt+Shift+B", true, None::<&str>)?;
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&open, &blitz, &quit])?;
             let mut tray = TrayIconBuilder::new()
@@ -302,8 +340,9 @@ pub fn run() {
             }
             tray.build(app)?;
 
-            // Ctrl+Shift+B starts a blitz from anywhere (ignored if another app already uses it)
-            let shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::KeyB);
+            // Ctrl+Alt+Shift+B starts a blitz from anywhere (ignored if another app already uses it).
+            // Not Ctrl+Shift+B (Chrome, Edge, VS Code) or Ctrl+Alt+B (AltGr+B types a character on some keyboards).
+            let shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT), Code::KeyB);
             let _ = app.global_shortcut().register(shortcut);
             Ok(())
         })

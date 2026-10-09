@@ -1082,6 +1082,33 @@ html,body{overscroll-behavior-y:contain}
 }
 
 .field:focus-visible,.d-title:focus-visible,.notes:focus-visible,.quick input:focus-visible,.ca-in:focus-visible,#nlIn:focus-visible,.sub-add input:focus-visible{outline:none}
+/* ---------- QA fixes ---------- */
+.sheet{visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s linear .36s}
+.sheet.on{visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.title,.f-title,.d-title,.pv-t{overflow-wrap:anywhere}
+.s-list .s-name{flex:1;min-width:0}.s-list .n{flex:none}
+.focus.sum .fsw,.focus.sum .pip-btn{visibility:hidden}
+.in-step{touch-action:pan-y}
+.top{gap:10px}.top-l{flex:none}.top-r{min-width:0;flex:1;justify-content:flex-end}.top .icon-btn{flex:none}.top .chip{min-width:0;flex:0 1 auto}
+.dsheet .subs{overscroll-behavior:auto}
+#listName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-height:520px) and (max-width:1099px){
+  .focus{overflow-y:auto;padding-top:10px;padding-bottom:10px}
+  .f-main{justify-content:flex-start;padding:4px 0}
+  .f-title{font-size:24px;-webkit-line-clamp:1}
+  .f-time{font-size:60px!important;margin:10px 0 8px!important}
+  .f-step{margin-top:8px;padding:8px 12px}
+  .f-next{display:none}
+  .f-btn{width:50px;height:50px}.f-done{height:50px}
+  .tide .t-main .f-title{font-size:22px;-webkit-line-clamp:1}
+  .tide .t-orb{width:min(120px,30vh)!important;height:min(120px,30vh)!important;margin:4px auto!important}
+  .tide .t-main .f-up{display:none}.tide .f-step{margin-top:6px;padding:6px 12px}.tide .t-cap{margin-top:4px}
+  .tide .t-ctl .f-btn{width:46px;height:46px}.tide .t-ctl .f-done{height:46px}
+  .tide .t-time{font-size:34px!important}
+  .tide .t-ch{margin-top:6px}
+  .tide{overflow-y:auto}.tide .t-main{flex:none;justify-content:flex-start}.tide .t-main>*,.tide .t-ctl,.tide .t-top{flex-shrink:0}
+  .tide .t-ctl{margin-top:10px}
+}
 </style>
 </head>
 <body>
@@ -1236,7 +1263,7 @@ html,body{overscroll-behavior-y:contain}
   </div>
   <div class="f-sum">
     <h3>Blitz complete</h3>
-    <div class="f-stats"><div><b id="sDone">0</b><span>tasks done</span></div><div><b id="sTime">0m</b><span>focused</span></div></div>
+    <div class="f-stats"><div><b id="sDone">0</b><span id="sDoneL">tasks done</span></div><div><b id="sTime">0m</b><span>focused</span></div></div>
     <button class="f-back" id="fBack">Back to list</button>
   </div>
 </div>
@@ -1284,7 +1311,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=55; // bumped with every published update
+const APP_VERSION=56; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1325,11 +1352,24 @@ try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 const FRESH=!S||!S.tasks;
 if(FRESH)S={tasks:JSON.parse(JSON.stringify(SEED)),stage:'today',list:'all',theme:null,nid:20,lastDay:today(),onboarded:false};
 else if(S.onboarded===undefined)S.onboarded=true;
+/* make sure the saved data has the right shape before anything reads it (old, partial or damaged saves) */
+function sanitize(){
+  const obj=x=>x&&typeof x==='object'&&!Array.isArray(x);
+  if(!Array.isArray(S.tasks))S.tasks=[];
+  S.tasks=S.tasks.filter(t=>obj(t)&&t.id!=null&&isFinite(+t.id));
+  S.tasks.forEach(t=>{t.subs=Array.isArray(t.subs)?t.subs.filter(x=>obj(x)&&x.id!=null&&isFinite(+x.id)):[]});
+  if(S.lists!=null)S.lists=Array.isArray(S.lists)?S.lists.filter(l=>obj(l)&&l.id!=null):null;
+  if(S.spaces!=null)S.spaces=Array.isArray(S.spaces)?S.spaces.filter(x=>obj(x)&&x.id!=null):null;
+  if(!obj(S.cfg))delete S.cfg;
+  if(!obj(S.tomb))S.tomb={};
+}
+if(!S||typeof S!=='object'||Array.isArray(S))S={tasks:JSON.parse(JSON.stringify(SEED)),stage:'today',list:'all',theme:null,nid:20,lastDay:today(),onboarded:false};
+sanitize();
 /* migrate older saves */
 if(!S.lists)S.lists=SEED_LISTS.map(l=>({...l}));
 if(!S.lastDay)S.lastDay=today();
 S.tasks.forEach(t=>{t.subs=t.subs||[];t.notes=t.notes||'';t.repeat=t.repeat||'none';if(t.stage==='done'&&!t.doneAt)t.doneAt=NOW-DAY});
-S.nid=Math.max(S.nid||0,...S.tasks.map(t=>t.id+1),...S.tasks.flatMap(t=>t.subs.map(s=>s.id+1)));
+S.nid=Math.max(+S.nid||0,...S.tasks.map(t=>+t.id+1),...S.tasks.flatMap(t=>t.subs.map(s=>+s.id+1)));
 
 /* ids are unique across devices (time-based), so two devices never create the same id */
 const newId=()=>{const v=Math.max(S.nid||0,Date.now()*1000+Math.floor(Math.random()*1000));S.nid=v+1;return v};
@@ -1344,7 +1384,8 @@ function trackChanges(){
   m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;
   trackMap=m;
 }
-const save=()=>{try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
+let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
+const save=()=>{if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
 let PIP=null; // the floating focus window (desktop Chrome)
 const $=id=>document.getElementById(id);
 const color=st=>`var(--${st})`;
@@ -1366,7 +1407,8 @@ function migrateSpaces(){
 function repairData(){
   const SIDS=['backlog','week','today','done'];
   if(!SIDS.includes(S.stage))S.stage='today';
-  if(!Array.isArray(S.tasks))S.tasks=[];
+  sanitize();
+  if(!Array.isArray(S.spaces)||!S.spaces.length)S.spaces=[{...SEED_SPACES[1]}];
   if(!Array.isArray(S.lists)||!S.lists.length)S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:S.spaces[0].id}];
   const lids=new Set(S.lists.map(l=>l.id));
   S.tasks=S.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);
@@ -1597,7 +1639,17 @@ const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,s
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
-  toast(msg,()=>{Object.assign(S,JSON.parse(snap));render();haptic(8)});
+  toast(msg,()=>{
+    undoHash=null;const d=JSON.parse(snap);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.nid=Math.max(S.nid||0,d.nid||0);
+    repairData();save();render();afterUndo();haptic(8)});
+  undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
+}
+/* after an undo, open sheets and pages must show the restored data, not stale copies */
+function afterUndo(){
+  if(cur&&$('detailSheet').classList.contains('on')){const t=S.tasks.find(x=>x.id===cur.id);if(t){cur=t;drawDetail()}else closeSheets()}
+  if($('listSheet').classList.contains('on'))try{drawLists()}catch(e){}
+  if(settingsOpen())drawSettings();
 }
 function collapse(row,cb,dx=24){
   row.style.height=row.offsetHeight+'px';void row.offsetHeight;
@@ -1623,6 +1675,7 @@ function rowClick(e){
   const row=e.target.closest('.row');if(!row||row.dataset.busy)return;
   const id=+row.dataset.id, t=S.tasks.find(x=>x.id===id);
   if(e.target.closest('[data-check]')){
+    if(Date.now()-(window.__chk||0)<700)return;window.__chk=Date.now();
     row.dataset.busy=1;haptic(14);
     const toDone=t.stage!=='done';
     row.classList.add('pop');row.classList.toggle('is-done',toDone);
@@ -1646,20 +1699,27 @@ function startReorder(d){
   d.rows=[...$('list').querySelectorAll('.row')];
   d.idx=d.rows.indexOf(d.row);d.target=d.idx;d.h=d.row.offsetHeight;
   d.mids=d.rows.map(r=>{const b=r.getBoundingClientRect();return b.top+b.height/2});
-  d.row.classList.add('lifted');
+  d.row.classList.add('lifted');d.sy0=window.scrollY;d.cy=d.y;d.dy=0;
   try{d.inner.setPointerCapture(d.pid)}catch(_){}
+  // near the top/bottom edge the page scrolls, so a task can travel past the visible rows
+  const auto=()=>{if(drag!==d||d.mode!=='reorder')return;
+    const v=d.cy<110?-Math.ceil((110-d.cy)/12):d.cy>innerHeight-130?Math.ceil((d.cy-innerHeight+130)/12):0;
+    if(v){const y0=window.scrollY;window.scrollBy(0,v);if(window.scrollY!==y0)reorderMove(d)}
+    requestAnimationFrame(auto)};
+  requestAnimationFrame(auto);
+}
+function reorderMove(d){
+  const off=d.dy+window.scrollY-d.sy0;
+  d.row.style.transform=`translateY(${off}px)`;
+  const cy=d.mids[d.idx]+off;let t=d.idx;
+  d.mids.forEach((m,i)=>{if(i<d.idx&&cy<m)t=Math.min(t,i);if(i>d.idx&&cy>m)t=Math.max(t,i)});
+  if(t!==d.target){d.target=t;haptic(4)}
+  d.rows.forEach((r,i)=>{if(i===d.idx)return;
+    const s=(i>d.idx&&i<=t)?-d.h:(i<d.idx&&i>=t)?d.h:0;r.style.transform=s?`translateY(${s}px)`:''});
 }
 window.addEventListener('pointermove',e=>{
   if(!drag)return;const d=drag,dx=e.clientX-d.x,dy=e.clientY-d.y;
-  if(d.mode==='reorder'){
-    d.row.style.transform=`translateY(${dy}px)`;
-    const cy=d.mids[d.idx]+dy;let t=d.idx;
-    d.mids.forEach((m,i)=>{if(i<d.idx&&cy<m)t=Math.min(t,i);if(i>d.idx&&cy>m)t=Math.max(t,i)});
-    if(t!==d.target){d.target=t;haptic(4)}
-    d.rows.forEach((r,i)=>{if(i===d.idx)return;
-      const s=(i>d.idx&&i<=t)?-d.h:(i<d.idx&&i>=t)?d.h:0;r.style.transform=s?`translateY(${s}px)`:''});
-    return;
-  }
+  if(d.mode==='reorder'){d.dy=dy;d.cy=e.clientY;reorderMove(d);return}
   if(!d.mode){
     if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)){clearTimeout(d.lp);d.mode='swipe';d.inner.classList.add('drag');try{d.inner.setPointerCapture(e.pointerId)}catch(_){}}
     else if(Math.abs(dy)>8){clearTimeout(d.lp);drag=null;return}
@@ -1850,6 +1910,7 @@ $('dPicker').onclick=e=>{
   else if(k==='list')t.list=v;
   else if(k==='est')t.est=+v;
   else if(k==='repeat')t.repeat=v;
+  if(k!=='stage'){save();render()}
   drawDetail();
 };
 $('dTitle').oninput=e=>{cur.title=e.target.value.replace(/\n/g,' ');grow(e.target);save()};
@@ -1892,14 +1953,15 @@ const SHEET_SKIP='textarea,.row-scroll,.ico-grid,#dDrag';
 document.addEventListener('touchstart',e=>{
   if(matchMedia('(min-width:1100px)').matches||e.touches.length>1)return;
   const sheet=e.target.closest('.sheet.on');if(!sheet||e.target.closest(SHEET_SKIP))return;
-  const sc=e.target.closest('.dsheet .subs')||e.target.closest('.d-scroll')||sheet.querySelector('.sheet-in');
+  // every scrollable box between the finger and the sheet: a pull-down only closes when all are at the top
+  const sc=[];for(let n=e.target;n&&n!==sheet.parentNode;n=n.parentElement){if(n.scrollHeight>n.clientHeight+1&&/(auto|scroll)/.test(getComputedStyle(n).overflowY))sc.push(n)}
   sheetSwipe={sheet,sc,y:e.touches[0].clientY,x:e.touches[0].clientX,dy:0,t:Date.now(),on:false};
 },{passive:true});
 document.addEventListener('touchmove',e=>{
   if(!sheetSwipe)return;const t=e.touches[0],dy=t.clientY-sheetSwipe.y,dx=t.clientX-sheetSwipe.x;
   if(!sheetSwipe.on){
     if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)){sheetSwipe=null;return}           // sideways: let it be
-    if(dy<-6||(dy>0&&sheetSwipe.sc&&sheetSwipe.sc.scrollTop>0)){sheetSwipe=null;return}               // scrolling content
+    if(dy<-6||(dy>0&&sheetSwipe.sc.some(x=>x.scrollTop>0))){sheetSwipe=null;return}               // scrolling content
     if(dy<8)return;
     sheetSwipe.on=true;sheetSwipe.lt=Date.now();sheetSwipe.dy=0;sheetSwipe.sheet.style.transition='none';$('scrim').style.transition='none';
   }
@@ -2117,7 +2179,7 @@ function tLog(){ // move newly focused seconds into the focus log
   if(add>0){S.focusLog=S.focusLog||{};const k=today();S.focusLog[k]=(S.focusLog[k]||0)+add;F.focused+=add;T.logged=el}
 }
 function tSave(){
-  S.tideRun=F&&F.on&&F.tide?{ids:F.q.map(t=>t.id),i:F.i,done:F.done,focused:F.focused,T:{mode:T.mode,dur:T.dur,st:T.st,pa:T.pa,pt:T.pt,logged:T.logged||0}}:null;save();
+  S.tideRun=F&&F.on&&F.tide?{ids:F.q.map(t=>t.id),cid:F.q[F.i]&&F.q[F.i].id,i:F.i,done:F.done,focused:F.focused,T:{mode:T.mode,dur:T.dur,st:T.st,pa:T.pa,pt:T.pt,logged:T.logged||0}}:null;save();
 }
 function tPick(){T={mode:'pick',dur:(S.cfg.tideMin||25)*6e4,st:0,pa:0,pt:0,logged:0}}
 function startTide(q,from){
@@ -2179,7 +2241,7 @@ function tideFinish(){ // end of the queue -> same summary as Classic
 }
 function tideLeave(){closePip();tLog();if(F.done)return tideFinish();F.on=false;F.tide=false;T=null;tSave();tideClose();unlockScreen();render()}
 function switchStyle(to){
-  if(!F||!F.on)return;haptic(6);S.cfg.focusStyle=to;
+  if(!F||!F.on||F.sum)return;haptic(6);S.cfg.focusStyle=to;
   if(to==='tide'&&!F.tide){startTide(F.q,{i:F.i,done:F.done,focused:F.focused,keepColor:true})}
   else if(to==='classic'&&F.tide){tLog();const q=F.q,i=F.i,d=F.done,fc=F.focused;F.tide=false;T=null;tSave();tideClose();
     startBlitz(q,{i,done:d,focused:fc,classic:true})}
@@ -2194,11 +2256,11 @@ $('tide').addEventListener('click',e=>{
   if(a==='step'){if(b.classList.contains('tick'))return;const t=tCur(),st=t&&t.subs.find(x=>x.id===+b.dataset.s);if(!st)return;
     b.classList.add('tick');haptic(10);
     setTimeout(()=>{st.done=true;save();shuffleFocus();const el=$('tStep');if(el){el.outerHTML=tStepHTML(t);const ne=$('tStep');if(ne)ne.classList.add('t-in-step')}},380);return}
-  if(a==='go'){const v=+(($('tIn')||{}).value||0);if(v>=1)T.dur=Math.min(300,v)*6e4;S.cfg.tideMin=Math.round(T.dur/6e4);T.mode='run';T.st=n;T.pa=0;T.pt=0;T.logged=0;haptic(10);tSave();tideRender()}
+  if(a==='go'){if(Date.now()-(F.tapAt||0)<900)return;const v=+(($('tIn')||{}).value||0);if(v>=1)T.dur=Math.min(300,v)*6e4;S.cfg.tideMin=Math.round(T.dur/6e4);T.mode='run';T.st=n;T.pa=0;T.pt=0;T.logged=0;haptic(10);tSave();tideRender()}
   else if(a==='pause'){T.mode='pause';T.pt=n;tLog();tSave();tideRender()}
   else if(a==='resume'){T.pa+=n-T.pt;T.pt=0;T.mode='run';tSave();tideRender()}
   else if(a==='more'){T.pa+=n-T.pt;T.pt=0;T.dur+=5*6e4;T.mode='run';haptic(8);tSave();tideRender()}
-  else if(a==='done'){if(Date.now()-(T.tapAt||0)<600)return;T.tapAt=Date.now();tLog();const t=tCur();if(t&&t.stage!=='done'){setStage(t,'done');F.done++}haptic(14);shuffleFocus();
+  else if(a==='done'){if(Date.now()-(F.tapAt||0)<900)return;F.tapAt=Date.now();tLog();const t=liveTask(tCur());if(t&&t.stage!=='done'){setStage(t,'done');F.done++}haptic(14);shuffleFocus();
     if(F.i<F.q.length-1){F.i++;const d=T.dur;tPick();T.dur=Math.min(T.dur,d)||T.dur;tSave();tideRender()}else tideFinish()}
   else if(a==='leave')tideLeave();
 });
@@ -2249,7 +2311,7 @@ async function installUpdate(){
   if(F.on){toast('Finish your blitz first, then update');return}
   UPD.busy=true;const b=$('updGo');if(b){b.disabled=true;b.textContent='Updating…'}
   if(settingsOpen())drawSettings();
-  try{await window.__TAURI__.core.invoke('install_update')}
+  try{await window.__TAURI__.core.invoke('install_update');UPD.busy=false;UPD.latest=null;$('upd')&&$('upd').remove();if(settingsOpen())drawSettings();toast('Blitzit is up to date')}
   catch(e){UPD.busy=false;if(b){b.disabled=false;b.textContent='Update'}if(settingsOpen())drawSettings();toast('Update failed. Try again later')}
 }
 function pipVars(){const cs=getComputedStyle(root);return{fbg:cs.getPropertyValue('--fbg').trim()||cs.getPropertyValue('--today').trim(),fink:cs.getPropertyValue('--fink').trim()||'#0F1013',font:cs.getPropertyValue('--font').trim(),dark:root.dataset.focusdark==='1'}}
@@ -2275,9 +2337,10 @@ function growIn(){
   const el=focusEl();if(!el)return;el.classList.remove('to-mini');
   if(root.dataset.motion==='off')return;el.classList.add('from-mini');setTimeout(()=>el.classList.remove('from-mini'),520);
 }
+let deskOpening=false;
 async function deskOpen(){
   if(deskMini)return deskClose();
-  if(!F.on)return;
+  if(!F.on||deskOpening)return;deskOpening=true;setTimeout(()=>deskOpening=false,1500);
   const z=deskSize(pipState());
   await shrinkOut();
   try{await window.__TAURI__.core.invoke('open_mini',z)}catch(e){growIn();return toast('Couldn’t open the mini timer')}
@@ -2298,7 +2361,7 @@ async function deskOpen(){
   clearInterval(deskT);deskT=setInterval(deskSend,300);deskSend();
 }
 function deskClose(){clearInterval(deskT);deskZ='';if(deskMini){deskMini=false;try{window.__TAURI__.core.invoke('close_mini').then(()=>setTimeout(growIn,60))}catch(_){}}}
-window.blitzitStart=()=>{if(!F.on)$('goBtn').click()}; // tray menu + Ctrl+Shift+B
+window.blitzitStart=()=>{if(!F.on)$('goBtn').click()}; // tray menu + Ctrl+Alt+Shift+B
 const PIP_CSS=`html,body{margin:0;height:100%}
 body{background:var(--fbg,var(--today));color:var(--fink,#0F1013);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;user-select:none;transition:background .6s}
 .pv{position:relative;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding:14px 18px}
@@ -2385,19 +2448,21 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-pip]')){e.stopP
 
 function showSummary(){
   clearInterval(F.tick);unlockScreen();
-  $('sDone').textContent=F.done;$('sTime').textContent=fmt(Math.max(0,Math.round(F.focused/60)));
+  $('sDone').textContent=F.done;$('sDoneL').textContent=F.done===1?'task done':'tasks done';$('sTime').textContent=fmt(Math.max(0,Math.round(F.focused/60)));
   F.sum=true;if(deskMini)deskSend();else closePip(); // desktop: celebrate in the mini timer, don't pull the big window up
   $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);
 }
 function closeFocus(){closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
 $('fPause').onclick=()=>{step();F.run=!F.run;F.last=Date.now();$('fPause').innerHTML=F.run?PAUSE:PLAY;haptic(5);fReveal()};
-$('fDone').onclick=()=>{if(Date.now()-(F.tapAt||0)<600)return;F.tapAt=Date.now();setStage(F.q[F.i],'done');F.done++;save();haptic(14);shuffleFocus();nextFocus()};
+const liveTask=t=>t&&(S.tasks.find(x=>x.id===t.id)||t);
+$('fDone').onclick=()=>{if(Date.now()-(F.tapAt||0)<600)return;F.tapAt=Date.now();setStage(liveTask(F.q[F.i]),'done');F.done++;save();haptic(14);shuffleFocus();nextFocus()};
 $('fSkip').onclick=()=>{if(Date.now()-(F.tapAt||0)<600)return;F.tapAt=Date.now();nextFocus()};
-$('fClose').onclick=()=>F.done?showSummary():closeFocus();
+$('fClose').onclick=()=>F.done&&!F.sum?showSummary():closeFocus();
 $('fBack').onclick=closeFocus;
 
 /* ---------- toast ---------- */
 let tt,undoFn=null;
+function dropUndo(){if(undoFn){undoFn=null;$('undoBtn').style.display='none';clearTimeout(tt);tt=setTimeout(()=>$('toast').classList.remove('on'),600)}}
 function toast(m,undo){
   const t=$('toast');$('toastMsg').textContent=m;undoFn=undo||null;
   $('undoBtn').style.display=undo?'block':'none';
@@ -2575,7 +2640,7 @@ function toggleSub(){
   if(sub&&!S.subHidden){
     sub.style.height=sub.scrollHeight+'px';sub.style.overflow='hidden';void sub.offsetHeight;
     sub.classList.add('closing');sub.style.height='0px';
-    setTimeout(()=>{S.subHidden=true;render()},230);
+    setTimeout(()=>{S.subHidden=true;S.list='all';save();render()},230);
   } else {
     S.subHidden=false;render();
     const n=document.querySelector('#sLists .s-sub');if(!n)return;
@@ -2593,7 +2658,7 @@ $('board').addEventListener('click',e=>{
 $('board').addEventListener('keydown',e=>{
   const inp=e.target.closest('.ca-in');if(!inp)return;
   if(e.key==='Escape'&&$('dlg').classList.contains('on')){closeDlg();return}
-  if(e.key==='Escape'){inp.value='';inp.blur();return}
+  if(e.key==='Escape'){e.stopPropagation();inp.value='';inp.blur();return}
   if(e.key!=='Enter')return;const v=inp.value.trim();if(!v)return;
   const t=newTask(v,inp.closest('.col').dataset.s,defaultList(),S.cfg.defEst);
   S.tasks.push(t);enterId=t.id;inp.value='';haptic(6);render();
@@ -2653,6 +2718,11 @@ window.addEventListener('pointerup',()=>{
 
 /* keyboard */
 document.addEventListener('keydown',e=>{
+  if($('dlg').classList.contains('on')){
+    if(e.key==='Escape'){e.preventDefault();closeDlg();return}
+    if(e.key==='Tab'){const f=[...$('dlg').querySelectorAll('input,button:not([disabled])')];if(f.length){const i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus()}}
+    return;
+  }
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   if(tideOn()){
     if(e.key==='Escape'){e.preventDefault();return tideLeave()}
@@ -2795,7 +2865,7 @@ function shuffleFocus(){
 function applySettings(){
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
-  if(DESK()){setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
+  if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
   const c=C();
   if(c.theme==='system')delete root.dataset.theme;else root.dataset.theme=c.theme;
   root.dataset.size=c.size;root.dataset.density=c.density;
@@ -2979,7 +3049,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#accOut')){sb.auth.signOut().catch(()=>{});user=null;onSignedOut();toast('Signed out');return}
   const ar=e.target.closest('.arc-row');
   if(ar){const t=S.tasks.find(x=>x.id===+ar.dataset.id);
-    if(t&&e.target.closest('[data-restore]')){commit(()=>{t.archived=false;delete t.archivedAt;t.doneAt=Date.now()},'Restored to '+STAGES[3].name);return drawSettings()}
+    if(t&&e.target.closest('[data-restore]')){commit(()=>{t.archived=false;delete t.archivedAt;t.keepUntil=Date.now()},'Restored to '+STAGES[3].name);return drawSettings()}
     if(t&&e.target.closest('[data-adel]')){commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Deleted');return drawSettings()}}
   const ae=e.target.closest('#arcEmpty');
   if(ae){if(!ae.dataset.arm){ae.dataset.arm=1;ae.textContent='Tap again to delete all archived tasks';haptic(10);setTimeout(()=>{if(ae.isConnected){delete ae.dataset.arm;ae.textContent='Empty archive'}},3000);return}
@@ -3010,10 +3080,13 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    try{const d=JSON.parse($('bkTxt').value);if(!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.space=null;S.nid=d.nid||S.nid;S.list='all';migrateSpaces();if(d.cfg)S.cfg=Object.assign({},DEF_CFG,d.cfg)},'Backup restored');
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
+      const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
+      const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
-    }catch(_){toast('That backup doesn’t look right')}
+    }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
   }
   if(e.target.closest('#demo')){commit(()=>{const base=S.nid+100;
@@ -3028,7 +3101,7 @@ $('setIn').addEventListener('click',e=>{
 $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.files[0])return;
   const r=new FileReader();r.onload=()=>{$('bkTxt').value=r.result;$('bkGo').click()};r.readAsText(e.target.files[0])});
 $('setIn').addEventListener('input',e=>{const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
-$('setIn').addEventListener('change',e=>{const n=e.target.dataset.name;if(n){C().names[n]=e.target.value.trim()||DEF_CFG.names[n];applySettings();save();render()}});
+$('setIn').addEventListener('change',e=>{const n=e.target.dataset.name;if(n){C().names[n]=e.target.value.trim()||DEF_CFG.names[n];applySettings();save();render();if(!e.target.value.trim())e.target.value=C().names[n]}});
 $('setIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='accEmail'){e.preventDefault();return CLOUD?accSend():$('accSend').click()}if(e.key==='Enter'&&e.target.id==='accCode'){e.preventDefault();return accVerify()}if(e.target.dataset.name&&e.key==='Enter')e.target.blur()});
 $('setBtn').onclick=openSettings;
 $('dSet').onclick=openSettings;
@@ -3050,7 +3123,7 @@ let sb=null,user=null,syncState='off',syncTimer=null,pendingRemote=null,channel=
 let authStep='email',authEmail='',authBusy=false,authMsg='',resendAt=0;
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.cfg,S.nid,S.focusLog||{}]);
-const busyUI=()=>document.querySelector('.sheet.on,.focus.on');
+const busyUI=()=>document.querySelector('.sheet.on,.focus.on,.tide.on');
 const SYNC_LABEL={off:'Off',syncing:'Syncing…',synced:'Up to date',offline:'Offline, will sync later',error:'Couldn’t sync, will retry'};
 function setSync(s){syncState=s;const el=document.getElementById('syncStatus');if(el)el.textContent=SYNC_LABEL[s];
   if(s==='error'&&S.dirty){clearTimeout(syncTimer);syncTimer=setTimeout(push,10000)}}
@@ -3136,7 +3209,7 @@ function subscribe(){
   try{
     if(channel)sb.removeChannel(channel);
     channel=sb.channel('ud-'+user.id).on('postgres_changes',{event:'*',schema:'public',table:'user_data',filter:'user_id=eq.'+user.id},p=>{
-      const d=p.new&&p.new.data;if(!d||d._cid===CID||(d._v||0)<=(S.syncV||0))return;
+      const d=p.new&&p.new.data;if(!d||d._cid===CID||!Array.isArray(d.tasks))return;
       const before=coreOf(localDoc());mergeIn(d);if(coreOf(localDoc())!==before)toast('Synced from another device');
     }).subscribe();
   }catch(e){}
@@ -3253,7 +3326,7 @@ function showHandoff(){
 function runCleanup(withUndo){
   if(!S.cfg||S.cfg.cleanup==='never')return;
   const cut=Date.now()-S.cfg.cleanupAfter*DAY;
-  const old=S.tasks.filter(t=>t.stage==='done'&&!t.archived&&t.doneAt&&t.doneAt<cut);
+  const old=S.tasks.filter(t=>t.stage==='done'&&!t.archived&&t.doneAt&&t.doneAt<cut&&!(t.keepUntil>cut));
   if(!old.length)return;
   const n=old.length,act=S.cfg.cleanup,msg=`${n} finished ${n===1?'task':'tasks'} ${act==='archive'?'archived':'deleted'}`;
   const fn=()=>{if(act==='archive')old.forEach(t=>{t.archived=true;t.archivedAt=Date.now()});else S.tasks=S.tasks.filter(t=>!old.includes(t))};
@@ -3302,7 +3375,7 @@ function startFresh(){
   S.tasks=[];S.spaces=picked.map(x=>({id:'s'+newId(),name:x.n,c:x.c,e:x.e,autoSet:true}));
   S.lists=S.spaces.map(sp=>({id:'l'+newId(),name:'General',c:sp.c,space:sp.id}));
   S.space=null;S.list='all';S.stage='today';S.focusLog={};S.onboarded=true;S.lastDay=today();
-  closeIntro();applySettings();render(0);haptic(12);toast('You’re all set. Tap + to add a task');
+  closeIntro();applySettings();render(0);haptic(12);toast(matchMedia('(min-width:1100px)').matches?'You’re all set. Press N to add a task':'You’re all set. Tap + to add a task');
 }
 $('inNext').onclick=()=>{
   if(inStep<2){inStep++;haptic(5);return drawIntro()}
@@ -3339,7 +3412,7 @@ runCleanup(false);
 if(HANDOFF)showHandoff();else{
 initCloud();
 if(!S.onboarded)openIntro(false);
-try{const tr=S.tideRun;if(tr&&tr.ids){const q=tr.ids.map(id=>S.tasks.find(t=>t.id===id)).filter(Boolean);if(q.length&&tr.i<q.length)setTimeout(()=>startTide(q,{i:tr.i,done:tr.done||0,focused:tr.focused||0,T:tr.T}),200);else{S.tideRun=null;save()}}}catch(e){}
+try{const tr=S.tideRun;if(tr&&tr.ids){const q=tr.ids.map(id=>S.tasks.find(t=>t.id===id)).filter(Boolean),ci=tr.cid!=null?q.findIndex(t=>t.id===tr.cid):tr.i;if(q.length&&ci>=0&&ci<q.length)setTimeout(()=>startTide(q,{i:ci,done:tr.done||0,focused:tr.focused||0,T:tr.T}),200);else{S.tideRun=null;save()}}}catch(e){}
 try{if(new URLSearchParams(location.search).get('blitz')==='1')setTimeout(()=>$('goBtn').click(),400)}catch(e){}
 }
 </script>
