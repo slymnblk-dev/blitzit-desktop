@@ -1082,6 +1082,7 @@ html,body{overscroll-behavior-y:contain}
 }
 
 .field:focus-visible,.d-title:focus-visible,.notes:focus-visible,.quick input:focus-visible,.ca-in:focus-visible,#nlIn:focus-visible,.sub-add input:focus-visible{outline:none}
+@property --ga{syntax:'<angle>';inherits:false;initial-value:0deg}
 /* ---------- you: avatar, profile chip, You page, Today blitz ---------- */
 .av{--p:0;position:relative;flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface2)}
 .av.has-goal{background:conic-gradient(var(--done) calc(var(--p)*1%),color-mix(in srgb,var(--text) 12%,transparent) 0)}
@@ -1120,6 +1121,19 @@ html,body{overscroll-behavior-y:contain}
     box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 38%,transparent);background:color-mix(in srgb,var(--c) 4%,transparent)}
   .col.has-go .col-scroll{padding-bottom:20px;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent)}
   .board{padding-bottom:24px}
+  .glint{display:none}
+  .board:not(.focused) .col[data-s="today"] .glint,.board.focused .col.fcs[data-s="today"] .glint{display:block;position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+    filter:drop-shadow(0 0 6px var(--c)) drop-shadow(0 0 2px color-mix(in srgb,var(--c) 60%,#fff))}
+  .glint i{position:absolute;inset:0;border-radius:inherit;padding:2px;
+    background:conic-gradient(from var(--ga),transparent 0deg,transparent 230deg,color-mix(in srgb,var(--c) 85%,transparent) 315deg,#fff 352deg,transparent 360deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+  .glint.run{animation:glintFade 1.5s ease both}
+  .glint.run i{animation:glintSpin 1.5s cubic-bezier(.45,.05,.35,1) both}
+  @keyframes glintFade{0%{opacity:0}12%,80%{opacity:1}100%{opacity:0}}
+  @keyframes glintSpin{from{--ga:0deg}to{--ga:360deg}}
+  .col-go.pulse{animation:goPulse 1.1s cubic-bezier(.2,.8,.2,1)}
+  @keyframes goPulse{0%{box-shadow:0 10px 24px -10px color-mix(in srgb,var(--c) 70%,transparent),0 0 0 0 color-mix(in srgb,var(--c) 55%,transparent);transform:scale(1)}
+    35%{transform:scale(1.02)}100%{box-shadow:0 10px 24px -10px color-mix(in srgb,var(--c) 70%,transparent),0 0 0 14px color-mix(in srgb,var(--c) 0%,transparent);transform:scale(1)}}
   /* Home: today strip */
   .ts{display:flex;align-items:center;gap:20px;padding:16px 16px 16px 22px;margin-bottom:18px;border-radius:24px;background:color-mix(in srgb,var(--today) 12%,var(--surface));animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
   .ts-l{flex:none;display:flex;flex-direction:column}
@@ -1384,7 +1398,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=59; // bumped with every published update
+const APP_VERSION=60; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2581,6 +2595,8 @@ function renderDesk(){
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   if(!S.space){$('dHome').innerHTML=`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
+  const gk=S.space?S.space+'|'+S.list:'';
+  if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
   $('mEdit').hidden=!sp;
   if(sp)$('mDate').textContent=(sp.e?sp.e+'  ':'')+sp.name;
@@ -2598,6 +2614,15 @@ $('sLists').onclick=e=>{
   const b=e.target.closest('.s-list[data-l]');if(b){S.list=b.dataset.l;haptic(5);render()}
 };
 $('dMe').onclick=()=>openYou();
+/* a line of light runs once around Today when a space or list opens, then the Blitz button glows */
+var glintKey=null,glintT=null;
+function playGlint(){
+  if(!S.cfg.todayGlint||root.dataset.motion==='off'||matchMedia('(prefers-reduced-motion: reduce)').matches||!matchMedia('(min-width:1100px)').matches)return;
+  const col=document.querySelector('.col[data-s="today"]');if(!col||(S.colFocus&&S.colFocus!=='today'))return;
+  const g=col.querySelector('.glint'),b=$('colGo');if(!g)return;
+  g.classList.remove('run');b&&b.classList.remove('pulse');void g.offsetWidth;g.classList.add('run');
+  clearTimeout(glintT);glintT=setTimeout(()=>{g.classList.remove('run');if(b&&!b.hidden){b.classList.add('pulse');setTimeout(()=>b.classList.remove('pulse'),1100)}},1500);
+}
 $('board').addEventListener('click',e=>{if(e.target.closest('#colGo')){e.stopPropagation();$('goBtn').click()}},true);
 $('dHome').addEventListener('click',e=>{if(e.target.closest('#tsGo'))$('goBtn').click()});
 /* Today strip on the desktop Home: every space's Today tasks, one click to blitz them */
@@ -2890,7 +2915,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 S.cfg.names=Object.assign({},DEF_CFG.names,S.cfg.names);S.cfg.colors=Object.assign({},DEF_CFG.colors,S.cfg.colors);
@@ -2915,7 +2940,7 @@ function buildShells(){
     <div class="col-sum"></div>
     <div class="col-scroll"><ul class="list col-list"></ul>
     ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"></div>`:''}
-    </div>${s.id==='today'?`<button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Blitz Focus</span></button>`:''}</section>`).join('');
+    </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Blitz Focus</span></button>`:''}</section>`).join('');
   applyColFocus(false);
 }
 /* focus page colours: [background, text, break colour] */
@@ -3025,6 +3050,7 @@ function settingsPage(id){
     ${row('Home style',`<div class="segc">${sOpt('homeStyle','calm','Calm')}${sOpt('homeStyle','colorful','Colourful')}</div>`,(c.homeStyle||'calm')==='calm'?'A quiet list of spaces. Only Today stands out.':'Colourful space cards with stage bars.')}
     </div><div class="set-sec"><h3>Feel</h3>
     ${row('Animations',tg('motion'))}
+    ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
     ${row('Haptics',tg('haptics'),'Vibration on Android')}</div>`;
   if(id==='stages')body=`<p class="sub-p">Tap a colour to change it. Tap a name to rename it.</p><div class="set-sec">
     ${STAGES.map(s=>`<div class="stg"><button class="stg-dot" data-sw="${s.id}" style="background:var(--${s.id})" aria-label="Change colour"></button>
