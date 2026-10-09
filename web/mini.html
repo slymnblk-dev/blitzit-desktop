@@ -26,7 +26,7 @@ body{font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;
 /* see-through while working (setting): calm and see-through at rest, solid as soon as you point at it.
    Time's up, paused and the finish screen always stay solid so they're never missed. */
 [data-fade="1"] .pv:not(.up):not(.sum):not(.paused){opacity:.6;transition-delay:0s,0s,.6s}
-[data-fade="1"] body:hover .pv:not(.up):not(.sum):not(.paused){opacity:1;transition-delay:0s}
+[data-fade="1"].hot .pv:not(.up):not(.sum):not(.paused){opacity:1;transition-delay:0s}
 
 /* task name + current step */
 .pv-h{display:flex;align-items:center;gap:10px;min-width:0}
@@ -88,7 +88,7 @@ body{font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;
   background:var(--fink);color:var(--fbg);box-shadow:0 6px 16px -4px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06);white-space:nowrap;
   opacity:0;transform:translate(-50%,6px) scale(.92);pointer-events:none;
   transition:opacity .18s ease,transform .26s cubic-bezier(.2,.9,.25,1.2),background .6s,color .6s}
-body:hover .pv-ctl,.pv.paused~.pv-ctl,.pv.up~.pv-ctl,.pv.sum~.pv-ctl{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.hot .pv-ctl,.pv.paused~.pv-ctl,.pv.up~.pv-ctl,.pv.sum~.pv-ctl{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .pv-ctl button{height:26px;min-width:26px;padding:0;border:0;border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:12px;font-weight:800;
   display:grid;place-items:center;cursor:pointer;transition:background .15s,transform .15s}
 .pv-ctl button:hover{background:rgba(255,255,255,.12)}
@@ -173,6 +173,15 @@ if(TAURI){
   send('ready');
   window.addEventListener('beforeunload',()=>send('closed'));
 }
+/* "pointing at it": tracked in script, not CSS :hover. On Windows a frameless always-on-top window
+   can miss the moment the mouse leaves, which left :hover stuck on (solid, controls showing). */
+const docEl=document.documentElement;let hotT=null;
+const setHot=v=>{clearTimeout(hotT);docEl.classList.toggle('hot',v);if(v)hotT=setTimeout(()=>docEl.classList.remove('hot'),4000)};
+['pointermove','pointerdown','wheel'].forEach(t=>document.addEventListener(t,()=>setHot(true),{passive:true}));
+document.addEventListener('pointerleave',()=>setHot(false));
+document.addEventListener('mouseout',e=>{if(!e.relatedTarget)setHot(false)});
+window.addEventListener('blur',()=>setHot(false));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)setHot(false)});
 const back=()=>{$('pv').classList.add('out');setTimeout(()=>send(last&&last.sum?'open':'back'),220)};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-pv]');if(!b)return;
   const a=b.dataset.pv;

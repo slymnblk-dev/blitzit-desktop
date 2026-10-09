@@ -1398,7 +1398,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=61; // bumped with every published update
+const APP_VERSION=62; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2921,6 +2921,7 @@ S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 S.cfg.names=Object.assign({},DEF_CFG.names,S.cfg.names);S.cfg.colors=Object.assign({},DEF_CFG.colors,S.cfg.colors);
 if(S.theme&&S.cfg.theme==='system'){S.cfg.theme=S.theme;delete S.theme}
 if(!S.cfg.shuffleDefault){S.cfg.shuffleDefault=1;S.cfg.focusShuffle=true}
+if(!S.cfg.fadeDefault){S.cfg.fadeDefault=1;S.cfg.pipFade=true} // see-through mini timer is on for everyone once
 if(S.pomo!==undefined){S.cfg.focusMode=S.pomo?'pomo':'free';delete S.pomo}
 const C=()=>S.cfg;
 let audio=null;
