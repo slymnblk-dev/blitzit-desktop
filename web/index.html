@@ -1107,13 +1107,19 @@ html,body{overscroll-behavior-y:contain}
 /* Today column: blitz right where today's tasks are */
 .col-go{display:none}
 @media (min-width:1100px){
-  .col-go{display:flex;align-items:center;gap:8px;width:100%;height:46px;margin:2px 0 10px;padding:0 18px;border-radius:999px;background:var(--c);color:var(--ink);font-weight:800;font-size:15px;letter-spacing:-.01em;transition:filter .15s,transform .15s}
+  .col-go{flex:none;display:flex;align-items:center;gap:8px;width:100%;height:52px;margin:6px 0 0;padding:0 20px;box-shadow:0 10px 24px -10px color-mix(in srgb,var(--c) 70%,transparent);border-radius:999px;background:var(--c);color:var(--ink);font-weight:800;font-size:15px;letter-spacing:-.01em;transition:filter .15s,transform .15s}
   .col-go[hidden]{display:none}
   .col-go:hover{filter:brightness(1.06)}.col-go:active{transform:scale(.98)}
   .col-go svg{width:15px;height:15px;flex:none}
   .col-go em{margin-left:auto;font-style:normal;font-weight:700;font-size:13px;opacity:.7;font-variant-numeric:tabular-nums}
   .board.focused .col:not(.fcs) .col-go{display:none}
   .board.focused .col.fcs .col-go{max-width:760px;margin-left:auto;margin-right:auto}
+  /* Today is where you start: a soft outline, the list fades just above the pinned Blitz button */
+  .board .col[data-s="today"]{position:relative}
+  .board:not(.focused) .col[data-s="today"],.board.focused .col.fcs[data-s="today"]{margin:-14px -14px 0;padding:14px 14px 16px;border-radius:24px;
+    box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 38%,transparent);background:color-mix(in srgb,var(--c) 4%,transparent)}
+  .col.has-go .col-scroll{padding-bottom:20px;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent)}
+  .board{padding-bottom:24px}
   /* Home: today strip */
   .ts{display:flex;align-items:center;gap:20px;padding:16px 16px 16px 22px;margin-bottom:18px;border-radius:24px;background:color-mix(in srgb,var(--today) 12%,var(--surface));animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
   .ts-l{flex:none;display:flex;flex-direction:column}
@@ -1378,7 +1384,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=57; // bumped with every published update
+const APP_VERSION=58; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2560,7 +2566,7 @@ function renderDesk(){
     } else {
       const m=here.reduce((a,t)=>a+t.est,0);
       sum.innerHTML=here.length?`<span><b>${fmt(m)}</b> planned</span>`:'';
-      if(sid==='today'){const g=$('colGo');if(g){g.hidden=!here.length;$('colGoM').textContent=here.length?`${here.length} · ${fmt(m)}`:''}}
+      if(sid==='today'){const g=$('colGo');col.classList.toggle('has-go',!!here.length);if(g){g.hidden=!here.length;$('colGoM').textContent=here.length?`${here.length} · ${fmt(m)}`:''}}
       ul.innerHTML=here.map(rowHTML).join('')||`<li class="col-empty">Drop tasks here.</li>`;
     }
   });
@@ -2906,10 +2912,10 @@ function buildShells(){
   $('board').innerHTML=STAGES.map(s=>`<section class="col" data-s="${s.id}" style="--c:${color(s.id)}">
     <header class="col-h"><div class="col-t"><h2 title="Focus on ${esc(s.name)}">${esc(s.name)}</h2>
       <button class="col-fx" aria-label="Focus on ${esc(s.name)}"><svg class="ic-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg><svg class="ic-min" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button></div><span class="col-n"></span></header>
-    <div class="col-sum"></div>${s.id==='today'?`<button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Blitz Today</span><em id="colGoM"></em></button>`:''}
+    <div class="col-sum"></div>
     <div class="col-scroll"><ul class="list col-list"></ul>
     ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"></div>`:''}
-    </div></section>`).join('');
+    </div>${s.id==='today'?`<button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Blitz Today</span><em id="colGoM"></em></button>`:''}</section>`).join('');
   applyColFocus(false);
 }
 /* focus page colours: [background, text, break colour] */
