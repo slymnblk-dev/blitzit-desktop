@@ -23,10 +23,10 @@ body{font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;
 @keyframes pvIn{from{opacity:0;transform:scale(.86) translateY(8px)}}
 @keyframes pvOut{to{opacity:0;transform:scale(.9) translateY(6px)}}
 
-/* see-through on hover (setting): the card fades so you can read what's behind it,
-   and comes back as soon as you reach for the controls */
-[data-fade="1"] body:hover .pv:not(.up):not(.sum){opacity:.28;transition-delay:0s,0s,.25s}
-[data-fade="1"] body:has(.pv-ctl:hover) .pv{opacity:1!important}
+/* see-through while working (setting): calm and see-through at rest, solid as soon as you point at it.
+   Time's up, paused and the finish screen always stay solid so they're never missed. */
+[data-fade="1"] .pv:not(.up):not(.sum):not(.paused){opacity:.6;transition-delay:0s,0s,.6s}
+[data-fade="1"] body:hover .pv:not(.up):not(.sum):not(.paused){opacity:1;transition-delay:0s}
 
 /* task name + current step */
 .pv-h{display:flex;align-items:center;gap:10px;min-width:0}

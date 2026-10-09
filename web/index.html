@@ -1398,7 +1398,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=60; // bumped with every published update
+const APP_VERSION=61; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3089,7 +3089,7 @@ function settingsPage(id){
     ${row('Shuffle colours',tg('focusShuffle'),'New colour after each finished step')}
     </div>${HAS_KEYS()?`<div class="set-sec"><h3>Pop-out window</h3>
     ${row('Size',`<div class="segc">${sOpt('pipMode','compact','Compact')}${sOpt('pipMode','mini','Timer only')}</div>`,(c.pipMode||'compact')==='mini'?'Just the countdown, very small.':'Task name and timer.')}
-    ${DESK()?row('Fade on hover',tg('pipFade'),'See what’s behind the mini timer'):''}</div>`:''}<div class="set-sec"><h3>During a blitz</h3>
+    ${DESK()?row('See-through while working',tg('pipFade'),'The mini timer turns solid when you point at it'):''}</div>`:''}<div class="set-sec"><h3>During a blitz</h3>
     ${row('Sound at end of round',tg('sound'))}
     ${row('Keep screen awake',tg('wake'))}</div>`;
   if(id==='archive'){
