@@ -1082,6 +1082,75 @@ html,body{overscroll-behavior-y:contain}
 }
 
 .field:focus-visible,.d-title:focus-visible,.notes:focus-visible,.quick input:focus-visible,.ca-in:focus-visible,#nlIn:focus-visible,.sub-add input:focus-visible{outline:none}
+/* ---------- you: avatar, profile chip, You page, Today blitz ---------- */
+.av{--p:0;position:relative;flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface2)}
+.av.has-goal{background:conic-gradient(var(--done) calc(var(--p)*1%),color-mix(in srgb,var(--text) 12%,transparent) 0)}
+.av-in{width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%;display:grid;place-items:center;background:var(--surface);color:var(--text);overflow:hidden}
+.av:not(.has-goal) .av-in{width:100%;height:100%}
+.av-in em{font-style:normal;font-size:20px;line-height:1}
+.av-in b{font-size:14px;font-weight:800;letter-spacing:-.02em}
+.av-in svg{width:56%;height:56%;color:var(--muted)}
+.av.sm{width:38px;height:38px}.av.sm .av-in em{font-size:18px}.av.sm .av-in b{font-size:13px}
+.av.xl{width:84px;height:84px}.av.xl.has-goal .av-in{width:calc(100% - 10px);height:calc(100% - 10px)}.av.xl .av-in em{font-size:42px}.av.xl .av-in b{font-size:28px}
+.me-a{position:relative;display:inline-grid;flex:none}
+.me-dot{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;border:2px solid var(--bg);background:var(--muted)}
+.me-dot.ok{background:var(--done)}.me-dot.warn{background:var(--week)}.me-dot.busy{background:var(--muted);animation:dotPulse 1.2s ease-in-out infinite}
+@keyframes dotPulse{50%{opacity:.35}}
+.me-btn{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;flex:none;transition:transform .15s}
+.me-btn:active{transform:scale(.94)}
+.me{display:flex;align-items:center;gap:12px;width:100%;padding:8px 10px 8px 8px;border-radius:18px;text-align:left;transition:background .15s}
+.me:hover{background:var(--surface)}
+.me-t{min-width:0;display:flex;flex-direction:column}
+.me-t b{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.me-t small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.desk.collapsed .me{padding:4px;justify-content:center;gap:0}
+/* Today column: blitz right where today's tasks are */
+.col-go{display:none}
+@media (min-width:1100px){
+  .col-go{display:flex;align-items:center;gap:8px;width:100%;height:46px;margin:2px 0 10px;padding:0 18px;border-radius:999px;background:var(--c);color:var(--ink);font-weight:800;font-size:15px;letter-spacing:-.01em;transition:filter .15s,transform .15s}
+  .col-go[hidden]{display:none}
+  .col-go:hover{filter:brightness(1.06)}.col-go:active{transform:scale(.98)}
+  .col-go svg{width:15px;height:15px;flex:none}
+  .col-go em{margin-left:auto;font-style:normal;font-weight:700;font-size:13px;opacity:.7;font-variant-numeric:tabular-nums}
+  .board.focused .col:not(.fcs) .col-go{display:none}
+  .board.focused .col.fcs .col-go{max-width:760px;margin-left:auto;margin-right:auto}
+  /* Home: today strip */
+  .ts{display:flex;align-items:center;gap:20px;padding:16px 16px 16px 22px;margin-bottom:18px;border-radius:24px;background:color-mix(in srgb,var(--today) 12%,var(--surface));animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
+  .ts-l{flex:none;display:flex;flex-direction:column}
+  .ts-k{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--today)}
+  .ts-l b{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+  .ts-t{flex:1;min-width:0;display:flex;gap:8px;flex-wrap:wrap;overflow:hidden;max-height:34px}
+  .ts-t span{display:flex;align-items:center;gap:7px;max-width:240px;height:34px;padding:0 13px;border-radius:999px;background:var(--surface);font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ts-t i{width:8px;height:8px;border-radius:3px;flex:none}
+  .ts-t .ts-more{color:var(--muted)}
+  .ts-go{flex:none;display:flex;align-items:center;gap:8px;height:48px;padding:0 24px;border-radius:999px;background:var(--today);color:var(--ink);font-weight:800;font-size:16px;transition:filter .15s,transform .15s}
+  .ts-go:hover{filter:brightness(1.06)}.ts-go:active{transform:scale(.97)}
+  .ts-go svg{width:15px;height:15px}
+}
+/* You page */
+.you-set{display:flex;align-items:center;gap:4px;height:36px;padding:0 6px 0 14px;border-radius:999px;font-size:14px;font-weight:600;color:var(--muted);transition:background .15s,color .15s}
+.you-set:hover{background:var(--surface2);color:var(--text)}
+.you-set svg{width:15px;height:15px}
+.you-head{display:flex;align-items:center;gap:18px;margin:22px 0 22px}
+.you-hl{min-width:0}
+.you-name{margin:0!important;font-size:clamp(32px,9vw,44px)!important;font-weight:800;letter-spacing:-.045em;line-height:1!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.you-hl p{margin:8px 0 0;font-size:14px;color:var(--muted)}
+.you-tabs{display:flex;width:100%}.you-tabs button{flex:1}
+.you-range{margin-top:22px}
+.you-in{height:52px;font-size:16px}
+.av-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}
+.av-grid button{height:44px;border-radius:14px;font-size:22px;display:grid;place-items:center;transition:background .15s,transform .2s cubic-bezier(.3,1.6,.5,1)}
+.av-grid button:hover{background:var(--surface2)}
+.av-grid button.on{background:var(--surface2);box-shadow:0 0 0 2px var(--text)}
+.av-grid button b{font-size:14px;font-weight:800}.av-grid button svg{width:20px;height:20px;color:var(--muted)}
+.you-goal{display:flex;align-items:center;gap:12px;padding:12px 0 2px;font-size:13px;color:var(--muted)}
+.you-bar{flex:1;height:6px;border-radius:6px;background:var(--surface2);overflow:hidden}
+.you-bar span{display:block;height:100%;border-radius:6px;background:var(--done);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.you-card{display:flex;align-items:center;gap:14px;width:100%;margin-top:22px;padding:14px 14px 14px 14px;border-radius:22px;background:var(--surface);text-align:left;transition:background .15s}
+.you-card:hover{background:var(--surface2)}
+.you-card>span:not(.av){flex:1;min-width:0;display:flex;flex-direction:column}
+.you-card b{font-size:16px;font-weight:700}.you-card small{font-size:13px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.you-card>svg{width:16px;height:16px;color:var(--muted);flex:none}
 /* ---------- QA fixes ---------- */
 .sheet{visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s linear .36s}
 .sheet.on{visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s}
@@ -1120,9 +1189,7 @@ html,body{overscroll-behavior-y:contain}
       <button class="icon-btn" id="installBtn" hidden aria-label="Install app">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
       </button>
-      <button class="icon-btn" id="setBtn" aria-label="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
-      </button>
+      <button class="me-btn" id="setBtn" aria-label="Your profile and settings"></button>
     </div>
   </header>
 
@@ -1158,7 +1225,7 @@ html,body{overscroll-behavior-y:contain}
       <div class="s-tools">
         <button class="icon-btn" id="dInstall" hidden aria-label="Install app" title="Install app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></button>
       </div>
-      <button class="go-d" id="dGo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="s-name">Start blitz</span></button>
+      <button class="me" id="dMe" aria-label="Your profile" title="Your profile"></button>
     </div>
   </aside>
   <main class="main">
@@ -1311,7 +1378,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=56; // bumped with every published update
+const APP_VERSION=57; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1564,14 +1631,14 @@ function todayCard(td,m){
 }
 function homeHTML(){
   const all=S.tasks.filter(shown),td=bySpaceOrder(all.filter(t=>t.stage==='today')),m=td.reduce((a,t)=>a+t.est,0);
-  return `<section class="home-hero"><div class="home-date">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</div>
+  return `<section class="home-hero"><div class="home-date">${meName()?esc(greeting())+' · ':''}${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</div>
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
     ${todayCard(td,m)}${backupCard()}<div class="sp-grid">${spaceCards()}</div>`;
 }
 function render(dir){
-  root.dataset.view=S.space?'space':'home';
+  root.dataset.view=S.space?'space':'home';drawMe();
   if(!S.space){
     root.style.setProperty('--accent',color('today'));
     $('homeView').innerHTML=homeHTML();
@@ -2478,8 +2545,9 @@ const PLUS_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 function renderDesk(){
   const vis=visible();
   const todayT=vis.filter(t=>t.stage==='today');
-  $('mDate').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-  $('mSub').innerHTML=todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear';
+  const dateTxt=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
+  $('mDate').textContent=!S.space&&meName()?greeting():dateTxt;
+  $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
   document.querySelectorAll('.col').forEach(col=>{
     const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);
     col.querySelector('.col-n').textContent=here.length;
@@ -2492,6 +2560,7 @@ function renderDesk(){
     } else {
       const m=here.reduce((a,t)=>a+t.est,0);
       sum.innerHTML=here.length?`<span><b>${fmt(m)}</b> planned</span>`:'';
+      if(sid==='today'){const g=$('colGo');if(g){g.hidden=!here.length;$('colGoM').textContent=here.length?`${here.length} · ${fmt(m)}`:''}}
       ul.innerHTML=here.map(rowHTML).join('')||`<li class="col-empty">Drop tasks here.</li>`;
     }
   });
@@ -2505,7 +2574,7 @@ function renderDesk(){
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
-  if(!S.space){$('dHome').innerHTML=`${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
+  if(!S.space){$('dHome').innerHTML=`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
   const sp=inSpaceMode()?spaceOf(S.space):null;
   $('mEdit').hidden=!sp;
   if(sp)$('mDate').textContent=(sp.e?sp.e+'  ':'')+sp.name;
@@ -2522,7 +2591,18 @@ $('sLists').onclick=e=>{
   if(e.target.closest('#sNew')){editing=false;nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();openSheet('listSheet');setTimeout(()=>$('nlIn').focus(),300);return}
   const b=e.target.closest('.s-list[data-l]');if(b){S.list=b.dataset.l;haptic(5);render()}
 };
-$('dGo').onclick=()=>$('goBtn').click();
+$('dMe').onclick=()=>openYou();
+$('board').addEventListener('click',e=>{if(e.target.closest('#colGo')){e.stopPropagation();$('goBtn').click()}},true);
+$('dHome').addEventListener('click',e=>{if(e.target.closest('#tsGo'))$('goBtn').click()});
+/* Today strip on the desktop Home: every space's Today tasks, one click to blitz them */
+function todayStrip(){
+  const td=bySpaceOrder(S.tasks.filter(t=>shown(t)&&t.stage==='today'));
+  if(!td.length)return '';
+  const m=td.reduce((a,t)=>a+t.est,0);
+  return `<div class="ts"><div class="ts-l"><span class="ts-k">Today</span><b>${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}</b></div>
+    <div class="ts-t">${td.slice(0,3).map(t=>`<span><i style="background:${listOf(t.list).c}"></i>${esc(t.title)}</span>`).join('')}${td.length>3?`<span class="ts-more">+${td.length-3} more</span>`:''}</div>
+    <button class="ts-go" id="tsGo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Blitz</button></div>`;
+}
 $('dInstall').onclick=()=>$('installBtn').click();
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
@@ -2747,6 +2827,7 @@ document.addEventListener('keydown',e=>{
   if(document.querySelector('.sheet.on')||settingsOpen())return;
   if(e.key===','){e.preventDefault();openSettings();return}
   if(e.key==='?'){e.preventDefault();openSettings();setView='shortcuts';drawSettings();return}
+  if(e.key==='p'&&!document.querySelector('.sheet.on')&&!settingsOpen()){e.preventDefault();openYou();return}
   if(e.key==='['){e.preventDefault();toggleSide();return}
   if(e.key==='h'||e.key==='H'){e.preventDefault();return goHome()}
   if(/^[1-4]$/.test(e.key)&&S.space&&matchMedia('(min-width:1100px)').matches){e.preventDefault();const st=VS()[+e.key-1];if(!st)return;const id=st.id;setColFocus(S.colFocus===id?null:id);return}
@@ -2825,7 +2906,7 @@ function buildShells(){
   $('board').innerHTML=STAGES.map(s=>`<section class="col" data-s="${s.id}" style="--c:${color(s.id)}">
     <header class="col-h"><div class="col-t"><h2 title="Focus on ${esc(s.name)}">${esc(s.name)}</h2>
       <button class="col-fx" aria-label="Focus on ${esc(s.name)}"><svg class="ic-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg><svg class="ic-min" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button></div><span class="col-n"></span></header>
-    <div class="col-sum"></div>
+    <div class="col-sum"></div>${s.id==='today'?`<button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Blitz Today</span><em id="colGoM"></em></button>`:''}
     <div class="col-scroll"><ul class="list col-list"></ul>
     ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"></div>`:''}
     </div></section>`).join('');
@@ -2886,8 +2967,8 @@ const HAS_KEYS=()=>matchMedia('(min-width:1100px)').matches||matchMedia('(hover:
 const BACK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
 const CHEV='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
 const PAGES=[
-  {id:'account',name:'Account'},
-  {id:'stats',name:'Analytics'},
+  {id:'account',name:'Account',hidden:true},
+  {id:'stats',name:'Analytics',hidden:true},
   {id:'appearance',name:'Appearance'},
   {id:'stages',name:'Stages'},
   {id:'tasks',name:'Tasks'},
@@ -2901,7 +2982,8 @@ let lastView='main';
 function drawSettings(){
   const el=$('setIn'),anim=lastView!==setView;
   const dir=setView==='main'?'in-l':'in-r';lastView=setView;
-  if(setView==='stats')drawStats();else el.innerHTML=setView==='main'?settingsMain():setView==='account'?accountPage():settingsPage(setView);
+  if(setView==='account'||setView==='stats'){youTab=setView==='stats'?'stats':'account';setView='you'} // these now live in You
+  if(setView==='you')youBody();else el.innerHTML=setView==='main'?settingsMain():settingsPage(setView);
   if(anim){el.classList.remove('in-l','in-r');void el.offsetWidth;el.classList.add(dir)}
 }
 function pageSummary(id){
@@ -2922,6 +3004,7 @@ function pageSummary(id){
 function settingsMain(){
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close settings">${BACK_SVG}</button></div>
   <h1>Settings</h1>
+  <button class="you-card" id="youOpen">${avatarHTML()}<span><b>${esc(meName()||'Your profile')}</b><small>${esc(meSub())} · stats, account</small></span>${CHEV}</button>
   <div class="cats">${PAGES.filter(p=>!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS())).map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>
   <div class="ver">Blitzit, version ${VER}. ${user?'Your tasks sync to your account.':'Your data stays on this device.'}</div>`;
 }
@@ -3018,11 +3101,77 @@ function closeSettings(){
   openSw=null;setView='main';render();
 }
 const settingsOpen=()=>$('settings').classList.contains('on');
+
+/* ---------- you: profile, stats and account ---------- */
+const AVATARS=['🙂','😎','🦊','🐼','🐯','🦁','🐙','🦄','🐸','🐨','🌞','⚡','🔥','🌿','🎧','🚀','🎯','💎'];
+const PERSON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg>';
+let youTab='profile',accInYou=false;
+function meName(){return String((S.cfg&&S.cfg.name)||'').trim()}
+function greeting(){const h=new Date().getHours();return `${h<5?'Good night':h<12?'Good morning':h<18?'Good afternoon':'Good evening'}, ${meName().split(/\s+/)[0]}`}
+function initials(){return meName().split(/\s+/).filter(Boolean).map(w=>[...w][0]).slice(0,2).join('').toUpperCase()}
+const focusToday=()=>Math.round(((S.focusLog||{})[today()]||0)/60);
+const goalMin=()=>+(S.cfg&&S.cfg.goalMin)||0;
+const goalPct=()=>goalMin()?Math.min(100,Math.round(focusToday()/goalMin()*100)):0;
+function avatarHTML(cls){
+  const a=S.cfg&&S.cfg.avatar,ini=initials();
+  const face=a?`<em>${esc(a)}</em>`:ini?`<b>${esc(ini)}</b>`:PERSON;
+  return `<span class="av ${cls||''} ${goalMin()?'has-goal':''}" style="--p:${goalPct()}"><span class="av-in">${face}</span></span>`;
+}
+/* sync state for the dot: ok (synced), busy (syncing), warn (not signed in / problem), none (preview) */
+function meState(){
+  if(!CLOUD)return 'none';const u=window.__u,ss=window.__ss;
+  if(!u)return 'warn';return ss==='synced'||ss==='off'?'ok':ss==='syncing'?'busy':'warn';
+}
+function meSub(){
+  const st=meState();
+  if(goalMin())return `${fmt(focusToday())} of ${fmt(goalMin())} focused`;
+  return st==='warn'?(window.__u?'Sync paused':'Sign in to sync'):st==='ok'?'Synced':st==='busy'?'Syncing…':'Profile & stats';
+}
+function drawMe(){
+  const st=meState(),dot=st==='none'?'':`<i class="me-dot ${st}"></i>`;
+  const d=$('dMe');if(d)d.innerHTML=`<span class="me-a">${avatarHTML()}${dot}</span><span class="s-name me-t"><b>${esc(meName()||'You')}</b><small>${esc(meSub())}</small></span>`;
+  const m=$('setBtn');if(m)m.innerHTML=`<span class="me-a">${avatarHTML('sm')}${dot}</span>`;
+}
+function openYou(tab){
+  youTab=tab||'profile';setView='you';lastView='you';drawSettings();
+  $('settings').classList.add('on');$('scrim').classList.add('on');$('settings').scrollTop=0;haptic(5);
+}
+function youHead(){
+  const tabs=[['profile','Profile'],['stats','Stats'],['account','Account']];
+  return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close">${BACK_SVG}</button><button class="you-set" id="youSet">Settings${CHEV}</button></div>
+  <div class="you-head">${avatarHTML('xl')}<div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
+  <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}</button>`).join('')}</div>`;
+}
+function youProfile(){
+  const c=C(),g=goalMin();
+  return `<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
+  <div class="set-sec"><h3>Avatar</h3><div class="av-grid">
+    <button data-av="" class="${!c.avatar?'on':''}" aria-label="Initials">${initials()?`<b>${esc(initials())}</b>`:PERSON}</button>
+    ${AVATARS.map(a=>`<button data-av="${a}" class="${c.avatar===a?'on':''}">${a}</button>`).join('')}</div></div>
+  <div class="set-sec"><h3>Daily focus goal</h3>
+    ${row('Goal',`<div class="segc">${[[0,'Off'],[60,'1h'],[120,'2h'],[180,'3h'],[240,'4h']].map(([v,l])=>`<button data-goal="${v}" class="${g===v?'on':''}">${l}</button>`).join('')}</div>`,'A ring around your avatar fills as you focus')}
+    ${g?`<div class="you-goal"><div class="you-bar"><span style="width:${goalPct()}%"></span></div><span>${goalPct()>=100?'Goal reached today':`${fmt(Math.max(0,g-focusToday()))} to go today`}</span></div>`:''}
+  </div>`;
+}
+function youBody(){
+  const el=$('setIn');
+  if(youTab==='stats'){
+    drawStats();const seg=el.querySelector('#anRange');const top=el.querySelector('.set-top');if(top)top.remove();const h=el.querySelector('h1');if(h)h.remove();
+    el.insertAdjacentHTML('afterbegin',youHead()+'<div class="you-range"></div>');if(seg)el.querySelector('.you-range').appendChild(seg);return;
+  }
+  if(youTab==='account'){accInYou=true;try{el.innerHTML=youHead()+accountPage()}finally{accInYou=false}return}
+  el.innerHTML=youHead()+youProfile();
+}
 function setCfg(k,v){S.cfg[k]=v;applySettings();save();render();if(k==='cleanup'||k==='cleanupAfter')runCleanup(true);drawSettings()}
 
 $('setIn').addEventListener('click',e=>{
   const c=C();
   if(e.target.closest('#setBack'))return closeSettings();
+  const yt=e.target.closest('[data-yt]');if(yt){youTab=yt.dataset.yt;haptic(5);return drawSettings()}
+  if(e.target.closest('#youSet')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
+  if(e.target.closest('#youOpen')){youTab='profile';setView='you';haptic(5);drawSettings();$('settings').scrollTop=0;return}
+  const av=e.target.closest('[data-av]');if(av){S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
+  const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
   if(pg){const id=pg.dataset.page;haptic(5);
     if(id==='lists'){editing=true;nl=null;drawLists();openSheet('listSheet');onSheetClose=drawSettings;return}
@@ -3100,10 +3249,10 @@ $('setIn').addEventListener('click',e=>{
 });
 $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.files[0])return;
   const r=new FileReader();r.onload=()=>{$('bkTxt').value=r.result;$('bkGo').click()};r.readAsText(e.target.files[0])});
-$('setIn').addEventListener('input',e=>{const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
+$('setIn').addEventListener('input',e=>{if(e.target.id==='youName'){S.cfg.name=e.target.value.slice(0,40);const t=$('youTitle');if(t)t.textContent=meName()||'You';drawMe();clearTimeout(window.__nmT);window.__nmT=setTimeout(()=>{save();render()},500);return}const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
 $('setIn').addEventListener('change',e=>{const n=e.target.dataset.name;if(n){C().names[n]=e.target.value.trim()||DEF_CFG.names[n];applySettings();save();render();if(!e.target.value.trim())e.target.value=C().names[n]}});
 $('setIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='accEmail'){e.preventDefault();return CLOUD?accSend():$('accSend').click()}if(e.key==='Enter'&&e.target.id==='accCode'){e.preventDefault();return accVerify()}if(e.target.dataset.name&&e.key==='Enter')e.target.blur()});
-$('setBtn').onclick=openSettings;
+$('setBtn').onclick=()=>openYou();
 $('dSet').onclick=openSettings;
 
 /* ---------- sidebar collapse ---------- */
@@ -3125,7 +3274,7 @@ const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.cfg,S.nid,S.focusLog||{}]);
 const busyUI=()=>document.querySelector('.sheet.on,.focus.on,.tide.on');
 const SYNC_LABEL={off:'Off',syncing:'Syncing…',synced:'Up to date',offline:'Offline, will sync later',error:'Couldn’t sync, will retry'};
-function setSync(s){syncState=s;const el=document.getElementById('syncStatus');if(el)el.textContent=SYNC_LABEL[s];
+function setSync(s){syncState=s;const el=document.getElementById('syncStatus');if(el)el.textContent=SYNC_LABEL[s];try{drawMe()}catch(e){}
   if(s==='error'&&S.dirty){clearTimeout(syncTimer);syncTimer=setTimeout(push,10000)}}
 function cloudDirty(){
   if(!user||applying)return;const h=hashOf();if(h===lastHash)return;lastHash=h;
@@ -3214,7 +3363,7 @@ function subscribe(){
     }).subscribe();
   }catch(e){}
 }
-function onSignedIn(){reconcile(true).then(subscribe);if(settingsOpen()&&setView==='account')drawSettings()}
+function onSignedIn(){reconcile(true).then(subscribe);drawMe();if(settingsOpen()&&(setView==='account'||setView==='you'))drawSettings()}
 function onSignedOut(){try{channel&&sb.removeChannel(channel)}catch(e){}channel=null;setSync('off');if(settingsOpen())drawSettings()}
 function loadSB(){return new Promise((res,rej)=>{if(window.supabase)return res();const s=document.createElement('script');
   s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
@@ -3252,7 +3401,7 @@ function accountPage(){
   const PV=!CLOUD;
   const pvBar=PV?`<div class="pv-note"><b>Preview.</b> Sign-in works in the installed app. Tap below to see each screen.</div>
     <div class="segc pv-seg">${[['out','Signed out'],['sent','Email sent'],['in','Signed in']].map(([k,l])=>`<button data-pv="${k}" class="${pvState===k?'on':''}">${l}</button>`).join('')}</div>`:'';
-  const head=`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><h1 class="sub-h">Account</h1>`+pvBar;
+  const head=accInYou?pvBar:`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><h1 class="sub-h">Account</h1>`+pvBar;
   const user=PV?(pvState==='in'?{email:'you@email.com'}:null):window.__u;
   const authStep=PV?(pvState==='sent'?'code':'email'):window.__step;
   const syncState=PV?'synced':window.__ss;
