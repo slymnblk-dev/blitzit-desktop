@@ -1,0 +1,70 @@
+/* ---------- Tide: same page, type and controls as Classic ---------- */
+.tide .f-step{margin-top:20px}
+.tide .t-alldone{opacity:.6;cursor:default}
+.tide .t-alldone i{background:var(--ink)}
+.tide .t-in-step{animation:inU .35s cubic-bezier(.2,.8,.2,1)}
+:root[data-focusdark="1"] .tide .f-step{background:rgba(255,255,255,.08)}
+.focus .f-top{display:grid;grid-template-columns:1fr auto 1fr}
+.focus .f-top .mode{justify-self:start}
+.tide{position:fixed;inset:0;z-index:31;display:none;flex-direction:column;background:var(--fbg,var(--today));--ink:var(--fink,#0F1013);color:var(--ink);
+  padding:calc(18px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));overflow:hidden;transition:background .6s ease}
+.tide.on{display:flex;animation:tideIn .45s cubic-bezier(.2,.8,.2,1) both}
+.tide.out{animation:tideOut .25s both}
+@keyframes tideIn{from{opacity:0;transform:scale(1.02)}}
+@keyframes tideOut{to{opacity:0}}
+.t-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;max-width:460px;width:100%;margin:0 auto;transition:opacity .5s}
+.t-top .f-x{justify-self:end}
+.t-main{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:460px;width:100%;margin:0 auto;padding:12px 0;min-height:0}
+.t-main .f-title{margin-top:8px}
+.t-orb{position:relative;width:min(100%,300px,38vh);aspect-ratio:1;margin:26px auto 0;flex:none}
+.tide:has(.f-step) .t-orb{width:min(100%,280px,33vh)}
+.t-orb svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.t-orb .o{fill:color-mix(in srgb,var(--ink) 6%,transparent);stroke:var(--ink);stroke-opacity:.28;stroke-width:3}
+.t-orb .wv path{fill:var(--ink);opacity:.16}
+.t-orb .wv2 path{opacity:.09}
+.t-orb .lvl{transition:transform 1s linear}
+.t-orb .wv{animation:tWave 5s linear infinite}
+.t-orb .wv2{animation-duration:7.5s;animation-direction:reverse}
+@keyframes tWave{to{transform:translateX(-200px)}}
+.tide.t-paused .wv{animation-play-state:paused}
+.t-orb.run{animation:tBreathe 6s ease-in-out infinite}
+@keyframes tBreathe{50%{transform:scale(1.025)}}
+.t-orb.pop{animation:tPop .8s cubic-bezier(.2,.8,.2,1)}
+@keyframes tPop{0%{transform:scale(1)}35%{transform:scale(1.09)}65%{transform:scale(.97)}100%{transform:scale(1)}}
+.t-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:6px;font-size:clamp(54px,16vw,80px);font-weight:800;letter-spacing:-.06em;line-height:1;font-variant-numeric:tabular-nums}
+.t-set{cursor:text;align-items:center}
+.mode button,.fsw button,.t-ch button{white-space:nowrap}
+.t-in{all:unset;box-sizing:content-box;width:2.2ch;text-align:center;font:inherit;letter-spacing:inherit;color:inherit;border-bottom:3px dashed color-mix(in srgb,var(--ink) 35%,transparent);caret-color:var(--ink)}
+.t-in:focus{border-bottom-color:var(--ink)}
+.t-set span{font-size:18px;font-weight:600;letter-spacing:0;opacity:.65}
+.t-cap{display:flex;justify-content:space-between;gap:12px;margin-top:22px;font-size:14px;font-weight:500;opacity:.65}
+.t-ch{display:flex;gap:2px;align-self:center;margin-top:18px;background:rgba(0,0,0,.12);border-radius:999px;padding:3px}
+.t-ch button{height:32px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600;opacity:.7}
+.t-ch button.on{background:var(--ink);color:var(--fbg,var(--today));opacity:1}
+.t-ctl{display:flex;gap:10px;max-width:460px;width:100%;margin:0 auto;transition:opacity .5s}
+.t-ctl .f-done{flex:1}
+.t-plus{font-weight:800;font-size:16px}
+.tide.quiet .t-ctl,.tide.quiet .t-top{opacity:0;pointer-events:none}
+:root[data-focusdark="1"] .tide .f-x,:root[data-focusdark="1"] .tide .f-btn,:root[data-focusdark="1"] .tide .fsw,:root[data-focusdark="1"] .tide .t-ch{background:rgba(255,255,255,.1)}
+@media (min-width:1100px){.t-main,.t-ctl,.t-top{max-width:620px}.t-main .f-title{font-size:56px}.t-orb{width:min(100%,340px,42vh)}}
+:root[data-motion="off"] .tide .wv,:root[data-motion="off"] .t-orb{animation:none!important}
+:root[data-motion="off"] .t-orb .lvl{transition:none}
+@media (prefers-reduced-motion:reduce){.tide,.tide *{animation:none!important}.t-orb .lvl{transition:none}}
+/* preferences applied */
+:root[data-est="off"] .est{display:none}
+:root[data-size="large"] .title{font-size:21px}
+:root[data-size="large"] .col-list .title{font-size:17px}
+:root[data-size="large"] .meta{font-size:14px}
+:root[data-size="large"] .col-list .meta{font-size:13px}
+:root[data-density="compact"] .row-in{padding:12px 0}
+:root[data-density="compact"] .col-list .row-in{padding:9px 0}
+:root[data-density="compact"] .meta{margin-top:3px}
+:root[data-motion="off"] *,:root[data-motion="off"] *::before,:root[data-motion="off"] *::after{transition:none!important;animation:none!important}
+@media (min-width:1100px){
+  .settings{left:auto;width:500px;border-radius:28px 0 0 28px;box-shadow:-20px 0 60px rgba(0,0,0,.25)}
+  .set-in{padding:28px 32px 48px}
+  .set-in h1{font-size:56px}
+}
+
+.field:focus-visible,.d-title:focus-visible,.notes:focus-visible,.quick input:focus-visible,.ca-in:focus-visible,#nlIn:focus-visible,.sub-add input:focus-visible{outline:none}
+@property --ga{syntax:'<angle>';inherits:false;initial-value:0deg}

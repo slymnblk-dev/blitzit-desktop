@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Windaday</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="theme-color" content="#0F1013" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F4F4F0" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Windaday">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+/*@CSS*/</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="top-l"><button class="icon-btn" id="homeBtn" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg></button><div class="brand" id="brandBtn">windaday<i></i></div></div>
+    <div class="top-r">
+      <button class="chip" id="listBtn" aria-label="Choose list"><span class="stack" id="stack"></span><span id="listName">All lists</span></button>
+      <button class="icon-btn" id="installBtn" hidden aria-label="Install app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+      </button>
+      <button class="me-btn" id="setBtn" aria-label="Your profile and settings"></button>
+    </div>
+  </header>
+
+  <div id="homeView" class="home-view"></div>
+  <div id="spaceView">
+  <section class="hero" id="hero">
+    <h1 id="stageTitle">Today</h1>
+    <div class="summary" id="summary"></div>
+    <div class="week" id="week" hidden></div>
+  </section>
+
+  <nav class="gauge" id="gauge" aria-label="Stages"></nav>
+
+  <div class="pull" id="pull"><div class="pull-in"><span class="pull-dot"></span><span id="pullTxt">Pull to add</span></div></div>
+  <div class="quick" id="quick"><span class="q-ring"></span><input id="quickIn" enterkeyhint="done" autocomplete="off"></div>
+  <ul class="list" id="list"></ul>
+  </div>
+</div>
+
+<div class="dock"><div class="dock-in">
+  <button class="go" id="goBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Win the day</button>
+  <button class="plus" id="addBtn" aria-label="Add task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="plus-l">Add task</span></button>
+</div></div>
+
+
+<div class="desk" id="desk">
+  <aside class="side">
+    <div class="s-top"><div class="brand">windaday<i></i></div>
+      <button class="s-toggle" id="sToggle" aria-label="Collapse sidebar" title="Collapse sidebar  [ "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M9.5 4.5v15"/><path class="s-arr" d="M15.5 10l-2 2 2 2"/></svg></button></div>
+
+    <div id="sLists"></div>
+    <div class="s-foot">
+      <div class="s-tools">
+        <button class="icon-btn" id="dInstall" hidden aria-label="Install app" title="Install app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></button>
+      </div>
+      <button class="me" id="dMe" aria-label="Your profile" title="Your profile"></button>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="m-head">
+      <div><div class="m-title"><div class="m-date" id="mDate"></div><button class="m-edit" id="mEdit" aria-label="Edit space" title="Edit space"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button></div><div class="m-sub" id="mSub"></div></div>
+      <div class="m-right"><button class="icon-btn m-set" id="dSet" aria-label="Settings" title="Settings ( , )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div>
+    </div>
+    <div class="d-home" id="dHome"></div>
+    <div class="board" id="board"></div>
+  </main>
+</div>
+
+<div class="settings" id="settings" aria-label="Settings"><div class="set-in" id="setIn"></div></div>
+<div class="scrim" id="scrim"></div>
+
+<div class="sheet" id="addSheet"><div class="sheet-in">
+  <div class="grab"></div>
+  <input class="field" id="newTitle" placeholder="What needs doing?" autocomplete="off" enterkeyhint="done">
+  <div id="addSpaceWrap"><div class="lbl">Space</div><div class="opts row-scroll" id="optSpace"></div></div>
+  <div id="addListWrap"><div class="lbl">List</div><div class="opts row-scroll" id="optList"></div></div>
+  <div class="lbl">When</div><div class="opts" id="optStage"></div>
+  <div class="lbl">Estimate</div><div class="opts" id="optEst"></div>
+  <button class="primary" id="saveBtn" disabled>Add task</button>
+</div></div>
+
+<div class="sheet dsheet" id="detailSheet"><div class="sheet-in d-in">
+  <div class="d-drag" id="dDrag"><div class="grab"></div>
+    <div class="d-top">
+      <button class="d-more" id="dMore" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+      <button class="txt-btn" id="dClose">Done</button>
+      <div class="d-menu" id="dMenu"><button id="dDup">Duplicate</button><button id="dDel" class="warn">Delete task</button></div>
+    </div>
+  </div>
+  <div class="d-scroll" id="dScroll">
+    <textarea class="d-title" id="dTitle" rows="1" placeholder="Task name"></textarea>
+    <div class="pills" id="dPills"></div>
+    <div class="picker" id="dPicker"></div>
+    <div class="d-sh" id="dStepsHead"><span>Steps</span><span id="dStepCount"></span></div>
+    <div class="d-prog" id="dProg"><span id="dProgBar"></span></div>
+    <div class="subs" id="dSubs"></div>
+    <div class="sub-add"><i></i><input id="dSubIn" placeholder="Add a step" enterkeyhint="done" autocomplete="off"></div>
+    <textarea class="notes d-notes" id="dNotes" placeholder="Add notes"></textarea>
+  </div>
+  <div class="d-foot2">
+    <button class="d-complete" id="dComplete"></button>
+    <button class="d-focus" id="dFocus"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Focus</button>
+  </div>
+</div></div>
+
+<div class="sheet" id="listSheet"><div class="sheet-in" id="listSheetIn">
+  <div class="grab"></div>
+  <div class="sh-head"><h2 id="listsTitle">Lists</h2><div class="sh-acts"><button class="txt-btn" id="editSpace" hidden>Edit space</button><button class="txt-btn" id="editLists">Edit</button></div></div>
+  <div id="picks"></div>
+</div></div>
+
+<div class="sheet" id="mergeSheet"><div class="sheet-in reset">
+  <div class="grab"></div>
+  <h2>Choose your tasks</h2>
+  <p id="mergeTxt"></p>
+  <button class="primary" id="mergeCloud">Use my account’s tasks</button>
+  <button class="secondary" id="mergeLocal">Keep this device’s tasks</button>
+</div></div>
+<div class="sheet" id="spaceSheet"><div class="sheet-in">
+  <div class="grab"></div>
+  <h2 id="spTitle">New space</h2>
+  <div class="sp-form"><span class="sp-prev" id="spPrev"></span><input class="field sp-name-in" id="spName" placeholder="Space name" autocomplete="off" enterkeyhint="done"></div>
+  <div class="lbl">Icon</div><div class="ico-grid" id="spIcons"></div>
+  <div class="lbl">Colour</div><div class="sw" id="spSw"></div>
+  <button class="sp-pinrow" id="spPin" hidden><span>Pin to top</span><span class="tg" id="spPinTg" aria-pressed="false"></span></button>
+  <button class="primary" id="spSave" disabled>Create space</button>
+  <button class="link-row warn sp-del" id="spDel" hidden>Delete space</button>
+</div></div>
+<div class="sheet" id="resetSheet"><div class="sheet-in reset">
+  <div class="grab"></div>
+  <h2>New day</h2>
+  <p id="resetTxt"></p>
+  <button class="primary" id="keepBtn">Keep in Today</button>
+  <button class="secondary" id="weekBtn">Move to My week</button>
+</div></div>
+
+<div class="tide" id="tide" role="dialog" aria-label="Focus, Tide style"></div>
+<div class="focus" id="focus">
+  <div class="f-top">
+    <div class="mode" id="fMode"><button data-m="free" class="on">Free</button><button data-m="pomo">25 / 5</button></div>
+    <div class="fsw" id="fStyleSw" role="group" aria-label="Focus style"><button data-fs="classic" class="on">Classic</button><button data-fs="tide">Tide</button></div>
+    <div class="f-r"><button class="f-x pip-btn" data-pip aria-label="Pop out focus window" title="Pop out (stays on top of other apps)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><rect x="11.5" y="11" width="7" height="6" rx="1.5" fill="currentColor" stroke="none"/></svg></button>
+    <button class="f-x" id="fClose" aria-label="Close focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  </div>
+  <div class="f-main">
+    <div class="f-up" id="fList"></div>
+    <div class="f-title" id="fTitle"></div>
+    <button class="f-step" id="fStep"><i></i><span class="fs-t" id="fStepT"></span><span class="fs-n" id="fStepN"></span></button>
+    <div class="f-time" id="fTime">00:00</div>
+    <div class="f-bar"><span id="fBar"></span></div>
+    <div class="f-cap"><span id="fLeft"></span><span id="fEst"></span></div>
+    <div class="f-next" id="fNext"></div>
+  </div>
+  <div class="f-ctrl">
+    <button class="f-btn" id="fPause" aria-label="Pause"></button>
+    <button class="f-done" id="fDone">Done</button>
+    <button class="f-btn" id="fSkip" aria-label="Skip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l10 7-10 7zM19 5v14"/></svg></button>
+  </div>
+  <div class="f-sum">
+    <h3>Day won</h3>
+    <div class="f-stats"><div><b id="sDone">0</b><span id="sDoneL">tasks done</span></div><div><b id="sTime">0m</b><span>focused</span></div></div>
+    <button class="f-back" id="fBack">Back to list</button>
+  </div>
+</div>
+
+<div class="dlg" id="dlg" role="dialog" aria-modal="true"><div class="dlg-in">
+  <div class="dlg-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></div>
+  <h3 id="dlgT"></h3><p id="dlgP"></p>
+  <label class="dlg-l">Type <b id="dlgW"></b> to confirm</label>
+  <input class="acc-in" id="dlgIn" autocomplete="off" spellcheck="false">
+  <div class="dlg-b"><button class="secondary" id="dlgNo">Cancel</button><button class="danger" id="dlgYes" disabled>Delete</button></div>
+</div></div>
+<div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="Welcome to Windaday">
+  <div class="in-top"><span class="brand">windaday<i></i></span><button class="in-skip" id="inSkip">Skip</button></div>
+  <div class="in-track" id="inTrack">
+    <section class="in-step">
+      <div class="in-art in-stages"><div><i style="background:var(--backlog)"></i><span>Backlog</span></div><div><i style="background:var(--week)"></i><span>My week</span></div><div><i style="background:var(--today)"></i><span>Today</span></div><div><i style="background:var(--done)"></i><span>Done</span></div></div>
+      <h1>Focus on what matters.</h1>
+      <p>Park ideas in <b>Backlog</b>, plan <b>My week</b>, commit to <b>Today</b>, and watch them land in <b>Done</b>.</p>
+    </section>
+    <section class="in-step">
+      <div class="in-art in-bolt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+      <h1>Win the day.</h1>
+      <p>Tap <b>Win the day</b> and work through Today one task at a time, with a timer that keeps you honest.</p>
+    </section>
+    <section class="in-step">
+      <h1>Make it yours.</h1>
+      <p id="inP3">Pick the areas you work on. Each becomes a <b>space</b> with its own lists. You can change them anytime.</p>
+      <div class="in-picks" id="inPicks"></div>
+    </section>
+  </div>
+  <div class="in-foot">
+    <div class="in-dots" id="inDots"><i></i><i></i><i></i></div>
+    <button class="in-next" id="inNext">Next</button>
+    <div class="in-alt" id="inAlt"><button id="inDemo">Explore with demo data</button><button id="inSignin">I already have an account</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"><span id="toastMsg"></span><button id="undoBtn">Undo</button></div>
+<script>
+/*@JS*/</script>
+</body>
+</html>

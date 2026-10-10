@@ -1,0 +1,27 @@
+/* ---------- QA fixes ---------- */
+.sheet{visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s linear .36s}
+.sheet.on{visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.title,.f-title,.d-title,.pv-t{overflow-wrap:anywhere}
+.s-list .s-name{flex:1;min-width:0}.s-list .n{flex:none}
+.focus.sum .fsw,.focus.sum .pip-btn{visibility:hidden}
+.in-step{touch-action:pan-y}
+.top{gap:10px}.top-l{flex:none}.top-r{min-width:0;flex:1;justify-content:flex-end}.top .icon-btn{flex:none}.top .chip{min-width:0;flex:0 1 auto}
+.dsheet .subs{overscroll-behavior:auto}
+#listName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-height:520px) and (max-width:1099px){
+  .focus{overflow-y:auto;padding-top:10px;padding-bottom:10px}
+  .f-main{justify-content:flex-start;padding:4px 0}
+  .f-title{font-size:24px;-webkit-line-clamp:1}
+  .f-time{font-size:60px!important;margin:10px 0 8px!important}
+  .f-step{margin-top:8px;padding:8px 12px}
+  .f-next{display:none}
+  .f-btn{width:50px;height:50px}.f-done{height:50px}
+  .tide .t-main .f-title{font-size:22px;-webkit-line-clamp:1}
+  .tide .t-orb{width:min(120px,30vh)!important;height:min(120px,30vh)!important;margin:4px auto!important}
+  .tide .t-main .f-up{display:none}.tide .f-step{margin-top:6px;padding:6px 12px}.tide .t-cap{margin-top:4px}
+  .tide .t-ctl .f-btn{width:46px;height:46px}.tide .t-ctl .f-done{height:46px}
+  .tide .t-time{font-size:34px!important}
+  .tide .t-ch{margin-top:6px}
+  .tide{overflow-y:auto}.tide .t-main{flex:none;justify-content:flex-start}.tide .t-main>*,.tide .t-ctl,.tide .t-top{flex-shrink:0}
+  .tide .t-ctl{margin-top:10px}
+}

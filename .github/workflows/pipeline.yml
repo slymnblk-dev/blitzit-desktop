@@ -26,6 +26,10 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: npm }
       - run: npm ci
+      - name: The live file must match the source files
+        run: |
+          npm run build:web
+          git diff --exit-code web/index.html || (echo "::error::web/index.html is out of date - run npm run build:web and commit it" && exit 1)
       - run: npx playwright install --with-deps chromium
       - run: npm test
       - name: Keep the report if something failed

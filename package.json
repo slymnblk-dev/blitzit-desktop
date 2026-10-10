@@ -6,7 +6,8 @@
     "tauri": "tauri",
     "dev": "tauri dev",
     "build": "tauri build",
-    "test": "playwright test"
+    "build:web": "node tools/build.mjs",
+    "test": "node tools/build.mjs && playwright test"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",

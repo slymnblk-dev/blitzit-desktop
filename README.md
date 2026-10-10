@@ -45,3 +45,13 @@ The first time Windows may say "Windows protected your PC" (the app isn't code-s
 4. If the desktop app changed (`src-tauri/` or `RELEASE_NOTES.md`), the Windows update is built and published too.
 
 Run the checks locally with `npm test`.
+
+## Where the code lives
+
+The web app is written in small files under `src/` and joined into `web/index.html` (the file Netlify serves) by `npm run build:web`:
+
+- `src/index.html`: the page (head + markup)
+- `src/css/`: styles, by area (base, desktop, settings, spaces/home/detail, Tide, profile/update window, fixes)
+- `src/js/`: app code, by area (data, tasks, gestures, sheets, Classic, Tide, mini timer + updates, board, spaces, settings, profile, sync/sign-in, startup)
+
+Edit `src/`, never `web/index.html` directly. The number prefixes set the order the parts are joined in.
