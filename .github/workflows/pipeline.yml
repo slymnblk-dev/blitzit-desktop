@@ -1,10 +1,14 @@
 name: Check and release
 
 # Every change goes to the "dev" branch first.
-#   1. check   - runs all automatic checks (tests/) in a real browser
-#   2. promote - only if every check passed: moves the change to "main"
-#                (Netlify publishes "main" to windaday.com within a minute)
-#   3. desktop - if the desktop app itself changed: builds and publishes the Windows update
+#   On every push to dev:
+#     1. check   - runs all automatic checks (tests/) in a real browser
+#     2. preview - only if every check passed: publishes a test copy at
+#                  https://slymnblk-dev.github.io/blitzit-desktop/  (the live app is untouched)
+#   "Go live" (Actions -> Check and release -> Run workflow, go_live ticked):
+#     1. check   - runs every check again
+#     2. promote - moves dev to "main" (Netlify publishes "main" to windaday.com within a minute)
+#     3. desktop - if the desktop app itself changed: builds and publishes the Windows update
 # If a check fails, nothing goes live.
 
 on:
@@ -12,6 +16,11 @@ on:
     branches: [dev]
   pull_request:
   workflow_dispatch:
+    inputs:
+      go_live:
+        description: Make the current dev version live on windaday.com
+        type: boolean
+        default: false
 
 concurrency:
   group: pipeline-${{ github.ref }}
@@ -40,9 +49,27 @@ jobs:
           path: test-results/
           retention-days: 7
 
-  promote:
+  preview:
     needs: check
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: web }
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  promote:
+    needs: check
+    if: github.event_name == 'workflow_dispatch' && inputs.go_live && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     permissions:
       contents: write

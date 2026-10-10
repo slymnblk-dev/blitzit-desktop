@@ -1248,6 +1248,7 @@ html,body{overscroll-behavior-y:contain}
   .tide{overflow-y:auto}.tide .t-main{flex:none;justify-content:flex-start}.tide .t-main>*,.tide .t-ctl,.tide .t-top{flex-shrink:0}
   .tide .t-ctl{margin-top:10px}
 }
+.pv-badge{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:95;padding:5px 12px;border-radius:999px;background:#FF5C8A;color:#fff;font:700 11px/1.2 system-ui,sans-serif;letter-spacing:.04em;text-transform:uppercase;pointer-events:none;opacity:.92;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 </style>
 </head>
 <body>
@@ -1448,7 +1449,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=66; // bumped with every published update
+const APP_VERSION=67; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3707,6 +3708,8 @@ try{if(/\.netlify\.app$/.test(location.hostname)&&!DESK()&&localStorage.getItem(
   document.body.appendChild(b);
   b.querySelector('.moved-x').onclick=()=>{try{localStorage.setItem('movedSeen','1')}catch(e){}b.remove()};
 }}catch(e){}
+/* preview copy (github.io): a small badge so it is never mistaken for the live app. Its data stays in this browser only. */
+try{if(/\.github\.io$/.test(location.hostname)){const p=document.createElement('div');p.className='pv-badge';p.textContent='Preview · test copy';p.title='Not the live app. Data here stays in this browser.';document.body.appendChild(p)}}catch(e){}
 try{if(new URLSearchParams(location.search).get('blitz')==='1')setTimeout(()=>$('goBtn').click(),400)}catch(e){}
 }
 </script>

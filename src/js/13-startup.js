@@ -105,5 +105,7 @@ try{if(/\.netlify\.app$/.test(location.hostname)&&!DESK()&&localStorage.getItem(
   document.body.appendChild(b);
   b.querySelector('.moved-x').onclick=()=>{try{localStorage.setItem('movedSeen','1')}catch(e){}b.remove()};
 }}catch(e){}
+/* preview copy (github.io): a small badge so it is never mistaken for the live app. Its data stays in this browser only. */
+try{if(/\.github\.io$/.test(location.hostname)){const p=document.createElement('div');p.className='pv-badge';p.textContent='Preview · test copy';p.title='Not the live app. Data here stays in this browser.';document.body.appendChild(p)}}catch(e){}
 try{if(new URLSearchParams(location.search).get('blitz')==='1')setTimeout(()=>$('goBtn').click(),400)}catch(e){}
 }
