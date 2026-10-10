@@ -1,0 +1,3 @@
+- A new update window in the middle of the screen, with what's new
+- Updates now wait until your focus session is over
+- Window and tray now say Windaday

@@ -201,6 +201,8 @@ async fn resize_mini(app: AppHandle, width: f64, height: f64) {
 struct UpdateInfo {
     current: String,
     latest: Option<String>,
+    /// "What's new" text from the GitHub release (one bullet per line).
+    notes: Option<String>,
 }
 
 /// Asks GitHub (latest release) whether a newer desktop app exists.
@@ -213,7 +215,11 @@ async fn check_update(app: AppHandle) -> Result<UpdateInfo, String> {
         .check()
         .await
         .map_err(|e| e.to_string())?;
-    Ok(UpdateInfo { current, latest: update.map(|u| u.version) })
+    let (latest, notes) = match update {
+        Some(u) => (Some(u.version), u.body),
+        None => (None, None),
+    };
+    Ok(UpdateInfo { current, latest, notes })
 }
 
 /// Downloads the signed update, installs it and restarts Blitzit.

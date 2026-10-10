@@ -11,6 +11,7 @@ on:
     paths:
       - 'src-tauri/**'
       - 'package.json'
+      - 'RELEASE_NOTES.md'
       - '.github/workflows/build.yml'
 
 permissions:
@@ -32,6 +33,12 @@ jobs:
         env:
           K: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         run: if (-not $env:K) { echo "::error::The TAURI_SIGNING_PRIVATE_KEY secret is missing"; exit 1 } else { echo "::notice::Signing key found ($($env:K.Trim().Length) characters)" }
+      - name: Read release notes
+        id: notes
+        shell: pwsh
+        run: |
+          $body = Get-Content RELEASE_NOTES.md -Raw
+          "body<<EOF`n$body`nEOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,7 +47,7 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: Blitzit __VERSION__
-          releaseBody: Download the Blitzit setup .exe below to install. Installed apps update themselves.
+          releaseBody: ${{ steps.notes.outputs.body }}
           releaseDraft: false
           prerelease: false
       - name: Show build error

@@ -1177,6 +1177,36 @@ html,body{overscroll-behavior-y:contain}
 .moved-go{flex:none;height:34px;padding:0 14px;border-radius:999px;background:var(--today);color:#0F1013;font-weight:800;display:grid;place-items:center;text-decoration:none}
 .moved-x{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:inherit;opacity:.6}.moved-x svg{width:14px;height:14px}
 @media (max-width:600px){.moved{border-radius:20px;flex-wrap:wrap;padding:12px 14px}.moved span{flex-basis:calc(100% - 40px)}}
+/* update window (desktop app) */
+.updm{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:16px;background:rgba(8,9,12,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:updmFade .25s ease both}
+.updm.out{animation:updmFade .22s ease reverse both}
+@keyframes updmFade{from{opacity:0}}
+.updm-card{width:min(420px,100%);padding:26px 26px 20px;border-radius:28px;background:var(--surface);color:var(--text);box-shadow:0 30px 80px -20px rgba(0,0,0,.55),0 0 0 1px var(--line);animation:updmIn .45s cubic-bezier(.2,.9,.25,1.12) both}
+.updm.out .updm-card{animation:updmIn .22s ease reverse both}
+@keyframes updmIn{from{opacity:0;transform:translateY(14px) scale(.96)}}
+.updm-top{display:flex;align-items:center;gap:10px}
+.updm-ico{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--today);color:#0F1013}
+.updm-ico svg{width:20px;height:20px}
+.updm-k{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--today)}
+.updm h2{margin:16px 0 0;font-size:30px;font-weight:800;letter-spacing:-.04em;line-height:1.05}
+.updm-sub{margin:6px 0 0;font-size:14px;color:var(--muted)}
+.updm-new{margin-top:20px;padding:16px 16px 6px;border-radius:20px;background:var(--surface2)}
+.updm-new h4{margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.updm-new ul{list-style:none;margin:0;padding:0}
+.updm-new li{display:flex;gap:10px;align-items:flex-start;padding:0 0 10px;font-size:15px;line-height:1.4}
+.updm-new li i{flex:none;width:20px;height:20px;margin-top:1px;border-radius:50%;display:grid;place-items:center;background:var(--done)}
+.updm-new li i svg{width:12px;height:12px;stroke:#0F1013}
+.updm-acts{display:flex;flex-direction:column;gap:4px;margin-top:20px}
+.updm-go{height:54px;border-radius:999px;background:var(--today);color:#0F1013;font-weight:800;font-size:16px;transition:filter .15s,transform .15s}
+.updm-go:hover{filter:brightness(1.06)}.updm-go:active{transform:scale(.98)}
+.updm-later{height:44px;border-radius:999px;font-weight:600;font-size:15px;color:var(--muted)}
+.updm-later:hover{color:var(--text)}
+.updm-busy{display:none;margin-top:22px;text-align:center}
+.updm.busy .updm-acts{display:none}.updm.busy .updm-busy{display:block}
+.updm-prog{height:6px;border-radius:6px;background:var(--surface2);overflow:hidden}
+.updm-prog span{display:block;width:40%;height:100%;border-radius:6px;background:var(--today);animation:updmRun 1.1s ease-in-out infinite}
+@keyframes updmRun{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+.updm-busy p{margin:12px 0 2px;font-size:14px;color:var(--muted)}
 /* ---------- QA fixes ---------- */
 .sheet{visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s linear .36s}
 .sheet.on{visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s}
@@ -1404,7 +1434,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=64; // bumped with every published update
+const APP_VERSION=65; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2381,31 +2411,54 @@ const DESK=()=>!!(window.__TAURI__&&window.__TAURI__.core&&window.__TAURI__.even
 let deskMini=false,deskT=null,deskUn=null;
 /* desktop app updates: the app checks GitHub for a newer signed version and offers a one-click update */
 const UPD={current:'',latest:null,checked:false,busy:false,later:false};
+/* "What's new" for desktop versions whose update doesn't carry its own notes yet */
+const DESK_NOTES={'0.5.1':['A new update window in the middle of the screen, with what’s new','Updates now wait until your focus session is over','Window and tray now say Windaday']};
+const updNotes=()=>{
+  const fromRelease=(UPD.notes||'').split(/\r?\n/).map(l=>l.replace(/^\s*[-*•]\s*/,'').trim()).filter(l=>l&&!/^#/.test(l)).slice(0,5);
+  return fromRelease.length?fromRelease:(DESK_NOTES[UPD.latest]||['Improvements and fixes for the desktop app']);
+};
 async function checkUpdate(manual){
   if(!DESK())return;
-  try{const r=await window.__TAURI__.core.invoke('check_update');UPD.current=r.current;UPD.latest=r.latest||null;UPD.checked=true}
+  try{const r=await window.__TAURI__.core.invoke('check_update');UPD.current=r.current;UPD.latest=r.latest||null;UPD.notes=r.notes||'';UPD.checked=true}
   catch(e){if(manual)toast('Couldn’t check for updates');return}
   if(manual&&!UPD.latest)toast('Windaday is up to date');
-  if(UPD.latest&&(manual||!UPD.later))showUpdate();
+  if(UPD.latest&&(manual||!UPD.later))showUpdate(manual);
   if(settingsOpen())drawSettings();
 }
-function showUpdate(){
+/* the update window: centred, calm, says what's new. Never interrupts a running session: it waits and shows right after. */
+function showUpdate(manual){
   if($('upd')||!UPD.latest)return;
-  const d=document.createElement('div');d.className='upd';d.id='upd';d.setAttribute('role','status');
-  d.innerHTML=`<div class="bk-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/></svg></div>
-    <div class="bk-t"><b>Update ready</b><span>Windaday ${esc(UPD.latest)} for desktop. Takes a few seconds.</span></div>
-    <div class="bk-acts"><button class="bk-alt" id="updLater">Later</button><button class="bk-go" id="updGo">Update</button></div>`;
+  if(F.on&&!manual){UPD.pending=true;return}
+  UPD.pending=false;
+  const d=document.createElement('div');d.className='updm';d.id='upd';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','updT');
+  d.innerHTML=`<div class="updm-card">
+    <div class="updm-top"><span class="updm-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/></svg></span><span class="updm-k">Update ready</span></div>
+    <h2 id="updT">Windaday ${esc(UPD.latest)}</h2>
+    <p class="updm-sub">${UPD.current?`You have ${esc(UPD.current)} · `:''}takes a few seconds</p>
+    <div class="updm-new"><h4>What’s new</h4><ul>${updNotes().map(n=>`<li><i>${CHECK}</i><span>${esc(n)}</span></li>`).join('')}</ul></div>
+    <div class="updm-acts"><button class="updm-go" id="updGo">Update now</button><button class="updm-later" id="updLater">Later</button></div>
+    <div class="updm-busy"><div class="updm-prog"><span></span></div><p>Installing… Windaday restarts by itself.</p></div>
+  </div>`;
   document.body.appendChild(d);
-  $('updLater').onclick=()=>{UPD.later=true;d.classList.add('out');setTimeout(()=>d.remove(),250)};
-  $('updGo').onclick=installUpdate;
+  const later=()=>{if(UPD.busy)return;UPD.later=true;d.classList.add('out');setTimeout(()=>d.remove(),260);document.removeEventListener('keydown',keys,true)};
+  const keys=e=>{if(!$('upd'))return document.removeEventListener('keydown',keys,true);
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();later()}
+    else if(e.key==='Enter'){e.preventDefault();e.stopPropagation();installUpdate()}
+    else if(e.key==='Tab'){e.preventDefault();const f=[$('updGo'),$('updLater')];f[(f.indexOf(document.activeElement)+1)%2].focus()}
+    else e.stopPropagation()};
+  document.addEventListener('keydown',keys,true);
+  $('updLater').onclick=later;$('updGo').onclick=installUpdate;
+  d.addEventListener('click',e=>{if(e.target===d)later()});
+  setTimeout(()=>{const g=$('updGo');g&&g.focus()},60);
 }
 async function installUpdate(){
   if(UPD.busy)return;
   if(F.on){toast('Finish your session first, then update');return}
-  UPD.busy=true;const b=$('updGo');if(b){b.disabled=true;b.textContent='Updating…'}
+  if(!$('upd'))showUpdate(true);
+  UPD.busy=true;const m=$('upd');if(m)m.classList.add('busy');
   if(settingsOpen())drawSettings();
   try{await window.__TAURI__.core.invoke('install_update');UPD.busy=false;UPD.latest=null;$('upd')&&$('upd').remove();if(settingsOpen())drawSettings();toast('Windaday is up to date')}
-  catch(e){UPD.busy=false;if(b){b.disabled=false;b.textContent='Update'}if(settingsOpen())drawSettings();toast('Update failed. Try again later')}
+  catch(e){UPD.busy=false;if(m)m.classList.remove('busy');if(settingsOpen())drawSettings();toast('Update failed. Try again later')}
 }
 function pipVars(){const cs=getComputedStyle(root);return{fbg:cs.getPropertyValue('--fbg').trim()||cs.getPropertyValue('--today').trim(),fink:cs.getPropertyValue('--fink').trim()||'#0F1013',font:cs.getPropertyValue('--font').trim(),dark:root.dataset.focusdark==='1'}}
 let deskZ='';
@@ -2545,7 +2598,7 @@ function showSummary(){
   F.sum=true;if(deskMini)deskSend();else closePip(); // desktop: celebrate in the mini timer, don't pull the big window up
   $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);
 }
-function closeFocus(){closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
+function closeFocus(){if(UPD.pending)setTimeout(()=>showUpdate(true),700);closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
 $('fPause').onclick=()=>{step();F.run=!F.run;F.last=Date.now();$('fPause').innerHTML=F.run?PAUSE:PLAY;haptic(5);fReveal()};
 const liveTask=t=>t&&(S.tasks.find(x=>x.id===t.id)||t);
 $('fDone').onclick=()=>{if(Date.now()-(F.tapAt||0)<600)return;F.tapAt=Date.now();setStage(liveTask(F.q[F.i]),'done');F.done++;save();haptic(14);shuffleFocus();nextFocus()};
