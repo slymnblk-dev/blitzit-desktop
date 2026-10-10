@@ -1177,6 +1177,20 @@ html,body{overscroll-behavior-y:contain}
 .moved-go{flex:none;height:34px;padding:0 14px;border-radius:999px;background:var(--today);color:#0F1013;font-weight:800;display:grid;place-items:center;text-decoration:none}
 .moved-x{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:inherit;opacity:.6}.moved-x svg{width:14px;height:14px}
 @media (max-width:600px){.moved{border-radius:20px;flex-wrap:wrap;padding:12px 14px}.moved span{flex-basis:calc(100% - 40px)}}
+.av-in img{width:100%;height:100%;object-fit:cover;display:block}
+.av-up{height:44px;border-radius:14px;display:grid;place-items:center;cursor:pointer;color:var(--muted);border:1.5px dashed color-mix(in srgb,var(--text) 22%,transparent);overflow:hidden;transition:background .15s,color .15s}
+.av-up:hover{background:var(--surface2);color:var(--text)}
+.av-up svg{width:20px;height:20px}
+.av-up img{width:100%;height:100%;object-fit:cover}
+.av-up.on{border:0;box-shadow:0 0 0 2px var(--text)}
+.you-week{display:flex;align-items:flex-end;gap:10px;padding:14px 0 2px}
+.you-week span{display:flex;flex-direction:column;align-items:center;gap:5px}
+.you-week i{width:14px;height:14px;border-radius:50%;background:var(--surface2)}
+.you-week .some i{background:color-mix(in srgb,var(--done) 35%,var(--surface2))}
+.you-week .hit i{background:var(--done)}
+.you-week .now i{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--text)}
+.you-week em{font-style:normal;font-size:11px;color:var(--muted)}
+.you-week b{margin-left:auto;font-size:13px;font-weight:600;color:var(--muted)}
 /* update window (desktop app) */
 .updm{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:16px;background:rgba(8,9,12,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:updmFade .25s ease both}
 .updm.out{animation:updmFade .22s ease reverse both}
@@ -1434,7 +1448,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=65; // bumped with every published update
+const APP_VERSION=66; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1488,6 +1502,7 @@ function sanitize(){
 }
 if(!S||typeof S!=='object'||Array.isArray(S))S={tasks:JSON.parse(JSON.stringify(SEED)),stage:'today',list:'all',theme:null,nid:20,lastDay:today(),onboarded:false};
 sanitize();
+window.__crHold=!!(S.classicRun&&S.classicRun.ids); // keep a saved Classic session until startup has resumed it
 /* migrate older saves */
 if(!S.lists)S.lists=SEED_LISTS.map(l=>({...l}));
 if(!S.lastDay)S.lastDay=today();
@@ -1508,7 +1523,7 @@ function trackChanges(){
   trackMap=m;
 }
 let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
-const save=()=>{if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
+const save=()=>{try{fSave()}catch(e){};if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
 let PIP=null; // the floating focus window (desktop Chrome)
 const $=id=>document.getElementById(id);
 const color=st=>`var(--${st})`;
@@ -2599,7 +2614,9 @@ function showSummary(){
   $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);
 }
 function closeFocus(){if(UPD.pending)setTimeout(()=>showUpdate(true),700);closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
-$('fPause').onclick=()=>{step();F.run=!F.run;F.last=Date.now();$('fPause').innerHTML=F.run?PAUSE:PLAY;haptic(5);fReveal()};
+/* remember a running Classic session, so a reload or restart picks it up where it was */
+function fSave(){if(window.__crHold)return;S.classicRun=F&&F.on&&!F.tide&&!F.sum&&F.q&&F.q[F.i]?{ids:F.q.map(t=>t.id),cid:F.q[F.i].id,sec:F.sec||0,run:!!F.run,mode:F.mode,phase:F.phase,left:F.left,round:F.round,focused:F.focused||0,done:F.done||0,extra:F.extra||0,last:F.last||Date.now()}:null}
+$('fPause').onclick=()=>{step();F.run=!F.run;F.last=Date.now();$('fPause').innerHTML=F.run?PAUSE:PLAY;haptic(5);fReveal();save()};
 const liveTask=t=>t&&(S.tasks.find(x=>x.id===t.id)||t);
 $('fDone').onclick=()=>{if(Date.now()-(F.tapAt||0)<600)return;F.tapAt=Date.now();setStage(liveTask(F.q[F.i]),'done');F.done++;save();haptic(14);shuffleFocus();nextFocus()};
 $('fSkip').onclick=()=>{if(Date.now()-(F.tapAt||0)<600)return;F.tapAt=Date.now();nextFocus()};
@@ -3205,8 +3222,8 @@ const focusToday=()=>Math.round(((S.focusLog||{})[today()]||0)/60);
 const goalMin=()=>+(S.cfg&&S.cfg.goalMin)||0;
 const goalPct=()=>goalMin()?Math.min(100,Math.round(focusToday()/goalMin()*100)):0;
 function avatarHTML(cls){
-  const a=S.cfg&&S.cfg.avatar,ini=initials();
-  const face=a?`<em>${esc(a)}</em>`:ini?`<b>${esc(ini)}</b>`:PERSON;
+  const a=S.cfg&&S.cfg.avatar,img=S.cfg&&S.cfg.avatarImg,ini=initials();
+  const face=img&&/^data:image\//.test(img)?`<img src="${img}" alt="">`:a?`<em>${esc(a)}</em>`:ini?`<b>${esc(ini)}</b>`:PERSON;
   return `<span class="av ${cls||''} ${goalMin()?'has-goal':''}" style="--p:${goalPct()}"><span class="av-in">${face}</span></span>`;
 }
 /* sync state for the dot: ok (synced), busy (syncing), warn (not signed in / problem), none (preview) */
@@ -3238,12 +3255,30 @@ function youProfile(){
   const c=C(),g=goalMin();
   return `<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
   <div class="set-sec"><h3>Avatar</h3><div class="av-grid">
-    <button data-av="" class="${!c.avatar?'on':''}" aria-label="Initials">${initials()?`<b>${esc(initials())}</b>`:PERSON}</button>
-    ${AVATARS.map(a=>`<button data-av="${a}" class="${c.avatar===a?'on':''}">${a}</button>`).join('')}</div></div>
+    <label class="av-up ${c.avatarImg?'on':''}" title="${c.avatarImg?'Change photo':'Upload a photo'}">${c.avatarImg?`<img src="${c.avatarImg}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`}<input type="file" id="avFile" accept="image/*" hidden></label>
+    <button data-av="" class="${!c.avatar&&!c.avatarImg?'on':''}" aria-label="Initials">${initials()?`<b>${esc(initials())}</b>`:PERSON}</button>
+    ${AVATARS.map(a=>`<button data-av="${a}" class="${!c.avatarImg&&c.avatar===a?'on':''}">${a}</button>`).join('')}</div>
+    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}</div>
   <div class="set-sec"><h3>Daily focus goal</h3>
     ${row('Goal',`<div class="segc">${[[0,'Off'],[60,'1h'],[120,'2h'],[180,'3h'],[240,'4h']].map(([v,l])=>`<button data-goal="${v}" class="${g===v?'on':''}">${l}</button>`).join('')}</div>`,'A ring around your avatar fills as you focus')}
-    ${g?`<div class="you-goal"><div class="you-bar"><span style="width:${goalPct()}%"></span></div><span>${goalPct()>=100?'Goal reached today':`${fmt(Math.max(0,g-focusToday()))} to go today`}</span></div>`:''}
+    ${g?`<div class="you-goal"><div class="you-bar"><span style="width:${goalPct()}%"></span></div><span>${goalPct()>=100?'Goal reached today':`${fmt(Math.max(0,g-focusToday()))} to go today`}</span></div>${goalWeek()}`:''}
   </div>`;
+}
+/* last 7 days against the goal: full dot = goal met, faint = some focus */
+function goalWeek(){
+  const g=goalMin();if(!g)return '';const log=S.focusLog||{};
+  const days=[...Array(7)].map((_,i)=>{const k=dkey(Date.now()-(6-i)*DAY);return {k,m:Math.round((log[k]||0)/60)}});
+  const hit=days.filter(d=>d.m>=g).length;
+  return `<div class="you-week">${days.map(d=>`<span class="${d.m>=g?'hit':d.m?'some':''} ${d.k===today()?'now':''}" title="${fmt(d.m)}"><i></i><em>${new Date(d.k+'T12:00').toLocaleDateString(undefined,{weekday:'narrow'})}</em></span>`).join('')}<b>${hit} of 7 days</b></div>`;
+}
+/* photo avatar: cropped to a square and shrunk, so it stays small enough to sync */
+function setAvatarPhoto(file){
+  if(!file||!/^image\//.test(file.type))return toast('Choose an image file');
+  const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{
+    const z=192,c=document.createElement('canvas');c.width=c.height=z;const x=c.getContext('2d');
+    const s=Math.min(im.width,im.height);x.drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,z,z);
+    S.cfg.avatarImg=c.toDataURL('image/jpeg',.85);save();drawMe();drawSettings();haptic(8);toast('Photo updated')};
+    im.onerror=()=>toast('Couldn’t read that image');im.src=r.result};r.readAsDataURL(file);
 }
 function youBody(){
   const el=$('setIn');
@@ -3262,7 +3297,8 @@ $('setIn').addEventListener('click',e=>{
   const yt=e.target.closest('[data-yt]');if(yt){youTab=yt.dataset.yt;haptic(5);return drawSettings()}
   if(e.target.closest('#youSet')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#youOpen')){youTab='profile';setView='you';haptic(5);drawSettings();$('settings').scrollTop=0;return}
-  const av=e.target.closest('[data-av]');if(av){S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
+  if(e.target.closest('#avRemove')){delete S.cfg.avatarImg;haptic(6);save();drawMe();return drawSettings()}
+  const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
   if(pg){const id=pg.dataset.page;haptic(5);
@@ -3341,6 +3377,7 @@ $('setIn').addEventListener('click',e=>{
 });
 $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.files[0])return;
   const r=new FileReader();r.onload=()=>{$('bkTxt').value=r.result;$('bkGo').click()};r.readAsText(e.target.files[0])});
+$('setIn').addEventListener('change',e=>{if(e.target.id==='avFile'){setAvatarPhoto(e.target.files&&e.target.files[0]);e.target.value=''}});
 $('setIn').addEventListener('input',e=>{if(e.target.id==='youName'){S.cfg.name=e.target.value.slice(0,40);const t=$('youTitle');if(t)t.textContent=meName()||'You';drawMe();clearTimeout(window.__nmT);window.__nmT=setTimeout(()=>{save();render()},500);return}const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
 $('setIn').addEventListener('change',e=>{const n=e.target.dataset.name;if(n){C().names[n]=e.target.value.trim()||DEF_CFG.names[n];applySettings();save();render();if(!e.target.value.trim())e.target.value=C().names[n]}});
 $('setIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='accEmail'){e.preventDefault();return CLOUD?accSend():$('accSend').click()}if(e.key==='Enter'&&e.target.id==='accCode'){e.preventDefault();return accVerify()}if(e.target.dataset.name&&e.key==='Enter')e.target.blur()});
@@ -3653,6 +3690,15 @@ runCleanup(false);
 if(HANDOFF)showHandoff();else{
 initCloud();
 if(!S.onboarded)openIntro(false);
+try{const cr=S.classicRun;window.__crHold=false;if(cr&&cr.ids&&!(S.tideRun&&S.tideRun.ids)){
+  const q=cr.ids.map(id=>S.tasks.find(t=>t.id===id)).filter(Boolean),ci=q.findIndex(t=>t.id===cr.cid);
+  if(ci>=0&&q[ci].stage!=='done')setTimeout(()=>{
+    startBlitz(q,{i:ci,done:cr.done||0,focused:cr.focused||0,classic:true});
+    const away=Date.now()-(cr.last||Date.now()),keep=cr.run&&away<2*3600e3; // closed for over 2h: resume paused, don't count the gap
+    Object.assign(F,{sec:cr.sec||0,run:keep,mode:cr.mode||F.mode,phase:cr.phase||'work',left:cr.left!=null?cr.left:F.left,round:cr.round||1,extra:cr.extra||0,last:keep?cr.last:Date.now()});
+    $('focus').classList.toggle('brk',F.phase==='break');drawFocus();step();save();
+  },200);else{S.classicRun=null;save()}
+}}catch(e){}
 try{const tr=S.tideRun;if(tr&&tr.ids){const q=tr.ids.map(id=>S.tasks.find(t=>t.id===id)).filter(Boolean),ci=tr.cid!=null?q.findIndex(t=>t.id===tr.cid):tr.i;if(q.length&&ci>=0&&ci<q.length)setTimeout(()=>startTide(q,{i:ci,done:tr.done||0,focused:tr.focused||0,T:tr.T}),200);else{S.tideRun=null;save()}}}catch(e){}
 /* old address (netlify.app) in a browser: point people to windaday.com. The desktop app keeps using this address on purpose. */
 try{if(/\.netlify\.app$/.test(location.hostname)&&!DESK()&&localStorage.getItem('movedSeen')!=='1'){

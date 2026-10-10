@@ -1,3 +1,3 @@
-- A new update window in the middle of the screen, with what's new
-- Updates now wait until your focus session is over
-- Window and tray now say Windaday
+- The app is now called Windaday in the Start menu and in Installed apps
+- A focus session you had open comes back after restarting the app
+- Add a photo as your avatar
