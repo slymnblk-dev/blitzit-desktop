@@ -203,9 +203,9 @@ async function accVerify(){
 function showHandoff(){
   const p=new URLSearchParams(HANDOFF),err=p.get('error'),link='blitzit://auth#'+HANDOFF;
   const d=document.createElement('div');d.className='handoff';
-  d.innerHTML=err?`<div class="ho-in"><div class="brand">windaday<i></i></div>
+  d.innerHTML=err?`<div class="ho-in"><div class="brand">Windaday<i></i></div>
       <h1>Link expired</h1><p>${p.get('error_code')==='otp_expired'?'This sign-in link is too old or was already used.':'This sign-in link didn’t work.'} Go back to the Windaday app and send a new one.</p></div>`
-    :`<div class="ho-in"><div class="brand">windaday<i></i></div>
+    :`<div class="ho-in"><div class="brand">Windaday<i></i></div>
       <h1>Opening Windaday…</h1><p>If your browser asks, choose <b>Open</b>. You’ll be signed in, and you can close this tab.</p>
       <a class="primary ho-go" href="${link}">Open Windaday</a>
       <button class="ghost-btn" id="hoHere">Not on your computer? Sign in here instead</button></div>`;
