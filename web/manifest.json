@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Blitzit",
-  "short_name": "Blitzit",
-  "description": "A bold, focused to-do list.",
+  "name": "Windaday",
+  "short_name": "Windaday",
+  "description": "Plan your day, then win it, one focused task at a time.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

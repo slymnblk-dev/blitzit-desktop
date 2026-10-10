@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blitzit</title>
+<title>Windaday</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
@@ -114,10 +114,10 @@ body{font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;
 <div class="pv" id="pv" data-tauri-drag-region>
   <div class="pv-h" data-tauri-drag-region><div class="pv-t" id="pvT" data-tauri-drag-region></div><span class="pv-st" id="pvSt" data-tauri-drag-region>Paused</span></div>
   <div class="pv-s" id="pvS" data-pv="step" title="Tick off this step"><i></i><span id="pvSt2"></span><b id="pvSn"></b></div>
-  <div class="pv-time" id="pvTime" data-tauri-drag-region><span class="pv-wait">Waiting for Blitzit…</span></div>
+  <div class="pv-time" id="pvTime" data-tauri-drag-region><span class="pv-wait">Waiting for Windaday…</span></div>
   <div class="pv-bar" data-tauri-drag-region><span id="pvBar"></span></div>
   <div class="pv-sum" data-tauri-drag-region><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-    <div data-tauri-drag-region><b data-tauri-drag-region>Blitz complete</b><span id="pvSum" data-tauri-drag-region></span></div></div>
+    <div data-tauri-drag-region><b data-tauri-drag-region>Day won</b><span id="pvSum" data-tauri-drag-region></span></div></div>
   <div class="pv-tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
 </div>
 <div class="pv-ctl" id="pvCtl">
@@ -126,8 +126,8 @@ body{font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden;
   <button class="pv-done" id="pvDone" data-pv="done" title="Done (Enter)">Done</button>
   <i id="pvSep"></i>
   <button data-pv="size" id="pvSize" aria-label="Switch size"></button>
-  <button data-pv="back" id="pvOpen" aria-label="Open Blitzit" title="Open Blitzit (double-click)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
-  <button class="pv-done" id="pvSumOpen" data-pv="open" hidden>Open Blitzit</button>
+  <button data-pv="back" id="pvOpen" aria-label="Open Windaday" title="Open Windaday (double-click)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+  <button class="pv-done" id="pvSumOpen" data-pv="open" hidden>Open Windaday</button>
   <button id="pvSumClose" data-pv="dismiss" aria-label="Close" title="Close" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
 </div>
 <script>
@@ -138,7 +138,7 @@ const TIMER_ONLY='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const $=id=>document.getElementById(id);
 const TAURI=window.__TAURI__&&window.__TAURI__.event;
 const send=a=>{if(TAURI)window.__TAURI__.event.emit('blitzit-act',a).catch(()=>{})};
-if(!TAURI)$('pvTime').innerHTML='<span class="pv-wait">Open this from the Blitzit desktop app.</span>';
+if(!TAURI)$('pvTime').innerHTML='<span class="pv-wait">Open this from the Windaday desktop app.</span>';
 let last=null,ticking=false;
 function render(st){
   const r=document.documentElement,mini=st.mode==='mini',pv=$('pv');
