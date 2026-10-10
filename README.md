@@ -1,4 +1,4 @@
-# Blitzit for Windows
+# Windaday for Windows (formerly Blitzit)
 
 A small desktop app that opens your live Blitzit site and adds:
 
@@ -31,3 +31,8 @@ The first time Windows may say "Windows protected your PC" (the app isn't code-s
 - The update signing key is stored as the GitHub secret `TAURI_SIGNING_PRIVATE_KEY`. Keep a backup copy: without it, updates can't be published.
 - If Ctrl+Alt+Shift+B is already used by another app, the shortcut is skipped. The tray menu still works.
 - To change the site address, edit `SITE` in `src-tauri/src/lib.rs`, `frontendDist` in `src-tauri/tauri.conf.json` and the URL in `src-tauri/capabilities/default.json`.
+
+## Name and address
+
+- The app is called **Windaday**; the web app lives at https://windaday.com.
+- The desktop app deliberately keeps loading `https://dulcet-daifuku-0fb870.netlify.app` (same site, always reachable) and keeps its internal name/identifier `Blitzit`, so updates install in place and local data is kept.

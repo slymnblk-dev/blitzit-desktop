@@ -140,7 +140,7 @@ async fn open_mini(app: AppHandle, width: f64, height: f64) -> Result<(), String
     } else {
         let url = tauri::Url::parse(&format!("{SITE}/mini.html")).map_err(|e| e.to_string())?;
         let mut b = WebviewWindowBuilder::new(&app, "mini", WebviewUrl::External(url))
-            .title("Blitzit")
+            .title("Windaday")
             .inner_size(width, height)
             .min_inner_size(150.0, 80.0)
             .decorations(false)
@@ -311,12 +311,12 @@ pub fn run() {
             });
 
             // tray icon: left click opens Blitzit, right click shows the menu
-            let open = MenuItem::with_id(app, "open", "Open Blitzit", true, None::<&str>)?;
-            let blitz = MenuItem::with_id(app, "blitz", "Start blitz   Ctrl+Alt+Shift+B", true, None::<&str>)?;
+            let open = MenuItem::with_id(app, "open", "Open Windaday", true, None::<&str>)?;
+            let blitz = MenuItem::with_id(app, "blitz", "Win the day   Ctrl+Alt+Shift+B", true, None::<&str>)?;
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&open, &blitz, &quit])?;
             let mut tray = TrayIconBuilder::new()
-                .tooltip(format!("Blitzit {}", app.package_info().version))
+                .tooltip(format!("Windaday {}", app.package_info().version))
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, e| match e.id.as_ref() {
@@ -347,5 +347,5 @@ pub fn run() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("error while running Blitzit");
+        .expect("error while running Windaday");
 }

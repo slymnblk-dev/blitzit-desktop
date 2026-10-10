@@ -1171,6 +1171,12 @@ html,body{overscroll-behavior-y:contain}
 .you-card>span:not(.av){flex:1;min-width:0;display:flex;flex-direction:column}
 .you-card b{font-size:16px;font-weight:700}.you-card small{font-size:13px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .you-card>svg{width:16px;height:16px;color:var(--muted);flex:none}
+.moved{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:90;display:flex;align-items:center;gap:12px;width:max-content;max-width:calc(100% - 24px);
+  padding:10px 10px 10px 18px;border-radius:999px;background:var(--text);color:var(--bg);font-size:14px;box-shadow:0 12px 32px -10px rgba(0,0,0,.45);animation:inU .4s cubic-bezier(.2,.8,.2,1)}
+.moved span{min-width:0}.moved b{font-weight:700}
+.moved-go{flex:none;height:34px;padding:0 14px;border-radius:999px;background:var(--today);color:#0F1013;font-weight:800;display:grid;place-items:center;text-decoration:none}
+.moved-x{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:inherit;opacity:.6}.moved-x svg{width:14px;height:14px}
+@media (max-width:600px){.moved{border-radius:20px;flex-wrap:wrap;padding:12px 14px}.moved span{flex-basis:calc(100% - 40px)}}
 /* ---------- QA fixes ---------- */
 .sheet{visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s linear .36s}
 .sheet.on{visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s}
@@ -1398,7 +1404,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=63; // bumped with every published update
+const APP_VERSION=64; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3595,6 +3601,13 @@ if(HANDOFF)showHandoff();else{
 initCloud();
 if(!S.onboarded)openIntro(false);
 try{const tr=S.tideRun;if(tr&&tr.ids){const q=tr.ids.map(id=>S.tasks.find(t=>t.id===id)).filter(Boolean),ci=tr.cid!=null?q.findIndex(t=>t.id===tr.cid):tr.i;if(q.length&&ci>=0&&ci<q.length)setTimeout(()=>startTide(q,{i:ci,done:tr.done||0,focused:tr.focused||0,T:tr.T}),200);else{S.tideRun=null;save()}}}catch(e){}
+/* old address (netlify.app) in a browser: point people to windaday.com. The desktop app keeps using this address on purpose. */
+try{if(/\.netlify\.app$/.test(location.hostname)&&!DESK()&&localStorage.getItem('movedSeen')!=='1'){
+  const b=document.createElement('div');b.className='moved';
+  b.innerHTML=`<span><b>Windaday has a new home.</b> ${S.syncedUser?'Your tasks sync there too.':'Sign in first so your tasks come with you.'}</span><a href="https://windaday.com" class="moved-go">Open windaday.com</a><button class="moved-x" aria-label="Dismiss">${X}</button>`;
+  document.body.appendChild(b);
+  b.querySelector('.moved-x').onclick=()=>{try{localStorage.setItem('movedSeen','1')}catch(e){}b.remove()};
+}}catch(e){}
 try{if(new URLSearchParams(location.search).get('blitz')==='1')setTimeout(()=>$('goBtn').click(),400)}catch(e){}
 }
 </script>

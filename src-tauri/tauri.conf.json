@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Blitzit",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "identifier": "app.blitzit.desktop",
   "build": {
     "frontendDist": "https://dulcet-daifuku-0fb870.netlify.app"
@@ -11,7 +11,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Blitzit",
+        "title": "Windaday",
         "width": 1320,
         "height": 840,
         "minWidth": 400,
@@ -29,7 +29,7 @@
       "nsis"
     ],
     "publisher": "Blitzit",
-    "shortDescription": "Bold, focused to-do app",
+    "shortDescription": "Plan your day, then win it",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
