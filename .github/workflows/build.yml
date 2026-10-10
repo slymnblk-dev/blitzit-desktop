@@ -2,17 +2,12 @@ name: Release Windows app
 
 # Builds the signed Windows installer in the cloud and publishes it as a GitHub release.
 # Installed Blitzit apps check the latest release and offer "Update now".
-# To ship a desktop update: bump "version" in src-tauri/tauri.conf.json and push to main.
+# It runs from the "Check and release" pipeline, only after every check has passed.
+# To ship a desktop update: bump "version" in src-tauri/tauri.conf.json, update RELEASE_NOTES.md, push to dev.
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'src-tauri/**'
-      - 'package.json'
-      - 'RELEASE_NOTES.md'
-      - '.github/workflows/build.yml'
+  workflow_call:
 
 permissions:
   contents: write

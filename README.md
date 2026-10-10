@@ -36,3 +36,12 @@ The first time Windows may say "Windows protected your PC" (the app isn't code-s
 
 - The app is called **Windaday**; the web app lives at https://windaday.com.
 - The desktop app deliberately keeps loading `https://dulcet-daifuku-0fb870.netlify.app` (same site, always reachable) and keeps its internal name/identifier `Blitzit`, so updates install in place and local data is kept.
+
+## How changes go live (automatic checks)
+
+1. Changes are pushed to the **`dev`** branch, never straight to `main`.
+2. GitHub runs every check in `tests/` in a real browser (app loads on desktop/phone, tasks, undo, focus sessions, resume after reload, mini timer, sign-in links, update window, damaged data, bad backups).
+3. Only if all checks pass, the change moves to **`main`** → Netlify publishes it to windaday.com.
+4. If the desktop app changed (`src-tauri/` or `RELEASE_NOTES.md`), the Windows update is built and published too.
+
+Run the checks locally with `npm test`.

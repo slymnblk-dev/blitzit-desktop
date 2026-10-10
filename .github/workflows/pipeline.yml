@@ -1,0 +1,70 @@
+name: Check and release
+
+# Every change goes to the "dev" branch first.
+#   1. check   - runs all automatic checks (tests/) in a real browser
+#   2. promote - only if every check passed: moves the change to "main"
+#                (Netlify publishes "main" to windaday.com within a minute)
+#   3. desktop - if the desktop app itself changed: builds and publishes the Windows update
+# If a check fails, nothing goes live.
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+      - name: Keep the report if something failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test-results/
+          retention-days: 7
+
+  promote:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      desktop: ${{ steps.diff.outputs.desktop }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: What changed since the live version?
+        id: diff
+        run: |
+          git fetch origin main
+          changed=$(git diff --name-only origin/main HEAD)
+          echo "$changed"
+          if echo "$changed" | grep -qE '^(src-tauri/|RELEASE_NOTES.md$)'; then
+            echo "desktop=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "desktop=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Make it live (move dev to main)
+        run: git push origin HEAD:main
+
+  desktop:
+    needs: promote
+    if: needs.promote.outputs.desktop == 'true'
+    permissions:
+      contents: write
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
