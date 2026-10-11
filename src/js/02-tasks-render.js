@@ -43,6 +43,7 @@ function rowHTML(t){
   const l=listOf(t.list);
   const sd=t.subs.filter(s=>s.done).length;
   const extra=[
+    tagChips(t,3),
     t.repeat!=='none'?`<span class="mi">${I_REP}${REPEATS.find(r=>r.id===t.repeat).name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
     t.notes.trim()?`<span class="mi" aria-label="Has notes">${I_NOTE}</span>`:''

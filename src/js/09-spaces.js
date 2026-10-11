@@ -69,10 +69,16 @@ function askDeleteSpace(id){
     onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
 }
 let dlgYes=null;
-function confirmDanger({title,text,word,yes,onYes}){
-  $('dlgT').textContent=title;$('dlgP').textContent=text;$('dlgW').textContent=word;$('dlgIn').value='';$('dlgYes').textContent=yes;$('dlgYes').disabled=true;
-  $('dlgIn').dataset.word=word;dlgYes=onYes;$('dlg').classList.add('on');haptic(12);setTimeout(()=>$('dlgIn').focus(),200);
+function confirmDanger({title,text,word,yes,no,onYes}){
+  const typed=!!word;$('dlg').classList.toggle('simple',!typed);
+  $('dlgT').textContent=title;$('dlgP').textContent=text;$('dlgW').textContent=word||'';$('dlgIn').value='';$('dlgYes').textContent=yes;$('dlgNo').textContent=no||'Cancel';$('dlgYes').disabled=typed;
+  $('dlgIn').dataset.word=word||'';dlgYes=onYes;$('dlg').classList.add('on');haptic(12);setTimeout(()=>(typed?$('dlgIn'):$('dlgYes')).focus(),200);
 }
+/* quick yes / no question, e.g. before deleting one task */
+const confirmAsk=o=>confirmDanger({...o,word:null});
+document.addEventListener('keydown',e=>{if(!$('dlg').classList.contains('on')||!$('dlg').classList.contains('simple'))return;
+  if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();closeDlg()}
+  else if(e.key==='Enter'&&document.activeElement!==$('dlgNo')){e.preventDefault();e.stopImmediatePropagation();$('dlgYes').click()}},true);
 function closeDlg(){$('dlg').classList.remove('on');dlgYes=null;$('dlgIn').blur()}
 $('dlgIn').oninput=e=>{$('dlgYes').disabled=e.target.value.trim().toLowerCase()!==e.target.dataset.word.trim().toLowerCase()};
 $('dlgIn').onkeydown=e=>{if(e.key==='Enter'&&!$('dlgYes').disabled)$('dlgYes').click();if(e.key==='Escape'){e.stopPropagation();closeDlg()}};

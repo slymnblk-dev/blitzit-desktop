@@ -361,3 +361,29 @@
   transform:scale(.16) translate(-6%,-6%);opacity:0;border-radius:120px;overflow:hidden}
 .focus.from-mini,.tide.from-mini{transform-origin:100% 100%;animation:fromMini .5s cubic-bezier(.2,.85,.25,1) both}
 @keyframes fromMini{from{transform:scale(.2);opacity:0;border-radius:120px}to{transform:none;opacity:1;border-radius:0}}
+/* simple yes / no dialog */
+.dlg.simple .dlg-l,.dlg.simple #dlgIn{display:none}
+.dlg.simple .dlg-b{margin-top:22px}
+/* tags */
+.meta .ttag{font-weight:500;color:var(--muted);white-space:nowrap}
+.meta .ttag.more{opacity:.7}
+.pill .pl-tg{font-weight:500}
+.pill .pl-tg+.pl-tg{margin-left:-1px}
+.pk.tg-pk{background:var(--surface)}
+.pk.tg-pk.on{background:var(--text);color:var(--bg)}
+.pk-in{height:36px;min-width:0;flex:1 1 110px;max-width:180px;border:1.5px dashed var(--line);border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:14px;padding:0 13px;outline:none}
+.pk-in:focus{border-style:solid;border-color:var(--muted)}
+.pk-in::placeholder{color:var(--muted)}
+.pk-link{height:36px;padding:0 8px;font-size:13px;font-weight:600;color:var(--muted);margin-left:auto}
+.pk-link:hover{color:var(--text)}
+.le-tags{display:flex;flex-wrap:wrap;gap:8px}
+.le-tg{display:inline-flex;align-items:center;height:34px;padding:0 4px 0 12px;border-radius:999px;background:var(--surface2)}
+.le-tg::before{content:"#";color:var(--muted);font-size:14px;font-weight:500}
+.le-tg input{border:0;background:transparent;color:var(--text);font:inherit;font-size:14px;font-weight:500;outline:none;padding:0 2px;width:auto;min-width:2ch;field-sizing:content}
+.le-tg button{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.le-tg button:hover{background:var(--surface);color:var(--text)}
+.le-tg button svg{width:12px;height:12px}
+.le-tg-new{height:34px;width:120px;border:1.5px dashed var(--line);border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:14px;padding:0 12px;outline:none}
+.le-tg-new:focus{border-style:solid;border-color:var(--muted)}
+.le-tg-new::placeholder{color:var(--muted)}
+.meta{flex-wrap:wrap;row-gap:4px}.meta .tag{white-space:nowrap}

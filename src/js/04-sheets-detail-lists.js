@@ -57,6 +57,17 @@ function openDetail(id){
   requestAnimationFrame(()=>{grow($('dTitle'));grow($('dNotes'))});
   onSheetClose=()=>{if(cur&&!cur.title.trim())cur.title='Untitled';cur=null;$('detailSheet').classList.remove('full');render()};
 }
+/* ---------- tags: each list keeps its own tags (list settings); a task picks from its list's tags ---------- */
+const I_TAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.4" fill="currentColor"/></svg>';
+const tagsOf=t=>Array.isArray(t.tags)?t.tags:[];
+const ltags=l=>Array.isArray(l.tags)?l.tags:(l.tags=[]);
+const tagKey=s=>String(s).trim().toLowerCase();
+const tagClean=s=>String(s||'').replace(/^#+/,'').replace(/\s+/g,' ').trim().slice(0,24);
+function addListTag(l,name){name=tagClean(name);if(!name||!l)return null;const ex=ltags(l).find(x=>tagKey(x)===tagKey(name));if(ex)return ex;l.tags.push(name);return name}
+function toggleTaskTag(t,name){const has=tagsOf(t).some(x=>tagKey(x)===tagKey(name));t.tags=has?tagsOf(t).filter(x=>tagKey(x)!==tagKey(name)):[...tagsOf(t),name]}
+/* moving a task to another list brings its tags along */
+function carryTags(t){if(!tagsOf(t).length)return;const l=listOf(t.list);t.tags=tagsOf(t).map(n=>addListTag(l,n)).filter(Boolean)}
+const tagChips=(t,max)=>{const a=tagsOf(t);if(!a.length)return '';return a.slice(0,max).map(n=>`<span class="ttag">#${esc(n)}</span>`).join('')+(a.length>max?`<span class="ttag more">+${a.length-max}</span>`:'')};
 function drawDetail(){
   const t=cur;if(!t)return;
   $('detailSheet').style.setProperty('--accent',color(t.stage==='done'?'done':t.stage));
@@ -66,7 +77,8 @@ function drawDetail(){
     P('stage',`<i style="background:${color(t.stage)}"></i>${esc(st.name)}`)+
     P('list',`<i style="background:${l.c}"></i>${esc(l.name)}`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
-    P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none');
+    P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
+    P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length);
   const pk=(on,v,label,dot)=>`<button class="pk ${on?'on':''}" data-v="${v}">${dot?`<i style="background:${dot}"></i>`:''}${esc(label)}</button>`;
   const pick=$('dPicker');
   if(pickOpen){
@@ -74,7 +86,11 @@ function drawDetail(){
     pick.innerHTML={stage:()=>STAGES.map(s=>pk(t.stage===s.id,s.id,s.name,color(s.id))).join(''),
       list:()=>S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?`${(spaceOf(x.space)||{}).name} › ${x.name}`:x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
       est:()=>ESTS.map(m=>pk(t.est===m,m,fmt(m))).join(''),
-      repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join('')}[pickOpen]();
+      repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
+      tags:()=>{const lt=ltags(l),on=n=>tagsOf(t).some(x=>tagKey(x)===tagKey(n));
+        return lt.map(n=>`<button class="pk tg-pk ${on(n)?'on':''}" data-v="${esc(n)}">#${esc(n)}</button>`).join('')+
+        `<input class="pk-in" id="dTagIn" maxlength="24" placeholder="${lt.length?'New tag':'Add a tag'}" enterkeyhint="done" autocomplete="off">`+
+        (lt.length?`<button class="pk-link" data-tagmng>Manage</button>`:'')}}[pickOpen]();
     pick.classList.add('on');
   } else pick.classList.remove('on');
   const sd=t.subs.filter(s=>s.done).length;
@@ -91,12 +107,19 @@ function drawDetail(){
   $('dFocus').hidden=done;
   save();
 }
+$('dPicker').addEventListener('keydown',e=>{if(e.target.id!=='dTagIn')return;
+  if(e.key==='Enter'){e.preventDefault();const t=cur,n=addListTag(listOf(t.list),e.target.value);if(!n)return;
+    if(!tagsOf(t).some(x=>tagKey(x)===tagKey(n)))t.tags=[...tagsOf(t),n];haptic(6);save();render();drawDetail();setTimeout(()=>$('dTagIn')&&$('dTagIn').focus(),0)}
+  if(e.key==='Escape'){e.stopPropagation();pickOpen=null;drawDetail()}});
 $('dPills').onclick=e=>{const b=e.target.closest('.pill');if(!b)return;pickOpen=pickOpen===b.dataset.p?null:b.dataset.p;haptic(5);drawDetail()};
 $('dPicker').onclick=e=>{
+  if(e.target.closest('[data-tagmng]')){const t=cur;pickOpen=null;closeSheets();setTimeout(()=>{editing=true;nl=null;leOpen=t.list;drawLists();openSheet('listSheet');
+    onSheetClose=()=>{if(S.tasks.includes(t))setTimeout(()=>openDetail(t.id),260)}},260);return}
   const b=e.target.closest('.pk');if(!b)return;const k=$('dPicker').dataset.k,v=b.dataset.v,t=cur;
+  if(k==='tags'){toggleTaskTag(t,v);haptic(5);save();render();return drawDetail()}
   pickOpen=null;haptic(6);
   if(k==='stage'){if(v!==t.stage)commit(()=>setStage(t,v),v==='done'?doneMsg(t):`Moved to ${STAGES[idx(v)].name}`)}
-  else if(k==='list')t.list=v;
+  else if(k==='list'){t.list=v;carryTags(t)}
   else if(k==='est')t.est=+v;
   else if(k==='repeat')t.repeat=v;
   if(k!=='stage'){save();render()}
@@ -120,8 +143,9 @@ $('dSubs').onclick=e=>{
 $('dClose').onclick=closeSheets;
 $('dMore').onclick=e=>{e.stopPropagation();const on=$('dMenu').classList.toggle('on');$('dMore').classList.toggle('on',on);haptic(5)};
 $('detailSheet').addEventListener('click',e=>{if(!e.target.closest('#dMenu,#dMore')){$('dMenu').classList.remove('on');$('dMore').classList.remove('on')}});
-$('dDel').onclick=()=>{const t=cur;cur=null;onSheetClose=null;closeSheets();haptic(10);render();
-  commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Task deleted')};
+$('dDel').onclick=()=>{const t=cur;if(!t)return;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');
+  confirmAsk({title:'Delete this task?',text:`“${t.title||'Untitled'}” will be deleted.`,yes:'Yes, delete',no:'No',
+    onYes:()=>{if(cur===t){cur=null;onSheetClose=null;closeSheets()}haptic(10);render();commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Task deleted')}})};
 $('dDup').onclick=()=>{
   const t=cur;const c={...JSON.parse(JSON.stringify(t)),id:newId(),title:t.title+' (copy)'};delete c.spawned;delete c.doneAt;
   if(c.stage==='done')c.stage='today';c.subs.forEach(s=>s.id=newId());
@@ -208,6 +232,8 @@ function drawLists(){
         <input class="le-name" data-ren="${l.id}" value="${esc(l.name)}" maxlength="40" placeholder="List name" enterkeyhint="done" autocomplete="off">
         <div class="lbl">Colour</div><div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
         ${S.spaces.length>1?`<div class="lbl">Space</div><div class="opts row-scroll le-sp">${S.spaces.map(x=>`<button class="opt sp-opt ${l.space===x.id?'on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</button>`).join('')}</div>`:''}
+        <div class="lbl">Tags</div><div class="le-tags">${ltags(l).map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
+          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>
         ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<button class="le-del" data-ldel="${l.id}">Delete list</button>`}
       </div>`:'')})()
     :`<button class="pick" data-l="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${open(l.id)} open</span>${S.list===l.id?tick():''}</button>`).join('');
@@ -228,6 +254,11 @@ $('picks').addEventListener('click',e=>{
   const lc=e.target.closest('[data-lc]');if(lc){const l=S.lists.find(x=>x.id===leOpen);if(l){l.c=lc.dataset.lc;haptic(5);drawLists();render()}return}
   const ls=e.target.closest('[data-ls]');if(ls&&!ls.disabled){const l=S.lists.find(x=>x.id===leOpen);if(l&&l.space!==ls.dataset.ls){
     const nx=spaceOf(ls.dataset.ls);l.space=nx.id;if(inSpaceMode()&&S.list===l.id)S.list='all';leOpen=inSpaceMode()?null:l.id;haptic(6);drawLists();render();toast(`${l.name} moved to ${nx.name}`)}return}
+  const td=e.target.closest('[data-tdel]');if(td){const l=S.lists.find(x=>x.id===leOpen);if(!l)return;const name=ltags(l)[+td.dataset.tdel];if(name==null)return;
+    const used=S.tasks.filter(t=>t.list===l.id&&tagsOf(t).some(x=>tagKey(x)===tagKey(name)));
+    const go=()=>{commit(()=>{l.tags=ltags(l).filter(x=>x!==name);used.forEach(t=>t.tags=tagsOf(t).filter(x=>tagKey(x)!==tagKey(name)))},`#${name} removed`);drawLists()};
+    if(!used.length){go();return}
+    confirmAsk({title:`Remove #${name}?`,text:`It comes off ${used.length} ${used.length===1?'task':'tasks'}. The tasks stay.`,yes:'Yes, remove',no:'No',onYes:go});return}
   const ld=e.target.closest('[data-ldel]');if(ld){const l=S.lists.find(x=>x.id===ld.dataset.ldel);if(!l)return;
     const n=S.tasks.filter(t=>t.list===l.id).length;
     confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'}.`,word:l.name,yes:'Delete list',
@@ -251,7 +282,15 @@ $('picks').addEventListener('click',e=>{
   S.list=id;closeSheets();render(0);
 });
 $('picks').addEventListener('input',e=>{if(e.target.dataset.ren){const l=S.lists.find(x=>x.id===e.target.dataset.ren);if(l&&e.target.value.trim()){l.name=e.target.value.trim();const row=document.querySelector(`.le-row[data-le="${l.id}"]`);if(row&&row.childNodes[1])row.childNodes[1].textContent=l.name;save()}return}if(e.target.id==='nlIn'){nl.name=e.target.value;$('nlSave').disabled=!nl.name.trim()}});
-$('picks').addEventListener('keydown',e=>{if(e.target.dataset.ren&&e.key==='Enter'){e.target.blur();leOpen=null;drawLists();render();return}if(e.target.id==='nlIn'&&e.key==='Enter')createList()});
+function renameTag(inp){const l=S.lists.find(x=>x.id===leOpen);if(!l)return;const i=+inp.dataset.tren,old=ltags(l)[i],n=tagClean(inp.value);
+  if(old==null||!n||n===old){inp.value=old||'';return}
+  if(ltags(l).some((x,j)=>j!==i&&tagKey(x)===tagKey(n))){inp.value=old;return toast('That tag already exists')}
+  l.tags[i]=n;S.tasks.forEach(t=>{if(t.list===l.id&&tagsOf(t).length)t.tags=tagsOf(t).map(x=>tagKey(x)===tagKey(old)?n:x)});save();render();drawLists()}
+$('picks').addEventListener('focusout',e=>{if(e.target.dataset&&e.target.dataset.tren!=null)renameTag(e.target)});
+$('picks').addEventListener('keydown',e=>{
+  if(e.target.dataset.tren!=null&&e.key==='Enter'){e.preventDefault();e.target.blur();return}
+  if(e.target.id==='leTagIn'&&e.key==='Enter'){e.preventDefault();const l=S.lists.find(x=>x.id===leOpen);if(l&&addListTag(l,e.target.value)){haptic(6);save();drawLists();setTimeout(()=>$('leTagIn')&&$('leTagIn').focus(),0)}return}
+if(e.target.dataset.ren&&e.key==='Enter'){e.target.blur();leOpen=null;drawLists();render();return}if(e.target.id==='nlIn'&&e.key==='Enter')createList()});
 function createList(){
   if(!nl||!nl.name.trim())return;
   const l={id:'l'+newId(),name:nl.name.trim(),c:nl.c,space:inSpaceMode()?S.space:S.spaces[0].id};S.lists.push(l);nl=null;haptic(8);

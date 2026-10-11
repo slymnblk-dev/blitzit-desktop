@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=68; // bumped with every published update
+const APP_VERSION=69; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -54,7 +54,10 @@ function sanitize(){
   if(!Array.isArray(S.tasks))S.tasks=[];
   S.tasks=S.tasks.filter(t=>obj(t)&&t.id!=null&&isFinite(+t.id));
   S.tasks.forEach(t=>{t.subs=Array.isArray(t.subs)?t.subs.filter(x=>obj(x)&&x.id!=null&&isFinite(+x.id)):[]});
+  const cleanTags=o=>{if('tags' in o)o.tags=Array.isArray(o.tags)?[...new Set(o.tags.filter(x=>typeof x==='string'&&x.trim()).map(x=>x.trim().slice(0,24)))]:[]};
+  S.tasks.forEach(cleanTags);
   if(S.lists!=null)S.lists=Array.isArray(S.lists)?S.lists.filter(l=>obj(l)&&l.id!=null):null;
+  if(S.lists)S.lists.forEach(cleanTags);
   if(S.spaces!=null)S.spaces=Array.isArray(S.spaces)?S.spaces.filter(x=>obj(x)&&x.id!=null):null;
   if(!obj(S.cfg))delete S.cfg;
   if(!obj(S.tomb))S.tomb={};
