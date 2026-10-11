@@ -49,7 +49,7 @@ let cur=null,pickOpen=null;
 const grow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px'};
 const ESTS=[15,30,45,60,90,120];
 function openDetail(id){
-  cur=S.tasks.find(x=>x.id===id);if(!cur)return;haptic(5);
+  cur=S.tasks.find(x=>x.id===id);if(!cur)return;haptic(5);setDetailWide(detailWide());
   pickOpen=null;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');
   $('detailSheet').classList.remove('full');$('dScroll').scrollTop=0;
   $('dTitle').value=cur.title;$('dNotes').value=cur.notes;$('dSubIn').value='';
@@ -98,8 +98,9 @@ function drawDetail(){
   $('dStepCount').textContent=`${sd} of ${t.subs.length}`;
   $('dProgBar').style.width=t.subs.length?(sd/t.subs.length*100)+'%':'0';
   $('dSubs').innerHTML=t.subs.map(s=>`<div class="sub ${s.done?'on':''}" data-s="${s.id}">
-    <button class="sc" aria-label="Toggle step">${CHECK}</button><span>${esc(s.t)}</span>
+    <button class="sc" aria-label="Toggle step">${CHECK}</button><textarea class="s-t" rows="1" maxlength="200" aria-label="Step name" spellcheck="false">${esc(s.t)}</textarea>
     <button class="sx" aria-label="Remove step">${X}</button></div>`).join('');
+  $('dSubs').querySelectorAll('.s-t').forEach(grow);
   const done=t.stage==='done';
   requestAnimationFrame(subsFade);
   $('dComplete').textContent=done?'Mark as not done':'Complete';
@@ -138,9 +139,23 @@ $('dSubs').addEventListener('scroll',subsFade);
 $('dSubs').onclick=e=>{
   const r=e.target.closest('.sub');if(!r)return;const s=cur.subs.find(x=>x.id===+r.dataset.s);
   if(e.target.closest('.sx')){cur.subs=cur.subs.filter(x=>x!==s);return drawDetail()}
+  if(!e.target.closest('.sc'))return;   /* only the circle ticks a step; the text is for editing */
   s.done=!s.done;haptic(8);drawDetail();
 };
+/* rename a step: click its text, type, Enter or click away to keep, Esc to undo the edit */
+$('dSubs').addEventListener('input',e=>{const ta=e.target.closest('.s-t');if(!ta)return;const s=cur.subs.find(x=>x.id===+ta.closest('.sub').dataset.s);
+  if(!ta.dataset.old)ta.dataset.old=s.t;const v=ta.value.replace(/\n/g,' ');if(v!==ta.value)ta.value=v;if(v.trim())s.t=v.trim();grow(ta);save()});
+$('dSubs').addEventListener('keydown',e=>{const ta=e.target.closest('.s-t');if(!ta)return;
+  if(e.key==='Enter'){e.preventDefault();ta.blur()}
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();const s=cur.subs.find(x=>x.id===+ta.closest('.sub').dataset.s);if(ta.dataset.old){s.t=ta.dataset.old;ta.value=s.t;save()}ta.blur()}});
+$('dSubs').addEventListener('focusout',e=>{const ta=e.target.closest('.s-t');if(!ta)return;const s=cur&&cur.subs.find(x=>x.id===+ta.closest('.sub').dataset.s);
+  if(s&&!ta.value.trim())ta.value=s.t;delete ta.dataset.old;render()});
 $('dClose').onclick=closeSheets;
+/* focus view (computer): the task opens big in the middle of the screen; remembered on this device */
+const detailWide=()=>{try{return localStorage.getItem('detailWide')==='1'}catch(e){return false}};
+function setDetailWide(on){$('detailSheet').classList.toggle('wide',on);$('dWide').setAttribute('aria-pressed',on);$('dWide').title=on?'Back to side panel':'Focus view';
+  try{localStorage.setItem('detailWide',on?'1':'0')}catch(e){}}
+$('dWide').onclick=()=>{setDetailWide(!$('detailSheet').classList.contains('wide'));haptic(5);$('dSubs').querySelectorAll('.s-t').forEach(grow);grow($('dTitle'));grow($('dNotes'))};
 $('dMore').onclick=e=>{e.stopPropagation();const on=$('dMenu').classList.toggle('on');$('dMore').classList.toggle('on',on);haptic(5)};
 $('detailSheet').addEventListener('click',e=>{if(!e.target.closest('#dMenu,#dMore')){$('dMenu').classList.remove('on');$('dMore').classList.remove('on')}});
 $('dDel').onclick=()=>{const t=cur;if(!t)return;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');

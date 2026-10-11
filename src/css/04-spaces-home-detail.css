@@ -406,3 +406,37 @@
 .arc-empty{margin:26px 0 0;font-size:15px;line-height:1.5;color:var(--muted)}
 .arc-empty b{color:var(--text);font-weight:600}
 .arc-all{margin-top:22px}
+/* steps: editable text */
+.sub .s-t{flex:1;min-width:0;border:0;background:transparent;color:var(--text);font:inherit;font-size:16px;line-height:1.35;padding:2px 0;resize:none;outline:none;overflow:hidden;border-radius:6px;cursor:text;transition:color .2s,box-shadow .15s}
+.sub .s-t:hover{box-shadow:0 0 0 6px var(--surface2);background:var(--surface2)}
+.sub .s-t:focus{box-shadow:0 0 0 6px var(--surface2);background:var(--surface2)}
+.sub.on .s-t{color:var(--muted);text-decoration:line-through}
+.sub.on .s-t:focus{text-decoration:none;color:var(--text)}
+/* focus view toggle (computer only) */
+.d-tr{display:flex;align-items:center;gap:6px}
+.d-wide{display:none;width:36px;height:36px;border-radius:50%;place-items:center;color:var(--muted);transition:background .15s,color .15s}
+.d-wide:hover{background:var(--surface2);color:var(--text)}
+.d-wide svg{width:17px;height:17px}
+.d-wide .ic-close{display:none}
+.dsheet.wide .d-wide .ic-open{display:none}.dsheet.wide .d-wide .ic-close{display:block}
+@media (min-width:1100px){
+  .d-wide{display:grid}
+  /* the big centred view */
+  .dsheet.wide{top:50%;left:50%;right:auto;bottom:auto;width:min(1000px,calc(100vw - 96px));height:min(88vh,900px);
+    transform:translate(-50%,-47%) scale(.97);opacity:0;pointer-events:none;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .22s}
+  .dsheet.wide.on{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+  .dsheet.wide .sheet-in{padding:26px 40px 0;max-width:none;width:100%}
+  .dsheet.wide .d-scroll{margin:0 -40px;padding:6px 40px 24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:44px;
+    grid-template-areas:"title title" "pills pills" "picker picker" "sh notes" "prog notes" "subs notes" "add notes";grid-template-rows:auto auto auto auto auto auto 1fr;align-content:start}
+  .dsheet.wide .d-title{grid-area:title;font-size:40px;letter-spacing:-.04em;padding-bottom:16px}
+  .dsheet.wide .pills{grid-area:pills}
+  .dsheet.wide .picker{grid-area:picker}
+  .dsheet.wide .d-sh{grid-area:sh}
+  .dsheet.wide .d-prog{grid-area:prog}
+  .dsheet.wide .subs{grid-area:subs;max-height:none;-webkit-mask-image:none;mask-image:none;overflow:visible}
+  .dsheet.wide .sub-add{grid-area:add;align-self:start}
+  .dsheet.wide .d-notes{grid-area:notes;align-self:stretch;margin-top:28px!important;padding:18px 20px!important;border-top:0!important;border-radius:20px!important;background:var(--surface2)!important;min-height:280px;font-size:16px;line-height:1.6}
+  .dsheet.wide .d-foot2{padding:16px 0 26px}
+  .dsheet.wide .d-foot2 .d-complete{flex:0 0 260px}
+  .dsheet.wide .d-foot2 .d-focus{flex:0 0 200px}
+}

@@ -1058,6 +1058,40 @@ html,body{overscroll-behavior-y:contain}
 .arc-empty{margin:26px 0 0;font-size:15px;line-height:1.5;color:var(--muted)}
 .arc-empty b{color:var(--text);font-weight:600}
 .arc-all{margin-top:22px}
+/* steps: editable text */
+.sub .s-t{flex:1;min-width:0;border:0;background:transparent;color:var(--text);font:inherit;font-size:16px;line-height:1.35;padding:2px 0;resize:none;outline:none;overflow:hidden;border-radius:6px;cursor:text;transition:color .2s,box-shadow .15s}
+.sub .s-t:hover{box-shadow:0 0 0 6px var(--surface2);background:var(--surface2)}
+.sub .s-t:focus{box-shadow:0 0 0 6px var(--surface2);background:var(--surface2)}
+.sub.on .s-t{color:var(--muted);text-decoration:line-through}
+.sub.on .s-t:focus{text-decoration:none;color:var(--text)}
+/* focus view toggle (computer only) */
+.d-tr{display:flex;align-items:center;gap:6px}
+.d-wide{display:none;width:36px;height:36px;border-radius:50%;place-items:center;color:var(--muted);transition:background .15s,color .15s}
+.d-wide:hover{background:var(--surface2);color:var(--text)}
+.d-wide svg{width:17px;height:17px}
+.d-wide .ic-close{display:none}
+.dsheet.wide .d-wide .ic-open{display:none}.dsheet.wide .d-wide .ic-close{display:block}
+@media (min-width:1100px){
+  .d-wide{display:grid}
+  /* the big centred view */
+  .dsheet.wide{top:50%;left:50%;right:auto;bottom:auto;width:min(1000px,calc(100vw - 96px));height:min(88vh,900px);
+    transform:translate(-50%,-47%) scale(.97);opacity:0;pointer-events:none;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .22s}
+  .dsheet.wide.on{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+  .dsheet.wide .sheet-in{padding:26px 40px 0;max-width:none;width:100%}
+  .dsheet.wide .d-scroll{margin:0 -40px;padding:6px 40px 24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:44px;
+    grid-template-areas:"title title" "pills pills" "picker picker" "sh notes" "prog notes" "subs notes" "add notes";grid-template-rows:auto auto auto auto auto auto 1fr;align-content:start}
+  .dsheet.wide .d-title{grid-area:title;font-size:40px;letter-spacing:-.04em;padding-bottom:16px}
+  .dsheet.wide .pills{grid-area:pills}
+  .dsheet.wide .picker{grid-area:picker}
+  .dsheet.wide .d-sh{grid-area:sh}
+  .dsheet.wide .d-prog{grid-area:prog}
+  .dsheet.wide .subs{grid-area:subs;max-height:none;-webkit-mask-image:none;mask-image:none;overflow:visible}
+  .dsheet.wide .sub-add{grid-area:add;align-self:start}
+  .dsheet.wide .d-notes{grid-area:notes;align-self:stretch;margin-top:28px!important;padding:18px 20px!important;border-top:0!important;border-radius:20px!important;background:var(--surface2)!important;min-height:280px;font-size:16px;line-height:1.6}
+  .dsheet.wide .d-foot2{padding:16px 0 26px}
+  .dsheet.wide .d-foot2 .d-complete{flex:0 0 260px}
+  .dsheet.wide .d-foot2 .d-focus{flex:0 0 200px}
+}
 /* ---------- Tide: same page, type and controls as Classic ---------- */
 .tide .f-step{margin-top:20px}
 .tide .t-alldone{opacity:.6;cursor:default}
@@ -1384,7 +1418,8 @@ html,body{overscroll-behavior-y:contain}
   <div class="d-drag" id="dDrag"><div class="grab"></div>
     <div class="d-top">
       <button class="d-more" id="dMore" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
-      <button class="txt-btn" id="dClose">Done</button>
+      <div class="d-tr"><button class="d-wide" id="dWide" aria-label="Focus view" title="Focus view" aria-pressed="false"><svg class="ic-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg><svg class="ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10h-6V4M4 14h6v6M14 10l7-7M10 14l-7 7"/></svg></button>
+      <button class="txt-btn" id="dClose">Done</button></div>
       <div class="d-menu" id="dMenu"><button id="dDup">Duplicate</button><button id="dArc">Archive task</button><button id="dDel" class="warn">Delete task</button></div>
     </div>
   </div>
@@ -1508,7 +1543,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=70; // bumped with every published update
+const APP_VERSION=71; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2064,7 +2099,7 @@ let cur=null,pickOpen=null;
 const grow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px'};
 const ESTS=[15,30,45,60,90,120];
 function openDetail(id){
-  cur=S.tasks.find(x=>x.id===id);if(!cur)return;haptic(5);
+  cur=S.tasks.find(x=>x.id===id);if(!cur)return;haptic(5);setDetailWide(detailWide());
   pickOpen=null;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');
   $('detailSheet').classList.remove('full');$('dScroll').scrollTop=0;
   $('dTitle').value=cur.title;$('dNotes').value=cur.notes;$('dSubIn').value='';
@@ -2113,8 +2148,9 @@ function drawDetail(){
   $('dStepCount').textContent=`${sd} of ${t.subs.length}`;
   $('dProgBar').style.width=t.subs.length?(sd/t.subs.length*100)+'%':'0';
   $('dSubs').innerHTML=t.subs.map(s=>`<div class="sub ${s.done?'on':''}" data-s="${s.id}">
-    <button class="sc" aria-label="Toggle step">${CHECK}</button><span>${esc(s.t)}</span>
+    <button class="sc" aria-label="Toggle step">${CHECK}</button><textarea class="s-t" rows="1" maxlength="200" aria-label="Step name" spellcheck="false">${esc(s.t)}</textarea>
     <button class="sx" aria-label="Remove step">${X}</button></div>`).join('');
+  $('dSubs').querySelectorAll('.s-t').forEach(grow);
   const done=t.stage==='done';
   requestAnimationFrame(subsFade);
   $('dComplete').textContent=done?'Mark as not done':'Complete';
@@ -2153,9 +2189,23 @@ $('dSubs').addEventListener('scroll',subsFade);
 $('dSubs').onclick=e=>{
   const r=e.target.closest('.sub');if(!r)return;const s=cur.subs.find(x=>x.id===+r.dataset.s);
   if(e.target.closest('.sx')){cur.subs=cur.subs.filter(x=>x!==s);return drawDetail()}
+  if(!e.target.closest('.sc'))return;   /* only the circle ticks a step; the text is for editing */
   s.done=!s.done;haptic(8);drawDetail();
 };
+/* rename a step: click its text, type, Enter or click away to keep, Esc to undo the edit */
+$('dSubs').addEventListener('input',e=>{const ta=e.target.closest('.s-t');if(!ta)return;const s=cur.subs.find(x=>x.id===+ta.closest('.sub').dataset.s);
+  if(!ta.dataset.old)ta.dataset.old=s.t;const v=ta.value.replace(/\n/g,' ');if(v!==ta.value)ta.value=v;if(v.trim())s.t=v.trim();grow(ta);save()});
+$('dSubs').addEventListener('keydown',e=>{const ta=e.target.closest('.s-t');if(!ta)return;
+  if(e.key==='Enter'){e.preventDefault();ta.blur()}
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();const s=cur.subs.find(x=>x.id===+ta.closest('.sub').dataset.s);if(ta.dataset.old){s.t=ta.dataset.old;ta.value=s.t;save()}ta.blur()}});
+$('dSubs').addEventListener('focusout',e=>{const ta=e.target.closest('.s-t');if(!ta)return;const s=cur&&cur.subs.find(x=>x.id===+ta.closest('.sub').dataset.s);
+  if(s&&!ta.value.trim())ta.value=s.t;delete ta.dataset.old;render()});
 $('dClose').onclick=closeSheets;
+/* focus view (computer): the task opens big in the middle of the screen; remembered on this device */
+const detailWide=()=>{try{return localStorage.getItem('detailWide')==='1'}catch(e){return false}};
+function setDetailWide(on){$('detailSheet').classList.toggle('wide',on);$('dWide').setAttribute('aria-pressed',on);$('dWide').title=on?'Back to side panel':'Focus view';
+  try{localStorage.setItem('detailWide',on?'1':'0')}catch(e){}}
+$('dWide').onclick=()=>{setDetailWide(!$('detailSheet').classList.contains('wide'));haptic(5);$('dSubs').querySelectorAll('.s-t').forEach(grow);grow($('dTitle'));grow($('dNotes'))};
 $('dMore').onclick=e=>{e.stopPropagation();const on=$('dMenu').classList.toggle('on');$('dMore').classList.toggle('on',on);haptic(5)};
 $('detailSheet').addEventListener('click',e=>{if(!e.target.closest('#dMenu,#dMore')){$('dMenu').classList.remove('on');$('dMore').classList.remove('on')}});
 $('dDel').onclick=()=>{const t=cur;if(!t)return;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');
