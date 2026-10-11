@@ -85,7 +85,6 @@ function todayStrip(){
     <div class="ts-t">${td.slice(0,3).map(t=>`<span><i style="background:${listOf(t.list).c}"></i>${esc(t.title)}</span>`).join('')}${td.length>3?`<span class="ts-more">+${td.length-3} more</span>`:''}</div>
     <button class="ts-go" id="tsGo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Win the day</button></div>`;
 }
-$('dInstall').onclick=()=>$('installBtn').click();
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
 const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});

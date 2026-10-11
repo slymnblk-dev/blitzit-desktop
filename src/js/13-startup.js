@@ -74,9 +74,10 @@ document.addEventListener('keydown',e=>{if(!$('intro').classList.contains('on'))
 
 /* ---------- install ---------- */
 let installEvt=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('installBtn').hidden=false;$('dInstall').hidden=false});
-$('installBtn').onclick=async()=>{if(!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch(e){}installEvt=null;$('installBtn').hidden=true;$('dInstall').hidden=true};
-window.addEventListener('appinstalled',()=>{$('installBtn').hidden=true;toast('Windaday installed')});
+/* installing the web app lives in Profile → Download; these just keep that tab up to date */
+const dlRedraw=()=>{try{if(settingsOpen()&&setView==='you'&&youTab==='download')drawSettings()}catch(e){}};
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;dlRedraw()});
+window.addEventListener('appinstalled',()=>{installEvt=null;toast('Windaday installed');dlRedraw()});
 if('serviceWorker' in navigator&&document.querySelector('link[rel=manifest]'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 if(!S.firstUse)S.firstUse=Date.now();

@@ -33,7 +33,7 @@ function openYou(tab){
   $('settings').classList.add('on');$('scrim').classList.add('on');$('settings').scrollTop=0;haptic(5);
 }
 function youHead(){
-  const tabs=[['profile','Profile'],['stats','Stats'],['account','Account']];
+  const tabs=[['profile','Profile'],['stats','Stats'],['account','Account'],['download','Download']];
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close">${BACK_SVG}</button><button class="you-set" id="youSet">Settings${CHEV}</button></div>
   <div class="you-head">${avatarHTML('xl')}<div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
   <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}</button>`).join('')}</div>`;
@@ -67,12 +67,51 @@ function setAvatarPhoto(file){
     S.cfg.avatarImg=c.toDataURL('image/jpeg',.85);save();drawMe();drawSettings();haptic(8);toast('Photo updated')};
     im.onerror=()=>toast('Couldn’t read that image');im.src=r.result};r.readAsDataURL(file);
 }
+/* ---------- Download tab: web app, Windows app, Mac (coming) ---------- */
+const WIN_RELEASES='https://github.com/slymnblk-dev/blitzit-desktop/releases/latest';
+const DL_ICO={
+  web:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M11 18h2"/></svg>',
+  win:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3zM11.5 4.3 21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg>',
+  mac:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'};
+function dlPlatform(){const u=navigator.userAgent||'';
+  if(/iPhone|iPad|iPod/.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1))return 'ios';
+  if(/Android/.test(u))return 'android';if(/Mac/.test(u))return 'mac';if(/Win/.test(u))return 'win';return 'other'}
+function dlStandalone(){try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}}
+function youDownload(){
+  const p=dlPlatform(),desk=DESK(),inst=dlStandalone()&&!desk;
+  const how={ios:'In Safari, tap <b>Share</b> → <b>Add to Home Screen</b>.',android:'In Chrome, tap <b>⋮</b> → <b>Install app</b>.',
+    mac:'In Chrome or Edge, click the <b>install icon</b> in the address bar. In Safari: <b>File → Add to Dock</b>.',
+    win:'In Chrome or Edge, click the <b>install icon</b> in the address bar.',other:'In Chrome or Edge, use <b>Install app</b> in the browser menu.'}[p];
+  const done=t=>`<span class="dl-ok">${DL_ICO.ok}${t}</span>`;
+  const web=desk?`<p class="dl-how">On your phone, open <b>windaday.com</b> and add it to your home screen.</p>`
+    :inst?done('Installed on this device')
+    :installEvt?`<button class="dl-btn" id="dlWeb">Install web app</button>`
+    :`<p class="dl-how">${how}</p>`;
+  const win=desk?done(`You’re using it${UPD.current?` · version ${esc(UPD.current)}`:''}`)
+    :`<button class="dl-btn" id="dlWin">Download for Windows</button><p class="dl-note">First time, Windows may say “protected your PC”: click <b>More info → Run anyway</b>.</p>`;
+  const card=(k,t,tag,d,act,dim)=>`<div class="dl-card${dim?' dim':''}"><div class="dl-h"><span class="dl-ico">${DL_ICO[k]}</span><div class="dl-t"><b>${t}</b>${tag?`<em>${tag}</em>`:''}</div></div><p class="dl-d">${d}</p>${act}</div>`;
+  return `<p class="sub-p dl-intro">Same tasks everywhere: sign in and they sync.</p><div class="dl-list">
+    ${card('web','Web app','Phone & computer','Install it from your browser. Opens like a normal app, with its own icon. Works offline.',web,false)}
+    ${card('win','Windows app','Recommended on PC','Adds a mini timer that floats on top, a tray icon and a <b>Ctrl+Alt+Shift+B</b> shortcut. Updates itself.',win,false)}
+    ${card('mac','Mac app','Coming soon','Not ready yet. Until then, use the web app on your Mac.','',true)}
+  </div>`;
+}
+async function dlWindows(btn){
+  btn.classList.add('busy');btn.textContent='Starting download…';
+  try{const r=await fetch('https://api.github.com/repos/slymnblk-dev/blitzit-desktop/releases/latest');
+    const j=await r.json();const a=(j.assets||[]).find(x=>/x64-setup\.exe$/i.test(x.name));
+    if(!a)throw 0;location.href=a.browser_download_url;toast('Download started')}
+  catch(e){window.open(WIN_RELEASES,'_blank','noopener')}
+  setTimeout(()=>{btn.classList.remove('busy');btn.textContent='Download for Windows'},2500);
+}
 function youBody(){
   const el=$('setIn');
   if(youTab==='stats'){
     drawStats();const seg=el.querySelector('#anRange');const top=el.querySelector('.set-top');if(top)top.remove();const h=el.querySelector('h1');if(h)h.remove();
     el.insertAdjacentHTML('afterbegin',youHead()+'<div class="you-range"></div>');if(seg)el.querySelector('.you-range').appendChild(seg);return;
   }
+  if(youTab==='download'){el.innerHTML=youHead()+youDownload();return}
   if(youTab==='account'){accInYou=true;try{el.innerHTML=youHead()+accountPage()}finally{accInYou=false}return}
   el.innerHTML=youHead()+youProfile();
 }
@@ -84,6 +123,8 @@ $('setIn').addEventListener('click',e=>{
   const yt=e.target.closest('[data-yt]');if(yt){youTab=yt.dataset.yt;haptic(5);return drawSettings()}
   if(e.target.closest('#youSet')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#youOpen')){youTab='profile';setView='you';haptic(5);drawSettings();$('settings').scrollTop=0;return}
+  if(e.target.closest('#dlWeb')){if(installEvt){const ev=installEvt;ev.prompt();ev.userChoice.then(()=>{installEvt=null;drawSettings()}).catch(()=>{})}return}
+  const dw=e.target.closest('#dlWin');if(dw){haptic(6);return dlWindows(dw)}
   if(e.target.closest('#avRemove')){delete S.cfg.avatarImg;haptic(6);save();drawMe();return drawSettings()}
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}

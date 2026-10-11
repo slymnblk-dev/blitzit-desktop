@@ -66,3 +66,21 @@ test('the Today column has a Win the day button that starts a session', async ({
   await expect.poll(() => page.evaluate(() => F.on)).toBe(true);
   noErrors(errors);
 });
+
+test('Download tab: web app, Windows app and Mac (coming soon); no stray install icons', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 860 });
+  const errors = await openApp(page);
+  await expect(page.locator('#dInstall, #installBtn')).toHaveCount(0);
+  await page.evaluate(() => openYou('download'));
+  const cards = page.locator('.dl-card');
+  await expect(cards).toHaveCount(3);
+  await expect(cards.nth(0)).toContainText('Web app');
+  await expect(cards.nth(1)).toContainText('Windows app');
+  await expect(page.locator('#dlWin')).toBeVisible();
+  await expect(cards.nth(2)).toContainText('Coming soon');
+  // when the browser offers installing, the web card gets an Install button
+  await page.evaluate(() => { const e = new Event('beforeinstallprompt'); e.prompt = () => { window.__prompted = true }; e.userChoice = Promise.resolve({}); window.dispatchEvent(e); });
+  await page.locator('#dlWeb').click();
+  expect(await page.evaluate(() => window.__prompted)).toBe(true);
+  noErrors(errors);
+});
