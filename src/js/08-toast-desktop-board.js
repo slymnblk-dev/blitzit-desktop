@@ -87,7 +87,7 @@ function todayStrip(){
 }
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;

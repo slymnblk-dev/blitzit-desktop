@@ -78,7 +78,7 @@ function spaceRows(){
       <span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>
       <span class="sp-rt"><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="sp-sub">${sub}</span></span>
       <button class="sp-more" data-more="${sp.id}" aria-label="Space options">${DOTS3}</button>
-      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button><button class="warn" data-del="${sp.id}">Delete space</button></div>
+      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
     </div>`}).join('')+`<button class="sp-new sp-row-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
 }
 function spaceCards(){
@@ -87,7 +87,7 @@ function spaceCards(){
     return `<div class="sp-card" role="button" tabindex="0" data-space="${sp.id}" style="--sc:${sp.c}">
       <div class="sp-top"><span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span>
         <button class="sp-more" data-more="${sp.id}" aria-label="Space options"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></div>
-      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button><button class="warn" data-del="${sp.id}">Delete space</button></div>
+      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
       <div class="sp-bar">${st.total?VS().map(x=>st.by[x.id]?`<span style="flex:${st.by[x.id]};background:var(--${x.id})"></span>`:'').join(''):''}</div>
       <div class="sp-meta"><span><b>${st.today}</b> today</span><span><b>${st.open}</b> open</span><span>${st.lists} ${st.lists===1?'list':'lists'}</span></div>
     </div>`}).join('')+`<button class="sp-new" id="spNew">${PLUS_S}<span>New space</span></button>`;

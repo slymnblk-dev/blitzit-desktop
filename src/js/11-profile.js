@@ -129,7 +129,7 @@ $('setIn').addEventListener('click',e=>{
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
-  if(pg){const id=pg.dataset.page;haptic(5);
+  if(pg){const id=pg.dataset.page;haptic(5);if(id==='archive'){arcFrom=setView;if(pg.dataset.arct)arcTab=pg.dataset.arct}
     if(id==='lists'){editing=true;nl=null;drawLists();openSheet('listSheet');onSheetClose=drawSettings;return}
     setView=id;drawSettings();$('settings').scrollTop=0;return}
   if(!CLOUD){
@@ -152,15 +152,9 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#accResend')){if(Date.now()<resendAt){authMsg=`You can resend in ${Math.ceil((resendAt-Date.now())/1000)}s.`;return drawSettings()}authStep='email';drawSettings();return accSend()}
   if(e.target.closest('#accSync')){reconcile(false);return}
   if(e.target.closest('#accOut')){sb.auth.signOut().catch(()=>{});user=null;onSignedOut();toast('Signed out');return}
-  const ar=e.target.closest('.arc-row');
-  if(ar){const t=S.tasks.find(x=>x.id===+ar.dataset.id);
-    if(t&&e.target.closest('[data-restore]')){commit(()=>{t.archived=false;delete t.archivedAt;t.keepUntil=Date.now()},'Restored to '+STAGES[3].name);return drawSettings()}
-    if(t&&e.target.closest('[data-adel]')){commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Deleted');return drawSettings()}}
-  const ae=e.target.closest('#arcEmpty');
-  if(ae){if(!ae.dataset.arm){ae.dataset.arm=1;ae.textContent='Tap again to delete all archived tasks';haptic(10);setTimeout(()=>{if(ae.isConnected){delete ae.dataset.arm;ae.textContent='Empty archive'}},3000);return}
-    commit(()=>S.tasks=S.tasks.filter(x=>!x.archived),'Archive emptied');return drawSettings()}
+  if(setView==='archive'&&arcClick(e))return;
   if(e.target.closest('#replayIntro')){closeSettings();return setTimeout(()=>openIntro(true),300)}
-  if(e.target.closest('#subBack')&&setView==='archive'){setView='tasks';haptic(5);drawSettings();return}
+  if(e.target.closest('#subBack')&&setView==='archive'){setView=arcFrom==='archive'?'data':arcFrom;haptic(5);drawSettings();return}
   if(e.target.closest('#subBack')){setView='main';openSw=null;haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#anBack')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   const rg=e.target.closest('#anRange [data-r]');if(rg){anRange=+rg.dataset.r;haptic(5);return drawSettings()}
@@ -185,11 +179,11 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
     try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
       const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
       const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;

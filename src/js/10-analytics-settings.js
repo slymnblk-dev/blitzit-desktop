@@ -138,7 +138,7 @@ const PAGES=[
   {id:'focus',name:'Focus'},
   {id:'lists',name:'Lists'},
   {id:'shortcuts',name:'Keyboard shortcuts'},
-  {id:'archive',name:'Archive',hidden:true},
+  {id:'archive',name:'Archived',hidden:true},
   {id:'data',name:'Data'}
 ];
 let lastView='main';
@@ -206,7 +206,7 @@ function settingsPage(id){
     ${row('Show Done',tg('showDone'),'Hide it to keep your board focused')}
     ${row('Clean up',`<div class="segc">${sOpt('cleanup','never','Never')}${sOpt('cleanup','archive','Archive')}${sOpt('cleanup','delete','Delete')}</div>`,c.cleanup==='delete'?'Deleted tasks also leave your analytics':c.cleanup==='archive'?'Archived tasks still count in analytics':'')}
     ${c.cleanup!=='never'?row('After',`<div class="segc">${[1,7,30].map(d=>sOpt('cleanupAfter',d,d===1?'1 day':d+' days')).join('')}</div>`):''}
-    ${(()=>{const n=S.tasks.filter(t=>t.archived).length;return n||c.cleanup==='archive'?`<button class="link-row" data-page="archive">Archive<span class="hint">${n} ${n===1?'task':'tasks'}</span></button>`:''})()}
+    ${(()=>{const n=S.tasks.filter(t=>t.archived).length;return n||c.cleanup==='archive'?`<button class="link-row" data-page="archive" data-arct="tasks">Archived tasks<span class="hint">${n}</span></button>`:''})()}
     </div>`;
   if(id==='focus')body=`<div class="set-sec"><h3>Timer</h3>
     ${row('Default timer',`<div class="segc">${sOpt('focusMode','free','Free')}${sOpt('focusMode','pomo','Pomodoro')}</div>`)}
@@ -224,15 +224,7 @@ function settingsPage(id){
     ${DESK()?row('See-through while working',tg('pipFade'),'The mini timer turns solid when you point at it'):''}</div>`:''}<div class="set-sec"><h3>During a session</h3>
     ${row('Sound at end of round',tg('sound'))}
     ${row('Keep screen awake',tg('wake'))}</div>`;
-  if(id==='archive'){
-    const a=S.tasks.filter(t=>t.archived).sort((x,y)=>(y.doneAt||0)-(x.doneAt||0));
-    body=a.length?`<p class="sub-p">Finished tasks that were tidied away. Restore one to bring it back to ${esc(STAGES[3].name)}.</p>
-      <div class="set-sec">${a.map(t=>`<div class="arc-row" data-id="${t.id}"><div class="arc-t"><span>${esc(t.title)}</span><small>${t.doneAt?dayLabel(t.doneAt):''}</small></div>
-        <button class="arc-b" data-restore aria-label="Restore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
-        <button class="arc-b" data-adel aria-label="Delete">${X}</button></div>`).join('')}</div>
-      <button class="link-row warn" id="arcEmpty">Empty archive</button>`
-      :`<p class="sub-p">Nothing here yet. Finished tasks land here when clean up is set to Archive.</p>`;
-  }
+  if(id==='archive')body=archivePage();
   if(id==='shortcuts'){
     const K=(keys,label)=>`<div class="kb-row"><span>${label}</span><span class="kb-keys">${keys.map(k=>k==='–'?'<span>to</span>':`<kbd>${k}</kbd>`).join('')}</span></div>`;
     body=`<div class="set-sec"><h3>Tasks</h3>${K(['H'],'Home')}${K(['N'],'New task')}${K(['1','–','4'],'Focus on a column')}${K(['Esc'],'Back to the board')}</div>
@@ -247,7 +239,9 @@ function settingsPage(id){
       <label class="bk-filein">Or choose a backup file<input type="file" id="bkFileIn" accept=".json,application/json"></label></div>
     ${row('Last backup',`<span class="acc-val">${ago(S.lastBackup)}</span>`)}
     ${row('Backup reminders',tg('backupRemind'),'Shown on Home when you’re not signed in')}
-    </div><div class="set-sec"><h3>Tasks</h3>
+    </div><div class="set-sec"><h3>Archive</h3>
+    <button class="link-row" data-page="archive">Archived<span class="hint">${(()=>{const n=arcTotal();return n?`${n} ${n===1?'item':'items'}`:'Empty'})()}</span></button></div>
+    <div class="set-sec"><h3>Tasks</h3>
     <button class="link-row" id="demo">Load demo tasks</button>
     <button class="link-row warn" id="wipe">Delete all tasks</button></div>
     <div class="set-sec"><h3>Help</h3><button class="link-row" id="replayIntro">Replay intro</button></div>

@@ -144,8 +144,10 @@ $('dClose').onclick=closeSheets;
 $('dMore').onclick=e=>{e.stopPropagation();const on=$('dMenu').classList.toggle('on');$('dMore').classList.toggle('on',on);haptic(5)};
 $('detailSheet').addEventListener('click',e=>{if(!e.target.closest('#dMenu,#dMore')){$('dMenu').classList.remove('on');$('dMore').classList.remove('on')}});
 $('dDel').onclick=()=>{const t=cur;if(!t)return;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');
-  confirmAsk({title:'Delete this task?',text:`“${t.title||'Untitled'}” will be deleted.`,yes:'Yes, delete',no:'No',
+  confirmAsk({title:'Delete this task?',text:`“${t.title||'Untitled'}” will be deleted for good. To keep it safe, choose Archive task instead.`,yes:'Yes, delete',no:'No',
     onYes:()=>{if(cur===t){cur=null;onSheetClose=null;closeSheets()}haptic(10);render();commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Task deleted')}})};
+$('dArc').onclick=()=>{const t=cur;if(!t)return;cur=null;onSheetClose=null;closeSheets();haptic(8);render();
+  commit(()=>archiveTask(t),'Task archived')};
 $('dDup').onclick=()=>{
   const t=cur;const c={...JSON.parse(JSON.stringify(t)),id:newId(),title:t.title+' (copy)'};delete c.spawned;delete c.doneAt;
   if(c.stage==='done')c.stage='today';c.subs.forEach(s=>s.id=newId());
@@ -234,7 +236,7 @@ function drawLists(){
         ${S.spaces.length>1?`<div class="lbl">Space</div><div class="opts row-scroll le-sp">${S.spaces.map(x=>`<button class="opt sp-opt ${l.space===x.id?'on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</button>`).join('')}</div>`:''}
         <div class="lbl">Tags</div><div class="le-tags">${ltags(l).map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
           <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>
-        ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<button class="le-del" data-ldel="${l.id}">Delete list</button>`}
+        ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<div class="le-acts"><button class="le-arc" data-larc="${l.id}">Archive list</button><button class="le-del" data-ldel="${l.id}">Delete list</button></div>`}
       </div>`:'')})()
     :`<button class="pick" data-l="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${open(l.id)} open</span>${S.list===l.id?tick():''}</button>`).join('');
   if(nl){
@@ -259,9 +261,11 @@ $('picks').addEventListener('click',e=>{
     const go=()=>{commit(()=>{l.tags=ltags(l).filter(x=>x!==name);used.forEach(t=>t.tags=tagsOf(t).filter(x=>tagKey(x)!==tagKey(name)))},`#${name} removed`);drawLists()};
     if(!used.length){go();return}
     confirmAsk({title:`Remove #${name}?`,text:`It comes off ${used.length} ${used.length===1?'task':'tasks'}. The tasks stay.`,yes:'Yes, remove',no:'No',onYes:go});return}
+  const la=e.target.closest('[data-larc]');if(la){const l=S.lists.find(x=>x.id===la.dataset.larc);if(!l)return;
+    commit(()=>archiveList(l),`${l.name} archived`);leOpen=null;drawLists();return}
   const ld=e.target.closest('[data-ldel]');if(ld){const l=S.lists.find(x=>x.id===ld.dataset.ldel);if(!l)return;
     const n=S.tasks.filter(t=>t.list===l.id).length;
-    confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'}.`,word:l.name,yes:'Delete list',
+    confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'} for good. To keep them safe, choose Archive list instead.`,word:l.name,yes:'Delete list',
       onYes:()=>{commit(()=>{S.lists=S.lists.filter(x=>x!==l);S.tasks=S.tasks.filter(t=>t.list!==l.id);if(S.list===l.id)S.list='all'},`${l.name} deleted`);leOpen=null;drawLists()}});return}
   const p=e.target.closest('.pick');if(!p)return;const id=p.dataset.l;
   if(editing){

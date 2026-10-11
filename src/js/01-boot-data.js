@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=69; // bumped with every published update
+const APP_VERSION=70; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -59,6 +59,8 @@ function sanitize(){
   if(S.lists!=null)S.lists=Array.isArray(S.lists)?S.lists.filter(l=>obj(l)&&l.id!=null):null;
   if(S.lists)S.lists.forEach(cleanTags);
   if(S.spaces!=null)S.spaces=Array.isArray(S.spaces)?S.spaces.filter(x=>obj(x)&&x.id!=null):null;
+  S.arch=Array.isArray(S.arch)?S.arch.filter(b=>obj(b)&&b.id!=null&&(b.kind==='list'&&obj(b.list)||b.kind==='space'&&obj(b.space))):[];
+  S.arch.forEach(b=>{if(!Array.isArray(b.tasks))b.tasks=[];if(b.kind==='space'&&!Array.isArray(b.lists))b.lists=[]});
   if(!obj(S.cfg))delete S.cfg;
   if(!obj(S.tomb))S.tomb={};
 }
@@ -78,7 +80,7 @@ let trackMap=null;
 const bareJSON=x=>{const {u,...r}=x;return JSON.stringify(r)};
 function trackChanges(){
   const now=Date.now(),m={};S.tomb=S.tomb||{};
-  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
+  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
   if(trackMap)Object.keys(trackMap).forEach(key=>{if(key[1]===':'&&!(key in m))S.tomb[key]=now});
   m.__ord=S.tasks.map(t=>t.id).join(',');if(trackMap&&m.__ord!==trackMap.__ord)S.orderU=now;
   m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;

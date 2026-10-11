@@ -12,6 +12,7 @@ const homeClick=e=>{
     if(r.bottom>lim)pop.classList.add('up')}haptic(5);return}
   const pn=e.target.closest('[data-pin]');if(pn){closePops();return togglePin(pn.dataset.pin)}
   const ed=e.target.closest('[data-edit]');if(ed){closePops();return openSpaceSheet(ed.dataset.edit)}
+  const ar=e.target.closest('[data-sparc]');if(ar){closePops();return askArchiveSpace(ar.dataset.sparc)}
   const dl=e.target.closest('[data-del]');if(dl){closePops();return askDeleteSpace(dl.dataset.del)}
   if(document.querySelector('.sp-pop.on')){closePops();return}
   const c=e.target.closest('[data-space]');if(c)return openSpace(c.dataset.space);
@@ -35,7 +36,7 @@ function openSpaceSheet(id){
   spDraft=sp?{...sp}:{id:null,name:'',c:PALETTE[S.spaces.length%PALETTE.length],e:''};
   spDraft.touched=!!(sp&&sp.e);
   $('spTitle').textContent=sp?'Edit space':'New space';$('spName').value=spDraft.name;
-  $('spDel').hidden=!sp||S.spaces.length<2;$('spPin').hidden=!sp;
+  $('spDel').hidden=$('spArc').hidden=!sp||S.spaces.length<2;$('spPin').hidden=!sp;
   drawSpaceSheet();openSheet('spaceSheet');setTimeout(()=>{if($('spaceSheet').classList.contains('on'))$('spName').focus()},300);
 }
 function drawSpaceSheet(){
@@ -58,13 +59,18 @@ $('spSave').onclick=()=>{
   closeSheets();openSpace(sp.id);toast(`${sp.name} created`);
 };
 $('spPin').onclick=()=>{spDraft.pinned=!spDraft.pinned;haptic(5);drawSpaceSheet()};
+$('spArc').onclick=()=>{const id=spDraft.id;closeSheets();setTimeout(()=>askArchiveSpace(id),250)};
 $('spDel').onclick=()=>{const id=spDraft.id;closeSheets();setTimeout(()=>askDeleteSpace(id),250)};
+function askArchiveSpace(id){
+  const sp=spaceOf(id);if(!sp)return;if(S.spaces.length<2)return toast('You need at least one space');
+  commit(()=>archiveSpace(sp),`${sp.name} archived`);
+}
 function askDeleteSpace(id){
   const sp=spaceOf(id);if(!sp)return;
   if(S.spaces.length<2)return toast('You need at least one space');
   const ls=S.lists.filter(l=>l.space===id).map(l=>l.id),nt=S.tasks.filter(t=>ls.includes(t.list)).length;
   confirmDanger({title:`Delete ${sp.name}?`,
-    text:`This deletes the space, its ${ls.length} ${ls.length===1?'list':'lists'} and ${nt} ${nt===1?'task':'tasks'}.`,
+    text:`This deletes the space, its ${ls.length} ${ls.length===1?'list':'lists'} and ${nt} ${nt===1?'task':'tasks'} for good. To keep them safe, choose Archive instead.`,
     word:sp.name,yes:'Delete space',
     onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
 }

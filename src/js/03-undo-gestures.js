@@ -1,11 +1,11 @@
 /* ---------- change + undo ---------- */
-const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,space:S.space,list:S.list,nid:S.nid});
+const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],space:S.space,list:S.list,nid:S.nid});
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
   toast(msg,()=>{
     undoHash=null;const d=JSON.parse(snap);
-    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.nid=Math.max(S.nid||0,d.nid||0);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.nid=Math.max(S.nid||0,d.nid||0);
     repairData();save();render();afterUndo();haptic(8)});
   undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
 }

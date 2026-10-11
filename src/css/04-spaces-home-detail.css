@@ -387,3 +387,22 @@
 .le-tg-new:focus{border-style:solid;border-color:var(--muted)}
 .le-tg-new::placeholder{color:var(--muted)}
 .meta{flex-wrap:wrap;row-gap:4px}.meta .tag{white-space:nowrap}
+/* list editor: archive + delete */
+.le-acts{display:flex;gap:22px;margin-top:18px}
+.le-acts .le-del{margin-top:0}
+.le-arc{font-size:15px;font-weight:600;color:var(--text);padding:6px 0}
+.sp-arc{color:var(--text)}
+/* Archived page */
+.arc-tabs{display:flex;width:100%;margin-top:22px}
+.arc-tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}
+.arc-tabs button b{font-size:12px;font-weight:700;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--surface2);color:var(--muted);display:inline-grid;place-items:center;font-variant-numeric:tabular-nums}
+.arc-tabs button.on b{background:var(--text);color:var(--bg)}
+.arc-list{margin-top:18px!important}
+.arc-row{gap:12px!important}
+.arc-dot{flex:none;width:10px;height:10px;border-radius:50%}
+.arc-dot.sq{width:14px;height:14px;border-radius:5px}
+.arc-sp{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px;font-weight:800;color:#0F1013}
+.arc-b.del:hover{color:var(--today)}
+.arc-empty{margin:26px 0 0;font-size:15px;line-height:1.5;color:var(--muted)}
+.arc-empty b{color:var(--text);font-weight:600}
+.arc-all{margin-top:22px}

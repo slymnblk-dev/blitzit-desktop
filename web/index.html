@@ -1039,6 +1039,25 @@ html,body{overscroll-behavior-y:contain}
 .le-tg-new:focus{border-style:solid;border-color:var(--muted)}
 .le-tg-new::placeholder{color:var(--muted)}
 .meta{flex-wrap:wrap;row-gap:4px}.meta .tag{white-space:nowrap}
+/* list editor: archive + delete */
+.le-acts{display:flex;gap:22px;margin-top:18px}
+.le-acts .le-del{margin-top:0}
+.le-arc{font-size:15px;font-weight:600;color:var(--text);padding:6px 0}
+.sp-arc{color:var(--text)}
+/* Archived page */
+.arc-tabs{display:flex;width:100%;margin-top:22px}
+.arc-tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}
+.arc-tabs button b{font-size:12px;font-weight:700;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--surface2);color:var(--muted);display:inline-grid;place-items:center;font-variant-numeric:tabular-nums}
+.arc-tabs button.on b{background:var(--text);color:var(--bg)}
+.arc-list{margin-top:18px!important}
+.arc-row{gap:12px!important}
+.arc-dot{flex:none;width:10px;height:10px;border-radius:50%}
+.arc-dot.sq{width:14px;height:14px;border-radius:5px}
+.arc-sp{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px;font-weight:800;color:#0F1013}
+.arc-b.del:hover{color:var(--today)}
+.arc-empty{margin:26px 0 0;font-size:15px;line-height:1.5;color:var(--muted)}
+.arc-empty b{color:var(--text);font-weight:600}
+.arc-all{margin-top:22px}
 /* ---------- Tide: same page, type and controls as Classic ---------- */
 .tide .f-step{margin-top:20px}
 .tide .t-alldone{opacity:.6;cursor:default}
@@ -1366,7 +1385,7 @@ html,body{overscroll-behavior-y:contain}
     <div class="d-top">
       <button class="d-more" id="dMore" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
       <button class="txt-btn" id="dClose">Done</button>
-      <div class="d-menu" id="dMenu"><button id="dDup">Duplicate</button><button id="dDel" class="warn">Delete task</button></div>
+      <div class="d-menu" id="dMenu"><button id="dDup">Duplicate</button><button id="dArc">Archive task</button><button id="dDel" class="warn">Delete task</button></div>
     </div>
   </div>
   <div class="d-scroll" id="dScroll">
@@ -1406,6 +1425,7 @@ html,body{overscroll-behavior-y:contain}
   <div class="lbl">Colour</div><div class="sw" id="spSw"></div>
   <button class="sp-pinrow" id="spPin" hidden><span>Pin to top</span><span class="tg" id="spPinTg" aria-pressed="false"></span></button>
   <button class="primary" id="spSave" disabled>Create space</button>
+  <button class="link-row sp-del sp-arc" id="spArc" hidden>Archive space</button>
   <button class="link-row warn sp-del" id="spDel" hidden>Delete space</button>
 </div></div>
 <div class="sheet" id="resetSheet"><div class="sheet-in reset">
@@ -1488,7 +1508,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=69; // bumped with every published update
+const APP_VERSION=70; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1540,6 +1560,8 @@ function sanitize(){
   if(S.lists!=null)S.lists=Array.isArray(S.lists)?S.lists.filter(l=>obj(l)&&l.id!=null):null;
   if(S.lists)S.lists.forEach(cleanTags);
   if(S.spaces!=null)S.spaces=Array.isArray(S.spaces)?S.spaces.filter(x=>obj(x)&&x.id!=null):null;
+  S.arch=Array.isArray(S.arch)?S.arch.filter(b=>obj(b)&&b.id!=null&&(b.kind==='list'&&obj(b.list)||b.kind==='space'&&obj(b.space))):[];
+  S.arch.forEach(b=>{if(!Array.isArray(b.tasks))b.tasks=[];if(b.kind==='space'&&!Array.isArray(b.lists))b.lists=[]});
   if(!obj(S.cfg))delete S.cfg;
   if(!obj(S.tomb))S.tomb={};
 }
@@ -1559,7 +1581,7 @@ let trackMap=null;
 const bareJSON=x=>{const {u,...r}=x;return JSON.stringify(r)};
 function trackChanges(){
   const now=Date.now(),m={};S.tomb=S.tomb||{};
-  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
+  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
   if(trackMap)Object.keys(trackMap).forEach(key=>{if(key[1]===':'&&!(key in m))S.tomb[key]=now});
   m.__ord=S.tasks.map(t=>t.id).join(',');if(trackMap&&m.__ord!==trackMap.__ord)S.orderU=now;
   m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;
@@ -1712,7 +1734,7 @@ function spaceRows(){
       <span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>
       <span class="sp-rt"><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="sp-sub">${sub}</span></span>
       <button class="sp-more" data-more="${sp.id}" aria-label="Space options">${DOTS3}</button>
-      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button><button class="warn" data-del="${sp.id}">Delete space</button></div>
+      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
     </div>`}).join('')+`<button class="sp-new sp-row-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
 }
 function spaceCards(){
@@ -1721,7 +1743,7 @@ function spaceCards(){
     return `<div class="sp-card" role="button" tabindex="0" data-space="${sp.id}" style="--sc:${sp.c}">
       <div class="sp-top"><span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span>
         <button class="sp-more" data-more="${sp.id}" aria-label="Space options"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></div>
-      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button><button class="warn" data-del="${sp.id}">Delete space</button></div>
+      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
       <div class="sp-bar">${st.total?VS().map(x=>st.by[x.id]?`<span style="flex:${st.by[x.id]};background:var(--${x.id})"></span>`:'').join(''):''}</div>
       <div class="sp-meta"><span><b>${st.today}</b> today</span><span><b>${st.open}</b> open</span><span>${st.lists} ${st.lists===1?'list':'lists'}</span></div>
     </div>`}).join('')+`<button class="sp-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
@@ -1817,13 +1839,13 @@ function render(dir){
 function go(stage){if(stage===S.stage)return;const d=idx(stage)-idx(S.stage);S.stage=stage;haptic(5);render(d)}
 
 /* ---------- change + undo ---------- */
-const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,space:S.space,list:S.list,nid:S.nid});
+const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],space:S.space,list:S.list,nid:S.nid});
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
   toast(msg,()=>{
     undoHash=null;const d=JSON.parse(snap);
-    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.nid=Math.max(S.nid||0,d.nid||0);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.nid=Math.max(S.nid||0,d.nid||0);
     repairData();save();render();afterUndo();haptic(8)});
   undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
 }
@@ -2137,8 +2159,10 @@ $('dClose').onclick=closeSheets;
 $('dMore').onclick=e=>{e.stopPropagation();const on=$('dMenu').classList.toggle('on');$('dMore').classList.toggle('on',on);haptic(5)};
 $('detailSheet').addEventListener('click',e=>{if(!e.target.closest('#dMenu,#dMore')){$('dMenu').classList.remove('on');$('dMore').classList.remove('on')}});
 $('dDel').onclick=()=>{const t=cur;if(!t)return;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');
-  confirmAsk({title:'Delete this task?',text:`“${t.title||'Untitled'}” will be deleted.`,yes:'Yes, delete',no:'No',
+  confirmAsk({title:'Delete this task?',text:`“${t.title||'Untitled'}” will be deleted for good. To keep it safe, choose Archive task instead.`,yes:'Yes, delete',no:'No',
     onYes:()=>{if(cur===t){cur=null;onSheetClose=null;closeSheets()}haptic(10);render();commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Task deleted')}})};
+$('dArc').onclick=()=>{const t=cur;if(!t)return;cur=null;onSheetClose=null;closeSheets();haptic(8);render();
+  commit(()=>archiveTask(t),'Task archived')};
 $('dDup').onclick=()=>{
   const t=cur;const c={...JSON.parse(JSON.stringify(t)),id:newId(),title:t.title+' (copy)'};delete c.spawned;delete c.doneAt;
   if(c.stage==='done')c.stage='today';c.subs.forEach(s=>s.id=newId());
@@ -2227,7 +2251,7 @@ function drawLists(){
         ${S.spaces.length>1?`<div class="lbl">Space</div><div class="opts row-scroll le-sp">${S.spaces.map(x=>`<button class="opt sp-opt ${l.space===x.id?'on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</button>`).join('')}</div>`:''}
         <div class="lbl">Tags</div><div class="le-tags">${ltags(l).map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
           <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>
-        ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<button class="le-del" data-ldel="${l.id}">Delete list</button>`}
+        ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<div class="le-acts"><button class="le-arc" data-larc="${l.id}">Archive list</button><button class="le-del" data-ldel="${l.id}">Delete list</button></div>`}
       </div>`:'')})()
     :`<button class="pick" data-l="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${open(l.id)} open</span>${S.list===l.id?tick():''}</button>`).join('');
   if(nl){
@@ -2252,9 +2276,11 @@ $('picks').addEventListener('click',e=>{
     const go=()=>{commit(()=>{l.tags=ltags(l).filter(x=>x!==name);used.forEach(t=>t.tags=tagsOf(t).filter(x=>tagKey(x)!==tagKey(name)))},`#${name} removed`);drawLists()};
     if(!used.length){go();return}
     confirmAsk({title:`Remove #${name}?`,text:`It comes off ${used.length} ${used.length===1?'task':'tasks'}. The tasks stay.`,yes:'Yes, remove',no:'No',onYes:go});return}
+  const la=e.target.closest('[data-larc]');if(la){const l=S.lists.find(x=>x.id===la.dataset.larc);if(!l)return;
+    commit(()=>archiveList(l),`${l.name} archived`);leOpen=null;drawLists();return}
   const ld=e.target.closest('[data-ldel]');if(ld){const l=S.lists.find(x=>x.id===ld.dataset.ldel);if(!l)return;
     const n=S.tasks.filter(t=>t.list===l.id).length;
-    confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'}.`,word:l.name,yes:'Delete list',
+    confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'} for good. To keep them safe, choose Archive list instead.`,word:l.name,yes:'Delete list',
       onYes:()=>{commit(()=>{S.lists=S.lists.filter(x=>x!==l);S.tasks=S.tasks.filter(t=>t.list!==l.id);if(S.list===l.id)S.list='all'},`${l.name} deleted`);leOpen=null;drawLists()}});return}
   const p=e.target.closest('.pick');if(!p)return;const id=p.dataset.l;
   if(editing){
@@ -2795,7 +2821,7 @@ function todayStrip(){
 }
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;
@@ -2834,6 +2860,7 @@ const homeClick=e=>{
     if(r.bottom>lim)pop.classList.add('up')}haptic(5);return}
   const pn=e.target.closest('[data-pin]');if(pn){closePops();return togglePin(pn.dataset.pin)}
   const ed=e.target.closest('[data-edit]');if(ed){closePops();return openSpaceSheet(ed.dataset.edit)}
+  const ar=e.target.closest('[data-sparc]');if(ar){closePops();return askArchiveSpace(ar.dataset.sparc)}
   const dl=e.target.closest('[data-del]');if(dl){closePops();return askDeleteSpace(dl.dataset.del)}
   if(document.querySelector('.sp-pop.on')){closePops();return}
   const c=e.target.closest('[data-space]');if(c)return openSpace(c.dataset.space);
@@ -2857,7 +2884,7 @@ function openSpaceSheet(id){
   spDraft=sp?{...sp}:{id:null,name:'',c:PALETTE[S.spaces.length%PALETTE.length],e:''};
   spDraft.touched=!!(sp&&sp.e);
   $('spTitle').textContent=sp?'Edit space':'New space';$('spName').value=spDraft.name;
-  $('spDel').hidden=!sp||S.spaces.length<2;$('spPin').hidden=!sp;
+  $('spDel').hidden=$('spArc').hidden=!sp||S.spaces.length<2;$('spPin').hidden=!sp;
   drawSpaceSheet();openSheet('spaceSheet');setTimeout(()=>{if($('spaceSheet').classList.contains('on'))$('spName').focus()},300);
 }
 function drawSpaceSheet(){
@@ -2880,13 +2907,18 @@ $('spSave').onclick=()=>{
   closeSheets();openSpace(sp.id);toast(`${sp.name} created`);
 };
 $('spPin').onclick=()=>{spDraft.pinned=!spDraft.pinned;haptic(5);drawSpaceSheet()};
+$('spArc').onclick=()=>{const id=spDraft.id;closeSheets();setTimeout(()=>askArchiveSpace(id),250)};
 $('spDel').onclick=()=>{const id=spDraft.id;closeSheets();setTimeout(()=>askDeleteSpace(id),250)};
+function askArchiveSpace(id){
+  const sp=spaceOf(id);if(!sp)return;if(S.spaces.length<2)return toast('You need at least one space');
+  commit(()=>archiveSpace(sp),`${sp.name} archived`);
+}
 function askDeleteSpace(id){
   const sp=spaceOf(id);if(!sp)return;
   if(S.spaces.length<2)return toast('You need at least one space');
   const ls=S.lists.filter(l=>l.space===id).map(l=>l.id),nt=S.tasks.filter(t=>ls.includes(t.list)).length;
   confirmDanger({title:`Delete ${sp.name}?`,
-    text:`This deletes the space, its ${ls.length} ${ls.length===1?'list':'lists'} and ${nt} ${nt===1?'task':'tasks'}.`,
+    text:`This deletes the space, its ${ls.length} ${ls.length===1?'list':'lists'} and ${nt} ${nt===1?'task':'tasks'} for good. To keep them safe, choose Archive instead.`,
     word:sp.name,yes:'Delete space',
     onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
 }
@@ -3031,6 +3063,87 @@ document.addEventListener('keydown',e=>{
 });
 matchMedia('(min-width:1100px)').addEventListener('change',()=>render());
 
+/* ---------- archive: tasks, lists and spaces you remove can be archived (kept safe, restorable) or deleted for good ---------- */
+/* tasks stay in S.tasks with archived:true (they still count in analytics).
+   lists and spaces move into S.arch as one bundle with everything inside, so the rest of the app never sees them. */
+const ARC=()=>S.arch||(S.arch=[]);
+const clone=x=>JSON.parse(JSON.stringify(x));
+let arcTab='tasks',arcFrom='data';
+function archiveTask(t){t.archived=true;t.archivedAt=Date.now();delete t.keepUntil}
+function archiveList(l){
+  const tasks=S.tasks.filter(t=>t.list===l.id),id='al'+l.id;
+  S.arch=ARC().filter(b=>b.id!==id);S.arch.unshift({id,kind:'list',at:Date.now(),list:clone(l),tasks:clone(tasks)});
+  S.lists=S.lists.filter(x=>x!==l);S.tasks=S.tasks.filter(t=>t.list!==l.id);if(S.list===l.id)S.list='all';
+}
+function archiveSpace(sp){
+  const ls=S.lists.filter(l=>l.space===sp.id),ids=ls.map(l=>l.id),tasks=S.tasks.filter(t=>ids.includes(t.list)),id='as'+sp.id;
+  S.arch=ARC().filter(b=>b.id!==id);S.arch.unshift({id,kind:'space',at:Date.now(),space:clone(sp),lists:clone(ls),tasks:clone(tasks)});
+  S.spaces=S.spaces.filter(x=>x!==sp);S.lists=S.lists.filter(l=>l.space!==sp.id);S.tasks=S.tasks.filter(t=>!ids.includes(t.list));
+  if(S.space===sp.id){S.space=null;S.list='all'}
+}
+function restoreBundle(b){
+  const addTasks=ts=>ts.forEach(t=>{if(!S.tasks.some(x=>x.id===t.id))S.tasks.push(t)});
+  if(b.kind==='list'){
+    const l={...b.list},sp=spaceOf(l.space)?l.space:(S.space&&spaceOf(S.space)?S.space:S.spaces[0].id);l.space=sp;
+    if(!S.lists.some(x=>x.id===l.id))S.lists.push(l);addTasks(b.tasks);
+  } else {
+    if(!S.spaces.some(x=>x.id===b.space.id))S.spaces.push({...b.space});
+    b.lists.forEach(l=>{if(!S.lists.some(x=>x.id===l.id))S.lists.push({...l,space:b.space.id})});addTasks(b.tasks);
+  }
+  S.arch=ARC().filter(x=>x!==b);
+}
+function restoreTask(t){
+  if(!S.lists.some(l=>l.id===t.list))t.list=(listsHere()[0]||S.lists[0]).id;
+  t.archived=false;delete t.archivedAt;t.keepUntil=Date.now();
+}
+/* ---------- Archived page (Settings → Data → Archived) ---------- */
+const arcCounts=()=>({tasks:S.tasks.filter(t=>t.archived).length,lists:ARC().filter(b=>b.kind==='list').length,spaces:ARC().filter(b=>b.kind==='space').length});
+const arcTotal=()=>{const c=arcCounts();return c.tasks+c.lists+c.spaces};
+const I_RESTORE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>';
+function archivePage(){
+  const c=arcCounts(),tabs=[['tasks','Tasks'],['lists','Lists'],['spaces','Spaces']];
+  const head=`<p class="sub-p">Archived items are hidden but safe. Restore them any time, or delete them for good.</p>
+  <div class="segc arc-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-arct="${k}" class="${arcTab===k?'on':''}" role="tab" aria-selected="${arcTab===k}">${l}<b>${c[k]}</b></button>`).join('')}</div>`;
+  const acts=key=>`<button class="arc-b" data-arest="${key}" aria-label="Restore" title="Restore">${I_RESTORE}</button><button class="arc-b del" data-akill="${key}" aria-label="Delete forever" title="Delete forever">${X}</button>`;
+  const when=ts=>ts?`archived ${ago(ts)}`:'';
+  const n=(k,w)=>`${k} ${w}${k===1?'':'s'}`;
+  let body='';
+  if(arcTab==='tasks'){
+    const a=S.tasks.filter(t=>t.archived).sort((x,y)=>(y.archivedAt||y.doneAt||0)-(x.archivedAt||x.doneAt||0));
+    body=a.length?`<div class="set-sec arc-list">${a.map(t=>{const l=S.lists.find(x=>x.id===t.list);
+      return `<div class="arc-row" data-k="t${t.id}"><span class="arc-dot" style="background:${l?l.c:'var(--muted)'}"></span><div class="arc-t"><span>${esc(t.title||'Untitled')}</span><small>${[l?esc(l.name):'',t.stage==='done'?'finished':'',when(t.archivedAt||t.doneAt)].filter(Boolean).join(' · ')}</small></div>${acts('t'+t.id)}</div>`}).join('')}</div>
+      <button class="link-row warn arc-all" data-akillall="tasks">Delete all archived tasks</button>`
+      :`<p class="arc-empty">No archived tasks. Use <b>Archive task</b> in a task’s ••• menu, or set Clean up to Archive.</p>`;
+  } else {
+    const kind=arcTab==='lists'?'list':'space',a=ARC().filter(b=>b.kind===kind);
+    body=a.length?`<div class="set-sec arc-list">${a.map(b=>{
+      if(kind==='list'){const sp=spaceOf(b.list.space);
+        return `<div class="arc-row" data-k="${b.id}"><span class="arc-dot sq" style="background:${b.list.c}"></span><div class="arc-t"><span>${esc(b.list.name)}</span><small>${[n(b.tasks.length,'task'),sp?`from ${esc(sp.name)}`:'',when(b.at)].filter(Boolean).join(' · ')}</small></div>${acts(b.id)}</div>`}
+      const s=b.space;
+      return `<div class="arc-row" data-k="${b.id}"><span class="arc-sp" style="background:${s.c}">${s.e?esc(s.e):esc((s.name[0]||'?').toUpperCase())}</span><div class="arc-t"><span>${esc(s.name)}</span><small>${[n(b.lists.length,'list'),n(b.tasks.length,'task'),when(b.at)].join(' · ')}</small></div>${acts(b.id)}</div>`}).join('')}</div>`
+      :`<p class="arc-empty">No archived ${arcTab}. Choose <b>Archive</b> when you remove a ${kind}${kind==='list'?' (Edit lists)':' (its ••• menu)'}.</p>`;
+  }
+  return head+body;
+}
+function arcFind(key){
+  if(key[0]==='t'){const t=S.tasks.find(x=>'t'+x.id===key&&x.archived);return t&&{task:t,name:t.title||'Untitled'}}
+  const b=ARC().find(x=>x.id===key);return b&&{b,name:b.kind==='list'?b.list.name:b.space.name};
+}
+function arcClick(e){
+  const tb=e.target.closest('[data-arct]');if(tb){arcTab=tb.dataset.arct;haptic(5);drawSettings();return true}
+  const rs=e.target.closest('[data-arest]');if(rs){const f=arcFind(rs.dataset.arest);if(!f)return true;haptic(8);
+    if(f.task)commit(()=>restoreTask(f.task),`Restored to ${STAGES[idx(f.task.stage)].name}`);
+    else commit(()=>restoreBundle(f.b),`${f.name} restored`);
+    drawSettings();try{drawLists()}catch(_){}return true}
+  const kl=e.target.closest('[data-akill]');if(kl){const f=arcFind(kl.dataset.akill);if(!f)return true;
+    const what=f.task?'task':f.b.kind,inside=f.b?(f.b.kind==='space'?` with its ${f.b.lists.length} ${f.b.lists.length===1?'list':'lists'} and ${f.b.tasks.length} ${f.b.tasks.length===1?'task':'tasks'}`:` with its ${f.b.tasks.length} ${f.b.tasks.length===1?'task':'tasks'}`):'';
+    confirmAsk({title:`Delete for good?`,text:`“${f.name}”${inside} will be deleted and can’t be restored.`,yes:'Yes, delete',no:'No',
+      onYes:()=>{commit(()=>{if(f.task)S.tasks=S.tasks.filter(x=>x!==f.task);else S.arch=ARC().filter(x=>x!==f.b)},`${what[0].toUpperCase()+what.slice(1)} deleted`);drawSettings()}});return true}
+  if(e.target.closest('[data-akillall]')){const n=S.tasks.filter(t=>t.archived).length;
+    confirmAsk({title:'Delete all archived tasks?',text:`${n} ${n===1?'task':'tasks'} will be deleted and can’t be restored.`,yes:'Yes, delete',no:'No',
+      onYes:()=>{commit(()=>S.tasks=S.tasks.filter(x=>!x.archived),'Archived tasks deleted');drawSettings()}});return true}
+  return false;
+}
 /* ---------- analytics ---------- */
 let setView='main',anRange=7;
 function bestStreak(){
@@ -3171,7 +3284,7 @@ const PAGES=[
   {id:'focus',name:'Focus'},
   {id:'lists',name:'Lists'},
   {id:'shortcuts',name:'Keyboard shortcuts'},
-  {id:'archive',name:'Archive',hidden:true},
+  {id:'archive',name:'Archived',hidden:true},
   {id:'data',name:'Data'}
 ];
 let lastView='main';
@@ -3239,7 +3352,7 @@ function settingsPage(id){
     ${row('Show Done',tg('showDone'),'Hide it to keep your board focused')}
     ${row('Clean up',`<div class="segc">${sOpt('cleanup','never','Never')}${sOpt('cleanup','archive','Archive')}${sOpt('cleanup','delete','Delete')}</div>`,c.cleanup==='delete'?'Deleted tasks also leave your analytics':c.cleanup==='archive'?'Archived tasks still count in analytics':'')}
     ${c.cleanup!=='never'?row('After',`<div class="segc">${[1,7,30].map(d=>sOpt('cleanupAfter',d,d===1?'1 day':d+' days')).join('')}</div>`):''}
-    ${(()=>{const n=S.tasks.filter(t=>t.archived).length;return n||c.cleanup==='archive'?`<button class="link-row" data-page="archive">Archive<span class="hint">${n} ${n===1?'task':'tasks'}</span></button>`:''})()}
+    ${(()=>{const n=S.tasks.filter(t=>t.archived).length;return n||c.cleanup==='archive'?`<button class="link-row" data-page="archive" data-arct="tasks">Archived tasks<span class="hint">${n}</span></button>`:''})()}
     </div>`;
   if(id==='focus')body=`<div class="set-sec"><h3>Timer</h3>
     ${row('Default timer',`<div class="segc">${sOpt('focusMode','free','Free')}${sOpt('focusMode','pomo','Pomodoro')}</div>`)}
@@ -3257,15 +3370,7 @@ function settingsPage(id){
     ${DESK()?row('See-through while working',tg('pipFade'),'The mini timer turns solid when you point at it'):''}</div>`:''}<div class="set-sec"><h3>During a session</h3>
     ${row('Sound at end of round',tg('sound'))}
     ${row('Keep screen awake',tg('wake'))}</div>`;
-  if(id==='archive'){
-    const a=S.tasks.filter(t=>t.archived).sort((x,y)=>(y.doneAt||0)-(x.doneAt||0));
-    body=a.length?`<p class="sub-p">Finished tasks that were tidied away. Restore one to bring it back to ${esc(STAGES[3].name)}.</p>
-      <div class="set-sec">${a.map(t=>`<div class="arc-row" data-id="${t.id}"><div class="arc-t"><span>${esc(t.title)}</span><small>${t.doneAt?dayLabel(t.doneAt):''}</small></div>
-        <button class="arc-b" data-restore aria-label="Restore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
-        <button class="arc-b" data-adel aria-label="Delete">${X}</button></div>`).join('')}</div>
-      <button class="link-row warn" id="arcEmpty">Empty archive</button>`
-      :`<p class="sub-p">Nothing here yet. Finished tasks land here when clean up is set to Archive.</p>`;
-  }
+  if(id==='archive')body=archivePage();
   if(id==='shortcuts'){
     const K=(keys,label)=>`<div class="kb-row"><span>${label}</span><span class="kb-keys">${keys.map(k=>k==='–'?'<span>to</span>':`<kbd>${k}</kbd>`).join('')}</span></div>`;
     body=`<div class="set-sec"><h3>Tasks</h3>${K(['H'],'Home')}${K(['N'],'New task')}${K(['1','–','4'],'Focus on a column')}${K(['Esc'],'Back to the board')}</div>
@@ -3280,7 +3385,9 @@ function settingsPage(id){
       <label class="bk-filein">Or choose a backup file<input type="file" id="bkFileIn" accept=".json,application/json"></label></div>
     ${row('Last backup',`<span class="acc-val">${ago(S.lastBackup)}</span>`)}
     ${row('Backup reminders',tg('backupRemind'),'Shown on Home when you’re not signed in')}
-    </div><div class="set-sec"><h3>Tasks</h3>
+    </div><div class="set-sec"><h3>Archive</h3>
+    <button class="link-row" data-page="archive">Archived<span class="hint">${(()=>{const n=arcTotal();return n?`${n} ${n===1?'item':'items'}`:'Empty'})()}</span></button></div>
+    <div class="set-sec"><h3>Tasks</h3>
     <button class="link-row" id="demo">Load demo tasks</button>
     <button class="link-row warn" id="wipe">Delete all tasks</button></div>
     <div class="set-sec"><h3>Help</h3><button class="link-row" id="replayIntro">Replay intro</button></div>
@@ -3430,7 +3537,7 @@ $('setIn').addEventListener('click',e=>{
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
-  if(pg){const id=pg.dataset.page;haptic(5);
+  if(pg){const id=pg.dataset.page;haptic(5);if(id==='archive'){arcFrom=setView;if(pg.dataset.arct)arcTab=pg.dataset.arct}
     if(id==='lists'){editing=true;nl=null;drawLists();openSheet('listSheet');onSheetClose=drawSettings;return}
     setView=id;drawSettings();$('settings').scrollTop=0;return}
   if(!CLOUD){
@@ -3453,15 +3560,9 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#accResend')){if(Date.now()<resendAt){authMsg=`You can resend in ${Math.ceil((resendAt-Date.now())/1000)}s.`;return drawSettings()}authStep='email';drawSettings();return accSend()}
   if(e.target.closest('#accSync')){reconcile(false);return}
   if(e.target.closest('#accOut')){sb.auth.signOut().catch(()=>{});user=null;onSignedOut();toast('Signed out');return}
-  const ar=e.target.closest('.arc-row');
-  if(ar){const t=S.tasks.find(x=>x.id===+ar.dataset.id);
-    if(t&&e.target.closest('[data-restore]')){commit(()=>{t.archived=false;delete t.archivedAt;t.keepUntil=Date.now()},'Restored to '+STAGES[3].name);return drawSettings()}
-    if(t&&e.target.closest('[data-adel]')){commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Deleted');return drawSettings()}}
-  const ae=e.target.closest('#arcEmpty');
-  if(ae){if(!ae.dataset.arm){ae.dataset.arm=1;ae.textContent='Tap again to delete all archived tasks';haptic(10);setTimeout(()=>{if(ae.isConnected){delete ae.dataset.arm;ae.textContent='Empty archive'}},3000);return}
-    commit(()=>S.tasks=S.tasks.filter(x=>!x.archived),'Archive emptied');return drawSettings()}
+  if(setView==='archive'&&arcClick(e))return;
   if(e.target.closest('#replayIntro')){closeSettings();return setTimeout(()=>openIntro(true),300)}
-  if(e.target.closest('#subBack')&&setView==='archive'){setView='tasks';haptic(5);drawSettings();return}
+  if(e.target.closest('#subBack')&&setView==='archive'){setView=arcFrom==='archive'?'data':arcFrom;haptic(5);drawSettings();return}
   if(e.target.closest('#subBack')){setView='main';openSw=null;haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#anBack')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   const rg=e.target.closest('#anRange [data-r]');if(rg){anRange=+rg.dataset.r;haptic(5);return drawSettings()}
@@ -3486,11 +3587,11 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
     try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
       const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
       const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
@@ -3529,7 +3630,7 @@ const CID=Math.random().toString(36).slice(2);
 let sb=null,user=null,syncState='off',syncTimer=null,pendingRemote=null,channel=null,applying=false,lastHash='';
 let authStep='email',authEmail='',authBusy=false,authMsg='',resendAt=0;
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.cfg,S.nid,S.focusLog||{}]);
+const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{}]);
 const busyUI=()=>document.querySelector('.sheet.on,.focus.on,.tide.on');
 const SYNC_LABEL={off:'Off',syncing:'Syncing…',synced:'Up to date',offline:'Offline, will sync later',error:'Couldn’t sync, will retry'};
 function setSync(s){syncState=s;const el=document.getElementById('syncStatus');if(el)el.textContent=SYNC_LABEL[s];try{drawMe()}catch(e){}
@@ -3539,8 +3640,8 @@ function cloudDirty(){
   S.dirty=true;S.editAt=Date.now();saveLocal();clearTimeout(syncTimer);syncTimer=setTimeout(push,1500);
 }
 /* ---- merge: combine two copies item by item, newest change wins, deletions respected ---- */
-const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{}});
-const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.cfg,d.focusLog]);
+const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{}});
+const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog]);
 function mergeDocs(L,Rm){
   const tomb={...(Rm.tomb||{})};Object.entries(L.tomb||{}).forEach(([k,v])=>{if(!tomb[k]||tomb[k]<v)tomb[k]=v});
   const cut=Date.now()-60*DAY;Object.keys(tomb).forEach(k=>{if(tomb[k]<cut)delete tomb[k]});
@@ -3554,12 +3655,12 @@ function mergeDocs(L,Rm){
   };
   const fl={...(Rm.focusLog||{})};Object.entries(L.focusLog||{}).forEach(([k,v])=>{fl[k]=Math.max(fl[k]||0,v)});
   const lc=(L.cfgU||0)>=(Rm.cfgU||0);
-  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),
+  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),
     cfg:lc?L.cfg:(Rm.cfg||L.cfg),cfgU:Math.max(L.cfgU||0,Rm.cfgU||0),orderU:Math.max(L.orderU||0,Rm.orderU||0),tomb,nid:Math.max(L.nid||0,Rm.nid||0),focusLog:fl};
 }
 function applyDoc(d){
   applying=true;
-  S.tasks=d.tasks||[];if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
+  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
   S.cfgU=d.cfgU||0;S.orderU=d.orderU||0;S.tomb=d.tomb||{};S.nid=Math.max(S.nid||0,d.nid||0);S.focusLog=d.focusLog||{};
   if(d.cfg)S.cfg=Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors)});
   migrateSpaces();
