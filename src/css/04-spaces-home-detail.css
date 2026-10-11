@@ -440,3 +440,8 @@
   .dsheet.wide .d-foot2 .d-complete{flex:0 0 260px}
   .dsheet.wide .d-foot2 .d-focus{flex:0 0 200px}
 }
+/* focus view: the board behind is dimmed and softly blurred */
+@media (min-width:1100px){
+  body:has(.dsheet.wide.on) .scrim.on{background:rgba(8,9,12,.62);-webkit-backdrop-filter:blur(8px) saturate(.9);backdrop-filter:blur(8px) saturate(.9)}
+  .scrim{transition:opacity .25s,background .25s,backdrop-filter .25s}
+}

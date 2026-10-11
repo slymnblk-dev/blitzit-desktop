@@ -138,7 +138,9 @@ function subsFade(){const b=$('dSubs');if(b)b.classList.toggle('at-end',b.scroll
 $('dSubs').addEventListener('scroll',subsFade);
 $('dSubs').onclick=e=>{
   const r=e.target.closest('.sub');if(!r)return;const s=cur.subs.find(x=>x.id===+r.dataset.s);
-  if(e.target.closest('.sx')){cur.subs=cur.subs.filter(x=>x!==s);return drawDetail()}
+  if(e.target.closest('.sx')){const t=cur;
+    confirmAsk({title:'Delete this step?',text:`“${s.t}” will be removed from this task.`,yes:'Yes, delete',no:'No',
+      onYes:()=>{t.subs=t.subs.filter(x=>x!==s);haptic(8);save();render();if(cur===t)drawDetail()}});return}
   if(!e.target.closest('.sc'))return;   /* only the circle ticks a step; the text is for editing */
   s.done=!s.done;haptic(8);drawDetail();
 };

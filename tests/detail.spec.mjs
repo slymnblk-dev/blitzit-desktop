@@ -33,3 +33,16 @@ test('focus view: task opens big in the middle and is remembered', async ({ page
   await expect(page.locator('#detailSheet')).toHaveClass(/wide/);                                  // remembered
   noErrors(errors);
 });
+
+test('deleting a step asks first', async ({ page }) => {
+  const errors = await openApp(page);
+  const id = await page.evaluate(() => { const t = S.tasks.find(x => !x.archived); t.subs = [{ id: 1, t: 'one', done: false }, { id: 2, t: 'two', done: false }]; openDetail(t.id); return t.id; });
+  await page.locator('#dSubs .sx').first().click();
+  await expect(page.locator('#dlg')).toHaveClass(/on/);
+  await page.locator('#dlgNo').click();
+  expect(await page.evaluate(id => S.tasks.find(x => x.id === id).subs.length, id)).toBe(2);
+  await page.locator('#dSubs .sx').first().click();
+  await page.locator('#dlgYes').click();
+  expect(await page.evaluate(id => S.tasks.find(x => x.id === id).subs.map(s => s.t), id)).toEqual(['two']);
+  noErrors(errors);
+});

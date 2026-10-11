@@ -1092,6 +1092,11 @@ html,body{overscroll-behavior-y:contain}
   .dsheet.wide .d-foot2 .d-complete{flex:0 0 260px}
   .dsheet.wide .d-foot2 .d-focus{flex:0 0 200px}
 }
+/* focus view: the board behind is dimmed and softly blurred */
+@media (min-width:1100px){
+  body:has(.dsheet.wide.on) .scrim.on{background:rgba(8,9,12,.62);-webkit-backdrop-filter:blur(8px) saturate(.9);backdrop-filter:blur(8px) saturate(.9)}
+  .scrim{transition:opacity .25s,background .25s,backdrop-filter .25s}
+}
 /* ---------- Tide: same page, type and controls as Classic ---------- */
 .tide .f-step{margin-top:20px}
 .tide .t-alldone{opacity:.6;cursor:default}
@@ -1543,7 +1548,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=71; // bumped with every published update
+const APP_VERSION=72; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2188,7 +2193,9 @@ function subsFade(){const b=$('dSubs');if(b)b.classList.toggle('at-end',b.scroll
 $('dSubs').addEventListener('scroll',subsFade);
 $('dSubs').onclick=e=>{
   const r=e.target.closest('.sub');if(!r)return;const s=cur.subs.find(x=>x.id===+r.dataset.s);
-  if(e.target.closest('.sx')){cur.subs=cur.subs.filter(x=>x!==s);return drawDetail()}
+  if(e.target.closest('.sx')){const t=cur;
+    confirmAsk({title:'Delete this step?',text:`“${s.t}” will be removed from this task.`,yes:'Yes, delete',no:'No',
+      onYes:()=>{t.subs=t.subs.filter(x=>x!==s);haptic(8);save();render();if(cur===t)drawDetail()}});return}
   if(!e.target.closest('.sc'))return;   /* only the circle ticks a step; the text is for editing */
   s.done=!s.done;haptic(8);drawDetail();
 };
