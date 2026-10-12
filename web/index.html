@@ -1427,6 +1427,42 @@ html,body{overscroll-behavior-y:contain}
 .more-btn svg{width:14px;height:14px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
 .more-btn.open svg{transform:rotate(180deg)}
 .col-list .more-btn{padding:12px 0;font-size:13px}
+
+/* ---------- sections (optional): named, foldable groups inside a column ---------- */
+.sec-h{list-style:none;display:flex;align-items:center;gap:2px;margin-top:22px;position:relative}
+.sec-h+.row,.sec-h+.sec-empty{border-top-color:transparent}
+.sec-tg{flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:8px 0;text-align:left;color:var(--text);font:inherit;font-size:14px;font-weight:700;letter-spacing:-.01em}
+.sec-tg>svg{width:14px;height:14px;flex:none;color:var(--muted);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.sec-h.shut .sec-tg>svg{transform:rotate(-90deg)}
+.sec-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sec-sp{font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap}
+.sec-c{font-size:12px;font-weight:600;color:var(--muted);min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--surface2);display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.sec-h.shut{border-bottom:1px solid var(--line);padding-bottom:6px}
+.sec-h.shut .sec-tg{color:var(--muted)}
+.sec-h.shut .sec-tg:hover{color:var(--text)}
+.sec-more{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--muted);opacity:0;transition:opacity .15s,background .15s}
+.sec-more svg{width:16px;height:16px}
+.sec-h:hover .sec-more,.sec-more:focus-visible{opacity:1}
+.sec-more:hover{background:var(--surface2);color:var(--text)}
+@media (hover:none){.sec-more{opacity:.7}}
+.sec-in{flex:1;min-width:0;background:none;border:0;border-bottom:1.5px solid var(--accent,var(--text));color:var(--text);font:inherit;font-size:14px;font-weight:700;padding:2px 0;outline:none}
+.sec-h.naming .sec-c{display:none}
+.sec-empty{list-style:none;font-size:13px;color:var(--muted);padding:14px 0 14px 22px;border-top:1px solid var(--line)}
+.sec-new-row{list-style:none;padding-top:10px}
+.sec-new,.ca-sec{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--muted);padding:8px 0;transition:color .15s}
+.sec-new:hover,.ca-sec:hover{color:var(--text)}
+.sec-new svg,.ca-sec svg{width:13px;height:13px}
+.col-add{display:flex;align-items:center;gap:12px}
+.col-add .ca-in{flex:1}
+.ca-sec{margin-left:auto;font-size:13px}
+.ca-sec[hidden]{display:none}
+.sec-pop{position:fixed;z-index:400;min-width:170px;padding:6px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,.28);opacity:0;transform:translateY(-4px) scale(.98);transform-origin:top right;transition:opacity .15s,transform .15s}
+.sec-pop.on{opacity:1;transform:none}
+.sec-pop button{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:9px;font-size:14px;font-weight:500;color:var(--text)}
+.sec-pop button:hover{background:var(--surface2)}
+.sec-pop .warn{color:var(--today)}
+.col-list .sec-h{margin-top:18px}
+.col-list .sec-tg{font-size:13px}
 </style>
 </head>
 <body>
@@ -1623,7 +1659,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=77; // bumped with every published update
+const APP_VERSION=78; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1675,6 +1711,7 @@ function sanitize(){
   if(S.lists!=null)S.lists=Array.isArray(S.lists)?S.lists.filter(l=>obj(l)&&l.id!=null):null;
   if(S.lists)S.lists.forEach(cleanTags);
   if(S.spaces!=null)S.spaces=Array.isArray(S.spaces)?S.spaces.filter(x=>obj(x)&&x.id!=null):null;
+  if(S.spaces)S.spaces.forEach(x=>{if('secs' in x)x.secs=Array.isArray(x.secs)?x.secs.filter(s=>obj(s)&&s.id&&typeof s.name==='string'&&s.name.trim()&&typeof s.stage==='string'):[]});
   S.arch=Array.isArray(S.arch)?S.arch.filter(b=>obj(b)&&b.id!=null&&(b.kind==='list'&&obj(b.list)||b.kind==='space'&&obj(b.space))):[];
   S.arch.forEach(b=>{if(!Array.isArray(b.tasks))b.tasks=[];if(b.kind==='space'&&!Array.isArray(b.lists))b.lists=[]});
   if(!obj(S.cfg))delete S.cfg;
@@ -1937,19 +1974,20 @@ function render(dir){
   prevCounts=counts;
 
   const L=$('list');
+  const secEmpty=!here.length&&S.stage!=='done'&&secOn()&&(canAddSec()||secSpaces().some(sp=>secsOf(sp).some(s=>s.stage===S.stage)));
   if(!here.length){
     const N=STAGES.map(x=>x.name);
     const msg={backlog:[`${N[0]} is empty`,'Park ideas here so they stop living in your head.'],
       week:['Nothing planned yet',`Pull a few tasks from ${N[0]} to shape your week.`],
       today:[`${N[2]} is clear`,`Pull down to add a task, or move one from ${N[1]}.`],
       done:['Nothing finished yet','Tick a task off and it lands here.']}[S.stage];
-    L.innerHTML=`<li class="empty"><b>${msg[0]}</b>${msg[1]}</li>`;
+    L.innerHTML=`<li class="empty"><b>${msg[0]}</b>${msg[1]}</li>`+(secEmpty?colRows([],S.stage,'m:'+S.stage):'');
   } else if(S.stage==='done'){
     here=[...here].sort((a,b)=>b.doneAt-a.doneAt);
     let last='',out='';
     here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)});
     L.innerHTML=out;
-  } else L.innerHTML=foldRows(here,'m:'+S.stage);
+  } else L.innerHTML=colRows(here,S.stage,'m:'+S.stage);
 
   const sp=inSpaceMode()?spaceOf(S.space):null;
   const lists=S.list==='all'?listsHere():[listOf(S.list)];
@@ -2074,7 +2112,9 @@ function endDrag(){
     d.row.style.transform=`translateY(${off}px)`;haptic(6);
     setTimeout(()=>{
       if(d.target!==d.idx){
-        const ids=d.rows.map(r=>+r.dataset.id);const [m]=ids.splice(d.idx,1);ids.splice(d.target,0,m);
+        const ids=d.rows.map(r=>+r.dataset.id);
+        if(secOn()){const mv=S.tasks.find(x=>x.id===ids[d.idx]),nb=S.tasks.find(x=>x.id===ids[d.target]),s=secOfTask(nb);if(mv){if(s)mv.sec=s.id;else delete mv.sec}}
+        const [m]=ids.splice(d.idx,1);ids.splice(d.target,0,m);
         const ordered=ids.map(id=>S.tasks.find(x=>x.id===id));let k=0;
         S.tasks=S.tasks.map(x=>ordered.includes(x)?ordered[k++]:x);
       }
@@ -2217,6 +2257,7 @@ function drawDetail(){
     P('list',`<i style="background:${l.c}"></i>${esc(l.name)}`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
     P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
+    (secOn()&&t.stage!=='done'&&secsForTask(t).length?P('sec',`${I_SEC}${secOfTask(t)?esc(secOfTask(t).name):'Section'}`,!secOfTask(t)):'')+
     P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length);
   const pk=(on,v,label,dot)=>`<button class="pk ${on?'on':''}" data-v="${v}">${dot?`<i style="background:${dot}"></i>`:''}${esc(label)}</button>`;
   const pick=$('dPicker');
@@ -2226,6 +2267,7 @@ function drawDetail(){
       list:()=>S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?`${(spaceOf(x.space)||{}).name} › ${x.name}`:x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
       est:()=>ESTS.map(m=>pk(t.est===m,m,fmt(m))).join(''),
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
+      sec:()=>pk(!secOfTask(t),'','No section')+secsForTask(t).map(s=>pk((secOfTask(t)||{}).id===s.id,s.id,s.name)).join(''),
       tags:()=>{const lt=ltags(l),on=n=>tagsOf(t).some(x=>tagKey(x)===tagKey(n));
         return lt.map(n=>`<button class="pk tg-pk ${on(n)?'on':''}" data-v="${esc(n)}">#${esc(n)}</button>`).join('')+
         `<input class="pk-in" id="dTagIn" maxlength="24" placeholder="${lt.length?'New tag':'Add a tag'}" enterkeyhint="done" autocomplete="off">`+
@@ -2262,6 +2304,7 @@ $('dPicker').onclick=e=>{
   else if(k==='list'){t.list=v;carryTags(t)}
   else if(k==='est')t.est=+v;
   else if(k==='repeat')t.repeat=v;
+  else if(k==='sec'){if(v)t.sec=v;else delete t.sec}
   if(k!=='stage'){save();render()}
   drawDetail();
 };
@@ -2907,7 +2950,8 @@ function renderDesk(){
       const m=here.reduce((a,t)=>a+t.est,0);
       sum.innerHTML=here.length?`<span><b>${fmt(m)}</b> planned</span>`:'';
       if(sid==='today'){const g=$('colGo');col.classList.toggle('has-go',!!here.length);if(g)g.hidden=!here.length;}
-      ul.innerHTML=foldRows(here,'d:'+sid)||`<li class="col-empty">Drop tasks here.</li>`;
+      ul.innerHTML=(here.length||!secOn()?'':`<li class="col-empty">Drop tasks here.</li>`)+colRows(here,sid,'d:'+sid)||`<li class="col-empty">Drop tasks here.</li>`;
+      const cs=col.querySelector('.ca-sec');if(cs)cs.hidden=!canAddSec();
     }
   });
   const open=id=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(id==='all'||t.list===id)&&t.stage!=='done').length;
@@ -3043,7 +3087,92 @@ document.addEventListener('click',e=>{if(fwPop&&!e.target.closest('.fw-crumbs'))
 document.addEventListener('keydown',e=>{if(fwPop&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fwClose()}},true);
 $('fwMe').onclick=()=>openYou();
 /* "N more" / "Show less" in long columns (board and phone list) */
-document.addEventListener('click',e=>{const b=e.target.closest('[data-more]');if(!b)return;e.stopPropagation();moreOpen[b.dataset.more]=!moreOpen[b.dataset.more];haptic(5);render()},true);
+document.addEventListener('click',e=>{const b=e.target.closest('.more-btn[data-more]');if(!b)return;e.stopPropagation();moreOpen[b.dataset.more]=!moreOpen[b.dataset.more];haptic(5);render()},true);
+/* ---------- sections: optional named, foldable groups inside a column (Settings → Tasks, off by default) ----------
+   A space keeps its sections: sp.secs=[{id,name,stage,shut}]. A task joins one with t.sec.
+   A task only shows in a section while it sits in that section's column and space; otherwise it is a loose task. */
+const secOn=()=>!!(S.cfg&&S.cfg.sections);
+const secsOf=sp=>sp&&Array.isArray(sp.secs)?sp.secs:[];
+const I_SEC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h10"/></svg>';
+const SEC_CHEV='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+function secFind(id){for(const sp of S.spaces||[]){const s=secsOf(sp).find(x=>x.id===id);if(s)return {sp,sec:s}}return null}
+function secOfTask(t){if(!t||!t.sec)return null;const f=secFind(t.sec);if(!f||f.sec.stage!==t.stage||listOf(t.list).space!==f.sp.id)return null;return f.sec}
+/* sections a task could join: its own space, its own column */
+const secsForTask=t=>secsOf(spaceOf(listOf(t.list).space)).filter(s=>s.stage===t.stage);
+/* which spaces' sections show right now: the open space, or every space on "All tasks" */
+const secSpaces=()=>S.space==='all'?orderedSpaces():S.space?[spaceOf(S.space)].filter(Boolean):[];
+const canAddSec=()=>secOn()&&S.space&&S.space!=='all';
+
+function secHead(s,ts,sp){
+  return `<li class="sec-h ${s.shut?'shut':''}" data-sec="${s.id}"><button class="sec-tg" data-sectg="${s.id}" aria-expanded="${!s.shut}">${SEC_CHEV}<span class="sec-n">${esc(s.name)}</span>${sp?`<span class="sec-sp">${esc(sp.name)}</span>`:''}<span class="sec-c">${ts.length}</span></button><button class="sec-more" data-secm="${s.id}" aria-label="Section options">${DOTS3}</button></li>`;
+}
+/* the rows of one column: loose tasks first (folded if that is on), then each section */
+function colRows(here,stage,key){
+  if(!secOn()||stage==='done')return foldRows(here,key);
+  const desk=key[0]==='d',all=S.space==='all';
+  const secs=secSpaces().flatMap(sp=>secsOf(sp).filter(s=>s.stage===stage).map(s=>({s,sp})));
+  const by=new Map(secs.map(x=>[x.s.id,[]])),loose=[];
+  here.forEach(t=>{const s=secOfTask(t);if(s&&by.has(s.id))by.get(s.id).push(t);else loose.push(t)});
+  let out=foldRows(loose,key);
+  secs.forEach(({s,sp})=>{const ts=by.get(s.id);if(all&&!ts.length)return;
+    out+=secHead(s,ts,all?sp:null)+(s.shut?'':ts.length?ts.map(rowHTML).join(''):`<li class="sec-empty">${desk?'Drag tasks here':'Empty. Open a task to add it here.'}</li>`)});
+  if(!desk&&canAddSec())out+=`<li class="sec-new-row"><button class="sec-new" data-secnew="${stage}">${PLUS_S}New section</button></li>`;
+  return out;
+}
+/* the section a dropped row lands in: the closest section header above it */
+function secAbove(row){for(let n=row.previousElementSibling;n;n=n.previousElementSibling){if(n.classList.contains('sec-h'))return n.dataset.sec;}return null}
+
+function secNew(stage){
+  const sp=spaceOf(S.space);if(!sp)return;
+  const s={id:'x'+newId(),name:'',stage};sp.secs=[...secsOf(sp),s];
+  render();secRename(s.id,true);
+}
+function secRename(id,isNew){
+  const li=[...document.querySelectorAll(`.sec-h[data-sec="${id}"]`)].find(x=>x.offsetParent!==null),f=secFind(id);if(!f)return;if(!li){if(!f.sec.name){f.sp.secs=secsOf(f.sp).filter(x=>x!==f.sec);save();render()}return}
+  const n=li.querySelector('.sec-n');
+  const inp=document.createElement('input');inp.className='sec-in';inp.maxLength=40;inp.value=f.sec.name;inp.placeholder='Section name';inp.setAttribute('autocomplete','off');inp.setAttribute('aria-label','Section name');
+  n.replaceWith(inp);li.classList.add('naming');inp.focus();inp.select();
+  let done=false;
+  const end=keep=>{if(done)return;done=true;const v=inp.value.replace(/\s+/g,' ').trim();
+    if(keep&&v){f.sec.name=v;haptic(6)}
+    else if(isNew||!f.sec.name){f.sp.secs=secsOf(f.sp).filter(x=>x!==f.sec)}
+    save();render()};
+  inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();end(true)}else if(e.key==='Escape'){e.preventDefault();end(false)}});
+  inp.addEventListener('blur',()=>end(true));
+  inp.addEventListener('click',e=>e.stopPropagation());
+  inp.addEventListener('pointerdown',e=>e.stopPropagation());
+}
+function secDelete(id){
+  const f=secFind(id);if(!f)return;const n=S.tasks.filter(t=>t.sec===id).length;
+  const go=()=>commit(()=>{f.sp.secs=secsOf(f.sp).filter(x=>x.id!==id);S.tasks.forEach(t=>{if(t.sec===id)delete t.sec})},'Section deleted');
+  confirmAsk({title:'Delete this section?',text:n?`“${f.sec.name}” goes away. Its ${n} ${n===1?'task stays':'tasks stay'} in the column.`:`“${f.sec.name}” goes away.`,yes:'Yes, delete',no:'No',onYes:go});
+}
+/* small menu for a section: Rename, Delete */
+function secMenu(btn){
+  closeSecMenu();const id=btn.dataset.secm,r=btn.getBoundingClientRect();
+  const m=document.createElement('div');m.className='sec-pop';m.id='secPop';
+  m.innerHTML=`<button data-secren="${id}">Rename</button><button class="warn" data-secdel="${id}">Delete section</button>`;
+  document.body.appendChild(m);
+  const w=m.offsetWidth,h=m.offsetHeight;
+  m.style.left=Math.max(8,Math.min(innerWidth-w-8,r.right-w))+'px';
+  m.style.top=(r.bottom+h+8>innerHeight?r.top-h-4:r.bottom+4)+'px';
+  requestAnimationFrame(()=>m.classList.add('on'));
+}
+function closeSecMenu(){const m=$('secPop');if(m)m.remove()}
+function secToggle(id){const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
+
+document.addEventListener('click',e=>{
+  const pop=e.target.closest('#secPop');
+  if(pop){const r=e.target.closest('[data-secren]'),d=e.target.closest('[data-secdel]');closeSecMenu();
+    if(r)secRename(r.dataset.secren);else if(d)secDelete(d.dataset.secdel);return}
+  closeSecMenu();
+  const m=e.target.closest('[data-secm]');if(m){e.stopPropagation();secMenu(m);return}
+  const tg=e.target.closest('[data-sectg]');if(tg){e.stopPropagation();if(!tg.closest('.naming'))secToggle(tg.dataset.sectg);return}
+  const nw=e.target.closest('[data-secnew]');if(nw){e.stopPropagation();secNew(nw.dataset.secnew);return}
+},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('secPop')){e.stopPropagation();closeSecMenu()}},true);
+addEventListener('resize',closeSecMenu);
+document.addEventListener('scroll',closeSecMenu,true);
 /* ---------- spaces ---------- */
 function openSpace(id){S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -3198,7 +3327,7 @@ window.addEventListener('pointermove',e=>{
   col.classList.add('over');bd.col=col;
   const ul=col.querySelector('.col-list');ul.querySelector('.col-empty')?.remove();
   if(col.dataset.s==='done'){if(bd.row.parentElement!==ul)ul.prepend(bd.row);return}
-  const rows=[...ul.querySelectorAll('.row')].filter(r=>r!==bd.row);
+  const rows=[...ul.querySelectorAll('.row, .sec-h')].filter(r=>r!==bd.row);
   const before=rows.find(r=>{const b=r.getBoundingClientRect();return e.clientY<b.top+b.height/2});
   if(before){if(before.previousElementSibling!==bd.row)ul.insertBefore(bd.row,before)}
   else if(ul.lastElementChild!==bd.row)ul.appendChild(bd.row);
@@ -3211,13 +3340,16 @@ window.addEventListener('pointerup',()=>{
   const col=d.col;if(!col){render();return}
   const target=col.dataset.s,t=S.tasks.find(x=>x.id===+d.row.dataset.id);
   const ids=[...col.querySelectorAll('.col-list .row')].map(r=>+r.dataset.id);
+  const sec=secOn()&&target!=='done'?secAbove(d.row):undefined,secMoved=sec!==undefined&&(sec||null)!==((secOfTask(t)||{}).id||null);
   const apply=()=>{
     if(t.stage!==target)setStage(t,target);
+    if(sec!==undefined){if(sec)t.sec=sec;else delete t.sec}
     if(target!=='done'){const ordered=ids.map(id=>S.tasks.find(x=>x.id===id)).filter(Boolean);let k=0;
       S.tasks=S.tasks.map(x=>ordered.includes(x)?ordered[k++]:x)}
   };
   haptic(8);
-  if(t.stage!==target)commit(apply,target==='done'?doneMsg(t):`Moved to ${STAGES[idx(target)].name}`);
+  if(t.stage!==target)commit(apply,target==='done'?doneMsg(t):sec?`Moved to ${secFind(sec).sec.name}`:`Moved to ${STAGES[idx(target)].name}`);
+  else if(secMoved)commit(apply,sec?`Moved to ${secFind(sec).sec.name}`:'Moved out of the section');
   else{apply();render()}
 });
 
@@ -3389,7 +3521,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -3415,7 +3547,7 @@ function buildShells(){
       <button class="col-fx" aria-label="Focus on ${esc(s.name)}"><svg class="ic-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg><svg class="ic-min" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button></div><span class="col-n"></span></header>
     <div class="col-sum"></div>
     <div class="col-scroll"><ul class="list col-list"></ul>
-    ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"></div>`:''}
+    ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"><button class="ca-sec" data-secnew="${s.id}" hidden>${PLUS_S}Section</button></div>`:''}
     </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Win the day</span></button>`:''}</section>`).join('');
   applyColFocus(false);
 }
@@ -3546,6 +3678,7 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Display</h3>
     ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Today progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
+    ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
     ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}

@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=77; // bumped with every published update
+const APP_VERSION=78; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -59,6 +59,7 @@ function sanitize(){
   if(S.lists!=null)S.lists=Array.isArray(S.lists)?S.lists.filter(l=>obj(l)&&l.id!=null):null;
   if(S.lists)S.lists.forEach(cleanTags);
   if(S.spaces!=null)S.spaces=Array.isArray(S.spaces)?S.spaces.filter(x=>obj(x)&&x.id!=null):null;
+  if(S.spaces)S.spaces.forEach(x=>{if('secs' in x)x.secs=Array.isArray(x.secs)?x.secs.filter(s=>obj(s)&&s.id&&typeof s.name==='string'&&s.name.trim()&&typeof s.stage==='string'):[]});
   S.arch=Array.isArray(S.arch)?S.arch.filter(b=>obj(b)&&b.id!=null&&(b.kind==='list'&&obj(b.list)||b.kind==='space'&&obj(b.space))):[];
   S.arch.forEach(b=>{if(!Array.isArray(b.tasks))b.tasks=[];if(b.kind==='space'&&!Array.isArray(b.lists))b.lists=[]});
   if(!obj(S.cfg))delete S.cfg;

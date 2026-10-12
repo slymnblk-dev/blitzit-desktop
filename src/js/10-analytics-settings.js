@@ -45,7 +45,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -71,7 +71,7 @@ function buildShells(){
       <button class="col-fx" aria-label="Focus on ${esc(s.name)}"><svg class="ic-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg><svg class="ic-min" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button></div><span class="col-n"></span></header>
     <div class="col-sum"></div>
     <div class="col-scroll"><ul class="list col-list"></ul>
-    ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"></div>`:''}
+    ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"><button class="ca-sec" data-secnew="${s.id}" hidden>${PLUS_S}Section</button></div>`:''}
     </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Win the day</span></button>`:''}</section>`).join('');
   applyColFocus(false);
 }
@@ -202,6 +202,7 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Display</h3>
     ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Today progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
+    ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
     ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}

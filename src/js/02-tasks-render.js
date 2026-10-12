@@ -166,19 +166,20 @@ function render(dir){
   prevCounts=counts;
 
   const L=$('list');
+  const secEmpty=!here.length&&S.stage!=='done'&&secOn()&&(canAddSec()||secSpaces().some(sp=>secsOf(sp).some(s=>s.stage===S.stage)));
   if(!here.length){
     const N=STAGES.map(x=>x.name);
     const msg={backlog:[`${N[0]} is empty`,'Park ideas here so they stop living in your head.'],
       week:['Nothing planned yet',`Pull a few tasks from ${N[0]} to shape your week.`],
       today:[`${N[2]} is clear`,`Pull down to add a task, or move one from ${N[1]}.`],
       done:['Nothing finished yet','Tick a task off and it lands here.']}[S.stage];
-    L.innerHTML=`<li class="empty"><b>${msg[0]}</b>${msg[1]}</li>`;
+    L.innerHTML=`<li class="empty"><b>${msg[0]}</b>${msg[1]}</li>`+(secEmpty?colRows([],S.stage,'m:'+S.stage):'');
   } else if(S.stage==='done'){
     here=[...here].sort((a,b)=>b.doneAt-a.doneAt);
     let last='',out='';
     here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)});
     L.innerHTML=out;
-  } else L.innerHTML=foldRows(here,'m:'+S.stage);
+  } else L.innerHTML=colRows(here,S.stage,'m:'+S.stage);
 
   const sp=inSpaceMode()?spaceOf(S.space):null;
   const lists=S.list==='all'?listsHere():[listOf(S.list)];

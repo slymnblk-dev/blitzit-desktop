@@ -152,7 +152,7 @@ window.addEventListener('pointermove',e=>{
   col.classList.add('over');bd.col=col;
   const ul=col.querySelector('.col-list');ul.querySelector('.col-empty')?.remove();
   if(col.dataset.s==='done'){if(bd.row.parentElement!==ul)ul.prepend(bd.row);return}
-  const rows=[...ul.querySelectorAll('.row')].filter(r=>r!==bd.row);
+  const rows=[...ul.querySelectorAll('.row, .sec-h')].filter(r=>r!==bd.row);
   const before=rows.find(r=>{const b=r.getBoundingClientRect();return e.clientY<b.top+b.height/2});
   if(before){if(before.previousElementSibling!==bd.row)ul.insertBefore(bd.row,before)}
   else if(ul.lastElementChild!==bd.row)ul.appendChild(bd.row);
@@ -165,13 +165,16 @@ window.addEventListener('pointerup',()=>{
   const col=d.col;if(!col){render();return}
   const target=col.dataset.s,t=S.tasks.find(x=>x.id===+d.row.dataset.id);
   const ids=[...col.querySelectorAll('.col-list .row')].map(r=>+r.dataset.id);
+  const sec=secOn()&&target!=='done'?secAbove(d.row):undefined,secMoved=sec!==undefined&&(sec||null)!==((secOfTask(t)||{}).id||null);
   const apply=()=>{
     if(t.stage!==target)setStage(t,target);
+    if(sec!==undefined){if(sec)t.sec=sec;else delete t.sec}
     if(target!=='done'){const ordered=ids.map(id=>S.tasks.find(x=>x.id===id)).filter(Boolean);let k=0;
       S.tasks=S.tasks.map(x=>ordered.includes(x)?ordered[k++]:x)}
   };
   haptic(8);
-  if(t.stage!==target)commit(apply,target==='done'?doneMsg(t):`Moved to ${STAGES[idx(target)].name}`);
+  if(t.stage!==target)commit(apply,target==='done'?doneMsg(t):sec?`Moved to ${secFind(sec).sec.name}`:`Moved to ${STAGES[idx(target)].name}`);
+  else if(secMoved)commit(apply,sec?`Moved to ${secFind(sec).sec.name}`:'Moved out of the section');
   else{apply();render()}
 });
 

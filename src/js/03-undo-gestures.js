@@ -110,7 +110,9 @@ function endDrag(){
     d.row.style.transform=`translateY(${off}px)`;haptic(6);
     setTimeout(()=>{
       if(d.target!==d.idx){
-        const ids=d.rows.map(r=>+r.dataset.id);const [m]=ids.splice(d.idx,1);ids.splice(d.target,0,m);
+        const ids=d.rows.map(r=>+r.dataset.id);
+        if(secOn()){const mv=S.tasks.find(x=>x.id===ids[d.idx]),nb=S.tasks.find(x=>x.id===ids[d.target]),s=secOfTask(nb);if(mv){if(s)mv.sec=s.id;else delete mv.sec}}
+        const [m]=ids.splice(d.idx,1);ids.splice(d.target,0,m);
         const ordered=ids.map(id=>S.tasks.find(x=>x.id===id));let k=0;
         S.tasks=S.tasks.map(x=>ordered.includes(x)?ordered[k++]:x);
       }
