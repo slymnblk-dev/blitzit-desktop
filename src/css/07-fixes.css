@@ -134,3 +134,9 @@
 .sec-pop .warn{color:var(--today)}
 .col-list .sec-h{margin-top:18px}
 .col-list .sec-tg{font-size:13px}
+
+/* desktop: "Add task" and "Section" stay out of sight until you point at their column */
+@media (hover:hover) and (min-width:1100px){
+  .col-add{opacity:0;transition:opacity .18s ease}
+  .col:hover .col-add,.col:focus-within .col-add,.col.over .col-add,.col-add:has(.ca-in:not([hidden])){opacity:1}
+}

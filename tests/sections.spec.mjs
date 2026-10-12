@@ -19,6 +19,7 @@ test('desktop: off by default; turn on, create, drag a task in, fold, rename, de
   const spId = await setup(page);
   const today = page.locator('.col[data-s="today"]');
   await expect(today.locator('.ca-sec')).toBeHidden();                          // off by default
+  await today.hover();
   await turnOn(page);
   await today.locator('.ca-sec').click();
   await page.keyboard.type('Deep work');
@@ -90,5 +91,20 @@ test('space ⋯ menu still opens on Home', async ({ page }) => {
   const btn = page.locator('#homeView .sp-more').first();
   await btn.click();
   await expect(page.locator('#homeView .sp-pop').first()).toBeVisible();
+  noErrors(errors);
+});
+
+test('desktop: Add task / Section appear only when the column is hovered', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { openSpaceSide(S.spaces[0].id); });
+  const op = sel => page.locator(sel).evaluate(e => +getComputedStyle(e).opacity);
+  await page.mouse.move(700, 880);
+  await page.waitForTimeout(300);
+  expect(await op('.col[data-s="week"] .col-add')).toBe(0);
+  await page.locator('.col[data-s="week"] .col-list').hover();
+  await page.waitForTimeout(300);
+  expect(await op('.col[data-s="week"] .col-add')).toBe(1);
+  expect(await op('.col[data-s="backlog"] .col-add')).toBe(0);
   noErrors(errors);
 });
