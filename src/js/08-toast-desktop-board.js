@@ -32,7 +32,7 @@ function renderDesk(){
       const m=here.reduce((a,t)=>a+t.est,0);
       sum.innerHTML=here.length?`<span><b>${fmt(m)}</b> planned</span>`:'';
       if(sid==='today'){const g=$('colGo');col.classList.toggle('has-go',!!here.length);if(g)g.hidden=!here.length;}
-      ul.innerHTML=here.map(rowHTML).join('')||`<li class="col-empty">Drop tasks here.</li>`;
+      ul.innerHTML=foldRows(here,'d:'+sid)||`<li class="col-empty">Drop tasks here.</li>`;
     }
   });
   const open=id=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(id==='all'||t.list===id)&&t.stage!=='done').length;

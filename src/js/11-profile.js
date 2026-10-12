@@ -160,7 +160,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#anBack')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   const rg=e.target.closest('#anRange [data-r]');if(rg){anRange=+rg.dataset.r;haptic(5);return drawSettings()}
   const b=e.target.closest('[data-k]');
-  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter'].includes(b.dataset.k))v=+v;haptic(5);return setCfg(b.dataset.k,v)}
+  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt'].includes(b.dataset.k))v=+v;haptic(5);return setCfg(b.dataset.k,v)}
   const t=e.target.closest('[data-tg]');
   if(t){const k=t.dataset.tg;t.setAttribute('aria-pressed',!c[k]);haptic(6);setTimeout(()=>setCfg(k,!c[k]),180);return}
   const dl=e.target.closest('[data-deflist]');if(dl)return setCfg('defList',dl.dataset.deflist||null);

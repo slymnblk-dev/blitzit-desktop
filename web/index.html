@@ -1420,6 +1420,13 @@ html,body{overscroll-behavior-y:contain}
 .lt-cols{flex:1;display:flex;gap:4px}
 .lt-cols i{flex:1;border-radius:5px;background:color-mix(in srgb,var(--text) 9%,transparent)}
 .lt-cols i:nth-child(3){background:color-mix(in srgb,var(--today) 45%,transparent)}
+/* fold long columns */
+.more-row{list-style:none;border-top:1px solid var(--line)}
+.more-btn{display:flex;align-items:center;gap:8px;width:100%;padding:14px 0;font-size:14px;font-weight:600;color:var(--muted);transition:color .15s}
+.more-btn:hover{color:var(--text)}
+.more-btn svg{width:14px;height:14px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.more-btn.open svg{transform:rotate(180deg)}
+.col-list .more-btn{padding:12px 0;font-size:13px}
 </style>
 </head>
 <body>
@@ -1616,7 +1623,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=76; // bumped with every published update
+const APP_VERSION=77; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1803,6 +1810,15 @@ function dayLabel(ts){
   if(k===dkey(Date.now()-DAY))return 'Yesterday';
   return new Date(ts).toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short'});
 }
+/* fold long columns (optional): first N tasks, the rest behind a quiet "N more" row */
+const moreOpen={};
+function foldRows(list,key){
+  const n=+S.cfg.collapseAt||5;
+  if(!S.cfg.collapseLong||list.length<=n)return list.map(rowHTML).join('');
+  const open=!!moreOpen[key];
+  const btn=`<li class="more-row"><button class="more-btn ${open?'open':''}" data-more="${key}"><span>${open?'Show less':`${list.length-n} more`}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></li>`;
+  return (open?list:list.slice(0,n)).map(rowHTML).join('')+btn;
+}
 function rowHTML(t){
   const l=listOf(t.list);
   const sd=t.subs.filter(s=>s.done).length;
@@ -1933,7 +1949,7 @@ function render(dir){
     let last='',out='';
     here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)});
     L.innerHTML=out;
-  } else L.innerHTML=here.map(rowHTML).join('');
+  } else L.innerHTML=foldRows(here,'m:'+S.stage);
 
   const sp=inSpaceMode()?spaceOf(S.space):null;
   const lists=S.list==='all'?listsHere():[listOf(S.list)];
@@ -2891,7 +2907,7 @@ function renderDesk(){
       const m=here.reduce((a,t)=>a+t.est,0);
       sum.innerHTML=here.length?`<span><b>${fmt(m)}</b> planned</span>`:'';
       if(sid==='today'){const g=$('colGo');col.classList.toggle('has-go',!!here.length);if(g)g.hidden=!here.length;}
-      ul.innerHTML=here.map(rowHTML).join('')||`<li class="col-empty">Drop tasks here.</li>`;
+      ul.innerHTML=foldRows(here,'d:'+sid)||`<li class="col-empty">Drop tasks here.</li>`;
     }
   });
   const open=id=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(id==='all'||t.list===id)&&t.stage!=='done').length;
@@ -3026,6 +3042,8 @@ $('fwNav').addEventListener('click',e=>{
 document.addEventListener('click',e=>{if(fwPop&&!e.target.closest('.fw-crumbs'))fwClose()});
 document.addEventListener('keydown',e=>{if(fwPop&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fwClose()}},true);
 $('fwMe').onclick=()=>openYou();
+/* "N more" / "Show less" in long columns (board and phone list) */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-more]');if(!b)return;e.stopPropagation();moreOpen[b.dataset.more]=!moreOpen[b.dataset.more];haptic(5);render()},true);
 /* ---------- spaces ---------- */
 function openSpace(id){S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -3371,7 +3389,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -3528,6 +3546,8 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Display</h3>
     ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Today progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
+    ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
+    ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
     ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}
     </div><div class="set-sec"><h3>Daily</h3>
     ${row('Morning check-in',tg('checkin'),'Ask about leftover tasks each day')}</div>
@@ -3751,7 +3771,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#anBack')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   const rg=e.target.closest('#anRange [data-r]');if(rg){anRange=+rg.dataset.r;haptic(5);return drawSettings()}
   const b=e.target.closest('[data-k]');
-  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter'].includes(b.dataset.k))v=+v;haptic(5);return setCfg(b.dataset.k,v)}
+  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt'].includes(b.dataset.k))v=+v;haptic(5);return setCfg(b.dataset.k,v)}
   const t=e.target.closest('[data-tg]');
   if(t){const k=t.dataset.tg;t.setAttribute('aria-pressed',!c[k]);haptic(6);setTimeout(()=>setCfg(k,!c[k]),180);return}
   const dl=e.target.closest('[data-deflist]');if(dl)return setCfg('defList',dl.dataset.deflist||null);

@@ -39,6 +39,15 @@ function dayLabel(ts){
   if(k===dkey(Date.now()-DAY))return 'Yesterday';
   return new Date(ts).toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short'});
 }
+/* fold long columns (optional): first N tasks, the rest behind a quiet "N more" row */
+const moreOpen={};
+function foldRows(list,key){
+  const n=+S.cfg.collapseAt||5;
+  if(!S.cfg.collapseLong||list.length<=n)return list.map(rowHTML).join('');
+  const open=!!moreOpen[key];
+  const btn=`<li class="more-row"><button class="more-btn ${open?'open':''}" data-more="${key}"><span>${open?'Show less':`${list.length-n} more`}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></li>`;
+  return (open?list:list.slice(0,n)).map(rowHTML).join('')+btn;
+}
 function rowHTML(t){
   const l=listOf(t.list);
   const sd=t.subs.filter(s=>s.done).length;
@@ -169,7 +178,7 @@ function render(dir){
     let last='',out='';
     here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)});
     L.innerHTML=out;
-  } else L.innerHTML=here.map(rowHTML).join('');
+  } else L.innerHTML=foldRows(here,'m:'+S.stage);
 
   const sp=inSpaceMode()?spaceOf(S.space):null;
   const lists=S.list==='all'?listsHere():[listOf(S.list)];

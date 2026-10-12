@@ -91,3 +91,10 @@
 .lt-cols{flex:1;display:flex;gap:4px}
 .lt-cols i{flex:1;border-radius:5px;background:color-mix(in srgb,var(--text) 9%,transparent)}
 .lt-cols i:nth-child(3){background:color-mix(in srgb,var(--today) 45%,transparent)}
+/* fold long columns */
+.more-row{list-style:none;border-top:1px solid var(--line)}
+.more-btn{display:flex;align-items:center;gap:8px;width:100%;padding:14px 0;font-size:14px;font-weight:600;color:var(--muted);transition:color .15s}
+.more-btn:hover{color:var(--text)}
+.more-btn svg{width:14px;height:14px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.more-btn.open svg{transform:rotate(180deg)}
+.col-list .more-btn{padding:12px 0;font-size:13px}
