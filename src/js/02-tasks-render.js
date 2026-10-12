@@ -175,10 +175,7 @@ function render(dir){
       done:['Nothing finished yet','Tick a task off and it lands here.']}[S.stage];
     L.innerHTML=`<li class="empty"><b>${msg[0]}</b>${msg[1]}</li>`+(secEmpty?colRows([],S.stage,'m:'+S.stage):'');
   } else if(S.stage==='done'){
-    here=[...here].sort((a,b)=>b.doneAt-a.doneAt);
-    let last='',out='';
-    here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)});
-    L.innerHTML=out;
+    L.innerHTML=doneRows(here);
   } else L.innerHTML=colRows(here,S.stage,'m:'+S.stage);
 
   const sp=inSpaceMode()?spaceOf(S.space):null;

@@ -108,3 +108,22 @@ test('desktop: Add task / Section appear only when the column is hovered', async
   expect(await op('.col[data-s="backlog"] .col-add')).toBe(0);
   noErrors(errors);
 });
+
+test('tuck away finished tasks: Done shows one "Completed" section, off by default', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { const l = S.lists[0]; for (let i = 0; i < 3; i++) { const t = newTask('Fin ' + i, 'done', l.id, 30); t.doneAt = Date.now(); S.tasks.push(t) } S.space = 'all'; render(); });
+  const done = page.locator('.col[data-s="done"]');
+  expect(await done.locator('.row').count()).toBeGreaterThanOrEqual(3);          // off: all finished tasks show
+  await expect(done.locator('.sec-h')).toHaveCount(0);
+  await page.evaluate(() => { openSettings(); setView = 'tasks'; drawSettings(); });
+  await page.locator('[data-tg="doneFold"]').click();
+  await page.evaluate(() => closeSettings());
+  await expect(done.locator('.sec-h .sec-n')).toHaveText('Completed');
+  await expect(done.locator('.row')).toHaveCount(0);                              // tucked away
+  await done.locator('.sec-tg').click();
+  expect(await done.locator('.row').count()).toBeGreaterThanOrEqual(3);          // opens on click
+  await done.locator('.sec-tg').click();
+  await expect(done.locator('.row')).toHaveCount(0);
+  noErrors(errors);
+});

@@ -25,8 +25,7 @@ function renderDesk(){
     const sum=col.querySelector('.col-sum'),ul=col.querySelector('.col-list');
     if(sid==='done'){
       sum.innerHTML=here.length?`<span><b>${here.length}</b> finished</span>`:'';
-      here=[...here].sort((a,b)=>b.doneAt-a.doneAt);let last='',out='';
-      here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)});
+      const out=doneRows(here);
       ul.innerHTML=out||`<li class="col-empty">Finished tasks land here.</li>`;
     } else {
       const m=here.reduce((a,t)=>a+t.est,0);

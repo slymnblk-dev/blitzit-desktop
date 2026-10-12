@@ -69,7 +69,7 @@ function secMenu(btn){
   requestAnimationFrame(()=>m.classList.add('on'));
 }
 function closeSecMenu(){const m=$('secPop');if(m)m.remove()}
-function secToggle(id){const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
+function secToggle(id){if(id==='__done'){S.cfg.doneOpen=!S.cfg.doneOpen;S.cfgU=Date.now();haptic(5);save();render();return}const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
 
 document.addEventListener('click',e=>{
   const pop=e.target.closest('#secPop');
@@ -83,3 +83,15 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('secPop')){e.stopPropagation();closeSecMenu()}},true);
 addEventListener('resize',closeSecMenu);
 document.addEventListener('scroll',closeSecMenu,true);
+
+/* Done column: finished tasks, newest first by day. With "Tuck away finished tasks" on, they wait under one quiet "Completed" section. */
+function doneRows(here){
+  here=[...here].sort((a,b)=>b.doneAt-a.doneAt);
+  let last='',out='';
+  const body=()=>{here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)})};
+  if(!S.cfg.doneFold||!here.length){body();return out}
+  const open=!!S.cfg.doneOpen;
+  out=`<li class="sec-h ${open?'':'shut'}"><button class="sec-tg" data-sectg="__done" aria-expanded="${open}">${SEC_CHEV}<span class="sec-n">Completed</span><span class="sec-c">${here.length}</span></button></li>`;
+  if(open)body();
+  return out;
+}

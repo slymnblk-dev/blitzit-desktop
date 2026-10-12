@@ -1665,7 +1665,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=79; // bumped with every published update
+const APP_VERSION=80; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1989,10 +1989,7 @@ function render(dir){
       done:['Nothing finished yet','Tick a task off and it lands here.']}[S.stage];
     L.innerHTML=`<li class="empty"><b>${msg[0]}</b>${msg[1]}</li>`+(secEmpty?colRows([],S.stage,'m:'+S.stage):'');
   } else if(S.stage==='done'){
-    here=[...here].sort((a,b)=>b.doneAt-a.doneAt);
-    let last='',out='';
-    here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)});
-    L.innerHTML=out;
+    L.innerHTML=doneRows(here);
   } else L.innerHTML=colRows(here,S.stage,'m:'+S.stage);
 
   const sp=inSpaceMode()?spaceOf(S.space):null;
@@ -2949,8 +2946,7 @@ function renderDesk(){
     const sum=col.querySelector('.col-sum'),ul=col.querySelector('.col-list');
     if(sid==='done'){
       sum.innerHTML=here.length?`<span><b>${here.length}</b> finished</span>`:'';
-      here=[...here].sort((a,b)=>b.doneAt-a.doneAt);let last='',out='';
-      here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)});
+      const out=doneRows(here);
       ul.innerHTML=out||`<li class="col-empty">Finished tasks land here.</li>`;
     } else {
       const m=here.reduce((a,t)=>a+t.est,0);
@@ -3165,7 +3161,7 @@ function secMenu(btn){
   requestAnimationFrame(()=>m.classList.add('on'));
 }
 function closeSecMenu(){const m=$('secPop');if(m)m.remove()}
-function secToggle(id){const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
+function secToggle(id){if(id==='__done'){S.cfg.doneOpen=!S.cfg.doneOpen;S.cfgU=Date.now();haptic(5);save();render();return}const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
 
 document.addEventListener('click',e=>{
   const pop=e.target.closest('#secPop');
@@ -3179,6 +3175,18 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('secPop')){e.stopPropagation();closeSecMenu()}},true);
 addEventListener('resize',closeSecMenu);
 document.addEventListener('scroll',closeSecMenu,true);
+
+/* Done column: finished tasks, newest first by day. With "Tuck away finished tasks" on, they wait under one quiet "Completed" section. */
+function doneRows(here){
+  here=[...here].sort((a,b)=>b.doneAt-a.doneAt);
+  let last='',out='';
+  const body=()=>{here.forEach(t=>{const lb=dayLabel(t.doneAt);if(lb!==last){out+=`<li class="day-h">${lb}</li>`;last=lb}out+=rowHTML(t)})};
+  if(!S.cfg.doneFold||!here.length){body();return out}
+  const open=!!S.cfg.doneOpen;
+  out=`<li class="sec-h ${open?'':'shut'}"><button class="sec-tg" data-sectg="__done" aria-expanded="${open}">${SEC_CHEV}<span class="sec-n">Completed</span><span class="sec-c">${here.length}</span></button></li>`;
+  if(open)body();
+  return out;
+}
 /* ---------- spaces ---------- */
 function openSpace(id){S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -3527,7 +3535,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -3692,6 +3700,7 @@ function settingsPage(id){
     ${row('Morning check-in',tg('checkin'),'Ask about leftover tasks each day')}</div>
     <div class="set-sec"><h3>Finished tasks</h3>
     ${row('Show Done',tg('showDone'),'Hide it to keep your board focused')}
+    ${row('Tuck away finished tasks',tg('doneFold'),'Keep finished tasks under one “Completed” section in Done.')}
     ${row('Clean up',`<div class="segc">${sOpt('cleanup','never','Never')}${sOpt('cleanup','archive','Archive')}${sOpt('cleanup','delete','Delete')}</div>`,c.cleanup==='delete'?'Deleted tasks also leave your analytics':c.cleanup==='archive'?'Archived tasks still count in analytics':'')}
     ${c.cleanup!=='never'?row('After',`<div class="segc">${[1,7,30].map(d=>sOpt('cleanupAfter',d,d===1?'1 day':d+' days')).join('')}</div>`):''}
     ${(()=>{const n=S.tasks.filter(t=>t.archived).length;return n||c.cleanup==='archive'?`<button class="link-row" data-page="archive" data-arct="tasks">Archived tasks<span class="hint">${n}</span></button>`:''})()}
