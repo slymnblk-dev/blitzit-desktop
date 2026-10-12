@@ -1364,31 +1364,33 @@ html,body{overscroll-behavior-y:contain}
   .desk.fw .m-right{gap:10px}
   .desk.fw .board{padding-top:26px}
 }
-.fw-back{display:flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 10px;border-radius:999px;font-size:14px;font-weight:700;letter-spacing:.02em;color:var(--muted);text-transform:uppercase;transition:background .15s,color .15s}
+.fw-back,.fw-pill{display:flex;align-items:center;gap:7px;height:38px;border-radius:999px;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;transition:background .15s,color .15s}
+.fw-back{padding:0 14px 0 10px;color:var(--muted)}
 .fw-back:hover{background:var(--surface);color:var(--text)}
-.fw-back svg{width:16px;height:16px}
-.fw-crumbs{position:relative;display:flex;align-items:center;gap:0}
-.fw-pill{display:flex;align-items:center;gap:6px;height:38px;padding:0 10px;border-radius:12px;font-size:17px;font-weight:500;color:var(--muted);white-space:nowrap;max-width:280px;transition:background .15s,color .15s}
-.fw-pill.fw-sp{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--text)}
-.fw-pill:hover,.fw-pill.open{background:var(--surface);color:var(--text)}
-.fw-pill svg{width:13px;height:13px;flex:none;opacity:.45;transition:transform .2s,opacity .15s}
-.fw-pill:hover svg,.fw-pill.open svg{opacity:.9}
+.fw-back svg{width:15px;height:15px}
+.fw-div{width:1px;height:18px;background:var(--line)}
+.fw-crumbs{position:relative}
+.fw-pill{padding:0 12px 0 14px;color:var(--text);max-width:420px}
+.fw-pill span{overflow:hidden;text-overflow:ellipsis}
+.fw-pill .fw-sl{color:var(--muted);opacity:.6;font-weight:400}
+.fw-pill:hover,.fw-pill.open{background:var(--surface)}
+.fw-pill svg{width:13px;height:13px;flex:none;color:var(--muted);transition:transform .2s}
 .fw-pill.open svg{transform:rotate(180deg)}
-.fw-e{font-size:19px;margin-right:2px}
-.fw-slash{color:var(--muted);opacity:.35;font-size:20px;font-weight:300;margin:0 2px}
-.fw-dot{flex:none;width:8px;height:8px;border-radius:50%}
-.fw-dot.none{background:transparent;box-shadow:inset 0 0 0 1.5px var(--muted);opacity:.6}
-.fw-sub{margin-left:8px;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fw-sub{margin-left:6px;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fw-sub b{color:var(--text);font-weight:600}
-.fw-menu{position:absolute;top:calc(100% + 6px);z-index:30;min-width:220px;max-height:60vh;overflow-y:auto;padding:6px;border-radius:16px;background:var(--surface);box-shadow:0 18px 40px rgba(0,0,0,.32),0 0 0 1px var(--line);animation:pop2 .16s cubic-bezier(.2,.8,.2,1);transform-origin:top left}
-.fw-menu.sp{left:0}.fw-menu.ls{left:auto;right:0;transform-origin:top right}
-.fw-it{display:flex;align-items:center;gap:12px;width:100%;padding:9px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--muted);text-align:left;transition:background .12s,color .12s}
+.fw-menu{position:absolute;top:calc(100% + 8px);left:0;z-index:30;width:260px;max-height:64vh;overflow-y:auto;padding:6px;border-radius:16px;background:var(--surface);box-shadow:0 18px 40px rgba(0,0,0,.32),0 0 0 1px var(--line);animation:pop2 .16s cubic-bezier(.2,.8,.2,1);transform-origin:top left;scrollbar-width:none}
+.fw-g+.fw-g{margin-top:4px;padding-top:4px;border-top:1px solid var(--line)}
+.fw-it{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);text-align:left;transition:background .12s,color .12s}
 .fw-it:hover{background:var(--surface2);color:var(--text)}
-.fw-it.on{color:var(--text);font-weight:700}
+.fw-it.on{color:var(--text);background:var(--surface2)}
+.fw-it.fw-h{font-weight:700;color:var(--text)}
+.fw-it.fw-l{padding-left:16px}
 .fw-it .fw-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fw-it em{font-style:normal;font-size:12px;color:var(--muted);opacity:.7;font-variant-numeric:tabular-nums}
-.fw-act{font-size:13px;font-weight:600;padding:8px 12px}
-.fw-hr{height:1px;background:var(--line);margin:6px 10px}
+.fw-dot{flex:none;width:7px;height:7px;border-radius:50%}
+.fw-foot{display:flex;gap:4px;margin-top:4px;padding:6px 4px 2px;border-top:1px solid var(--line)}
+.fw-act{padding:6px 8px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted)}
+.fw-act:hover{background:var(--surface2);color:var(--text)}
 /* settings: layout picker */
 .lay-pick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
 .lay{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border-radius:18px;border:2px solid var(--line);text-align:left;transition:border-color .2s,background .2s}
@@ -1601,7 +1603,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=73; // bumped with every published update
+const APP_VERSION=74; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2966,33 +2968,27 @@ function renderFullWidth(){
   const on=fwOn();$('desk').classList.toggle('fw',on);
   if(!on){$('fwNav').innerHTML='';fwPop=null;return}
   const sp=S.space==='all'?null:spaceOf(S.space),l=S.list!=='all'?S.lists.find(x=>x.id===S.list):null;
-  const spLbl=sp?`${sp.e?`<span class="fw-e">${esc(sp.e)}</span>`:''}${esc(sp.name)}`:'All tasks';
-  const lsLbl=l?esc(l.name):'All lists';
-  $('fwNav').innerHTML=`<button class="fw-back" id="fwBack" title="Home  (H)">${FW_BACK}<span>Home</span></button>
-    <div class="fw-crumbs"><button class="fw-pill fw-sp ${fwPop==='sp'?'open':''}" data-fwp="sp">${spLbl}${CHEV_D}</button><span class="fw-slash">/</span>
-    <button class="fw-pill fw-ls ${fwPop==='ls'?'open':''}" data-fwp="ls">${lsLbl}${CHEV_D}</button>${fwPop?fwMenu():''}</div>
+  const where=`<span>${sp?esc(sp.name):'All tasks'}</span>${l?`<span class="fw-sl">/</span><span>${esc(l.name)}</span>`:''}`;
+  $('fwNav').innerHTML=`<button class="fw-back" id="fwBack" title="Home  (H)">${FW_BACK}<span>Home</span></button><span class="fw-div"></span>
+    <div class="fw-crumbs"><button class="fw-pill ${fwPop?'open':''}" data-fwp="1" title="Switch space or list">${where}${CHEV_D}</button>${fwPop?fwMenu():''}</div>
     <span class="fw-sub">${$('mSub').innerHTML}</span>`;
 }
+/* one menu: every space with its lists underneath */
 function fwMenu(){
-  const open=(test)=>S.tasks.filter(t=>shown(t)&&test(t)&&t.stage!=='done').length;
-  const tick=()=>'';
-  if(fwPop==='sp'){
-    const items=orderedSpaces().map(sp=>{const ids=S.lists.filter(l=>l.space===sp.id).map(l=>l.id);
-      return `<button class="fw-it ${S.space===sp.id?'on':''}" data-fwsp="${sp.id}"><i class="fw-dot" style="background:${sp.c}"></i><span class="fw-n">${esc(sp.name)}</span><em>${open(t=>ids.includes(t.list))}</em>${tick(S.space===sp.id)}</button>`}).join('');
-    return `<div class="fw-menu sp" role="menu">${items}<button class="fw-it ${S.space==='all'?'on':''}" data-fwsp="all"><i class="fw-dot none"></i><span class="fw-n">All tasks</span><em>${open(()=>true)}</em>${tick(S.space==='all')}</button>
-      <div class="fw-hr"></div><button class="fw-it fw-act" data-fwact="newsp">New space</button></div>`;
-  }
-  const ls=listsHere();
-  return `<div class="fw-menu ls" role="menu"><button class="fw-it ${S.list==='all'?'on':''}" data-fwl="all"><i class="fw-dot none"></i><span class="fw-n">All lists</span><em>${open(t=>inSpace(t))}</em>${tick(S.list==='all')}</button>
-    ${ls.map(l=>`<button class="fw-it ${S.list===l.id?'on':''}" data-fwl="${l.id}"><i class="fw-dot" style="background:${l.c}"></i><span class="fw-n">${esc(l.name)}</span><em>${open(t=>t.list===l.id)}</em>${tick(S.list===l.id)}</button>`).join('')}
-    <div class="fw-hr"></div>${S.space!=='all'?`<button class="fw-it fw-act" data-fwact="newl">New list</button>`:''}<button class="fw-it fw-act" data-fwact="editl">Edit lists</button></div>`;
+  const open=test=>S.tasks.filter(t=>shown(t)&&test(t)&&t.stage!=='done').length;
+  const group=sp=>{const ls=S.lists.filter(l=>l.space===sp.id),ids=ls.map(l=>l.id),here=S.space===sp.id;
+    return `<div class="fw-g"><button class="fw-it fw-h ${here&&S.list==='all'?'on':''}" data-fwsp="${sp.id}"><span class="fw-n">${esc(sp.name)}</span><em>${open(t=>ids.includes(t.list))}</em></button>
+      ${ls.length>1?ls.map(l=>`<button class="fw-it fw-l ${here&&S.list===l.id?'on':''}" data-fwsp="${sp.id}" data-fwl="${l.id}"><i class="fw-dot" style="background:${l.c}"></i><span class="fw-n">${esc(l.name)}</span><em>${open(t=>t.list===l.id)}</em></button>`).join(''):''}</div>`};
+  return `<div class="fw-menu" role="menu">${orderedSpaces().map(group).join('')}
+    <div class="fw-g"><button class="fw-it fw-h ${S.space==='all'?'on':''}" data-fwsp="all"><span class="fw-n">All tasks</span><em>${open(()=>true)}</em></button></div>
+    <div class="fw-foot">${S.space!=='all'?`<button class="fw-act" data-fwact="newl">New list</button>`:''}<button class="fw-act" data-fwact="editl">Edit lists</button><button class="fw-act" data-fwact="newsp">New space</button></div></div>`;
 }
 function fwClose(){if(fwPop){fwPop=null;renderFullWidth()}}
 $('fwNav').addEventListener('click',e=>{
   if(e.target.closest('#fwBack')){fwPop=null;return goHome()}
-  const p=e.target.closest('[data-fwp]');if(p){e.stopPropagation();fwPop=fwPop===p.dataset.fwp?null:p.dataset.fwp;haptic(5);return renderFullWidth()}
-  const s=e.target.closest('[data-fwsp]');if(s){fwPop=null;return s.dataset.fwsp===S.space?renderFullWidth():openSpaceSide(s.dataset.fwsp)}
-  const l=e.target.closest('[data-fwl]');if(l){fwPop=null;S.list=l.dataset.fwl;haptic(5);return render()}
+  const p=e.target.closest('[data-fwp]');if(p){e.stopPropagation();fwPop=!fwPop;haptic(5);return renderFullWidth()}
+  const s=e.target.closest('[data-fwsp]');if(s){fwPop=null;const sp=s.dataset.fwsp,l=s.dataset.fwl||'all';
+    if(sp!==S.space)openSpaceSide(sp);S.list=l;haptic(5);return render()}
   const a=e.target.closest('[data-fwact]');if(a){fwPop=null;renderFullWidth();const k=a.dataset.fwact;
     if(k==='newsp')return openSpaceSheet(null);
     if(k==='newl'){editing=false;nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();openSheet('listSheet');setTimeout(()=>$('nlIn').focus(),300);return}
