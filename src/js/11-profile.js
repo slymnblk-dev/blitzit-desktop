@@ -26,6 +26,7 @@ function meSub(){
 function drawMe(){
   const st=meState(),dot=st==='none'?'':`<i class="me-dot ${st}"></i>`;
   const d=$('dMe');if(d)d.innerHTML=`<span class="me-a">${avatarHTML()}${dot}</span><span class="s-name me-t"><b>${esc(meName()||'You')}</b><small>${esc(meSub())}</small></span>`;
+  const fm=$('fwMe');if(fm)fm.innerHTML=`<span class="me-a">${avatarHTML('sm')}${dot}</span>`;
   const m=$('setBtn');if(m)m.innerHTML=`<span class="me-a">${avatarHTML('sm')}${dot}</span>`;
 }
 function openYou(tab){
@@ -174,6 +175,7 @@ $('setIn').addEventListener('click',e=>{
       $('bkBox').classList.add('on');$('bkTxt').value=data;$('bkTxt').select();toast('Copy the text below')});
     return;
   }
+  const fwb=e.target.closest('[data-fw]');if(fwb){haptic(5);return setCfg('fullWidth',fwb.dataset.fw==='1')}
   const fc=e.target.closest('[data-fcol]');if(fc){haptic(5);return setCfg('focusColor',fc.dataset.fcol)}
   if(e.target.closest('#updCheck')){UPD.latest?installUpdate():checkUpdate(true);return}
   if(e.target.closest('#bkFile')){doBackup();return}

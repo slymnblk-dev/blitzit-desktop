@@ -52,6 +52,7 @@ function renderDesk(){
   $('mEdit').hidden=!sp;
   if(sp)$('mDate').textContent=(sp.e?sp.e+'  ':'')+sp.name;
   else if(S.space==='all')$('mDate').textContent='All tasks';
+  renderFullWidth();
 }
 
 $('sLists').onclick=e=>{

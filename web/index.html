@@ -1352,6 +1352,61 @@ html,body{overscroll-behavior-y:contain}
   .tide .t-ctl{margin-top:10px}
 }
 .pv-badge{position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:95;padding:5px 12px;border-radius:999px;background:#FF5C8A;color:#fff;font:700 11px/1.2 system-ui,sans-serif;letter-spacing:.04em;text-transform:uppercase;pointer-events:none;opacity:.92;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+/* ---------- full width (computers) ---------- */
+.fw-nav,.fw-me{display:none}
+@media (min-width:1100px){
+  .desk.fw{grid-template-columns:0 1fr}
+  .desk.fw .side{padding-left:0;padding-right:0;border-right-color:transparent;opacity:0;pointer-events:none;transition:padding .52s var(--ez),opacity .2s}
+  .desk.fw .m-head{align-items:center;padding-top:22px}
+  .desk.fw .m-title,.desk.fw .m-sub{display:none}
+  .desk.fw .fw-nav{display:flex;align-items:center;gap:14px;min-width:0;animation:inU .35s cubic-bezier(.2,.8,.2,1)}
+  .desk.fw .fw-me{display:grid;width:40px;height:40px}
+  .desk.fw .m-right{gap:10px}
+  .desk.fw .board{padding-top:26px}
+}
+.fw-back{display:flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 10px;border-radius:999px;font-size:14px;font-weight:700;letter-spacing:.02em;color:var(--muted);text-transform:uppercase;transition:background .15s,color .15s}
+.fw-back:hover{background:var(--surface);color:var(--text)}
+.fw-back svg{width:16px;height:16px}
+.fw-crumbs{position:relative;display:flex;align-items:center;gap:4px;padding:4px;border-radius:16px;background:var(--surface)}
+.fw-pill{display:flex;align-items:center;gap:9px;height:40px;padding:0 12px;border-radius:12px;font-size:16px;font-weight:600;white-space:nowrap;max-width:280px;transition:background .15s}
+.fw-pill.fw-sp{font-size:20px;font-weight:800;letter-spacing:-.025em}
+.fw-pill:hover,.fw-pill.open{background:var(--surface2)}
+.fw-pill svg{width:15px;height:15px;color:var(--muted);flex:none;transition:transform .2s}
+.fw-pill.open svg{transform:rotate(180deg)}
+.fw-slash{color:var(--muted);opacity:.5;font-size:18px}
+.fw-ico{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px;font-weight:800;color:#0F1013;letter-spacing:0}
+.fw-ico.all{background:var(--surface2);color:var(--text)}
+.fw-dot{flex:none;width:10px;height:10px;border-radius:4px}
+.fw-sub{font-size:15px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fw-sub b{color:var(--text);font-weight:600}
+.fw-menu{position:absolute;top:calc(100% + 8px);z-index:30;min-width:260px;max-height:60vh;overflow-y:auto;padding:6px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:0 24px 48px rgba(0,0,0,.35);animation:pop2 .18s cubic-bezier(.2,.8,.2,1);transform-origin:top left}
+.fw-menu.sp{left:0}.fw-menu.ls{left:auto;right:0;transform-origin:top right}
+.fw-it{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border-radius:11px;font-size:15px;font-weight:500;text-align:left}
+.fw-it:hover{background:var(--surface2)}
+.fw-it.on{font-weight:700}
+.fw-it .fw-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fw-it em{font-style:normal;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.fw-it .fw-tick{width:15px;height:15px;color:var(--text)}
+.fw-it .fw-ico{width:24px;height:24px;font-size:13px}
+.fw-act{color:var(--muted)}.fw-act:hover{color:var(--text)}
+.fw-act svg{width:14px;height:14px}
+.fw-hr{height:1px;background:var(--line);margin:6px 8px}
+/* settings: layout picker */
+.lay-pick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.lay{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border-radius:18px;border:2px solid var(--line);text-align:left;transition:border-color .2s,background .2s}
+.lay:hover{background:var(--surface)}
+.lay.on{border-color:var(--text)}
+.lay b{margin-top:8px;font-size:15px;font-weight:700}
+.lay small{font-size:13px;line-height:1.4;color:var(--muted)}
+.lay-th{display:flex;gap:5px;width:100%;height:78px;padding:7px;border-radius:12px;background:var(--surface2)}
+.lt-side{width:26%;border-radius:6px;background:color-mix(in srgb,var(--text) 14%,transparent);transition:width .3s}
+.lay-th.full .lt-side{display:none}
+.lt-main{flex:1;display:flex;flex-direction:column;gap:5px}
+.lt-top{height:9px;width:55%;border-radius:4px;background:color-mix(in srgb,var(--text) 22%,transparent)}
+.lay-th.full .lt-top{width:70%}
+.lt-cols{flex:1;display:flex;gap:4px}
+.lt-cols i{flex:1;border-radius:5px;background:color-mix(in srgb,var(--text) 9%,transparent)}
+.lt-cols i:nth-child(3){background:color-mix(in srgb,var(--today) 45%,transparent)}
 </style>
 </head>
 <body>
@@ -1398,8 +1453,8 @@ html,body{overscroll-behavior-y:contain}
   </aside>
   <main class="main">
     <div class="m-head">
-      <div><div class="m-title"><div class="m-date" id="mDate"></div><button class="m-edit" id="mEdit" aria-label="Edit space" title="Edit space"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button></div><div class="m-sub" id="mSub"></div></div>
-      <div class="m-right"><button class="icon-btn m-set" id="dSet" aria-label="Settings" title="Settings ( , )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div>
+      <div class="m-left"><div class="fw-nav" id="fwNav"></div><div class="m-title"><div class="m-date" id="mDate"></div><button class="m-edit" id="mEdit" aria-label="Edit space" title="Edit space"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button></div><div class="m-sub" id="mSub"></div></div>
+      <div class="m-right"><button class="me-btn fw-me" id="fwMe" aria-label="Your profile" title="Your profile"></button><button class="icon-btn m-set" id="dSet" aria-label="Settings" title="Settings ( , )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div>
     </div>
     <div class="d-home" id="dHome"></div>
     <div class="board" id="board"></div>
@@ -1548,7 +1603,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=72; // bumped with every published update
+const APP_VERSION=73; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2843,6 +2898,7 @@ function renderDesk(){
   $('mEdit').hidden=!sp;
   if(sp)$('mDate').textContent=(sp.e?sp.e+'  ':'')+sp.name;
   else if(S.space==='all')$('mDate').textContent='All tasks';
+  renderFullWidth();
 }
 
 $('sLists').onclick=e=>{
@@ -2903,6 +2959,50 @@ async function doBackup(){
   return false;
 }
 
+/* ---------- full width (computers): inside a space the sidebar hides; a top bar switches spaces and lists ---------- */
+const FW_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
+const CHEV_D='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+const fwOn=()=>!!(S.cfg&&S.cfg.fullWidth&&S.space);
+let fwPop=null;
+function renderFullWidth(){
+  const on=fwOn();$('desk').classList.toggle('fw',on);
+  if(!on){$('fwNav').innerHTML='';fwPop=null;return}
+  const sp=S.space==='all'?null:spaceOf(S.space),l=S.list!=='all'?S.lists.find(x=>x.id===S.list):null;
+  const spLbl=sp?`<span class="fw-ico" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>${esc(sp.name)}`:`<span class="fw-ico all">≡</span>All tasks`;
+  const lsLbl=l?`<i class="fw-dot" style="background:${l.c}"></i>${esc(l.name)}`:'All lists';
+  $('fwNav').innerHTML=`<button class="fw-back" id="fwBack" title="Home  (H)">${FW_BACK}<span>Home</span></button>
+    <div class="fw-crumbs"><button class="fw-pill fw-sp ${fwPop==='sp'?'open':''}" data-fwp="sp">${spLbl}${CHEV_D}</button><span class="fw-slash">/</span>
+    <button class="fw-pill fw-ls ${fwPop==='ls'?'open':''}" data-fwp="ls">${lsLbl}${CHEV_D}</button>${fwPop?fwMenu():''}</div>
+    <span class="fw-sub">${$('mSub').innerHTML}</span>`;
+}
+function fwMenu(){
+  const open=(test)=>S.tasks.filter(t=>shown(t)&&test(t)&&t.stage!=='done').length;
+  const tick=on=>on?`<svg class="fw-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`:'';
+  if(fwPop==='sp'){
+    const items=orderedSpaces().map(sp=>{const ids=S.lists.filter(l=>l.space===sp.id).map(l=>l.id);
+      return `<button class="fw-it ${S.space===sp.id?'on':''}" data-fwsp="${sp.id}"><span class="fw-ico" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><span class="fw-n">${esc(sp.name)}</span><em>${open(t=>ids.includes(t.list))}</em>${tick(S.space===sp.id)}</button>`}).join('');
+    return `<div class="fw-menu sp" role="menu">${items}<button class="fw-it ${S.space==='all'?'on':''}" data-fwsp="all"><span class="fw-ico all">≡</span><span class="fw-n">All tasks</span><em>${open(()=>true)}</em>${tick(S.space==='all')}</button>
+      <div class="fw-hr"></div><button class="fw-it fw-act" data-fwact="newsp">${PLUS_S}New space</button></div>`;
+  }
+  const ls=listsHere();
+  return `<div class="fw-menu ls" role="menu"><button class="fw-it ${S.list==='all'?'on':''}" data-fwl="all"><span class="stack">${ls.slice(0,3).map(x=>`<span style="background:${x.c};border-color:var(--surface)"></span>`).join('')}</span><span class="fw-n">All lists</span><em>${open(t=>inSpace(t))}</em>${tick(S.list==='all')}</button>
+    ${ls.map(l=>`<button class="fw-it ${S.list===l.id?'on':''}" data-fwl="${l.id}"><i class="fw-dot" style="background:${l.c}"></i><span class="fw-n">${esc(l.name)}</span><em>${open(t=>t.list===l.id)}</em>${tick(S.list===l.id)}</button>`).join('')}
+    <div class="fw-hr"></div>${S.space!=='all'?`<button class="fw-it fw-act" data-fwact="newl">${PLUS_S}New list</button>`:''}<button class="fw-it fw-act" data-fwact="editl">Edit lists</button></div>`;
+}
+function fwClose(){if(fwPop){fwPop=null;renderFullWidth()}}
+$('fwNav').addEventListener('click',e=>{
+  if(e.target.closest('#fwBack')){fwPop=null;return goHome()}
+  const p=e.target.closest('[data-fwp]');if(p){e.stopPropagation();fwPop=fwPop===p.dataset.fwp?null:p.dataset.fwp;haptic(5);return renderFullWidth()}
+  const s=e.target.closest('[data-fwsp]');if(s){fwPop=null;return s.dataset.fwsp===S.space?renderFullWidth():openSpaceSide(s.dataset.fwsp)}
+  const l=e.target.closest('[data-fwl]');if(l){fwPop=null;S.list=l.dataset.fwl;haptic(5);return render()}
+  const a=e.target.closest('[data-fwact]');if(a){fwPop=null;renderFullWidth();const k=a.dataset.fwact;
+    if(k==='newsp')return openSpaceSheet(null);
+    if(k==='newl'){editing=false;nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();openSheet('listSheet');setTimeout(()=>$('nlIn').focus(),300);return}
+    if(k==='editl'){editing=true;nl=null;drawLists();openSheet('listSheet');return}}
+});
+document.addEventListener('click',e=>{if(fwPop&&!e.target.closest('.fw-crumbs'))fwClose()});
+document.addEventListener('keydown',e=>{if(fwPop&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fwClose()}},true);
+$('fwMe').onclick=()=>openYou();
 /* ---------- spaces ---------- */
 function openSpace(id){S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -3383,7 +3483,10 @@ function settingsPage(id){
     ${row('Text size',`<div class="segc">${sOpt('size','default','Default')}${sOpt('size','large','Large')}</div>`)}
     ${row('Density',`<div class="segc">${sOpt('density','comfortable','Roomy')}${sOpt('density','compact','Compact')}</div>`)}
     ${row('Home style',`<div class="segc">${sOpt('homeStyle','calm','Calm')}${sOpt('homeStyle','colorful','Colourful')}</div>`,(c.homeStyle||'calm')==='calm'?'A quiet list of spaces. Only Today stands out.':'Colourful space cards with stage bars.')}
-    </div><div class="set-sec"><h3>Feel</h3>
+    </div>${(matchMedia('(min-width:1100px)').matches||DESK())?`<div class="set-sec"><h3>Layout on computers</h3>
+    <div class="lay-pick">${[[0,'With sidebar','Spaces and lists on the left.'],[1,'Full width','Hides the sidebar inside a space. Switch spaces and lists from the top.']].map(([v,n,d])=>`<button class="lay ${!!c.fullWidth===!!v?'on':''}" data-fw="${v}">
+      <span class="lay-th ${v?'full':''}"><i class="lt-side"></i><span class="lt-main"><i class="lt-top"></i><span class="lt-cols"><i></i><i></i><i></i><i></i></span></span></span>
+      <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>
     ${row('Animations',tg('motion'))}
     ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
     ${row('Haptics',tg('haptics'),'Vibration on Android')}</div>`;
@@ -3491,6 +3594,7 @@ function meSub(){
 function drawMe(){
   const st=meState(),dot=st==='none'?'':`<i class="me-dot ${st}"></i>`;
   const d=$('dMe');if(d)d.innerHTML=`<span class="me-a">${avatarHTML()}${dot}</span><span class="s-name me-t"><b>${esc(meName()||'You')}</b><small>${esc(meSub())}</small></span>`;
+  const fm=$('fwMe');if(fm)fm.innerHTML=`<span class="me-a">${avatarHTML('sm')}${dot}</span>`;
   const m=$('setBtn');if(m)m.innerHTML=`<span class="me-a">${avatarHTML('sm')}${dot}</span>`;
 }
 function openYou(tab){
@@ -3639,6 +3743,7 @@ $('setIn').addEventListener('click',e=>{
       $('bkBox').classList.add('on');$('bkTxt').value=data;$('bkTxt').select();toast('Copy the text below')});
     return;
   }
+  const fwb=e.target.closest('[data-fw]');if(fwb){haptic(5);return setCfg('fullWidth',fwb.dataset.fw==='1')}
   const fc=e.target.closest('[data-fcol]');if(fc){haptic(5);return setCfg('focusColor',fc.dataset.fcol)}
   if(e.target.closest('#updCheck')){UPD.latest?installUpdate():checkUpdate(true);return}
   if(e.target.closest('#bkFile')){doBackup();return}
