@@ -1469,6 +1469,25 @@ html,body{overscroll-behavior-y:contain}
   .col-add{opacity:0;transition:opacity .18s ease}
   .col:hover .col-add,.col:focus-within .col-add,.col.over .col-add,.col-add:has(.ca-in:not([hidden])){opacity:1}
 }
+
+/* priority: small signal bars, High 3 / Medium 2 / Low 1 */
+.pri-i{width:13px;height:13px;flex:none;fill:currentColor}
+.pri-i .off{opacity:.25}
+.mi.pri{display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.mi.pri.high{color:#FF6B6B}
+.mi.pri.med{color:#F5A524}
+.mi.pri.low{color:#6DA8FF}
+:root[data-theme="light"] .mi.pri.high{color:#D93636}
+:root[data-theme="light"] .mi.pri.med{color:#C27803}
+:root[data-theme="light"] .mi.pri.low{color:#2F6FDB}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]) .mi.pri.high{color:#D93636}
+  :root:not([data-theme="dark"]) .mi.pri.med{color:#C27803}
+  :root:not([data-theme="dark"]) .mi.pri.low{color:#2F6FDB}
+}
+.pk-pri{display:inline-flex;align-items:center;gap:7px}
+.pk-pri .pri-i{width:14px;height:14px}
+#dPills .pill .pri-i{width:14px;height:14px}
 </style>
 </head>
 <body>
@@ -1665,7 +1684,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=80; // bumped with every published update
+const APP_VERSION=81; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1714,6 +1733,7 @@ function sanitize(){
   S.tasks.forEach(t=>{t.subs=Array.isArray(t.subs)?t.subs.filter(x=>obj(x)&&x.id!=null&&isFinite(+x.id)):[]});
   const cleanTags=o=>{if('tags' in o)o.tags=Array.isArray(o.tags)?[...new Set(o.tags.filter(x=>typeof x==='string'&&x.trim()).map(x=>x.trim().slice(0,24)))]:[]};
   S.tasks.forEach(cleanTags);
+  S.tasks.forEach(t=>{if(t.pri!==undefined&&!['high','med','low'].includes(t.pri))delete t.pri});
   if(S.lists!=null)S.lists=Array.isArray(S.lists)?S.lists.filter(l=>obj(l)&&l.id!=null):null;
   if(S.lists)S.lists.forEach(cleanTags);
   if(S.spaces!=null)S.spaces=Array.isArray(S.spaces)?S.spaces.filter(x=>obj(x)&&x.id!=null):null;
@@ -1824,7 +1844,7 @@ function setStage(t,stage){
   if(stage==='done'&&was!=='done'){
     t.doneAt=Date.now();
     if(t.repeat!=='none'&&!t.spawned){
-      const c={id:newId(),title:t.title,stage:'today',list:t.list,est:t.est,notes:t.notes,repeat:t.repeat,
+      const c={id:newId(),title:t.title,stage:'today',list:t.list,est:t.est,notes:t.notes,repeat:t.repeat,...(t.pri?{pri:t.pri}:{}),
         subs:t.subs.map(s=>({...s,done:false})),showFrom:nextDate(t.repeat)};
       S.tasks.push(c);t.spawned=c.id;
     }
@@ -1862,10 +1882,16 @@ function foldRows(list,key){
   const btn=`<li class="more-row"><button class="more-btn ${open?'open':''}" data-more="${key}"><span>${open?'Show less':`${list.length-n} more`}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></li>`;
   return (open?list:list.slice(0,n)).map(rowHTML).join('')+btn;
 }
+/* priority (optional, set in task details): High / Medium / Low, shown as small signal bars */
+const PRIS=[{id:'high',name:'High',n:3},{id:'med',name:'Medium',n:2},{id:'low',name:'Low',n:1}];
+const priOf=t=>PRIS.find(p=>p.id===t.pri)||null;
+const priIcon=n=>`<svg class="pri-i" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="9.5" width="3" height="4.5" rx="1" ${n>=1?'':'class="off"'}/><rect x="6.5" y="6" width="3" height="8" rx="1" ${n>=2?'':'class="off"'}/><rect x="11" y="2" width="3" height="12" rx="1" ${n>=3?'':'class="off"'}/></svg>`;
 function rowHTML(t){
   const l=listOf(t.list);
   const sd=t.subs.filter(s=>s.done).length;
+  const pr=priOf(t);
   const extra=[
+    pr&&t.stage!=='done'?`<span class="mi pri ${pr.id}" title="${pr.name} priority">${priIcon(pr.n)}${pr.name}</span>`:'',
     tagChips(t,3),
     t.repeat!=='none'?`<span class="mi">${I_REP}${REPEATS.find(r=>r.id===t.repeat).name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
@@ -2260,6 +2286,7 @@ function drawDetail(){
     P('list',`<i style="background:${l.c}"></i>${esc(l.name)}`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
     P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
+    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+
     (secOn()&&t.stage!=='done'&&secsForTask(t).length?P('sec',`${I_SEC}${secOfTask(t)?esc(secOfTask(t).name):'Section'}`,!secOfTask(t)):'')+
     P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length);
   const pk=(on,v,label,dot)=>`<button class="pk ${on?'on':''}" data-v="${v}">${dot?`<i style="background:${dot}"></i>`:''}${esc(label)}</button>`;
@@ -2270,6 +2297,7 @@ function drawDetail(){
       list:()=>S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?`${(spaceOf(x.space)||{}).name} › ${x.name}`:x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
       est:()=>ESTS.map(m=>pk(t.est===m,m,fmt(m))).join(''),
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
+      pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
       sec:()=>pk(!secOfTask(t),'','No section')+secsForTask(t).map(s=>pk((secOfTask(t)||{}).id===s.id,s.id,s.name)).join(''),
       tags:()=>{const lt=ltags(l),on=n=>tagsOf(t).some(x=>tagKey(x)===tagKey(n));
         return lt.map(n=>`<button class="pk tg-pk ${on(n)?'on':''}" data-v="${esc(n)}">#${esc(n)}</button>`).join('')+
@@ -2307,6 +2335,7 @@ $('dPicker').onclick=e=>{
   else if(k==='list'){t.list=v;carryTags(t)}
   else if(k==='est')t.est=+v;
   else if(k==='repeat')t.repeat=v;
+  else if(k==='pri'){if(v)t.pri=v;else delete t.pri}
   else if(k==='sec'){if(v)t.sec=v;else delete t.sec}
   if(k!=='stage'){save();render()}
   drawDetail();

@@ -46,3 +46,20 @@ test('deleting a step asks first', async ({ page }) => {
   expect(await page.evaluate(id => S.tasks.find(x => x.id === id).subs.map(s => s.t), id)).toEqual(['two']);
   noErrors(errors);
 });
+
+test('priority: set High from task details, shows on the row, can be cleared', async ({ page }) => {
+  const errors = await openApp(page);
+  const id = await page.evaluate(() => { const t = S.tasks.find(x => x.stage !== 'done'); openDetail(t.id); return t.id; });
+  await expect(page.locator('#dPills [data-p="pri"]')).toContainText('Priority');
+  await page.locator('#dPills [data-p="pri"]').click();
+  await page.locator('#dPicker .pk', { hasText: 'High' }).click();
+  expect(await page.evaluate(id => S.tasks.find(t => t.id === id).pri, id)).toBe('high');
+  await expect(page.locator('#dPills [data-p="pri"]')).toContainText('High');
+  await page.evaluate(() => closeSheets());
+  await expect(page.locator(`.row[data-id="${id}"] .pri.high`).first()).toBeAttached();
+  await page.evaluate(id => openDetail(id), id);
+  await page.locator('#dPills [data-p="pri"]').click();
+  await page.locator('#dPicker .pk', { hasText: 'None' }).click();
+  expect(await page.evaluate(id => S.tasks.find(t => t.id === id).pri, id)).toBeUndefined();
+  noErrors(errors);
+});

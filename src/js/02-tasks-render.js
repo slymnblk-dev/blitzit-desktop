@@ -10,7 +10,7 @@ function setStage(t,stage){
   if(stage==='done'&&was!=='done'){
     t.doneAt=Date.now();
     if(t.repeat!=='none'&&!t.spawned){
-      const c={id:newId(),title:t.title,stage:'today',list:t.list,est:t.est,notes:t.notes,repeat:t.repeat,
+      const c={id:newId(),title:t.title,stage:'today',list:t.list,est:t.est,notes:t.notes,repeat:t.repeat,...(t.pri?{pri:t.pri}:{}),
         subs:t.subs.map(s=>({...s,done:false})),showFrom:nextDate(t.repeat)};
       S.tasks.push(c);t.spawned=c.id;
     }
@@ -48,10 +48,16 @@ function foldRows(list,key){
   const btn=`<li class="more-row"><button class="more-btn ${open?'open':''}" data-more="${key}"><span>${open?'Show less':`${list.length-n} more`}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></li>`;
   return (open?list:list.slice(0,n)).map(rowHTML).join('')+btn;
 }
+/* priority (optional, set in task details): High / Medium / Low, shown as small signal bars */
+const PRIS=[{id:'high',name:'High',n:3},{id:'med',name:'Medium',n:2},{id:'low',name:'Low',n:1}];
+const priOf=t=>PRIS.find(p=>p.id===t.pri)||null;
+const priIcon=n=>`<svg class="pri-i" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="9.5" width="3" height="4.5" rx="1" ${n>=1?'':'class="off"'}/><rect x="6.5" y="6" width="3" height="8" rx="1" ${n>=2?'':'class="off"'}/><rect x="11" y="2" width="3" height="12" rx="1" ${n>=3?'':'class="off"'}/></svg>`;
 function rowHTML(t){
   const l=listOf(t.list);
   const sd=t.subs.filter(s=>s.done).length;
+  const pr=priOf(t);
   const extra=[
+    pr&&t.stage!=='done'?`<span class="mi pri ${pr.id}" title="${pr.name} priority">${priIcon(pr.n)}${pr.name}</span>`:'',
     tagChips(t,3),
     t.repeat!=='none'?`<span class="mi">${I_REP}${REPEATS.find(r=>r.id===t.repeat).name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
