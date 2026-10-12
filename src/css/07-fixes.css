@@ -52,18 +52,28 @@
 .fw-pill.open svg{transform:rotate(180deg)}
 .fw-sub{margin-left:6px;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fw-sub b{color:var(--text);font-weight:600}
-.fw-menu{position:absolute;top:calc(100% + 8px);left:0;z-index:30;width:260px;max-height:64vh;overflow-y:auto;padding:6px;border-radius:16px;background:var(--surface);box-shadow:0 18px 40px rgba(0,0,0,.32),0 0 0 1px var(--line);animation:pop2 .16s cubic-bezier(.2,.8,.2,1);transform-origin:top left;scrollbar-width:none}
-.fw-g+.fw-g{margin-top:4px;padding-top:4px;border-top:1px solid var(--line)}
-.fw-it{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);text-align:left;transition:background .12s,color .12s}
-.fw-it:hover{background:var(--surface2);color:var(--text)}
-.fw-it.on{color:var(--text);background:var(--surface2)}
-.fw-it.fw-h{font-weight:700;color:var(--text)}
-.fw-it.fw-l{padding-left:16px}
+.fw-menu{position:absolute;top:calc(100% + 8px);left:0;z-index:30;display:flex;width:520px;height:min(380px,62vh);border-radius:18px;background:var(--surface);box-shadow:0 18px 40px rgba(0,0,0,.32),0 0 0 1px var(--line);animation:pop2 .16s cubic-bezier(.2,.8,.2,1);transform-origin:top left;overflow:hidden}
+.fw-col{display:flex;flex-direction:column;min-width:0}
+.fw-col.sp{width:46%;border-right:1px solid var(--line)}
+.fw-col.ls{flex:1;background:color-mix(in srgb,var(--surface2) 35%,var(--surface))}
+.fw-scroll{flex:1;min-height:0;overflow-y:auto;padding:6px;scrollbar-width:none}
+.fw-scroll::-webkit-scrollbar{display:none}
+.fw-it{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);text-align:left;transition:background .12s,color .12s}
+.fw-it:hover,.fw-it.hov{background:var(--surface2);color:var(--text)}
+.fw-it.cur{color:var(--text);font-weight:700}
 .fw-it .fw-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fw-it em{font-style:normal;font-size:12px;color:var(--muted);opacity:.7;font-variant-numeric:tabular-nums}
+.fw-it .fw-ch{width:12px;height:12px;flex:none;opacity:0;transition:opacity .12s}
+.fw-it.hov .fw-ch{opacity:.6}
 .fw-dot{flex:none;width:7px;height:7px;border-radius:50%}
-.fw-foot{display:flex;gap:4px;margin-top:4px;padding:6px 4px 2px;border-top:1px solid var(--line)}
-.fw-act{padding:6px 8px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted)}
+.fw-cap{padding:8px 12px 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fw-new{color:var(--muted);opacity:.75}
+.fw-new svg{width:12px;height:12px;flex:none}
+.fw-new:hover{opacity:1}
+.fw-note{margin:10px 12px;font-size:13px;line-height:1.5;color:var(--muted)}
+.fw-foot{flex:none;padding:6px;border-top:1px solid var(--line);background:inherit}
+.fw-act{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);text-align:left}
+.fw-act svg{width:12px;height:12px}
 .fw-act:hover{background:var(--surface2);color:var(--text)}
 /* settings: layout picker */
 .lay-pick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}

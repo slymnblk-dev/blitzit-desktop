@@ -15,10 +15,12 @@ test('full width: hide sidebar in a space, switch space and list, go home', asyn
   await expect(page.locator('#desk')).toHaveClass(/\bfw\b/);
   await expect(page.locator('.side')).toHaveCSS('opacity', '0');
   await page.locator('[data-fwp]').click();                                   // one menu: switch space
-  await page.locator(`.fw-h[data-fwsp="${b}"]`).click();
+  await page.locator(`.fw-s[data-fwsp="${b}"]`).click();
   expect(await page.evaluate(() => S.space)).toBe(b);
   const lid = await page.evaluate(a => { S.lists.push({ id: 'lfw', name: 'Second', c: '#888', space: a }); render(); return 'lfw'; }, a);
-  await page.locator('[data-fwp]').click();                                   // …and a list in another space
+  await page.locator('[data-fwp]').click();                                   // point at another space: its lists show on the right
+  await page.locator(`.fw-s[data-fwh="${a}"]`).hover();
+  await expect(page.locator('#fwLs .fw-new')).toBeVisible();                   // "New list" sits under its lists
   await page.locator(`[data-fwl="${lid}"]`).click();
   expect(await page.evaluate(() => [S.space, S.list])).toEqual([a, lid]);
   await page.locator('#fwBack').click();                                      // back home

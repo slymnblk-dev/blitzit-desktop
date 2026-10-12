@@ -1378,18 +1378,28 @@ html,body{overscroll-behavior-y:contain}
 .fw-pill.open svg{transform:rotate(180deg)}
 .fw-sub{margin-left:6px;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fw-sub b{color:var(--text);font-weight:600}
-.fw-menu{position:absolute;top:calc(100% + 8px);left:0;z-index:30;width:260px;max-height:64vh;overflow-y:auto;padding:6px;border-radius:16px;background:var(--surface);box-shadow:0 18px 40px rgba(0,0,0,.32),0 0 0 1px var(--line);animation:pop2 .16s cubic-bezier(.2,.8,.2,1);transform-origin:top left;scrollbar-width:none}
-.fw-g+.fw-g{margin-top:4px;padding-top:4px;border-top:1px solid var(--line)}
-.fw-it{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);text-align:left;transition:background .12s,color .12s}
-.fw-it:hover{background:var(--surface2);color:var(--text)}
-.fw-it.on{color:var(--text);background:var(--surface2)}
-.fw-it.fw-h{font-weight:700;color:var(--text)}
-.fw-it.fw-l{padding-left:16px}
+.fw-menu{position:absolute;top:calc(100% + 8px);left:0;z-index:30;display:flex;width:520px;height:min(380px,62vh);border-radius:18px;background:var(--surface);box-shadow:0 18px 40px rgba(0,0,0,.32),0 0 0 1px var(--line);animation:pop2 .16s cubic-bezier(.2,.8,.2,1);transform-origin:top left;overflow:hidden}
+.fw-col{display:flex;flex-direction:column;min-width:0}
+.fw-col.sp{width:46%;border-right:1px solid var(--line)}
+.fw-col.ls{flex:1;background:color-mix(in srgb,var(--surface2) 35%,var(--surface))}
+.fw-scroll{flex:1;min-height:0;overflow-y:auto;padding:6px;scrollbar-width:none}
+.fw-scroll::-webkit-scrollbar{display:none}
+.fw-it{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);text-align:left;transition:background .12s,color .12s}
+.fw-it:hover,.fw-it.hov{background:var(--surface2);color:var(--text)}
+.fw-it.cur{color:var(--text);font-weight:700}
 .fw-it .fw-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fw-it em{font-style:normal;font-size:12px;color:var(--muted);opacity:.7;font-variant-numeric:tabular-nums}
+.fw-it .fw-ch{width:12px;height:12px;flex:none;opacity:0;transition:opacity .12s}
+.fw-it.hov .fw-ch{opacity:.6}
 .fw-dot{flex:none;width:7px;height:7px;border-radius:50%}
-.fw-foot{display:flex;gap:4px;margin-top:4px;padding:6px 4px 2px;border-top:1px solid var(--line)}
-.fw-act{padding:6px 8px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted)}
+.fw-cap{padding:8px 12px 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fw-new{color:var(--muted);opacity:.75}
+.fw-new svg{width:12px;height:12px;flex:none}
+.fw-new:hover{opacity:1}
+.fw-note{margin:10px 12px;font-size:13px;line-height:1.5;color:var(--muted)}
+.fw-foot{flex:none;padding:6px;border-top:1px solid var(--line);background:inherit}
+.fw-act{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);text-align:left}
+.fw-act svg{width:12px;height:12px}
 .fw-act:hover{background:var(--surface2);color:var(--text)}
 /* settings: layout picker */
 .lay-pick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
@@ -1603,7 +1613,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=74; // bumped with every published update
+const APP_VERSION=75; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2973,26 +2983,42 @@ function renderFullWidth(){
     <div class="fw-crumbs"><button class="fw-pill ${fwPop?'open':''}" data-fwp="1" title="Switch space or list">${where}${CHEV_D}</button>${fwPop?fwMenu():''}</div>
     <span class="fw-sub">${$('mSub').innerHTML}</span>`;
 }
-/* one menu: every space with its lists underneath */
+/* one menu, two calm columns: spaces on the left, the lists of the space you point at on the right */
+let fwFocus=null;
+const fwOpenN=test=>S.tasks.filter(t=>shown(t)&&test(t)&&t.stage!=='done').length;
+const FW_CH='<svg class="fw-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
 function fwMenu(){
-  const open=test=>S.tasks.filter(t=>shown(t)&&test(t)&&t.stage!=='done').length;
-  const group=sp=>{const ls=S.lists.filter(l=>l.space===sp.id),ids=ls.map(l=>l.id),here=S.space===sp.id;
-    return `<div class="fw-g"><button class="fw-it fw-h ${here&&S.list==='all'?'on':''}" data-fwsp="${sp.id}"><span class="fw-n">${esc(sp.name)}</span><em>${open(t=>ids.includes(t.list))}</em></button>
-      ${ls.length>1?ls.map(l=>`<button class="fw-it fw-l ${here&&S.list===l.id?'on':''}" data-fwsp="${sp.id}" data-fwl="${l.id}"><i class="fw-dot" style="background:${l.c}"></i><span class="fw-n">${esc(l.name)}</span><em>${open(t=>t.list===l.id)}</em></button>`).join(''):''}</div>`};
-  return `<div class="fw-menu" role="menu">${orderedSpaces().map(group).join('')}
-    <div class="fw-g"><button class="fw-it fw-h ${S.space==='all'?'on':''}" data-fwsp="all"><span class="fw-n">All tasks</span><em>${open(()=>true)}</em></button></div>
-    <div class="fw-foot">${S.space!=='all'?`<button class="fw-act" data-fwact="newl">New list</button>`:''}<button class="fw-act" data-fwact="editl">Edit lists</button><button class="fw-act" data-fwact="newsp">New space</button></div></div>`;
+  if(!fwFocus)fwFocus=S.space;
+  const sps=orderedSpaces().map(sp=>{const ids=S.lists.filter(l=>l.space===sp.id).map(l=>l.id);
+    return `<button class="fw-it fw-s ${S.space===sp.id?'cur':''} ${fwFocus===sp.id?'hov':''}" data-fwsp="${sp.id}" data-fwh="${sp.id}"><span class="fw-n">${esc(sp.name)}</span><em>${fwOpenN(t=>ids.includes(t.list))}</em>${FW_CH}</button>`}).join('');
+  return `<div class="fw-menu" role="menu">
+    <div class="fw-col sp"><div class="fw-scroll">${sps}<button class="fw-it fw-s ${S.space==='all'?'cur':''} ${fwFocus==='all'?'hov':''}" data-fwsp="all" data-fwh="all"><span class="fw-n">All tasks</span><em>${fwOpenN(()=>true)}</em></button></div>
+      <div class="fw-foot"><button class="fw-act" data-fwact="newsp">${PLUS_S}New space</button></div></div>
+    <div class="fw-col ls" id="fwLs">${fwLists()}</div></div>`;
 }
-function fwClose(){if(fwPop){fwPop=null;renderFullWidth()}}
+function fwLists(){
+  if(fwFocus==='all')return `<div class="fw-scroll"><p class="fw-note">Every task from all your spaces, in one board.</p></div>`;
+  const sp=spaceOf(fwFocus);if(!sp)return '';
+  const ls=S.lists.filter(l=>l.space===sp.id),here=S.space===sp.id;
+  return `<div class="fw-scroll"><div class="fw-cap">${esc(sp.name)}</div>
+    <button class="fw-it ${here&&S.list==='all'?'cur':''}" data-fwsp="${sp.id}" data-fwl="all"><span class="fw-n">All lists</span><em>${fwOpenN(t=>ls.some(l=>l.id===t.list))}</em></button>
+    ${ls.map(l=>`<button class="fw-it ${here&&S.list===l.id?'cur':''}" data-fwsp="${sp.id}" data-fwl="${l.id}"><i class="fw-dot" style="background:${l.c}"></i><span class="fw-n">${esc(l.name)}</span><em>${fwOpenN(t=>t.list===l.id)}</em></button>`).join('')}
+    <button class="fw-it fw-new" data-fwact="newl" data-fwsp="${sp.id}">${PLUS_S}<span class="fw-n">New list</span></button></div>
+    <div class="fw-foot"><button class="fw-act" data-fwact="editl" data-fwsp="${sp.id}">Edit lists</button></div>`;
+}
+function fwClose(){if(fwPop){fwPop=null;fwFocus=null;renderFullWidth()}}
+$('fwNav').addEventListener('mouseover',e=>{const h=e.target.closest('[data-fwh]');if(!h||h.dataset.fwh===fwFocus)return;fwFocus=h.dataset.fwh;
+  document.querySelectorAll('.fw-s').forEach(b=>b.classList.toggle('hov',b.dataset.fwh===fwFocus));const ls=$('fwLs');if(ls)ls.innerHTML=fwLists()});
 $('fwNav').addEventListener('click',e=>{
   if(e.target.closest('#fwBack')){fwPop=null;return goHome()}
-  const p=e.target.closest('[data-fwp]');if(p){e.stopPropagation();fwPop=!fwPop;haptic(5);return renderFullWidth()}
-  const s=e.target.closest('[data-fwsp]');if(s){fwPop=null;const sp=s.dataset.fwsp,l=s.dataset.fwl||'all';
-    if(sp!==S.space)openSpaceSide(sp);S.list=l;haptic(5);return render()}
-  const a=e.target.closest('[data-fwact]');if(a){fwPop=null;renderFullWidth();const k=a.dataset.fwact;
+  const p=e.target.closest('[data-fwp]');if(p){e.stopPropagation();fwPop=!fwPop;fwFocus=null;haptic(5);return renderFullWidth()}
+  const a0=e.target.closest('[data-fwact]');if(a0){const k=a0.dataset.fwact,sp=a0.dataset.fwsp;fwPop=null;fwFocus=null;
+    if(sp&&sp!==S.space)openSpaceSide(sp);else renderFullWidth();
     if(k==='newsp')return openSpaceSheet(null);
     if(k==='newl'){editing=false;nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();openSheet('listSheet');setTimeout(()=>$('nlIn').focus(),300);return}
     if(k==='editl'){editing=true;nl=null;drawLists();openSheet('listSheet');return}}
+  const s=e.target.closest('[data-fwsp]');if(s){fwPop=null;fwFocus=null;const sp=s.dataset.fwsp,l=s.dataset.fwl||'all';
+    if(sp!==S.space)openSpaceSide(sp);S.list=l;haptic(5);return render()}
 });
 document.addEventListener('click',e=>{if(fwPop&&!e.target.closest('.fw-crumbs'))fwClose()});
 document.addEventListener('keydown',e=>{if(fwPop&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fwClose()}},true);
