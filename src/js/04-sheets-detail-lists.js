@@ -134,7 +134,7 @@ $('dSubIn').onkeydown=e=>{
   cur.subs.push({id:newId(),t:v,done:false});e.target.value='';haptic(6);drawDetail();
   const box=$('dSubs');box.scrollTop=box.scrollHeight;subsFade();
 };
-function subsFade(){const b=$('dSubs');if(b)b.classList.toggle('at-end',b.scrollTop+b.clientHeight>=b.scrollHeight-4)}
+function subsFade(){const b=$('dSubs');if(!b)return;b.classList.toggle('at-end',b.scrollTop+b.clientHeight>=b.scrollHeight-4);b.classList.toggle('scrolled',b.scrollTop>4)}
 $('dSubs').addEventListener('scroll',subsFade);
 $('dSubs').onclick=e=>{
   const r=e.target.closest('.sub');if(!r)return;const s=cur.subs.find(x=>x.id===+r.dataset.s);

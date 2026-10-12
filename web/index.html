@@ -1078,16 +1078,16 @@ html,body{overscroll-behavior-y:contain}
     transform:translate(-50%,-47%) scale(.97);opacity:0;pointer-events:none;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .22s}
   .dsheet.wide.on{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
   .dsheet.wide .sheet-in{padding:26px 40px 0;max-width:none;width:100%}
-  .dsheet.wide .d-scroll{margin:0 -40px;padding:6px 40px 24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:44px;
-    grid-template-areas:"title title" "pills pills" "picker picker" "sh notes" "prog notes" "subs notes" "add notes";grid-template-rows:auto auto auto auto auto auto 1fr;align-content:start}
+  .dsheet.wide .d-scroll{margin:0 -40px;padding:6px 40px 18px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:44px;overflow:hidden;
+    grid-template-areas:"title title" "pills pills" "picker picker" "sh notes" "prog notes" "subs notes" "add notes";grid-template-rows:auto auto auto auto auto minmax(0,1fr) auto}
   .dsheet.wide .d-title{grid-area:title;font-size:40px;letter-spacing:-.04em;padding-bottom:16px}
   .dsheet.wide .pills{grid-area:pills}
   .dsheet.wide .picker{grid-area:picker}
   .dsheet.wide .d-sh{grid-area:sh}
   .dsheet.wide .d-prog{grid-area:prog}
-  .dsheet.wide .subs{grid-area:subs;max-height:none;-webkit-mask-image:none;mask-image:none;overflow:visible}
-  .dsheet.wide .sub-add{grid-area:add;align-self:start}
-  .dsheet.wide .d-notes{grid-area:notes;align-self:stretch;margin-top:28px!important;padding:18px 20px!important;border-top:0!important;border-radius:20px!important;background:var(--surface2)!important;min-height:280px;font-size:16px;line-height:1.6}
+  .dsheet.wide .subs{grid-area:subs;max-height:none;min-height:0;overflow-y:auto;margin-top:4px}
+  .dsheet.wide .sub-add{grid-area:add;align-self:end;border-top:1px solid var(--line)!important;margin-top:0!important;padding-top:14px}
+  .dsheet.wide .d-notes{grid-area:notes;align-self:stretch;margin-top:28px!important;padding:18px 20px!important;border-top:0!important;border-radius:20px!important;background:var(--surface2)!important;min-height:0;height:auto!important;overflow-y:auto!important;resize:none;font-size:16px;line-height:1.6}
   .dsheet.wide .d-foot2{padding:16px 0 26px}
   .dsheet.wide .d-foot2 .d-complete{flex:0 0 260px}
   .dsheet.wide .d-foot2 .d-focus{flex:0 0 200px}
@@ -1097,6 +1097,9 @@ html,body{overscroll-behavior-y:contain}
   body:has(.dsheet.wide.on) .scrim.on{background:rgba(8,9,12,.62);-webkit-backdrop-filter:blur(8px) saturate(.9);backdrop-filter:blur(8px) saturate(.9)}
   .scrim{transition:opacity .25s,background .25s,backdrop-filter .25s}
 }
+/* steps list: soft fade at the top once scrolled, and at the bottom while more is below */
+.dsheet .subs.scrolled{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 22px,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to bottom,transparent,#000 22px,#000 calc(100% - 22px),transparent)}
+.dsheet .subs.scrolled.at-end{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 22px);mask-image:linear-gradient(to bottom,transparent,#000 22px)}
 /* ---------- Tide: same page, type and controls as Classic ---------- */
 .tide .f-step{margin-top:20px}
 .tide .t-alldone{opacity:.6;cursor:default}
@@ -1613,7 +1616,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=75; // bumped with every published update
+const APP_VERSION=76; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2254,7 +2257,7 @@ $('dSubIn').onkeydown=e=>{
   cur.subs.push({id:newId(),t:v,done:false});e.target.value='';haptic(6);drawDetail();
   const box=$('dSubs');box.scrollTop=box.scrollHeight;subsFade();
 };
-function subsFade(){const b=$('dSubs');if(b)b.classList.toggle('at-end',b.scrollTop+b.clientHeight>=b.scrollHeight-4)}
+function subsFade(){const b=$('dSubs');if(!b)return;b.classList.toggle('at-end',b.scrollTop+b.clientHeight>=b.scrollHeight-4);b.classList.toggle('scrolled',b.scrollTop>4)}
 $('dSubs').addEventListener('scroll',subsFade);
 $('dSubs').onclick=e=>{
   const r=e.target.closest('.sub');if(!r)return;const s=cur.subs.find(x=>x.id===+r.dataset.s);
