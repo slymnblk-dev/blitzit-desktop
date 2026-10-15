@@ -241,3 +241,12 @@
 @keyframes cbOrb{0%{stroke-dashoffset:100;opacity:0}8%{opacity:1}85%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
 @media (prefers-reduced-motion:reduce){.celeb *{animation-duration:.01s!important}.cb-pill{animation:none}}
 .pri-pick{flex-basis:100%}
+
+/* quiet when idle (computers): summary and add buttons drift away after 5s still, and come back on any move */
+@media (hover:hover) and (pointer:fine){
+  #mSub{animation:subIn 1.1s cubic-bezier(.2,.8,.2,1) both .15s;transition:opacity .45s cubic-bezier(.2,.8,.2,1),filter .45s,transform .45s,letter-spacing .45s}
+  body.idle #mSub{opacity:0;filter:blur(8px);transform:translateY(-5px);letter-spacing:.06em;transition-duration:1.2s}
+  body.idle .col-add{opacity:0!important;transition:opacity 1s ease}
+}
+@keyframes subIn{from{opacity:0;filter:blur(10px);transform:translateY(6px);letter-spacing:.08em}to{opacity:1;filter:none;transform:none;letter-spacing:normal}}
+@media (prefers-reduced-motion:reduce){#mSub{animation:none;transition:opacity .3s}body.idle #mSub{filter:none;transform:none;letter-spacing:normal}}
