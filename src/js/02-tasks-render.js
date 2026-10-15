@@ -65,7 +65,7 @@ function rowHTML(t){
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
     t.notes.trim()?`<span class="mi" aria-label="Has notes">${I_NOTE}</span>`:''
   ].join('');
-  return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''} ${pr&&ps==='ring'?'pr-'+pr.id:''}" data-id="${t.id}">
+  return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''} ${pr&&ps==='ring'?'pr-'+pr.id:''} ${pr&&ps==='edge'?'pe-'+pr.id:''} ${pr&&ps==='tint'?'pt-'+pr.id:''}" data-id="${t.id}">
     <div class="under"><span></span></div>
     <div class="row-in">
       <button class="check" data-check aria-label="Complete">${CHECK}</button>

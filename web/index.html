@@ -1523,8 +1523,8 @@ html,body{overscroll-behavior-y:contain}
 .pri-dt.med{background:var(--p-med)}
 .pri-dt.low{background:var(--p-low);opacity:.8}
 .row.pr-high .check{border-color:var(--p-high);border-width:2.5px;background:color-mix(in srgb,var(--p-high) 18%,transparent)}
-.row.pr-med .check{border-color:var(--p-med)}
-.row.pr-low .check{border-color:var(--p-low);border-style:dashed}
+.row.pr-med .check{border-color:var(--p-med);border-width:2.5px;background:color-mix(in srgb,var(--p-med) 22%,transparent)}
+.row.pr-low .check{border-color:var(--p-low);border-style:dashed;background:color-mix(in srgb,var(--p-low) 12%,transparent)}
 .pri-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
 .prp{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:12px;border-radius:16px;border:2px solid var(--line);text-align:left;color:var(--text);transition:border-color .2s}
 .prp.on{border-color:var(--text)}
@@ -1650,6 +1650,24 @@ body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
 .pri-mk{display:inline-block;margin-left:8px;font-style:normal;font-weight:800;font-size:.82em;letter-spacing:.04em;vertical-align:1px}
 .pri-mk.high{color:var(--p-high)}.pri-mk.med{color:var(--p-med)}.pri-mk.low{color:var(--p-low)}
 .prp .pri-mk{margin-left:6px}
+
+/* priority look: Edge, a coloured line at the start of the task (every row shifts a little so they all line up) */
+:root[data-pri="edge"] .row-in{padding-left:14px}
+.row[class*=" pe-"] .row-in::before{content:'';position:absolute;left:0;top:16px;bottom:16px;width:3.5px;border-radius:3px}
+.row.pe-high .row-in::before{background:var(--p-high);box-shadow:0 0 10px color-mix(in srgb,var(--p-high) 45%,transparent)}
+.row.pe-med .row-in::before{background:var(--p-med)}
+.row.pe-low .row-in::before{background:var(--p-low);opacity:.75}
+/* priority look: Tint, the whole row softly takes the colour, strongest at the start */
+:root[data-pri="tint"] .row-in{padding-left:12px;padding-right:12px}
+.row[class*=" pt-"] .row-in{border-radius:12px;margin:3px 0}
+.row.pt-high .row-in{background-image:linear-gradient(90deg,color-mix(in srgb,var(--p-high) 20%,transparent),color-mix(in srgb,var(--p-high) 6%,transparent) 75%,transparent)}
+.row.pt-med .row-in{background-image:linear-gradient(90deg,color-mix(in srgb,var(--p-med) 17%,transparent),color-mix(in srgb,var(--p-med) 5%,transparent) 75%,transparent)}
+.row.pt-low .row-in{background-image:linear-gradient(90deg,color-mix(in srgb,var(--p-low) 15%,transparent),color-mix(in srgb,var(--p-low) 4%,transparent) 75%,transparent)}
+/* previews in Settings */
+.pri-pick{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.prp.edge .prp-row{position:relative;padding-left:10px}
+.prp.edge .prp-row::before{content:'';position:absolute;left:0;top:1px;bottom:1px;width:3px;border-radius:3px;background:var(--p-high)}
+.prp.tint .prp-row{padding:7px 8px;margin:-7px -4px;width:calc(100% + 8px);border-radius:10px;background:linear-gradient(90deg,color-mix(in srgb,var(--p-high) 22%,transparent),transparent)}
 </style>
 </head>
 <body>
@@ -1847,7 +1865,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=90; // bumped with every published update
+const APP_VERSION=91; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2172,7 +2190,7 @@ function rowHTML(t){
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
     t.notes.trim()?`<span class="mi" aria-label="Has notes">${I_NOTE}</span>`:''
   ].join('');
-  return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''} ${pr&&ps==='ring'?'pr-'+pr.id:''}" data-id="${t.id}">
+  return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''} ${pr&&ps==='ring'?'pr-'+pr.id:''} ${pr&&ps==='edge'?'pe-'+pr.id:''} ${pr&&ps==='tint'?'pt-'+pr.id:''}" data-id="${t.id}">
     <div class="under"><span></span></div>
     <div class="row-in">
       <button class="check" data-check aria-label="Complete">${CHECK}</button>
@@ -4054,6 +4072,7 @@ function shuffleFocus(){
   focusLive=keys[Math.floor(Math.random()*keys.length)];applyFocusColor();
 }
 function applySettings(){try{srchApply()}catch(e){}
+  root.dataset.pri=(S.cfg&&S.cfg.priStyle)||'bars';
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
   if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
@@ -4158,7 +4177,7 @@ function settingsPage(id){
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
     <div class="set-row"><div class="set-l">Priority look<small>How High, Medium and Low show on your tasks.</small></div>
-      <div class="pri-pick">${[['bars','Label','Bars and the word.'],['marks','Marks','!!! / !! / ! after the name.'],['ring','Ring','The circle takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${((c.priStyle==='dot'?'marks':c.priStyle)||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
+      <div class="pri-pick">${[['bars','Label','Bars and the word.'],['marks','Marks','!!! / !! / ! after the name.'],['ring','Ring','The circle takes the colour.'],['edge','Edge','A coloured line at the start.'],['tint','Tint','The whole row softly takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${((c.priStyle==='dot'?'marks':c.priStyle)||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
         <span class="prp-row"><span class="pc"></span><span class="pt"><span>Call the bank${v==='marks'?'<i class="pri-mk high">!!!</i>':''}</span>${v==='bars'?`<em>${priIcon(3)}High</em>`:''}</span></span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>
     ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}
     </div><div class="set-sec"><h3>Celebrations</h3>

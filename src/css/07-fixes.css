@@ -192,8 +192,8 @@
 .pri-dt.med{background:var(--p-med)}
 .pri-dt.low{background:var(--p-low);opacity:.8}
 .row.pr-high .check{border-color:var(--p-high);border-width:2.5px;background:color-mix(in srgb,var(--p-high) 18%,transparent)}
-.row.pr-med .check{border-color:var(--p-med)}
-.row.pr-low .check{border-color:var(--p-low);border-style:dashed}
+.row.pr-med .check{border-color:var(--p-med);border-width:2.5px;background:color-mix(in srgb,var(--p-med) 22%,transparent)}
+.row.pr-low .check{border-color:var(--p-low);border-style:dashed;background:color-mix(in srgb,var(--p-low) 12%,transparent)}
 .pri-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
 .prp{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:12px;border-radius:16px;border:2px solid var(--line);text-align:left;color:var(--text);transition:border-color .2s}
 .prp.on{border-color:var(--text)}
@@ -319,3 +319,21 @@ body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
 .pri-mk{display:inline-block;margin-left:8px;font-style:normal;font-weight:800;font-size:.82em;letter-spacing:.04em;vertical-align:1px}
 .pri-mk.high{color:var(--p-high)}.pri-mk.med{color:var(--p-med)}.pri-mk.low{color:var(--p-low)}
 .prp .pri-mk{margin-left:6px}
+
+/* priority look: Edge, a coloured line at the start of the task (every row shifts a little so they all line up) */
+:root[data-pri="edge"] .row-in{padding-left:14px}
+.row[class*=" pe-"] .row-in::before{content:'';position:absolute;left:0;top:16px;bottom:16px;width:3.5px;border-radius:3px}
+.row.pe-high .row-in::before{background:var(--p-high);box-shadow:0 0 10px color-mix(in srgb,var(--p-high) 45%,transparent)}
+.row.pe-med .row-in::before{background:var(--p-med)}
+.row.pe-low .row-in::before{background:var(--p-low);opacity:.75}
+/* priority look: Tint, the whole row softly takes the colour, strongest at the start */
+:root[data-pri="tint"] .row-in{padding-left:12px;padding-right:12px}
+.row[class*=" pt-"] .row-in{border-radius:12px;margin:3px 0}
+.row.pt-high .row-in{background-image:linear-gradient(90deg,color-mix(in srgb,var(--p-high) 20%,transparent),color-mix(in srgb,var(--p-high) 6%,transparent) 75%,transparent)}
+.row.pt-med .row-in{background-image:linear-gradient(90deg,color-mix(in srgb,var(--p-med) 17%,transparent),color-mix(in srgb,var(--p-med) 5%,transparent) 75%,transparent)}
+.row.pt-low .row-in{background-image:linear-gradient(90deg,color-mix(in srgb,var(--p-low) 15%,transparent),color-mix(in srgb,var(--p-low) 4%,transparent) 75%,transparent)}
+/* previews in Settings */
+.pri-pick{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.prp.edge .prp-row{position:relative;padding-left:10px}
+.prp.edge .prp-row::before{content:'';position:absolute;left:0;top:1px;bottom:1px;width:3px;border-radius:3px;background:var(--p-high)}
+.prp.tint .prp-row{padding:7px 8px;margin:-7px -4px;width:calc(100% + 8px);border-radius:10px;background:linear-gradient(90deg,color-mix(in srgb,var(--p-high) 22%,transparent),transparent)}
