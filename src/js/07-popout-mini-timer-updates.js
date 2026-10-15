@@ -195,7 +195,7 @@ function showSummary(){
   F.sum=true;if(deskMini)deskSend();else closePip(); // desktop: celebrate in the mini timer, don't pull the big window up
   $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);sfx('win');
 }
-function closeFocus(){if(UPD.pending)setTimeout(()=>showUpdate(true),700);closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
+function closeFocus(){ambFocusEnd();if(UPD.pending)setTimeout(()=>showUpdate(true),700);closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
 /* remember a running Classic session, so a reload or restart picks it up where it was */
 function fSave(){if(window.__crHold)return;S.classicRun=F&&F.on&&!F.tide&&!F.sum&&F.q&&F.q[F.i]?{ids:F.q.map(t=>t.id),cid:F.q[F.i].id,sec:F.sec||0,run:!!F.run,mode:F.mode,phase:F.phase,left:F.left,round:F.round,focused:F.focused||0,done:F.done||0,extra:F.extra||0,last:F.last||Date.now()}:null}
 $('fPause').onclick=()=>{step();F.run=!F.run;F.last=Date.now();$('fPause').innerHTML=F.run?PAUSE:PLAY;haptic(5);fReveal();save()};

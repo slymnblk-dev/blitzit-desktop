@@ -13,7 +13,7 @@ function tSave(){
   S.tideRun=F&&F.on&&F.tide?{ids:F.q.map(t=>t.id),cid:F.q[F.i]&&F.q[F.i].id,i:F.i,done:F.done,focused:F.focused,T:{mode:T.mode,dur:T.dur,st:T.st,pa:T.pa,pt:T.pt,logged:T.logged||0}}:null;save();
 }
 function tPick(){T={mode:'pick',dur:(S.cfg.tideMin||25)*6e4,st:0,pa:0,pt:0,logged:0}}
-function startTide(q,from){if(!from)sfx('start');
+function startTide(q,from){if(!from){sfx('start');setTimeout(ambFocusStart,300)}
   clearInterval(F&&F.tick);
   F={on:true,tide:true,q,i:from?from.i:0,focused:from?from.focused:0,done:from?from.done:0,tick:null};
   if(from&&from.T)T=from.T;else tPick();
@@ -41,7 +41,7 @@ function tideRender(){
     :`<button class="f-btn t-plus" data-a="more" aria-label="Add 5 minutes">+5</button>${DONE}`;
   el.innerHTML=`<div class="t-top"><span></span>
       <div class="fsw" role="group" aria-label="Focus style"><button data-fs="classic">Classic</button><button data-fs="tide" class="on">Tide</button></div>
-      <div class="f-r"><button class="f-x pip-btn" data-pip aria-label="Pop out focus window" title="Pop out (stays on top of other apps)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><rect x="11.5" y="11" width="7" height="6" rx="1.5" fill="currentColor" stroke="none"/></svg></button><button class="f-x" data-a="leave" aria-label="Leave focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div>
+      <div class="f-r"><button class="f-x amb-btn" data-amb aria-label="Focus sounds" title="Focus sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.5"/></svg><i class="amb-dot"></i></button><button class="f-x pip-btn" data-pip aria-label="Pop out focus window" title="Pop out (stays on top of other apps)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><rect x="11.5" y="11" width="7" height="6" rx="1.5" fill="currentColor" stroke="none"/></svg></button><button class="f-x" data-a="leave" aria-label="Leave focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div>
     <div class="t-main">
       <div class="f-up">${esc(l.name)}${F.q.length>1?`, ${F.i+1} of ${F.q.length}`:''}</div>
       <div class="f-title">${esc(t.title)}</div>
@@ -70,7 +70,7 @@ function tideFinish(){ // end of the queue -> same summary as Classic
   if(!F.done){closePip();F.on=false;unlockScreen();render();return}
   $('focus').classList.add('on');showSummary();
 }
-function tideLeave(){closePip();tLog();if(F.done)return tideFinish();F.on=false;F.tide=false;T=null;tSave();tideClose();unlockScreen();render()}
+function tideLeave(){ambFocusEnd();closePip();tLog();if(F.done)return tideFinish();F.on=false;F.tide=false;T=null;tSave();tideClose();unlockScreen();render()}
 function switchStyle(to){
   if(!F||!F.on||F.sum)return;haptic(6);S.cfg.focusStyle=to;
   if(to==='tide'&&!F.tide){startTide(F.q,{i:F.i,done:F.done,focused:F.focused,keepColor:true})}

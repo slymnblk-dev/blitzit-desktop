@@ -1738,6 +1738,26 @@ body.idle .col-add.typing{opacity:1!important}
 .set-lists .pick{font-size:16px;padding:13px 2px}
 .set-lists .new-list{font-size:14.5px;padding:13px 2px}
 .set-lists .lg-new svg{width:14px;height:14px}
+
+/* focus sounds: 🎧 button + menu */
+.amb-btn{position:relative}
+.amb-btn svg{width:19px;height:19px}
+.amb-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:currentColor;transform:scale(0);transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.amb-btn.playing .amb-dot{transform:scale(1);animation:ambPulse 2.4s ease-in-out infinite}
+@keyframes ambPulse{50%{opacity:.35}}
+body.no-amb .amb-btn{display:none!important}
+.amb-pop{position:fixed;z-index:1500;width:min(320px,calc(100vw - 20px));padding:14px;border-radius:22px;background:rgba(18,19,22,.86);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);color:#F3F2EE;box-shadow:0 24px 60px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);
+  opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top right;transition:opacity .18s,transform .22s cubic-bezier(.2,.8,.2,1)}
+.amb-pop.on{opacity:1;transform:none}
+.amb-h{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(243,242,238,.55);margin:2px 4px 10px}
+.amb-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.amb-o{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:14px;background:rgba(255,255,255,.05);font-size:14px;font-weight:600;color:inherit;text-align:left;transition:background .15s,box-shadow .15s}
+.amb-o:hover{background:rgba(255,255,255,.1)}
+.amb-o.on{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+.amb-i{width:22px;text-align:center;font-size:16px;line-height:1}
+.amb-vol{display:flex;align-items:center;gap:10px;margin:12px 4px 2px;color:rgba(243,242,238,.7)}
+.amb-vol svg{width:18px;height:18px;flex:none}
+.amb-vol input{flex:1;accent-color:#F3F2EE;height:4px}
 </style>
 </head>
 <body>
@@ -1868,7 +1888,7 @@ body.idle .col-add.typing{opacity:1!important}
   <div class="f-top">
     <div class="mode" id="fMode"><button data-m="free" class="on">Free</button><button data-m="pomo">25 / 5</button></div>
     <div class="fsw" id="fStyleSw" role="group" aria-label="Focus style"><button data-fs="classic" class="on">Classic</button><button data-fs="tide">Tide</button></div>
-    <div class="f-r"><button class="f-x pip-btn" data-pip aria-label="Pop out focus window" title="Pop out (stays on top of other apps)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><rect x="11.5" y="11" width="7" height="6" rx="1.5" fill="currentColor" stroke="none"/></svg></button>
+    <div class="f-r"><button class="f-x amb-btn" data-amb aria-label="Focus sounds" title="Focus sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.5"/></svg><i class="amb-dot"></i></button><button class="f-x pip-btn" data-pip aria-label="Pop out focus window" title="Pop out (stays on top of other apps)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><rect x="11.5" y="11" width="7" height="6" rx="1.5" fill="currentColor" stroke="none"/></svg></button>
     <button class="f-x" id="fClose" aria-label="Close focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   </div>
   <div class="f-main">
@@ -1935,7 +1955,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=96; // bumped with every published update
+const APP_VERSION=97; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2944,7 +2964,7 @@ $('goBtn').onclick=()=>{
   if(!q.length)return toast('Add a task to Today first');
   startBlitz(q);
 };
-function startBlitz(q,from){if(!from)sfx('start');
+function startBlitz(q,from){if(!from){sfx('start');setTimeout(ambFocusStart,300)}
   if(!from&&S.cfg.focusStyle==='tide')return startTide(q);
   focusLive=null;applyFocusColor();
   F={on:true,q,i:from?from.i:0,sec:0,run:true,mode:S.cfg.focusMode,phase:'work',left:POMO.work,round:1,focused:from?from.focused:0,done:from?from.done:0,last:Date.now(),tick:setInterval(step,500)};
@@ -3011,6 +3031,120 @@ function nextFocus(){
   if(F.i<F.q.length-1){F.i++;F.sec=0;F.extra=0;F.upd=false;F.run=true;drawFocus()}
   else showSummary();
 }
+/* ---------- focus sounds (optional; Settings → Focus): calm background sound while you focus ----------
+   Phase 1: sounds made in code (no files, no storage, works offline).
+   Later: songs streamed from Supabase Storage plug in as entries with kind:'track' and a url (see AMB_TRACKS). */
+const AMB={ctx:null,bus:null,cur:null,stop:[],el:null};
+/* future songs: [{id:'lofi-1',name:'Lofi · Night drive',kind:'track',url:'https://…supabase.co/storage/v1/object/public/music/…mp3'}] */
+let AMB_TRACKS=[];
+const AMB_GEN=[
+  {id:'rain',name:'Rain',ico:'🌧️',build:ambRain},
+  {id:'ocean',name:'Ocean',ico:'🌊',build:ambOcean},
+  {id:'cafe',name:'Café',ico:'☕',build:ambCafe},
+  {id:'fire',name:'Fireplace',ico:'🔥',build:ambFire},
+  {id:'brown',name:'Brown noise',ico:'🟤',build:ambBrown}
+];
+const ambList=()=>[...AMB_GEN.map(x=>({...x,kind:'gen'})),...AMB_TRACKS];
+const ambOn=()=>S.cfg&&S.cfg.ambShow!==false;
+const ambVol=()=>{const v=+((S.cfg||{}).ambVol);return isFinite(v)&&v>=0?Math.min(1,v):.6};
+
+function ambCtx(){
+  if(!AMB.ctx){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;AMB.ctx=new A();
+    AMB.bus=AMB.ctx.createGain();AMB.bus.gain.value=0;AMB.bus.connect(AMB.ctx.destination)}
+  if(AMB.ctx.state==='suspended')try{AMB.ctx.resume()}catch(e){}
+  return AMB.ctx;
+}
+/* noise buffers, made once */
+const ambBuf={};
+function noise(kind){
+  if(ambBuf[kind])return ambBuf[kind];
+  const c=AMB.ctx,n=c.sampleRate*4,b=c.createBuffer(2,n,c.sampleRate);
+  for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);let last=0,b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for(let i=0;i<n;i++){const w=Math.random()*2-1;
+      if(kind==='brown'){last=(last+.02*w)/1.02;d[i]=last*3.5}
+      else if(kind==='pink'){b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926}
+      else d[i]=w}}
+  return ambBuf[kind]=b;
+}
+function src(kind){const s=AMB.ctx.createBufferSource();s.buffer=noise(kind);s.loop=true;s.loopStart=Math.random();s.start(0,Math.random()*3);AMB.stop.push(()=>{try{s.stop()}catch(e){}});return s}
+function filt(type,f,q){const x=AMB.ctx.createBiquadFilter();x.type=type;x.frequency.value=f;if(q!=null)x.Q.value=q;return x}
+function gain(v){const g=AMB.ctx.createGain();g.gain.value=v;return g}
+function lfo(target,rate,depth,base){const o=AMB.ctx.createOscillator(),g=gain(depth);o.frequency.value=rate;target.value=base;o.connect(g).connect(target);o.start();AMB.stop.push(()=>{try{o.stop()}catch(e){}})}
+function every(min,max,fn){let t;const go=()=>{fn();t=setTimeout(go,min+Math.random()*(max-min))};t=setTimeout(go,min);AMB.stop.push(()=>clearTimeout(t))}
+function burst(f,q,dur,vol,type='bandpass'){const c=AMB.ctx,s=c.createBufferSource(),b=filt(type,f,q),g=gain(0),t=c.currentTime;
+  s.buffer=noise('white');g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(b).connect(g).connect(AMB.bus);s.start(t,Math.random()*3);s.stop(t+dur+.05)}
+function ping(f,vol){const c=AMB.ctx,t=c.currentTime;[[1,1],[2.7,.25]].forEach(([m,k])=>{const o=c.createOscillator(),g=gain(0);o.frequency.value=f*m;
+  g.gain.setValueAtTime(vol*k,t);g.gain.exponentialRampToValueAtTime(.0001,t+.6);o.connect(g).connect(AMB.bus);o.start(t);o.stop(t+.65)})}
+
+/* the five sounds */
+function ambRain(){
+  src('pink').connect(filt('highpass',380)).connect(filt('lowpass',6500)).connect(gain(.5)).connect(AMB.bus);
+  src('brown').connect(filt('lowpass',260)).connect(gain(.22)).connect(AMB.bus);
+  every(25,110,()=>burst(2200+Math.random()*4500,1.4,.03+Math.random()*.03,.05+Math.random()*.12));
+}
+function ambOcean(){
+  const f=filt('lowpass',700,.5),g=gain(.4);
+  src('brown').connect(f).connect(g).connect(AMB.bus);
+  lfo(f.frequency,.09,450,750);lfo(g.gain,.09,.28,.42);
+  const f2=filt('bandpass',1800,.6),g2=gain(.05);src('pink').connect(f2).connect(g2).connect(AMB.bus);lfo(g2.gain,.09,.045,.05);
+}
+function ambCafe(){
+  const m=filt('bandpass',520,.7),mg=gain(.6);src('pink').connect(m).connect(mg).connect(AMB.bus);lfo(mg.gain,.23,.14,.56);lfo(m.frequency,.07,120,520);
+  src('brown').connect(filt('lowpass',320)).connect(gain(.38)).connect(AMB.bus);
+  every(2500,8000,()=>ping(1900+Math.random()*1700,.025+Math.random()*.03));
+  every(900,3000,()=>burst(900+Math.random()*900,3,.08,.03));
+}
+function ambFire(){
+  src('brown').connect(filt('lowpass',480)).connect(gain(.45)).connect(AMB.bus);
+  const h=filt('bandpass',900,.5),hg=gain(.06);src('pink').connect(h).connect(hg).connect(AMB.bus);lfo(hg.gain,.3,.03,.06);
+  every(60,420,()=>{const n=1+Math.floor(Math.random()*3);for(let i=0;i<n;i++)setTimeout(()=>burst(1800+Math.random()*3500,.9,.006+Math.random()*.02,.12+Math.random()*.25,'highpass'),i*(20+Math.random()*60))});
+}
+function ambBrown(){src('brown').connect(filt('lowpass',900)).connect(gain(.6)).connect(AMB.bus)}
+
+function ambFade(to,sec){const g=AMB.bus.gain,t=AMB.ctx.currentTime;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(to,t+sec)}
+function ambTeardown(){AMB.stop.splice(0).forEach(f=>f());if(AMB.el){try{AMB.el.pause()}catch(e){}AMB.el=null}}
+/* play a sound by id ('off' or unknown stops) */
+function ambPlay(id){
+  const it=ambList().find(x=>x.id===id);
+  if(!it){ambStop();return}
+  if(!ambCtx())return;
+  const swap=()=>{ambTeardown();AMB.cur=it.id;
+    if(it.kind==='track'){const a=new Audio(it.url);a.loop=true;a.volume=ambVol();a.play().catch(()=>{});AMB.el=a}
+    else{it.build();ambFade(ambVol()*.8,1.4)}
+    ambMark()};
+  if(AMB.cur&&AMB.cur!==it.id){ambFade(0,.35);setTimeout(swap,380)}else if(AMB.cur!==it.id)swap();
+}
+function ambStop(){if(!AMB.ctx||!AMB.cur){AMB.cur=null;ambMark();return}AMB.cur=null;ambFade(0,.8);setTimeout(()=>{if(!AMB.cur)ambTeardown()},850);ambMark()}
+function ambSetVol(v){S.cfg.ambVol=v;save();if(AMB.el)AMB.el.volume=v;else if(AMB.ctx&&AMB.cur)ambFade(v*.8,.15)}
+/* the button shows a small dot while a sound plays */
+function ambMark(){document.querySelectorAll('.amb-btn').forEach(b=>b.classList.toggle('playing',!!AMB.cur));const p=$('ambPop');if(p)ambDraw()}
+
+/* menu */
+function ambDraw(){
+  const p=$('ambPop');if(!p)return;const cur=AMB.cur||'off';
+  p.innerHTML=`<div class="amb-h">Focus sounds</div><div class="amb-grid">
+    <button class="amb-o ${cur==='off'?'on':''}" data-ambp="off"><span class="amb-i">∅</span>Off</button>
+    ${ambList().map(x=>`<button class="amb-o ${cur===x.id?'on':''}" data-ambp="${x.id}"><span class="amb-i">${x.ico||'🎵'}</span>${esc(x.name)}</button>`).join('')}</div>
+    <label class="amb-vol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/></svg><input type="range" min="0" max="1" step=".02" value="${ambVol()}" id="ambVol" aria-label="Volume"></label>`;
+}
+function ambMenu(btn){
+  ambClose();const r=btn.getBoundingClientRect(),p=document.createElement('div');p.id='ambPop';p.className='amb-pop';
+  document.body.appendChild(p);ambDraw();
+  const w=p.offsetWidth;p.style.left=Math.max(10,Math.min(innerWidth-w-10,r.right-w))+'px';p.style.top=(r.bottom+8)+'px';
+  requestAnimationFrame(()=>p.classList.add('on'));
+}
+function ambClose(){const p=$('ambPop');if(p)p.remove()}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-amb]');if(b){e.stopPropagation();$('ambPop')?ambClose():ambMenu(b);haptic(5);return}
+  const o=e.target.closest('[data-ambp]');if(o){e.stopPropagation();const id=o.dataset.ambp;S.cfg.ambSound=id;S.cfgU=Date.now();save();id==='off'?ambStop():ambPlay(id);haptic(5);return}
+  if($('ambPop')&&!e.target.closest('#ambPop'))ambClose();
+},true);
+document.addEventListener('input',e=>{if(e.target.id==='ambVol')ambSetVol(+e.target.value)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('ambPop')){e.stopPropagation();ambClose()}},true);
+/* focus starts: bring back the last sound you picked; focus ends: fade out */
+function ambFocusStart(){if(ambOn()&&S.cfg.ambSound&&S.cfg.ambSound!=='off')ambPlay(S.cfg.ambSound)}
+function ambFocusEnd(){ambClose();ambStop()}
+function ambApply(){document.body.classList.toggle('no-amb',!ambOn());if(!ambOn())ambFocusEnd()}
 /* ---------- Tide focus style ---------- */
 let T=null,tideT=null,tideQ=null;
 const tideOn=()=>$('tide').classList.contains('on');
@@ -3026,7 +3160,7 @@ function tSave(){
   S.tideRun=F&&F.on&&F.tide?{ids:F.q.map(t=>t.id),cid:F.q[F.i]&&F.q[F.i].id,i:F.i,done:F.done,focused:F.focused,T:{mode:T.mode,dur:T.dur,st:T.st,pa:T.pa,pt:T.pt,logged:T.logged||0}}:null;save();
 }
 function tPick(){T={mode:'pick',dur:(S.cfg.tideMin||25)*6e4,st:0,pa:0,pt:0,logged:0}}
-function startTide(q,from){if(!from)sfx('start');
+function startTide(q,from){if(!from){sfx('start');setTimeout(ambFocusStart,300)}
   clearInterval(F&&F.tick);
   F={on:true,tide:true,q,i:from?from.i:0,focused:from?from.focused:0,done:from?from.done:0,tick:null};
   if(from&&from.T)T=from.T;else tPick();
@@ -3054,7 +3188,7 @@ function tideRender(){
     :`<button class="f-btn t-plus" data-a="more" aria-label="Add 5 minutes">+5</button>${DONE}`;
   el.innerHTML=`<div class="t-top"><span></span>
       <div class="fsw" role="group" aria-label="Focus style"><button data-fs="classic">Classic</button><button data-fs="tide" class="on">Tide</button></div>
-      <div class="f-r"><button class="f-x pip-btn" data-pip aria-label="Pop out focus window" title="Pop out (stays on top of other apps)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><rect x="11.5" y="11" width="7" height="6" rx="1.5" fill="currentColor" stroke="none"/></svg></button><button class="f-x" data-a="leave" aria-label="Leave focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div>
+      <div class="f-r"><button class="f-x amb-btn" data-amb aria-label="Focus sounds" title="Focus sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.5"/></svg><i class="amb-dot"></i></button><button class="f-x pip-btn" data-pip aria-label="Pop out focus window" title="Pop out (stays on top of other apps)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><rect x="11.5" y="11" width="7" height="6" rx="1.5" fill="currentColor" stroke="none"/></svg></button><button class="f-x" data-a="leave" aria-label="Leave focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div>
     <div class="t-main">
       <div class="f-up">${esc(l.name)}${F.q.length>1?`, ${F.i+1} of ${F.q.length}`:''}</div>
       <div class="f-title">${esc(t.title)}</div>
@@ -3083,7 +3217,7 @@ function tideFinish(){ // end of the queue -> same summary as Classic
   if(!F.done){closePip();F.on=false;unlockScreen();render();return}
   $('focus').classList.add('on');showSummary();
 }
-function tideLeave(){closePip();tLog();if(F.done)return tideFinish();F.on=false;F.tide=false;T=null;tSave();tideClose();unlockScreen();render()}
+function tideLeave(){ambFocusEnd();closePip();tLog();if(F.done)return tideFinish();F.on=false;F.tide=false;T=null;tSave();tideClose();unlockScreen();render()}
 function switchStyle(to){
   if(!F||!F.on||F.sum)return;haptic(6);S.cfg.focusStyle=to;
   if(to==='tide'&&!F.tide){startTide(F.q,{i:F.i,done:F.done,focused:F.focused,keepColor:true})}
@@ -3320,7 +3454,7 @@ function showSummary(){
   F.sum=true;if(deskMini)deskSend();else closePip(); // desktop: celebrate in the mini timer, don't pull the big window up
   $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);sfx('win');
 }
-function closeFocus(){if(UPD.pending)setTimeout(()=>showUpdate(true),700);closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
+function closeFocus(){ambFocusEnd();if(UPD.pending)setTimeout(()=>showUpdate(true),700);closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
 /* remember a running Classic session, so a reload or restart picks it up where it was */
 function fSave(){if(window.__crHold)return;S.classicRun=F&&F.on&&!F.tide&&!F.sum&&F.q&&F.q[F.i]?{ids:F.q.map(t=>t.id),cid:F.q[F.i].id,sec:F.sec||0,run:!!F.run,mode:F.mode,phase:F.phase,left:F.left,round:F.round,focused:F.focused||0,done:F.done||0,extra:F.extra||0,last:F.last||Date.now()}:null}
 $('fPause').onclick=()=>{step();F.run=!F.run;F.last=Date.now();$('fPause').innerHTML=F.run?PAUSE:PLAY;haptic(5);fReveal();save()};
@@ -4142,7 +4276,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -4203,7 +4337,7 @@ function shuffleFocus(){
   const cur=focusLive||S.cfg.focusColor||'red',keys=Object.keys(FOCUS_COLORS).filter(k=>k!==cur&&k!=='paper');
   focusLive=keys[Math.floor(Math.random()*keys.length)];applyFocusColor();
 }
-function applySettings(){try{srchApply()}catch(e){}
+function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   root.dataset.pri=(S.cfg&&S.cfg.priStyle)||'bars';
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
@@ -4332,6 +4466,7 @@ function settingsPage(id){
     ${row('Focus length',`<div class="segc">${[15,25,45,50].map(m=>sOpt('pomoWork',m,m+'m')).join('')}</div>`)}
     ${row('Break length',`<div class="segc">${[5,10,15].map(m=>sOpt('pomoBreak',m,m+'m')).join('')}</div>`)}
     </div><div class="set-sec"><h3>Style</h3>
+    ${row('Focus sounds',tg('ambShow'),'A 🎧 button in focus mode with calm sounds: rain, ocean, café, fireplace or brown noise.')}
     ${row('Timer look',`<div class="segc">${sOpt('focusStyle','classic','Digits')}${sOpt('focusStyle','tide','Wave')}</div>`,(c.focusStyle||'classic')==='tide'?'A circle that fills like a wave as time runs.':'Big clear numbers, with your task steps.')}
     </div><div class="set-sec"><h3>Look</h3>
     <div class="fc-prev ${(c.focusStyle||'classic')==='tide'?'wave':''}" style="--pb:${(FOCUS_COLORS[c.focusColor]||{}).bg||'var(--today)'};--pi:${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).ink}">${(c.focusStyle||'classic')==='tide'

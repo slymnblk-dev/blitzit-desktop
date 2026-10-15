@@ -13,7 +13,7 @@ $('goBtn').onclick=()=>{
   if(!q.length)return toast('Add a task to Today first');
   startBlitz(q);
 };
-function startBlitz(q,from){if(!from)sfx('start');
+function startBlitz(q,from){if(!from){sfx('start');setTimeout(ambFocusStart,300)}
   if(!from&&S.cfg.focusStyle==='tide')return startTide(q);
   focusLive=null;applyFocusColor();
   F={on:true,q,i:from?from.i:0,sec:0,run:true,mode:S.cfg.focusMode,phase:'work',left:POMO.work,round:1,focused:from?from.focused:0,done:from?from.done:0,last:Date.now(),tick:setInterval(step,500)};
