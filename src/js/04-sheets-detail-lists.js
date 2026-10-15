@@ -242,6 +242,19 @@ $('dDrag').addEventListener('pointercancel',endSheetDrag);
 
 /* lists sheet */
 let editing=false,nl=null,leOpen=null;
+function lePanel(l,only){return `<div class="le-panel">
+        <input class="le-name" data-ren="${l.id}" value="${esc(l.name)}" maxlength="40" placeholder="List name" enterkeyhint="done" autocomplete="off">
+        <div class="lbl">Colour</div><div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
+        ${S.spaces.length>1?`<div class="lbl">Space</div><div class="opts row-scroll le-sp">${S.spaces.map(x=>`<button class="opt sp-opt ${l.space===x.id?'on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</button>`).join('')}</div>`:''}
+        <div class="lbl">Tags</div><div class="le-tags">${ltags(l).map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
+          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>
+        ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<div class="le-acts"><button class="le-arc" data-larc="${l.id}">Archive list</button><button class="le-del" data-ldel="${l.id}">Delete list</button></div>`}
+      </div>`}
+/* Settings → Lists shows the same list editor inside the settings page, grouped by space */
+let listsInSet=false;
+const picksHome={parent:null,next:null};
+function listsToSettings(slot){const pk=$('picks');if(!picksHome.parent){picksHome.parent=pk.parentNode;picksHome.next=pk.nextSibling}slot.appendChild(pk);listsInSet=true;editing=true;nl=null;leOpen=null;pk.classList.add('editing','set-lists');drawLists()}
+function listsBack(){const pk=$('picks');if(!listsInSet||!picksHome.parent)return;listsInSet=false;pk.classList.remove('editing','set-lists');picksHome.parent.insertBefore(pk,picksHome.next);editing=false;leOpen=null;nl=null}
 function drawLists(){
   $('listSheetIn').classList.toggle('editing',editing);
   $('editLists').textContent=editing?'Done':'Edit';
@@ -253,27 +266,31 @@ function drawLists(){
   out+=LH.map(l=>editing
     ?(()=>{const n=S.tasks.filter(t=>t.list===l.id&&!t.archived).length,on=leOpen===l.id,only=S.lists.filter(x=>x.space===l.space).length<2;
       return `<button class="pick le-row ${on?'open':''}" data-l="${l.id}" data-le="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${n} ${n===1?'task':'tasks'}</span>${CHEV}</button>`+
-      (on?`<div class="le-panel">
-        <input class="le-name" data-ren="${l.id}" value="${esc(l.name)}" maxlength="40" placeholder="List name" enterkeyhint="done" autocomplete="off">
-        <div class="lbl">Colour</div><div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
-        ${S.spaces.length>1?`<div class="lbl">Space</div><div class="opts row-scroll le-sp">${S.spaces.map(x=>`<button class="opt sp-opt ${l.space===x.id?'on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</button>`).join('')}</div>`:''}
-        <div class="lbl">Tags</div><div class="le-tags">${ltags(l).map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
-          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>
-        ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<div class="le-acts"><button class="le-arc" data-larc="${l.id}">Archive list</button><button class="le-del" data-ldel="${l.id}">Delete list</button></div>`}
-      </div>`:'')})()
+      (on?lePanel(l,only):'')})()
     :`<button class="pick" data-l="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${open(l.id)} open</span>${S.list===l.id?tick():''}</button>`).join('');
   if(nl){
     out+=`<div class="nl-form"><input id="nlIn" placeholder="List name" enterkeyhint="done" autocomplete="off" value="${esc(nl.name)}">
       <div class="sw" id="nlSw">${PALETTE.map(c=>`<button data-c="${c}" class="${nl.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
       <button class="primary" id="nlSave" style="background:${nl.c}" ${nl.name.trim()?'':'disabled'}>Create list</button></div>`;
   } else out+=`<button class="new-list" id="nlBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New list</button>`;
+  if(listsInSet)out=listsGrouped();
   $('picks').innerHTML=out;
+}
+function listsGrouped(){
+  return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);
+    return `<div class="lg"><div class="lg-head"><span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span>${ls.length} ${ls.length===1?'list':'lists'}</span></div>`+
+      ls.map(l=>{const n=S.tasks.filter(t=>t.list===l.id&&!t.archived).length,on=leOpen===l.id,only=ls.length<2;
+        return `<button class="pick le-row ${on?'open':''}" data-l="${l.id}" data-le="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${n} ${n===1?'task':'tasks'}</span>${CHEV}</button>`+(on?lePanel(l,only):'')}).join('')+
+      (nl&&nl.space===sp.id?`<div class="nl-form"><input id="nlIn" placeholder="List name in ${esc(sp.name)}" enterkeyhint="done" autocomplete="off" value="${esc(nl.name)}">
+        <div class="sw" id="nlSw">${PALETTE.map(c=>`<button data-c="${c}" class="${nl.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
+        <button class="primary" id="nlSave" style="background:${nl.c}" ${nl.name.trim()?'':'disabled'}>Create list</button></div>`
+       :`<button class="new-list lg-new" data-nlsp="${sp.id}">${PLUS_S}New list in ${esc(sp.name)}</button>`)+`</div>`}).join('');
 }
 const tick=()=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`;
 $('listBtn').onclick=()=>{editing=false;nl=null;drawLists();openSheet('listSheet')};
 $('editLists').onclick=()=>{editing=!editing;nl=null;leOpen=null;drawLists()};
 $('picks').addEventListener('click',e=>{
-  if(e.target.closest('#nlBtn')){nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();setTimeout(()=>$('nlIn').focus(),50);return}
+  const nb=e.target.closest('#nlBtn,[data-nlsp]');if(nb){nl={name:'',c:PALETTE[S.lists.length%PALETTE.length],space:nb.dataset.nlsp||null};drawLists();try{$('nlIn').focus()}catch(_){}setTimeout(()=>$('nlIn')&&$('nlIn').focus(),50);return}
   const sw=e.target.closest('#nlSw button');if(sw){nl.c=sw.dataset.c;drawLists();return}
   if(e.target.closest('#nlSave'))return createList();
   const lc=e.target.closest('[data-lc]');if(lc){const l=S.lists.find(x=>x.id===leOpen);if(l){l.c=lc.dataset.lc;haptic(5);drawLists();render()}return}
@@ -320,7 +337,8 @@ $('picks').addEventListener('keydown',e=>{
 if(e.target.dataset.ren&&e.key==='Enter'){e.target.blur();leOpen=null;drawLists();render();return}if(e.target.id==='nlIn'&&e.key==='Enter')createList()});
 function createList(){
   if(!nl||!nl.name.trim())return;
-  const l={id:'l'+newId(),name:nl.name.trim(),c:nl.c,space:inSpaceMode()?S.space:S.spaces[0].id};S.lists.push(l);nl=null;haptic(8);
+  const l={id:'l'+newId(),name:nl.name.trim(),c:nl.c,space:nl.space||(inSpaceMode()?S.space:S.spaces[0].id)};S.lists.push(l);nl=null;haptic(8);
+  if(listsInSet){save();render();drawLists();toast(`${l.name} created`);return}
   S.list=l.id;closeSheets();render(0);toast(`${l.name} created`);
 }
 

@@ -68,3 +68,28 @@ test('archived lists sync between devices and a restore beats the old removal', 
   expect(ok).toBe(true);
   noErrors(errors);
 });
+
+test('Settings → Lists: a page with a back button, lists grouped by space, editing works, sheet still works after', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { openSettings(); setView = 'main'; drawSettings(); });
+  await page.locator('#setIn [data-page="lists"]').click();
+  await expect(page.locator('#listSheet')).not.toHaveClass(/on/);                    // no extra panel on top
+  await expect(page.locator('#setIn #subBack')).toBeVisible();
+  const groups = await page.evaluate(() => S.spaces.length);
+  await expect(page.locator('#setIn .lg')).toHaveCount(groups);
+  const l = await page.evaluate(() => S.lists[0].id);
+  await page.locator(`#setIn [data-le="${l}"]`).click();
+  await page.locator(`#setIn [data-ren="${l}"]`).fill('Renamed list');
+  expect(await page.evaluate(l => S.lists.find(x => x.id === l).name, l)).toBe('Renamed list');
+  const sp = await page.evaluate(() => S.spaces[0].id);
+  await page.locator(`#setIn [data-nlsp="${sp}"]`).click();
+  await page.keyboard.type('Brand new');
+  await page.keyboard.press('Enter');
+  expect(await page.evaluate(sp => S.lists.some(x => x.name === 'Brand new' && x.space === sp), sp)).toBe(true);
+  await page.locator('#subBack').click();
+  await page.evaluate(() => closeSettings());
+  await page.evaluate(() => { editing = false; nl = null; drawLists(); openSheet('listSheet'); });
+  await expect(page.locator('#listSheet #picks .pick').first()).toBeVisible();          // the list sheet still has its picks
+  noErrors(errors);
+});

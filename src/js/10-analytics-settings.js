@@ -145,10 +145,12 @@ const PAGES=[
 ];
 let lastView='main';
 function drawSettings(){
+  try{listsBack()}catch(e){}
   const el=$('setIn'),anim=lastView!==setView;
   const dir=setView==='main'?'in-l':'in-r';lastView=setView;
   if(setView==='account'||setView==='stats'){youTab=setView==='stats'?'stats':'account';setView='you'} // these now live in You
   if(setView==='you')youBody();else el.innerHTML=setView==='main'?settingsMain():settingsPage(setView);
+  if(setView==='lists'&&$('picksSlot'))listsToSettings($('picksSlot'));
   if(anim){el.classList.remove('in-l','in-r');void el.offsetWidth;el.classList.add(dir)}
 }
 function pageSummary(id){
@@ -247,6 +249,7 @@ function settingsPage(id){
     ${row('Sound at end of round',tg('sound'))}
     ${row('Keep screen awake',tg('wake'))}</div>`;
   if(id==='archive')body=archivePage();
+  if(id==='lists')body=`<p class="sub-p">Lists sit inside your spaces. Tap a list to rename, recolour, move, tag or archive it.</p><div class="lists-slot" id="picksSlot"></div>`;
   if(id==='sounds'){const cur=sfxStyle().id,PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
     body=`<div class="set-sec">${row('Sounds',tg('uiSounds'),c.uiSounds===false?'Off. You can still try styles below.':'Soft sounds when you add, move or finish tasks')}
       ${row('Volume',`<div class="segc">${sOpt('sfxVol','quiet','Quiet')}${sOpt('sfxVol','normal','Normal')}${sOpt('sfxVol','loud','Loud')}</div>`)}</div>
@@ -279,7 +282,7 @@ function settingsPage(id){
 }
 
 function openSettings(){setView='main';lastView='main';drawSettings();$('settings').classList.add('on');$('scrim').classList.add('on');$('settings').scrollTop=0;haptic(5)}
-function closeSettings(){
+function closeSettings(){try{listsBack()}catch(e){}
   const ae=document.activeElement;if(ae&&ae.closest&&ae.closest('.settings'))ae.blur();
   $('settings').classList.remove('on');
   if(!document.querySelector('.sheet.on'))$('scrim').classList.remove('on');

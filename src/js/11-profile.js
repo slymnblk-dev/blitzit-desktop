@@ -131,7 +131,6 @@ $('setIn').addEventListener('click',e=>{
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
   if(pg){const id=pg.dataset.page;haptic(5);if(id==='archive'){arcFrom=setView;if(pg.dataset.arct)arcTab=pg.dataset.arct}
-    if(id==='lists'){editing=true;nl=null;drawLists();openSheet('listSheet');onSheetClose=drawSettings;return}
     setView=id;drawSettings();$('settings').scrollTop=0;return}
   if(!CLOUD){
     const pv=e.target.closest('[data-pv]');if(pv){pvState=pv.dataset.pv;authMsg='';haptic(5);return drawSettings()}
