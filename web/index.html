@@ -1683,6 +1683,26 @@ body.idle .col-add.typing{opacity:1!important}
 .col-add .ca-row{gap:14px}
 .col-add .ca-dot{width:22px;height:22px}
 .col-add .ca-row .ca-in{font-size:15.5px}
+
+/* space page (Full width): the lists of one space as cards */
+.lp-back{display:inline-flex;align-items:center;gap:6px;margin:-6px 0 18px -6px;padding:6px 10px 6px 6px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:color .15s,background .15s}
+.lp-back:hover{color:var(--text);background:var(--surface)}
+.lp-back svg{width:16px;height:16px}
+.lp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.lp-card{position:relative;display:flex;flex-direction:column;gap:6px;padding:24px;border-radius:26px;background:var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer;overflow:hidden;
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
+.lp-card:hover{transform:translateY(-3px);box-shadow:0 0 0 1px var(--line),0 18px 40px rgba(0,0,0,.14)}
+.lp-card:active{transform:scale(.98)}
+.lp-ico{display:flex;align-items:center;height:26px}
+.lp-ico:empty::before{content:'';width:12px;height:12px;border-radius:4px;background:var(--sc)}
+.lp-ico .stack{display:flex}
+.lp-ico .stack span{width:14px;height:14px;border-radius:50%;border:2px solid var(--surface);margin-right:-5px}
+.lp-name{font-size:22px;font-weight:700;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:8px}
+.lp-meta{font-size:13px;color:var(--muted)}
+.lp-meta b{color:var(--text);font-weight:600}
+.lp-new{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:150px;border-radius:26px;border:1.5px dashed var(--line);color:var(--muted);font-size:15px;font-weight:600;transition:color .15s,border-color .15s;animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
+.lp-new:hover{color:var(--text);border-color:var(--muted)}
+.lp-new svg{width:18px;height:18px}
 </style>
 </head>
 <body>
@@ -1880,7 +1900,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=92; // bumped with every published update
+const APP_VERSION=93; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3273,7 +3293,17 @@ const HOUSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const PLUS_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 
 /* Full width: on Home, clicking a space first unfolds its lists in the sidebar; picking one opens the board */
-let fwPeek=null;
+let fwPeek=null,spPage=null;
+/* Full width, computer: a space card on Home opens a page of that space's lists (one list: straight to the board) */
+const spPageOn=()=>peekOn()&&matchMedia('(min-width:1100px)').matches;
+function spaceListsPage(sp){
+  const ls=S.lists.filter(l=>l.space===sp.id),st=id=>{const ts=S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id));return {today:ts.filter(t=>t.stage==='today').length,open:ts.filter(t=>t.stage!=='done').length}};
+  const card=(id,name,ico,c,i)=>{const s=st(id);return `<div class="lp-card" role="button" tabindex="0" data-lp="${id}" style="--sc:${c};animation-delay:${i*.04}s"><span class="lp-ico">${ico}</span><span class="lp-name">${esc(name)}</span><span class="lp-meta">${s.today?`<b>${s.today}</b> today · `:''}${s.open} open</span></div>`};
+  return `<button class="lp-back" data-spback>${BACK_SVG}<span>All spaces</span></button>
+    <div class="lp-grid">${card('all','All lists',`<span class="stack">${ls.slice(0,3).map(x=>`<span style="background:${x.c}"></span>`).join('')}</span>`,sp.c,0)}
+    ${ls.map((l,i)=>card(l.id,l.name,'',l.c,i+1)).join('')}
+    <button class="lp-new" data-lpnew style="animation-delay:${(ls.length+1)*.04}s">${PLUS_S}<span>New list</span></button></div>`;
+}
 const peekOn=()=>!!(S.cfg&&S.cfg.fullWidth&&!S.space);
 function peekSub(sp){
   const ls=S.lists.filter(l=>l.space===sp.id),n=id=>S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id)&&t.stage!=='done').length;
@@ -3312,13 +3342,15 @@ function renderDesk(){
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
-  if(!S.space){$('dHome').innerHTML=`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
+  const spp=!S.space&&spPage&&spPageOn()?spaceOf(spPage):null;if(!spp)spPage=null;
+  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
   const gk=S.space?S.space+'|'+S.list:'';
   if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
   $('mEdit').hidden=!sp;
   if(sp)$('mDate').textContent=(sp.e?sp.e+'  ':'')+sp.name;
   else if(S.space==='all')$('mDate').textContent='All tasks';
+  if(spp){$('mDate').textContent=(spp.e?spp.e+'  ':'')+spp.name;const s=spaceStats(spp);$('mSub').innerHTML=`<b>${s.today}</b> today · <b>${s.open}</b> open · ${s.lists} ${s.lists===1?'list':'lists'}`}
   renderFullWidth();
 }
 
@@ -3687,8 +3719,8 @@ addEventListener('resize',()=>{if(srchOpen)srchPlace()});
 /* show / hide the buttons with the setting */
 function srchApply(){document.body.classList.toggle('no-srch',!srchOn());if(!srchOn()){closeSearch();if(srchFiltering()){SF.pri.clear();SF.tags.clear();render()}}srchChip()}
 /* ---------- spaces ---------- */
-function openSpace(id){S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
-function goHome(){S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
+function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
+function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
 $('homeBtn').onclick=goHome;
 $('mEdit').onclick=()=>inSpaceMode()&&openSpaceSheet(S.space);$('brandBtn').onclick=goHome;
 document.querySelector('.side .brand').onclick=goHome;
@@ -3703,7 +3735,12 @@ const homeClick=e=>{
   const ar=e.target.closest('[data-sparc]');if(ar){closePops();return askArchiveSpace(ar.dataset.sparc)}
   const dl=e.target.closest('[data-del]');if(dl){closePops();return askDeleteSpace(dl.dataset.del)}
   if(document.querySelector('.sp-pop.on')){closePops();return}
-  const c=e.target.closest('[data-space]');if(c)return openSpace(c.dataset.space);
+  if(e.target.closest('[data-spback]')){spPage=null;fwPeek=null;haptic(5);render();return}
+  const lp=e.target.closest('[data-lp]');if(lp){const id=spPage,l=lp.dataset.lp;openSpaceSide(id);S.list=l;haptic(5);render();return}
+  if(e.target.closest('[data-lpnew]')){const id=spPage;openSpaceSide(id);editing=false;nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();openSheet('listSheet');setTimeout(()=>$('nlIn').focus(),300);return}
+  const c=e.target.closest('[data-space]');if(c){const id=c.dataset.space;
+    if(spPageOn()&&S.lists.filter(l=>l.space===id).length>1){spPage=id;fwPeek=id;haptic(5);render();$('dHome').scrollTop=0;return}
+    return openSpace(id)}
   if(e.target.closest('#spNew'))return openSpaceSheet(null);
   if(e.target.closest('#allTasks'))return openSpace('all');
   if(e.target.closest('#tdBlitz')){e.stopPropagation();const c=e.target.closest('.td-card'),id=c&&c.dataset.sp;

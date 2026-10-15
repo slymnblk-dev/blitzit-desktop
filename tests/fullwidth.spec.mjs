@@ -61,3 +61,21 @@ test('board: Add task opens a task line; Enter adds and leaves a fresh line', as
   await expect(col.locator('.ca-row')).toBeHidden();
   noErrors(errors);
 });
+
+test('full width: a space card on Home opens its lists page; a one-list space opens the board', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  const r = await page.evaluate(() => { S.cfg.fullWidth = true; S.cfg.homeStyle = 'colorful'; S.space = null;
+    const multi = S.spaces[0]; if (S.lists.filter(l => l.space === multi.id).length < 2) S.lists.push({ id: 'lz', name: 'Extra', c: '#888', space: multi.id });
+    S.spaces.push({ id: 'one', name: 'Solo', c: '#5AB8F5', e: '' }); S.lists.push({ id: 'lone', name: 'Only', c: '#5AB8F5', space: 'one' });
+    applySettings(); render(); return { multi: multi.id, l: S.lists.find(x => x.space === multi.id).id }; });
+  await page.locator(`#dHome [data-space="${r.multi}"]`).click();
+  expect(await page.evaluate(() => S.space)).toBeNull();
+  await expect(page.locator('#dHome .lp-card[data-lp="all"]')).toBeVisible();
+  await page.locator(`#dHome .lp-card[data-lp="${r.l}"]`).click();
+  expect(await page.evaluate(() => [S.space, S.list])).toEqual([r.multi, r.l]);
+  await page.evaluate(() => goHome());
+  await page.locator('#dHome [data-space="one"]').click();
+  expect(await page.evaluate(() => S.space)).toBe('one');                           // one list: straight in
+  noErrors(errors);
+});

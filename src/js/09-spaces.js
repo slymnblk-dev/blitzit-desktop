@@ -1,6 +1,6 @@
 /* ---------- spaces ---------- */
-function openSpace(id){S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
-function goHome(){S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
+function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
+function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
 $('homeBtn').onclick=goHome;
 $('mEdit').onclick=()=>inSpaceMode()&&openSpaceSheet(S.space);$('brandBtn').onclick=goHome;
 document.querySelector('.side .brand').onclick=goHome;
@@ -15,7 +15,12 @@ const homeClick=e=>{
   const ar=e.target.closest('[data-sparc]');if(ar){closePops();return askArchiveSpace(ar.dataset.sparc)}
   const dl=e.target.closest('[data-del]');if(dl){closePops();return askDeleteSpace(dl.dataset.del)}
   if(document.querySelector('.sp-pop.on')){closePops();return}
-  const c=e.target.closest('[data-space]');if(c)return openSpace(c.dataset.space);
+  if(e.target.closest('[data-spback]')){spPage=null;fwPeek=null;haptic(5);render();return}
+  const lp=e.target.closest('[data-lp]');if(lp){const id=spPage,l=lp.dataset.lp;openSpaceSide(id);S.list=l;haptic(5);render();return}
+  if(e.target.closest('[data-lpnew]')){const id=spPage;openSpaceSide(id);editing=false;nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();openSheet('listSheet');setTimeout(()=>$('nlIn').focus(),300);return}
+  const c=e.target.closest('[data-space]');if(c){const id=c.dataset.space;
+    if(spPageOn()&&S.lists.filter(l=>l.space===id).length>1){spPage=id;fwPeek=id;haptic(5);render();$('dHome').scrollTop=0;return}
+    return openSpace(id)}
   if(e.target.closest('#spNew'))return openSpaceSheet(null);
   if(e.target.closest('#allTasks'))return openSpace('all');
   if(e.target.closest('#tdBlitz')){e.stopPropagation();const c=e.target.closest('.td-card'),id=c&&c.dataset.sp;

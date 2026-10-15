@@ -352,3 +352,23 @@ body.idle .col-add.typing{opacity:1!important}
 .col-add .ca-row{gap:14px}
 .col-add .ca-dot{width:22px;height:22px}
 .col-add .ca-row .ca-in{font-size:15.5px}
+
+/* space page (Full width): the lists of one space as cards */
+.lp-back{display:inline-flex;align-items:center;gap:6px;margin:-6px 0 18px -6px;padding:6px 10px 6px 6px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:color .15s,background .15s}
+.lp-back:hover{color:var(--text);background:var(--surface)}
+.lp-back svg{width:16px;height:16px}
+.lp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.lp-card{position:relative;display:flex;flex-direction:column;gap:6px;padding:24px;border-radius:26px;background:var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer;overflow:hidden;
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
+.lp-card:hover{transform:translateY(-3px);box-shadow:0 0 0 1px var(--line),0 18px 40px rgba(0,0,0,.14)}
+.lp-card:active{transform:scale(.98)}
+.lp-ico{display:flex;align-items:center;height:26px}
+.lp-ico:empty::before{content:'';width:12px;height:12px;border-radius:4px;background:var(--sc)}
+.lp-ico .stack{display:flex}
+.lp-ico .stack span{width:14px;height:14px;border-radius:50%;border:2px solid var(--surface);margin-right:-5px}
+.lp-name{font-size:22px;font-weight:700;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:8px}
+.lp-meta{font-size:13px;color:var(--muted)}
+.lp-meta b{color:var(--text);font-weight:600}
+.lp-new{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:150px;border-radius:26px;border:1.5px dashed var(--line);color:var(--muted);font-size:15px;font-weight:600;transition:color .15s,border-color .15s;animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
+.lp-new:hover{color:var(--text);border-color:var(--muted)}
+.lp-new svg{width:18px;height:18px}

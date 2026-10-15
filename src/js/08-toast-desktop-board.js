@@ -14,7 +14,17 @@ const HOUSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const PLUS_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 
 /* Full width: on Home, clicking a space first unfolds its lists in the sidebar; picking one opens the board */
-let fwPeek=null;
+let fwPeek=null,spPage=null;
+/* Full width, computer: a space card on Home opens a page of that space's lists (one list: straight to the board) */
+const spPageOn=()=>peekOn()&&matchMedia('(min-width:1100px)').matches;
+function spaceListsPage(sp){
+  const ls=S.lists.filter(l=>l.space===sp.id),st=id=>{const ts=S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id));return {today:ts.filter(t=>t.stage==='today').length,open:ts.filter(t=>t.stage!=='done').length}};
+  const card=(id,name,ico,c,i)=>{const s=st(id);return `<div class="lp-card" role="button" tabindex="0" data-lp="${id}" style="--sc:${c};animation-delay:${i*.04}s"><span class="lp-ico">${ico}</span><span class="lp-name">${esc(name)}</span><span class="lp-meta">${s.today?`<b>${s.today}</b> today · `:''}${s.open} open</span></div>`};
+  return `<button class="lp-back" data-spback>${BACK_SVG}<span>All spaces</span></button>
+    <div class="lp-grid">${card('all','All lists',`<span class="stack">${ls.slice(0,3).map(x=>`<span style="background:${x.c}"></span>`).join('')}</span>`,sp.c,0)}
+    ${ls.map((l,i)=>card(l.id,l.name,'',l.c,i+1)).join('')}
+    <button class="lp-new" data-lpnew style="animation-delay:${(ls.length+1)*.04}s">${PLUS_S}<span>New list</span></button></div>`;
+}
 const peekOn=()=>!!(S.cfg&&S.cfg.fullWidth&&!S.space);
 function peekSub(sp){
   const ls=S.lists.filter(l=>l.space===sp.id),n=id=>S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id)&&t.stage!=='done').length;
@@ -53,13 +63,15 @@ function renderDesk(){
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
-  if(!S.space){$('dHome').innerHTML=`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
+  const spp=!S.space&&spPage&&spPageOn()?spaceOf(spPage):null;if(!spp)spPage=null;
+  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
   const gk=S.space?S.space+'|'+S.list:'';
   if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
   $('mEdit').hidden=!sp;
   if(sp)$('mDate').textContent=(sp.e?sp.e+'  ':'')+sp.name;
   else if(S.space==='all')$('mDate').textContent='All tasks';
+  if(spp){$('mDate').textContent=(spp.e?spp.e+'  ':'')+spp.name;const s=spaceStats(spp);$('mSub').innerHTML=`<b>${s.today}</b> today · <b>${s.open}</b> open · ${s.lists} ${s.lists===1?'list':'lists'}`}
   renderFullWidth();
 }
 
