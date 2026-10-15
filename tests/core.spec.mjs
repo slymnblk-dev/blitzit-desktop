@@ -47,6 +47,8 @@ test('profile: name, emoji avatar and goal are saved', async ({ page }) => {
   const errors = await openApp(page);
   await page.locator('#dMe').click();
   await page.locator('#youName').fill('Suly');
+  await expect(page.locator('[data-av="🦊"]')).toHaveCount(0);                     // avatars tucked away
+  await page.locator('#avToggle').click();
   await page.locator('[data-av="🦊"]').click();
   await page.locator('[data-goal="120"]').click();
   await page.waitForTimeout(700);
@@ -82,5 +84,19 @@ test('Download tab: web app, Windows app and Mac (coming soon); no stray install
   await page.evaluate(() => { const e = new Event('beforeinstallprompt'); e.prompt = () => { window.__prompted = true }; e.userChoice = Promise.resolve({}); window.dispatchEvent(e); });
   await page.locator('#dlWeb').click();
   expect(await page.evaluate(() => window.__prompted)).toBe(true);
+  noErrors(errors);
+});
+
+test('profile: a clear card says whether tasks are backed up', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => openYou('profile'));
+  const card = page.locator('#setIn .safe-card');
+  if (await page.evaluate(() => typeof CLOUD !== 'undefined' && !!CLOUD)) {
+    await expect(card).toHaveClass(/warn/);
+    await expect(card).toContainText('only on this device');
+    await card.locator('[data-yt="account"]').click();
+    expect(await page.evaluate(() => youTab)).toBe('account');
+  }
   noErrors(errors);
 });

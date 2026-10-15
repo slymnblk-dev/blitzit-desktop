@@ -433,3 +433,23 @@ body.no-amb .amb-btn{display:none!important}
 /* list editor: show every space as a choice (wrap, no sideways scrolling) */
 .opts.le-sp{display:flex;flex-wrap:wrap;gap:8px;overflow:visible;white-space:normal;margin-right:0;padding-right:0;-webkit-mask-image:none;mask-image:none}
 .opts.le-sp .opt{flex:none}
+
+/* Profile: is my data safe? */
+.safe-card{display:flex;align-items:center;gap:14px;margin:4px 0 26px;padding:16px;border-radius:20px;border:1px solid}
+.safe-card.warn{background:color-mix(in srgb,var(--week) 12%,var(--surface));border-color:color-mix(in srgb,var(--week) 40%,transparent)}
+.safe-card.ok{background:color-mix(in srgb,var(--done) 9%,var(--surface));border-color:color-mix(in srgb,var(--done) 28%,transparent)}
+.safe-i{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center}
+.safe-card.warn .safe-i{background:color-mix(in srgb,var(--week) 22%,transparent);color:var(--week)}
+.safe-card.ok .safe-i{background:color-mix(in srgb,var(--done) 20%,transparent);color:var(--done)}
+.safe-i svg{width:22px;height:22px}
+.safe-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.safe-t b{font-size:15.5px;font-weight:700;letter-spacing:-.01em}
+.safe-t small{font-size:13px;color:var(--muted);line-height:1.4}
+.safe-go{flex:none;height:38px;padding:0 16px;border-radius:999px;background:var(--week);color:#0F1013;font-size:14px;font-weight:800}
+@media (max-width:420px){.safe-card.warn{flex-wrap:wrap}.safe-card.warn .safe-go{width:100%;height:42px}}
+/* Profile: avatar picker tucked behind one row */
+.av-row{display:flex;align-items:center;gap:14px;width:100%;padding:10px 4px;font-size:15.5px;font-weight:600;color:var(--text);text-align:left}
+.av-row>span:not(.av){flex:1}
+.av-row>svg{width:16px;height:16px;color:var(--muted);transition:transform .25s}
+.av-row.open>svg{transform:rotate(90deg)}
+.av-drop{margin-top:10px;animation:caIn .25s cubic-bezier(.2,.8,.2,1)}

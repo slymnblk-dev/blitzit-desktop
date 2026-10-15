@@ -124,7 +124,7 @@ function todayCard(td,m){
     <div class="td-head"><span class="td-lbl">Today</span></div>
     ${sp?`<span class="td-space">${sp.e?`<i>${esc(sp.e)}</i>`:''}${esc(sp.name)}</span>`:''}
     <div class="td-next"><span class="td-up">Up next</span><span class="td-title">${esc(nx.title)}</span>${mine.length>1?`<span class="td-more">+${mine.length-1} more</span>`:''}</div>
-    <button class="td-go" id="tdBlitz" aria-label="Win the day: start on today's tasks"><span class="td-ring"></span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="td-gl">Win</span></button>
+    <button class="td-go" id="tdBlitz" aria-label="Focus: start on today's tasks"><span class="td-ring"></span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="td-gl">Focus</span></button>
   </div>`;
 }
 function homeHTML(){

@@ -39,14 +39,22 @@ function youHead(){
   <div class="you-head">${avatarHTML('xl')}<div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
   <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}</button>`).join('')}</div>`;
 }
+/* is my data safe? a clear card at the top of Profile */
+function youSafety(){
+  if(!CLOUD)return '';const u=window.__u;
+  if(u)return `<div class="safe-card ok"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M8.8 12.2l2.2 2.2 4.4-4.6"/></svg></span><span class="safe-t"><b>Your tasks are backed up</b><small>Signed in${u.email?' as '+esc(u.email):''}. They sync to all your devices.</small></span></div>`;
+  return `<div class="safe-card warn"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M12 8.5v4.5"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></span><span class="safe-t"><b>Your tasks are only on this device</b><small>Clear your browser or lose this device and they’re gone. Sign in to back them up and use them everywhere.</small></span><button class="safe-go" data-yt="account">Sign in</button></div>`;
+}
+let avOpen=false;
 function youProfile(){
   const c=C(),g=goalMin();
-  return `<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
-  <div class="set-sec"><h3>Avatar</h3><div class="av-grid">
+  return `${youSafety()}<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
+  <div class="set-sec"><h3>Avatar</h3><button class="av-row ${avOpen?'open':''}" id="avToggle" aria-expanded="${avOpen}">${avatarHTML('sm')}<span>${avOpen?'Done':'Change avatar'}</span>${CHEV}</button>
+    ${avOpen?`<div class="av-grid av-drop">
     <label class="av-up ${c.avatarImg?'on':''}" title="${c.avatarImg?'Change photo':'Upload a photo'}">${c.avatarImg?`<img src="${c.avatarImg}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`}<input type="file" id="avFile" accept="image/*" hidden></label>
     <button data-av="" class="${!c.avatar&&!c.avatarImg?'on':''}" aria-label="Initials">${initials()?`<b>${esc(initials())}</b>`:PERSON}</button>
     ${AVATARS.map(a=>`<button data-av="${a}" class="${!c.avatarImg&&c.avatar===a?'on':''}">${a}</button>`).join('')}</div>
-    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}</div>
+    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}`:''}</div>
   <div class="set-sec"><h3>Daily focus goal</h3>
     ${row('Goal',`<div class="segc">${[[0,'Off'],[60,'1h'],[120,'2h'],[180,'3h'],[240,'4h']].map(([v,l])=>`<button data-goal="${v}" class="${g===v?'on':''}">${l}</button>`).join('')}</div>`,'A ring around your avatar fills as you focus')}
     ${g?`<div class="you-goal"><div class="you-bar"><span style="width:${goalPct()}%"></span></div><span>${goalPct()>=100?'Goal reached today':`${fmt(Math.max(0,g-focusToday()))} to go today`}</span></div>${goalWeek()}`:''}
@@ -127,6 +135,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#dlWeb')){if(installEvt){const ev=installEvt;ev.prompt();ev.userChoice.then(()=>{installEvt=null;drawSettings()}).catch(()=>{})}return}
   const dw=e.target.closest('#dlWin');if(dw){haptic(6);return dlWindows(dw)}
   if(e.target.closest('#avRemove')){delete S.cfg.avatarImg;haptic(6);save();drawMe();return drawSettings()}
+  if(e.target.closest('#avToggle')){avOpen=!avOpen;haptic(5);return drawSettings()}
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');

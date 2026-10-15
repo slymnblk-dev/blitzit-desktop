@@ -1764,6 +1764,26 @@ body.no-amb .amb-btn{display:none!important}
 /* list editor: show every space as a choice (wrap, no sideways scrolling) */
 .opts.le-sp{display:flex;flex-wrap:wrap;gap:8px;overflow:visible;white-space:normal;margin-right:0;padding-right:0;-webkit-mask-image:none;mask-image:none}
 .opts.le-sp .opt{flex:none}
+
+/* Profile: is my data safe? */
+.safe-card{display:flex;align-items:center;gap:14px;margin:4px 0 26px;padding:16px;border-radius:20px;border:1px solid}
+.safe-card.warn{background:color-mix(in srgb,var(--week) 12%,var(--surface));border-color:color-mix(in srgb,var(--week) 40%,transparent)}
+.safe-card.ok{background:color-mix(in srgb,var(--done) 9%,var(--surface));border-color:color-mix(in srgb,var(--done) 28%,transparent)}
+.safe-i{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center}
+.safe-card.warn .safe-i{background:color-mix(in srgb,var(--week) 22%,transparent);color:var(--week)}
+.safe-card.ok .safe-i{background:color-mix(in srgb,var(--done) 20%,transparent);color:var(--done)}
+.safe-i svg{width:22px;height:22px}
+.safe-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.safe-t b{font-size:15.5px;font-weight:700;letter-spacing:-.01em}
+.safe-t small{font-size:13px;color:var(--muted);line-height:1.4}
+.safe-go{flex:none;height:38px;padding:0 16px;border-radius:999px;background:var(--week);color:#0F1013;font-size:14px;font-weight:800}
+@media (max-width:420px){.safe-card.warn{flex-wrap:wrap}.safe-card.warn .safe-go{width:100%;height:42px}}
+/* Profile: avatar picker tucked behind one row */
+.av-row{display:flex;align-items:center;gap:14px;width:100%;padding:10px 4px;font-size:15.5px;font-weight:600;color:var(--text);text-align:left}
+.av-row>span:not(.av){flex:1}
+.av-row>svg{width:16px;height:16px;color:var(--muted);transition:transform .25s}
+.av-row.open>svg{transform:rotate(90deg)}
+.av-drop{margin-top:10px;animation:caIn .25s cubic-bezier(.2,.8,.2,1)}
 </style>
 </head>
 <body>
@@ -1961,7 +1981,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=100; // bumped with every published update
+const APP_VERSION=101; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2345,7 +2365,7 @@ function todayCard(td,m){
     <div class="td-head"><span class="td-lbl">Today</span></div>
     ${sp?`<span class="td-space">${sp.e?`<i>${esc(sp.e)}</i>`:''}${esc(sp.name)}</span>`:''}
     <div class="td-next"><span class="td-up">Up next</span><span class="td-title">${esc(nx.title)}</span>${mine.length>1?`<span class="td-more">+${mine.length-1} more</span>`:''}</div>
-    <button class="td-go" id="tdBlitz" aria-label="Win the day: start on today's tasks"><span class="td-ring"></span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="td-gl">Win</span></button>
+    <button class="td-go" id="tdBlitz" aria-label="Focus: start on today's tasks"><span class="td-ring"></span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="td-gl">Focus</span></button>
   </div>`;
 }
 function homeHTML(){
@@ -4569,14 +4589,22 @@ function youHead(){
   <div class="you-head">${avatarHTML('xl')}<div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
   <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}</button>`).join('')}</div>`;
 }
+/* is my data safe? a clear card at the top of Profile */
+function youSafety(){
+  if(!CLOUD)return '';const u=window.__u;
+  if(u)return `<div class="safe-card ok"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M8.8 12.2l2.2 2.2 4.4-4.6"/></svg></span><span class="safe-t"><b>Your tasks are backed up</b><small>Signed in${u.email?' as '+esc(u.email):''}. They sync to all your devices.</small></span></div>`;
+  return `<div class="safe-card warn"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M12 8.5v4.5"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></span><span class="safe-t"><b>Your tasks are only on this device</b><small>Clear your browser or lose this device and they’re gone. Sign in to back them up and use them everywhere.</small></span><button class="safe-go" data-yt="account">Sign in</button></div>`;
+}
+let avOpen=false;
 function youProfile(){
   const c=C(),g=goalMin();
-  return `<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
-  <div class="set-sec"><h3>Avatar</h3><div class="av-grid">
+  return `${youSafety()}<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
+  <div class="set-sec"><h3>Avatar</h3><button class="av-row ${avOpen?'open':''}" id="avToggle" aria-expanded="${avOpen}">${avatarHTML('sm')}<span>${avOpen?'Done':'Change avatar'}</span>${CHEV}</button>
+    ${avOpen?`<div class="av-grid av-drop">
     <label class="av-up ${c.avatarImg?'on':''}" title="${c.avatarImg?'Change photo':'Upload a photo'}">${c.avatarImg?`<img src="${c.avatarImg}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`}<input type="file" id="avFile" accept="image/*" hidden></label>
     <button data-av="" class="${!c.avatar&&!c.avatarImg?'on':''}" aria-label="Initials">${initials()?`<b>${esc(initials())}</b>`:PERSON}</button>
     ${AVATARS.map(a=>`<button data-av="${a}" class="${!c.avatarImg&&c.avatar===a?'on':''}">${a}</button>`).join('')}</div>
-    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}</div>
+    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}`:''}</div>
   <div class="set-sec"><h3>Daily focus goal</h3>
     ${row('Goal',`<div class="segc">${[[0,'Off'],[60,'1h'],[120,'2h'],[180,'3h'],[240,'4h']].map(([v,l])=>`<button data-goal="${v}" class="${g===v?'on':''}">${l}</button>`).join('')}</div>`,'A ring around your avatar fills as you focus')}
     ${g?`<div class="you-goal"><div class="you-bar"><span style="width:${goalPct()}%"></span></div><span>${goalPct()>=100?'Goal reached today':`${fmt(Math.max(0,g-focusToday()))} to go today`}</span></div>${goalWeek()}`:''}
@@ -4657,6 +4685,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#dlWeb')){if(installEvt){const ev=installEvt;ev.prompt();ev.userChoice.then(()=>{installEvt=null;drawSettings()}).catch(()=>{})}return}
   const dw=e.target.closest('#dlWin');if(dw){haptic(6);return dlWindows(dw)}
   if(e.target.closest('#avRemove')){delete S.cfg.avatarImg;haptic(6);save();drawMe();return drawSettings()}
+  if(e.target.closest('#avToggle')){avOpen=!avOpen;haptic(5);return drawSettings()}
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
