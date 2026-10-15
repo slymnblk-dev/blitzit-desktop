@@ -220,7 +220,7 @@ function settingsPage(id){
     ${row('Focus length',`<div class="segc">${[15,25,45,50].map(m=>sOpt('pomoWork',m,m+'m')).join('')}</div>`)}
     ${row('Break length',`<div class="segc">${[5,10,15].map(m=>sOpt('pomoBreak',m,m+'m')).join('')}</div>`)}
     </div><div class="set-sec"><h3>Style</h3>
-    ${row('Focus style',`<div class="segc">${sOpt('focusStyle','classic','Classic')}${sOpt('focusStyle','tide','Tide')}</div>`,(c.focusStyle||'classic')==='tide'?'One task, a filling circle and a countdown.':'Your task queue with steps and a timer.')}
+    ${row('Timer look',`<div class="segc">${sOpt('focusStyle','classic','Digits')}${sOpt('focusStyle','tide','Wave')}</div>`,(c.focusStyle||'classic')==='tide'?'A circle that fills like a wave as time runs.':'Big clear numbers, with your task steps.')}
     </div><div class="set-sec"><h3>Look</h3>
     <div class="fc-prev" style="--pb:${(FOCUS_COLORS[c.focusColor]||{}).bg||'var(--today)'};--pi:${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).ink}"><span class="fc-t">25:00</span><span class="fc-b">Done</span></div>
     <div class="fc-sw">${Object.entries(FOCUS_COLORS).map(([k,f])=>`<button data-fcol="${k}" class="${(c.focusColor||'red')===k?'on':''}" style="--sb:${f.bg||'var(--today)'}" aria-label="${f.n}" title="${f.n}"></button>`).join('')}</div>
