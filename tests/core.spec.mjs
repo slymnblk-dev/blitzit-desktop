@@ -96,7 +96,8 @@ test('profile: a clear card says whether tasks are backed up', async ({ page }) 
     await expect(card).toHaveClass(/warn/);
     await expect(card).toContainText('only on this device');
     await card.locator('[data-yt="account"]').click();
-    expect(await page.evaluate(() => youTab)).toBe('account');
+    expect(await page.evaluate(() => youTab)).toBe('profile');                         // Account lives inside Profile
+    await expect(page.locator('#accSec')).toBeVisible();
   }
   noErrors(errors);
 });

@@ -34,7 +34,7 @@ function openYou(tab){
   $('settings').classList.add('on');$('scrim').classList.add('on');$('settings').scrollTop=0;haptic(5);
 }
 function youHead(){
-  const tabs=[['profile','Profile'],['stats','Stats'],['account','Account'],['download','Download']];
+  const tabs=[['profile','Profile'],['stats','Stats'],['download','Download']];
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close">${BACK_SVG}</button><button class="you-set" id="youSet">Settings${CHEV}</button></div>
   <div class="you-head">${avatarHTML('xl')}<div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
   <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}</button>`).join('')}</div>`;
@@ -46,6 +46,9 @@ function youSafety(){
   return `<div class="safe-card warn"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M12 8.5v4.5"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></span><span class="safe-t"><b>Your tasks are only on this device</b><small>Clear your browser or lose this device and they’re gone. Sign in to back them up and use them everywhere.</small></span><button class="safe-go" data-yt="account">Sign in</button></div>`;
 }
 let avOpen=false;
+/* Account (sign in, sync, sign out) as its own clearly separated part of Profile */
+function youAccount(){if(!CLOUD&&typeof accountPage!=='function')return '';accInYou=true;let h='';try{h=accountPage()}finally{accInYou=false}
+  return `<section class="acc-sec" id="accSec"><div class="acc-sec-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><h2>Account</h2></div>${h}</section>`}
 function youProfile(){
   const c=C(),g=goalMin();
   return `${youSafety()}<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
@@ -121,8 +124,9 @@ function youBody(){
     el.insertAdjacentHTML('afterbegin',youHead()+'<div class="you-range"></div>');if(seg)el.querySelector('.you-range').appendChild(seg);return;
   }
   if(youTab==='download'){el.innerHTML=youHead()+youDownload();return}
-  if(youTab==='account'){accInYou=true;try{el.innerHTML=youHead()+accountPage()}finally{accInYou=false}return}
-  el.innerHTML=youHead()+youProfile();
+  let toAcc=false;if(youTab==='account'){youTab='profile';toAcc=true}  // Account now lives inside Profile
+  el.innerHTML=youHead()+youProfile()+youAccount();
+  if(toAcc)requestAnimationFrame(()=>{const a=$('accSec');if(a)a.scrollIntoView({behavior:'smooth',block:'start'})});
 }
 function setCfg(k,v){S.cfg[k]=v;applySettings();save();render();if(k==='cleanup'||k==='cleanupAfter')runCleanup(true);drawSettings()}
 

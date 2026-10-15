@@ -453,3 +453,9 @@ body.no-amb .amb-btn{display:none!important}
 .av-row>svg{width:16px;height:16px;color:var(--muted);transition:transform .25s}
 .av-row.open>svg{transform:rotate(90deg)}
 .av-drop{margin-top:10px;animation:caIn .25s cubic-bezier(.2,.8,.2,1)}
+/* Profile → Account section */
+.acc-sec{margin-top:34px;padding:20px 18px 6px;border-radius:24px;background:var(--surface);border:1px solid var(--line);scroll-margin-top:16px}
+.acc-sec-h{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.acc-sec-h svg{width:20px;height:20px;color:var(--muted)}
+.acc-sec-h h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.03em}
+.acc-sec .sub-p{margin-top:6px}
