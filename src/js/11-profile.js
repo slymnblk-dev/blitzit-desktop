@@ -155,12 +155,15 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#accOut')){sb.auth.signOut().catch(()=>{});user=null;onSignedOut();toast('Signed out');return}
   if(setView==='archive'&&arcClick(e))return;
   if(e.target.closest('#replayIntro')){closeSettings();return setTimeout(()=>openIntro(true),300)}
+  if(e.target.closest('#subBack')&&setView==='sounds'){setView='appearance';haptic(5);drawSettings();return}
+  const sn=e.target.closest('[data-snd]');if(sn){S.cfg.sfxStyle=sn.dataset.snd;S.cfgU=Date.now();sfxTry('done',sn.dataset.snd);haptic(5);save();return drawSettings()}
+  const sy=e.target.closest('[data-sndtry]');if(sy){sfxTry(sy.dataset.sndtry,sfxStyle().id);haptic(4);return}
   if(e.target.closest('#subBack')&&setView==='archive'){setView=arcFrom==='archive'?'data':arcFrom;haptic(5);drawSettings();return}
   if(e.target.closest('#subBack')){setView='main';openSw=null;haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#anBack')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   const rg=e.target.closest('#anRange [data-r]');if(rg){anRange=+rg.dataset.r;haptic(5);return drawSettings()}
   const b=e.target.closest('[data-k]');
-  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt'].includes(b.dataset.k))v=+v;haptic(5);return setCfg(b.dataset.k,v)}
+  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt'].includes(b.dataset.k))v=+v;haptic(5);setCfg(b.dataset.k,v);if(b.dataset.k==='sfxVol')sfxTry('done',sfxStyle().id);return}
   const t=e.target.closest('[data-tg]');
   if(t){const k=t.dataset.tg;t.setAttribute('aria-pressed',!c[k]);haptic(6);if(k==='uiSounds'&&!c[k])setTimeout(()=>sfx('done'),200);else sfx('toggle');setTimeout(()=>setCfg(k,!c[k]),180);return}
   const dl=e.target.closest('[data-deflist]');if(dl)return setCfg('defList',dl.dataset.deflist||null);

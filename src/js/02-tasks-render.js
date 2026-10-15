@@ -7,7 +7,7 @@ function nextDate(rep){
 }
 function setStage(t,stage){
   const was=t.stage;t.stage=stage;
-  if(was!==stage)sfx(stage==='done'?'done':was==='done'?'undone':'move');
+  sfxStage(t,was,stage);
   if(stage==='done'&&was!=='done'){
     t.doneAt=Date.now();
     if(t.repeat!=='none'&&!t.spawned){

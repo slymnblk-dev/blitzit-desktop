@@ -45,7 +45,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={uiSounds:true,doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -139,6 +139,7 @@ const PAGES=[
   {id:'lists',name:'Lists'},
   {id:'shortcuts',name:'Keyboard shortcuts'},
   {id:'archive',name:'Archived',hidden:true},
+  {id:'sounds',name:'Sounds',hidden:true},
   {id:'data',name:'Data'}
 ];
 let lastView='main';
@@ -187,6 +188,7 @@ function settingsPage(id){
     ${row('Animations',tg('motion'))}
     ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
     ${row('Sounds',tg('uiSounds'),'Soft sounds when you add, move or finish tasks')}
+    <button class="link-row" data-page="sounds">Sound style<span class="hint">${esc(sfxStyle().name)}${CHEV}</span></button>
     ${row('Haptics',tg('haptics'),'Vibration on Android')}</div>`;
   if(id==='stages')body=`<p class="sub-p">Tap a colour to change it. Tap a name to rename it.</p><div class="set-sec">
     ${STAGES.map(s=>`<div class="stg"><button class="stg-dot" data-sw="${s.id}" style="background:var(--${s.id})" aria-label="Change colour"></button>
@@ -233,6 +235,11 @@ function settingsPage(id){
     ${row('Sound at end of round',tg('sound'))}
     ${row('Keep screen awake',tg('wake'))}</div>`;
   if(id==='archive')body=archivePage();
+  if(id==='sounds'){const cur=sfxStyle().id,PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    body=`<div class="set-sec">${row('Sounds',tg('uiSounds'),c.uiSounds===false?'Off. You can still try styles below.':'Soft sounds when you add, move or finish tasks')}
+      ${row('Volume',`<div class="segc">${sOpt('sfxVol','quiet','Quiet')}${sOpt('sfxVol','normal','Normal')}${sOpt('sfxVol','loud','Loud')}</div>`)}</div>
+    <div class="set-sec"><h3>Style</h3><p class="sub-p snd-p">Tap a style to hear it.</p><div class="snd-list">${SFX_STYLES.map(s=>`<button class="snd ${s.id===cur?'on':''}" data-snd="${s.id}" aria-pressed="${s.id===cur}"><span class="snd-play">${PLAY}</span><span class="snd-t"><b>${s.name}</b><small>${s.d}</small></span><span class="snd-ck">${TICK}</span></button>`).join('')}</div></div>
+    <div class="set-sec"><h3>Try each sound</h3><div class="snd-try">${[['done','Finish a task'],['tick','Tick a step'],['add','Add a task'],['move','Move a task'],['remove','Delete'],['undo','Undo'],['fold','Open a section'],['start','Start focus'],['win','Finish the day']].map(([k,n])=>`<button class="snd-chip" data-sndtry="${k}">${PLAY}${n}</button>`).join('')}</div></div>`}
   if(id==='shortcuts'){
     const K=(keys,label)=>`<div class="kb-row"><span>${label}</span><span class="kb-keys">${keys.map(k=>k==='–'?'<span>to</span>':`<kbd>${k}</kbd>`).join('')}</span></div>`;
     body=`<div class="set-sec"><h3>Tasks</h3>${K(['H'],'Home')}${K(['N'],'New task')}${K(['1','–','4'],'Focus on a column')}${K(['Esc'],'Back to the board')}</div>

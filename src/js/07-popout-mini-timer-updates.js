@@ -173,6 +173,7 @@ async function popOut(){
   const z=PIP_SIZE[pipMode()];
   let w;try{w=await documentPictureInPicture.requestWindow(z)}catch(e){return toast('Couldn’t open the pop-out window')}
   PIP=w;w.document.title='Windaday';
+  ['pointerdown','pointerup','keydown'].forEach(k=>w.document.addEventListener(k,()=>{sfxAct=performance.now()},true)); // clicks in the pop-out count for sounds too
   document.querySelectorAll('link[rel=stylesheet],link[rel=preconnect]').forEach(n=>w.document.head.appendChild(n.cloneNode(true)));
   const st=w.document.createElement('style');st.textContent=`:root{${[...document.styleSheets].length?'':''}}`+PIP_CSS;w.document.head.appendChild(st);
   // carry the app's colour tokens (fonts, theme, focus colour)

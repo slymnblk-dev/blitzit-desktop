@@ -1490,6 +1490,29 @@ html,body{overscroll-behavior-y:contain}
 .pk-pri{display:inline-flex;align-items:center;gap:7px}
 .pk-pri .pri-i{width:14px;height:14px}
 #dPills .pill .pri-i{width:14px;height:14px}
+
+/* Sounds page: pick a style, set the volume, try each sound */
+.link-row .hint{display:inline-flex;align-items:center;gap:6px}
+.snd-p{margin:0 0 12px}
+.snd-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.snd{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--surface2);border:1.5px solid transparent;text-align:left;color:var(--text);transition:border-color .2s,background .2s,transform .12s}
+.snd:hover{border-color:var(--line)}
+.snd:active{transform:scale(.98)}
+.snd.on{border-color:var(--text);background:var(--surface)}
+.snd-play{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--bg);color:var(--text)}
+.snd.on .snd-play{background:var(--text);color:var(--bg)}
+.snd-play svg{width:15px;height:15px;margin-left:2px}
+.snd-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.snd-t b{font-size:15px;font-weight:700}
+.snd-t small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.snd-ck{flex:none;width:18px;height:18px;opacity:0;transition:opacity .2s}
+.snd-ck svg{width:18px;height:18px}
+.snd.on .snd-ck{opacity:1}
+.snd-try{display:flex;flex-wrap:wrap;gap:8px}
+.snd-chip{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;background:var(--surface2);font-size:13.5px;font-weight:600;color:var(--text);transition:background .15s,transform .12s}
+.snd-chip:hover{background:var(--line)}
+.snd-chip:active{transform:scale(.96)}
+.snd-chip svg{width:11px;height:11px;opacity:.7}
 </style>
 </head>
 <body>
@@ -1686,7 +1709,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=83; // bumped with every published update
+const APP_VERSION=84; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1834,51 +1857,103 @@ const I_SUB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const I_NOTE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg>';
 
 
-/* ---------- interface sounds: soft, short, made in code (no audio files). Settings → Appearance → Feel → Sounds ---------- */
-let sfxCtx=null,sfxBus=null,sfxLast={};
+/* ---------- interface sounds: soft, short, made in code (no audio files) ----------
+   Settings → Appearance → Feel → Sounds (on/off) and Sound style (pick a style, set the volume, try each sound). */
+let sfxCtx=null,sfxBus=null,sfxLast={},sfxNoise=null;
+const SFX_VOL={quiet:.3,normal:.55,loud:.85};
 function sfxReady(){
   if(!sfxCtx){const A=window.AudioContext||window.webkitAudioContext;if(!A)return false;
     sfxCtx=new A();
     // a gentle low-pass and a soft limiter keep every sound warm and never sharp
-    const lp=sfxCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;lp.Q.value=.3;
+    const lp=sfxCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=6500;lp.Q.value=.3;
     const cmp=sfxCtx.createDynamicsCompressor();cmp.threshold.value=-18;cmp.ratio.value=4;
-    sfxBus=sfxCtx.createGain();sfxBus.gain.value=.55;
+    sfxBus=sfxCtx.createGain();
     sfxBus.connect(lp).connect(cmp).connect(sfxCtx.destination)}
+  sfxBus.gain.value=SFX_VOL[(S.cfg&&S.cfg.sfxVol)||'normal']||.55;
   if(sfxCtx.state==='suspended')try{sfxCtx.resume()}catch(e){}
   return true;
 }
-/* one soft note: a sine with a faint octave shimmer, quick attack, smooth fade */
-function sfxNote(f,at,dur,vol,glide,type){
-  const c=sfxCtx,t=c.currentTime+at;
-  [[1,1],[2,.12]].forEach(([m,k])=>{
-    const o=c.createOscillator(),g=c.createGain();
-    o.type=type||'sine';o.frequency.setValueAtTime(f*m,t);if(glide)o.frequency.exponentialRampToValueAtTime(glide*m,t+dur*.6);
-    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol*k,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    o.connect(g).connect(sfxBus);o.start(t);o.stop(t+dur+.05)});
+/* building blocks */
+function sfxOsc(type,f,t,dur,vol,{glideTo,glideIn,attack=.008,detune=0,dest=sfxBus}={}){
+  const c=sfxCtx,o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.detune.value=detune;
+  if(glideIn){o.frequency.setValueAtTime(f*glideIn,t);o.frequency.exponentialRampToValueAtTime(f,t+.045)}else o.frequency.setValueAtTime(f,t);
+  if(glideTo)o.frequency.exponentialRampToValueAtTime(glideTo,t+dur*.6);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(vol,.0002),t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g).connect(dest);o.start(t);o.stop(t+dur+.05);
 }
-const SFX={
-  done:()=>{sfxNote(1046.5,0,.38,.16);sfxNote(1568,.075,.55,.13)},            // task finished: two bright, airy notes
-  undone:()=>{sfxNote(880,0,.22,.08,660)},                                       // back to open
-  tick:()=>{sfxNote(1760,0,.09,.07)},                                             // a step ticked off
-  move:()=>{sfxNote(620,0,.14,.06,880)},                                          // moved to another stage
-  add:()=>{sfxNote(784,0,.12,.07);sfxNote(1175,.05,.18,.06)},                     // new task
-  remove:()=>{sfxNote(330,0,.2,.09,220)},                                         // deleted or archived
-  undo:()=>{sfxNote(740,0,.16,.06,520)},
-  fold:()=>{sfxNote(1320,0,.05,.035)},                                            // open / close a section
-  toggle:()=>{sfxNote(1480,0,.045,.03)},                                          // a switch in Settings
-  start:()=>{[523.25,659.25,784].forEach((f,i)=>sfxNote(f,i*.07,.42,.09))},       // focus begins
-  win:()=>{[523.25,659.25,784,1046.5].forEach((f,i)=>sfxNote(f,i*.09,.9,.1))}    // the day's run is complete
+function sfxNoiseHit(t,f,dur,vol){
+  const c=sfxCtx;
+  if(!sfxNoise){sfxNoise=c.createBuffer(1,c.sampleRate*.2,c.sampleRate);const d=sfxNoise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  const s=c.createBufferSource(),bp=c.createBiquadFilter(),g=c.createGain();
+  s.buffer=sfxNoise;bp.type='bandpass';bp.frequency.value=f;bp.Q.value=2.5;
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(bp).connect(g).connect(sfxBus);s.start(t);s.stop(t+dur+.02);
+}
+/* sound styles: each one plays the same little melodies with its own voice */
+const SFX_STYLES=[
+  {id:'glass',name:'Glass',d:'Bright and airy. The default.',shift:1,
+    v:(f,t,dur,vol,gl)=>{sfxOsc('sine',f,t,dur,vol,{glideTo:gl});sfxOsc('sine',f*2,t,dur*.8,vol*.12,{glideTo:gl&&gl*2})}},
+  {id:'soft',name:'Soft',d:'Warm, low and gentle.',shift:.5,
+    v:(f,t,dur,vol,gl)=>{sfxOsc('sine',f,t,dur*1.2,vol*1.3,{glideTo:gl,attack:.02});sfxOsc('triangle',f,t,dur,vol*.25,{glideTo:gl,attack:.02})}},
+  {id:'marimba',name:'Marimba',d:'Round wooden taps.',shift:.5,
+    v:(f,t,dur,vol,gl)=>{sfxOsc('sine',f,t,dur*.75,vol*1.2,{glideTo:gl,attack:.003});sfxOsc('sine',f*4,t,dur*.18,vol*.35,{attack:.002})}},
+  {id:'bell',name:'Bell',d:'Clear chimes with a long shimmer.',shift:1,
+    v:(f,t,dur,vol,gl)=>{sfxOsc('sine',f,t,dur*1.6,vol,{glideTo:gl,attack:.004});sfxOsc('sine',f*2.76,t,dur*.9,vol*.28,{attack:.004});sfxOsc('sine',f*5.4,t,dur*.45,vol*.12,{attack:.003})}},
+  {id:'pop',name:'Pop',d:'Light bubbly pops.',shift:1,
+    v:(f,t,dur,vol,gl)=>{sfxOsc('sine',f,t,dur*.55,vol*1.1,{glideIn:.55,glideTo:gl,attack:.004})}},
+  {id:'drop',name:'Droplet',d:'Like water drops.',shift:1.2,
+    v:(f,t,dur,vol)=>{sfxOsc('sine',f*1.5,t,dur*.5,vol,{glideTo:f*.85,attack:.003});sfxOsc('sine',f*3,t,dur*.2,vol*.08,{attack:.002})}},
+  {id:'pluck',name:'Pluck',d:'Soft plucked strings.',shift:.5,
+    v:(f,t,dur,vol,gl)=>{const c=sfxCtx,lp=c.createBiquadFilter();lp.type='lowpass';lp.Q.value=1;lp.frequency.setValueAtTime(f*8,t);lp.frequency.exponentialRampToValueAtTime(f*1.2,t+dur*.7);lp.connect(sfxBus);
+      sfxOsc('sawtooth',f,t,dur,vol*.6,{glideTo:gl,attack:.003,dest:lp});sfxOsc('sine',f,t,dur,vol*.4,{glideTo:gl,attack:.003})}},
+  {id:'breeze',name:'Breeze',d:'Dreamy and slow, like a soft pad.',shift:1,
+    v:(f,t,dur,vol,gl)=>{[-7,7].forEach(dt=>sfxOsc('triangle',f,t,dur*1.5,vol*.55,{glideTo:gl,attack:.035,detune:dt}));sfxOsc('sine',f*2,t,dur,vol*.08,{attack:.04})}},
+  {id:'click',name:'Click',d:'Crisp, quiet clicks. Barely there.',shift:1,
+    v:(f,t,dur,vol)=>{sfxNoiseHit(t,f*2.2,.035,vol*1.6);sfxOsc('sine',f,t,.06,vol*.25,{attack:.002})}}
+];
+const sfxStyle=()=>SFX_STYLES.find(s=>s.id===(S.cfg&&S.cfg.sfxStyle))||SFX_STYLES[0];
+/* the little melodies: [frequency, start, length, volume, glide-to] */
+const SFX_MEL={
+  done:[[1046.5,0,.38,.16],[1568,.075,.55,.13]],                         // task finished: two rising notes
+  undone:[[880,0,.22,.08,660]],                                           // back to open
+  tick:[[1760,0,.12,.08]],                                                // a step ticked off
+  move:[[620,0,.16,.06,880]],                                             // moved to another stage
+  add:[[784,0,.14,.07],[1175,.05,.2,.06]],                                // new task
+  remove:[[330,0,.22,.09,220]],                                           // deleted or archived
+  undo:[[740,0,.18,.06,520]],
+  fold:[[1320,0,.06,.04]],                                                // open / close a section
+  toggle:[[1480,0,.05,.035]],                                             // a switch in Settings
+  start:[[523.25,0,.42,.09],[659.25,.07,.42,.09],[784,.14,.5,.09]],       // focus begins
+  win:[[523.25,0,.9,.1],[659.25,.09,.9,.1],[784,.18,.9,.1],[1046.5,.27,1.1,.1]] // the day's run is complete
 };
+function sfxPlay(name,style){
+  const st=style||sfxStyle(),mel=SFX_MEL[name];if(!mel)return;
+  const t0=sfxCtx.currentTime+.005;
+  mel.forEach(([f,at,dur,vol,gl])=>st.v(f*st.shift,t0+at,dur,vol,gl&&gl*st.shift));
+}
 let sfxAct=0;['pointerdown','pointerup','keydown'].forEach(k=>addEventListener(k,()=>{sfxAct=performance.now()},true));
-function sfx(name){
+/* a task's finish sound plays the moment it is ticked; the move that follows a moment later stays quiet */
+let sfxHold={id:null,until:0};
+const sfxHoldFor=id=>{sfxHold={id,until:performance.now()+2500}};
+/* gated: only right after the person did something (never from sync, startup or timers) */
+function sfx(name,gated){
   try{
-    if(performance.now()-sfxAct>1500)return;
-    if(!S.cfg||S.cfg.uiSounds===false||!SFX[name])return;
-    const now=performance.now();if(now-(sfxLast[name]||0)<(name==='done'||name==='undone'?500:60))return;sfxLast[name]=now; // never stack the same sound
+    if(gated&&performance.now()-sfxAct>1500)return;
+    if(!S.cfg||S.cfg.uiSounds===false||!SFX_MEL[name])return;
+    const now=performance.now();if(now-(sfxLast[name]||0)<60)return;sfxLast[name]=now; // never stack the same sound
     if(window.__sfxLog)window.__sfxLog.push(name); // tests listen here (no speakers needed)
-    if(!sfxReady())return;SFX[name]();
+    if(!sfxReady())return;sfxPlay(name);
   }catch(e){}
 }
+/* stage changes come from many places (swipes, drags, pickers, focus); they ask through here */
+function sfxStage(t,was,stage){
+  if(was===stage)return;
+  if(sfxHold.id===t.id&&performance.now()<sfxHold.until){sfxHold.id=null;return}
+  sfx(stage==='done'?'done':was==='done'?'undone':'move',true);
+}
+/* try a sound in Settings, even while sounds are off */
+function sfxTry(name,styleId){try{if(!sfxReady())return;if(window.__sfxLog)window.__sfxLog.push('try:'+name);sfxPlay(name,SFX_STYLES.find(s=>s.id===styleId))}catch(e){}}
 /* ---------- recurring ---------- */
 function nextDate(rep){
   let d=new Date();d.setHours(12,0,0,0);
@@ -1888,7 +1963,7 @@ function nextDate(rep){
 }
 function setStage(t,stage){
   const was=t.stage;t.stage=stage;
-  if(was!==stage)sfx(stage==='done'?'done':was==='done'?'undone':'move');
+  sfxStage(t,was,stage);
   if(stage==='done'&&was!=='done'){
     t.doneAt=Date.now();
     if(t.repeat!=='none'&&!t.spawned){
@@ -2120,7 +2195,7 @@ function rowClick(e){
   if(e.target.closest('[data-check]')){
     if(Date.now()-(window.__chk||0)<700)return;window.__chk=Date.now();
     row.dataset.busy=1;haptic(14);
-    const toDone=t.stage!=='done';sfx(toDone?'done':'undone');
+    const toDone=t.stage!=='done';sfx(toDone?'done':'undone');sfxHoldFor(t.id);
     row.classList.add('pop');row.classList.toggle('is-done',toDone);
     setTimeout(()=>moveRow(row,toDone?'done':'today',toDone?24:-24),420);return}
   if(e.target.closest('.row-in'))openDetail(id);
@@ -2765,7 +2840,7 @@ $('tide').addEventListener('click',e=>{
   if(b.dataset.d){T.dur=+b.dataset.d*6e4;haptic(5);tideRender();return}
   const a=b.dataset.a,n=Date.now();
   if(a==='step'){if(b.classList.contains('tick'))return;const t=tCur(),st=t&&t.subs.find(x=>x.id===+b.dataset.s);if(!st)return;
-    b.classList.add('tick');haptic(10);
+    b.classList.add('tick');haptic(10);sfx('tick');
     setTimeout(()=>{st.done=true;save();shuffleFocus();const el=$('tStep');if(el){el.outerHTML=tStepHTML(t);const ne=$('tStep');if(ne)ne.classList.add('t-in-step')}},380);return}
   if(a==='go'){if(Date.now()-(F.tapAt||0)<900)return;const v=+(($('tIn')||{}).value||0);if(v>=1)T.dur=Math.min(300,v)*6e4;S.cfg.tideMin=Math.round(T.dur/6e4);T.mode='run';T.st=n;T.pa=0;T.pt=0;T.logged=0;haptic(10);tSave();tideRender()}
   else if(a==='pause'){T.mode='pause';T.pt=n;tLog();tSave();tideRender()}
@@ -2965,6 +3040,7 @@ async function popOut(){
   const z=PIP_SIZE[pipMode()];
   let w;try{w=await documentPictureInPicture.requestWindow(z)}catch(e){return toast('Couldn’t open the pop-out window')}
   PIP=w;w.document.title='Windaday';
+  ['pointerdown','pointerup','keydown'].forEach(k=>w.document.addEventListener(k,()=>{sfxAct=performance.now()},true)); // clicks in the pop-out count for sounds too
   document.querySelectorAll('link[rel=stylesheet],link[rel=preconnect]').forEach(n=>w.document.head.appendChild(n.cloneNode(true)));
   const st=w.document.createElement('style');st.textContent=`:root{${[...document.styleSheets].length?'':''}}`+PIP_CSS;w.document.head.appendChild(st);
   // carry the app's colour tokens (fonts, theme, focus colour)
@@ -3612,7 +3688,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={uiSounds:true,doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -3706,6 +3782,7 @@ const PAGES=[
   {id:'lists',name:'Lists'},
   {id:'shortcuts',name:'Keyboard shortcuts'},
   {id:'archive',name:'Archived',hidden:true},
+  {id:'sounds',name:'Sounds',hidden:true},
   {id:'data',name:'Data'}
 ];
 let lastView='main';
@@ -3754,6 +3831,7 @@ function settingsPage(id){
     ${row('Animations',tg('motion'))}
     ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
     ${row('Sounds',tg('uiSounds'),'Soft sounds when you add, move or finish tasks')}
+    <button class="link-row" data-page="sounds">Sound style<span class="hint">${esc(sfxStyle().name)}${CHEV}</span></button>
     ${row('Haptics',tg('haptics'),'Vibration on Android')}</div>`;
   if(id==='stages')body=`<p class="sub-p">Tap a colour to change it. Tap a name to rename it.</p><div class="set-sec">
     ${STAGES.map(s=>`<div class="stg"><button class="stg-dot" data-sw="${s.id}" style="background:var(--${s.id})" aria-label="Change colour"></button>
@@ -3800,6 +3878,11 @@ function settingsPage(id){
     ${row('Sound at end of round',tg('sound'))}
     ${row('Keep screen awake',tg('wake'))}</div>`;
   if(id==='archive')body=archivePage();
+  if(id==='sounds'){const cur=sfxStyle().id,PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    body=`<div class="set-sec">${row('Sounds',tg('uiSounds'),c.uiSounds===false?'Off. You can still try styles below.':'Soft sounds when you add, move or finish tasks')}
+      ${row('Volume',`<div class="segc">${sOpt('sfxVol','quiet','Quiet')}${sOpt('sfxVol','normal','Normal')}${sOpt('sfxVol','loud','Loud')}</div>`)}</div>
+    <div class="set-sec"><h3>Style</h3><p class="sub-p snd-p">Tap a style to hear it.</p><div class="snd-list">${SFX_STYLES.map(s=>`<button class="snd ${s.id===cur?'on':''}" data-snd="${s.id}" aria-pressed="${s.id===cur}"><span class="snd-play">${PLAY}</span><span class="snd-t"><b>${s.name}</b><small>${s.d}</small></span><span class="snd-ck">${TICK}</span></button>`).join('')}</div></div>
+    <div class="set-sec"><h3>Try each sound</h3><div class="snd-try">${[['done','Finish a task'],['tick','Tick a step'],['add','Add a task'],['move','Move a task'],['remove','Delete'],['undo','Undo'],['fold','Open a section'],['start','Start focus'],['win','Finish the day']].map(([k,n])=>`<button class="snd-chip" data-sndtry="${k}">${PLAY}${n}</button>`).join('')}</div></div>`}
   if(id==='shortcuts'){
     const K=(keys,label)=>`<div class="kb-row"><span>${label}</span><span class="kb-keys">${keys.map(k=>k==='–'?'<span>to</span>':`<kbd>${k}</kbd>`).join('')}</span></div>`;
     body=`<div class="set-sec"><h3>Tasks</h3>${K(['H'],'Home')}${K(['N'],'New task')}${K(['1','–','4'],'Focus on a column')}${K(['Esc'],'Back to the board')}</div>
@@ -3992,12 +4075,15 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#accOut')){sb.auth.signOut().catch(()=>{});user=null;onSignedOut();toast('Signed out');return}
   if(setView==='archive'&&arcClick(e))return;
   if(e.target.closest('#replayIntro')){closeSettings();return setTimeout(()=>openIntro(true),300)}
+  if(e.target.closest('#subBack')&&setView==='sounds'){setView='appearance';haptic(5);drawSettings();return}
+  const sn=e.target.closest('[data-snd]');if(sn){S.cfg.sfxStyle=sn.dataset.snd;S.cfgU=Date.now();sfxTry('done',sn.dataset.snd);haptic(5);save();return drawSettings()}
+  const sy=e.target.closest('[data-sndtry]');if(sy){sfxTry(sy.dataset.sndtry,sfxStyle().id);haptic(4);return}
   if(e.target.closest('#subBack')&&setView==='archive'){setView=arcFrom==='archive'?'data':arcFrom;haptic(5);drawSettings();return}
   if(e.target.closest('#subBack')){setView='main';openSw=null;haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#anBack')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   const rg=e.target.closest('#anRange [data-r]');if(rg){anRange=+rg.dataset.r;haptic(5);return drawSettings()}
   const b=e.target.closest('[data-k]');
-  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt'].includes(b.dataset.k))v=+v;haptic(5);return setCfg(b.dataset.k,v)}
+  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt'].includes(b.dataset.k))v=+v;haptic(5);setCfg(b.dataset.k,v);if(b.dataset.k==='sfxVol')sfxTry('done',sfxStyle().id);return}
   const t=e.target.closest('[data-tg]');
   if(t){const k=t.dataset.tg;t.setAttribute('aria-pressed',!c[k]);haptic(6);if(k==='uiSounds'&&!c[k])setTimeout(()=>sfx('done'),200);else sfx('toggle');setTimeout(()=>setCfg(k,!c[k]),180);return}
   const dl=e.target.closest('[data-deflist]');if(dl)return setCfg('defList',dl.dataset.deflist||null);

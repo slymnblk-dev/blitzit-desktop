@@ -85,7 +85,7 @@ $('tide').addEventListener('click',e=>{
   if(b.dataset.d){T.dur=+b.dataset.d*6e4;haptic(5);tideRender();return}
   const a=b.dataset.a,n=Date.now();
   if(a==='step'){if(b.classList.contains('tick'))return;const t=tCur(),st=t&&t.subs.find(x=>x.id===+b.dataset.s);if(!st)return;
-    b.classList.add('tick');haptic(10);
+    b.classList.add('tick');haptic(10);sfx('tick');
     setTimeout(()=>{st.done=true;save();shuffleFocus();const el=$('tStep');if(el){el.outerHTML=tStepHTML(t);const ne=$('tStep');if(ne)ne.classList.add('t-in-step')}},380);return}
   if(a==='go'){if(Date.now()-(F.tapAt||0)<900)return;const v=+(($('tIn')||{}).value||0);if(v>=1)T.dur=Math.min(300,v)*6e4;S.cfg.tideMin=Math.round(T.dur/6e4);T.mode='run';T.st=n;T.pa=0;T.pt=0;T.logged=0;haptic(10);tSave();tideRender()}
   else if(a==='pause'){T.mode='pause';T.pt=n;tLog();tSave();tideRender()}
