@@ -235,7 +235,9 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Style</h3>
     ${row('Timer look',`<div class="segc">${sOpt('focusStyle','classic','Digits')}${sOpt('focusStyle','tide','Wave')}</div>`,(c.focusStyle||'classic')==='tide'?'A circle that fills like a wave as time runs.':'Big clear numbers, with your task steps.')}
     </div><div class="set-sec"><h3>Look</h3>
-    <div class="fc-prev" style="--pb:${(FOCUS_COLORS[c.focusColor]||{}).bg||'var(--today)'};--pi:${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).ink}"><span class="fc-t">25:00</span><span class="fc-b">Done</span></div>
+    <div class="fc-prev ${(c.focusStyle||'classic')==='tide'?'wave':''}" style="--pb:${(FOCUS_COLORS[c.focusColor]||{}).bg||'var(--today)'};--pi:${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).ink}">${(c.focusStyle||'classic')==='tide'
+      ?`<span class="fw-orb"><i></i><b>25<small>min</small></b></span><span class="fw-t">Deep work</span><span class="fc-b">Begin</span>`
+      :`<span class="fc-t">25:00</span><span class="fc-b">Done</span>`}</div>
     <div class="fc-sw">${Object.entries(FOCUS_COLORS).map(([k,f])=>`<button data-fcol="${k}" class="${(c.focusColor||'red')===k?'on':''}" style="--sb:${f.bg||'var(--today)'}" aria-label="${f.n}" title="${f.n}"></button>`).join('')}</div>
     <p class="fc-name">${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).n}${(c.focusColor||'red')==='red'?' (default)':''}${c.focusShuffle?' · starting colour':''}</p>
     ${row('Shuffle colours',tg('focusShuffle'),'New colour after each finished step')}
