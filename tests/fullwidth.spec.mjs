@@ -28,3 +28,36 @@ test('full width: hide sidebar in a space, switch space and list, go home', asyn
   await expect(page.locator('#desk')).not.toHaveClass(/\bfw\b/);
   noErrors(errors);
 });
+
+test('full width: on Home, a space in the sidebar unfolds its lists first; a list opens the board', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  const r = await page.evaluate(() => { S.cfg.fullWidth = true; S.space = null; applySettings(); render(); const sp = S.spaces[0]; return { sp: sp.id, l: S.lists.find(x => x.space === sp.id).id }; });
+  await page.locator(`#sLists [data-sp="${r.sp}"]`).click();
+  expect(await page.evaluate(() => S.space)).toBeNull();                          // still on Home
+  await expect(page.locator(`#sLists [data-pl="${r.l}"]`)).toBeVisible();
+  await page.locator(`#sLists [data-pl="${r.l}"]`).click();
+  expect(await page.evaluate(() => [S.space, S.list])).toEqual([r.sp, r.l]);
+  noErrors(errors);
+});
+
+test('board: Add task opens a task line; Enter adds and leaves a fresh line', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => openSpaceSide(S.spaces[0].id));
+  const col = page.locator('.col[data-s="week"]');
+  await col.hover();
+  await col.locator('.ca-btn').click();
+  await expect(col.locator('.ca-btn')).toBeHidden();
+  await expect(col.locator('.ca-in')).toBeFocused();
+  await page.keyboard.type('First new');
+  await page.keyboard.press('Enter');
+  await expect(col.locator('.ca-in')).toBeFocused();
+  await expect(col.locator('.ca-in')).toHaveValue('');
+  await page.keyboard.type('Second new');
+  await page.keyboard.press('Enter');
+  expect(await page.evaluate(() => S.tasks.filter(t => /^(First|Second) new$/.test(t.title)).length)).toBe(2);
+  await page.keyboard.press('Escape');
+  await expect(col.locator('.ca-row')).toBeHidden();
+  noErrors(errors);
+});

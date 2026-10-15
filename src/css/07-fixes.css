@@ -138,7 +138,7 @@
 /* desktop: "Add task" and "Section" stay out of sight until you point at their column */
 @media (hover:hover) and (min-width:1100px){
   .col-add{opacity:0;transition:opacity .18s ease}
-  .col:hover .col-add,.col:focus-within .col-add,.col.over .col-add,.col-add:has(.ca-in:not([hidden])){opacity:1}
+  .col:hover .col-add,.col:focus-within .col-add,.col.over .col-add,.col-add.typing{opacity:1}
 }
 
 /* priority: small signal bars, High 3 / Medium 2 / Low 1 */
@@ -337,3 +337,18 @@ body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
 .prp.edge .prp-row{position:relative;padding-left:10px}
 .prp.edge .prp-row::before{content:'';position:absolute;left:0;top:1px;bottom:1px;width:3px;border-radius:3px;background:var(--p-high)}
 .prp.tint .prp-row{padding:7px 8px;margin:-7px -4px;width:calc(100% + 8px);border-radius:10px;background:linear-gradient(90deg,color-mix(in srgb,var(--p-high) 22%,transparent),transparent)}
+
+/* Add task (board): opens as a new task line under the list; Enter adds it and leaves a fresh line ready */
+.col-add{flex-wrap:wrap}
+.col-add.typing .ca-btn,.col-add.typing .ca-sec{display:none}
+.ca-row{flex-basis:100%;display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);animation:caIn .25s cubic-bezier(.2,.8,.2,1)}
+.ca-row[hidden]{display:none}
+.ca-dot{flex:none;width:26px;height:26px;border-radius:50%;border:2px dashed color-mix(in srgb,var(--c) 70%,transparent)}
+.col-add .ca-row .ca-in{flex:1;min-width:0;border:0;padding:0;font-size:17px;font-weight:500;background:none}
+.ca-hint{flex:none;font-size:11px;font-weight:600;color:var(--muted);padding:3px 7px;border-radius:6px;background:var(--surface2);opacity:0;transition:opacity .2s}
+.ca-row:has(.ca-in:not(:placeholder-shown)) .ca-hint{opacity:1}
+@keyframes caIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+body.idle .col-add.typing{opacity:1!important}
+.col-add .ca-row{gap:14px}
+.col-add .ca-dot{width:22px;height:22px}
+.col-add .ca-row .ca-in{font-size:15.5px}

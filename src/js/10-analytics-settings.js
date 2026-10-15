@@ -71,7 +71,7 @@ function buildShells(){
       <button class="col-fx" aria-label="Focus on ${esc(s.name)}"><svg class="ic-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg><svg class="ic-min" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button></div><span class="col-n"></span></header>
     <div class="col-sum"></div>
     <div class="col-scroll"><ul class="list col-list"></ul>
-    ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"><button class="ca-sec" data-secnew="${s.id}" hidden>${PLUS_S}Section</button></div>`:''}
+    ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><div class="ca-row" hidden><span class="ca-dot"></span><input class="ca-in" placeholder="New task" autocomplete="off" enterkeyhint="next"><span class="ca-hint">Enter</span></div><button class="ca-sec" data-secnew="${s.id}" hidden>${PLUS_S}Section</button></div>`:''}
     </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Win the day</span></button>`:''}</section>`).join('');
   applyColFocus(false);
 }

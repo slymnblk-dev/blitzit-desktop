@@ -112,7 +112,7 @@ function toggleSub(){
 /* column quick add */
 $('board').addEventListener('click',e=>{
   const b=e.target.closest('.ca-btn');if(!b)return;
-  const inp=b.nextElementSibling;b.hidden=true;inp.hidden=false;inp.focus();
+  const add=b.closest('.col-add'),row=add.querySelector('.ca-row');add.classList.add('typing');row.hidden=false;row.querySelector('.ca-in').focus();
 });
 $('board').addEventListener('keydown',e=>{
   const inp=e.target.closest('.ca-in');if(!inp)return;
@@ -125,7 +125,7 @@ $('board').addEventListener('keydown',e=>{
 });
 $('board').addEventListener('focusout',e=>{
   const inp=e.target.closest('.ca-in');if(!inp||inp.value.trim())return;
-  setTimeout(()=>{inp.hidden=true;inp.previousElementSibling.hidden=false},120);
+  setTimeout(()=>{if(document.activeElement===inp)return;const add=inp.closest('.col-add');add.classList.remove('typing');inp.closest('.ca-row').hidden=true},120);
 });
 
 /* drag between columns */

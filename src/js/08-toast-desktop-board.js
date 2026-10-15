@@ -13,6 +13,14 @@ $('undoBtn').onclick=()=>{if(undoFn){sfx('undo');const f=undoFn;undoFn=null;f();
 const HOUSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg>';
 const PLUS_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 
+/* Full width: on Home, clicking a space first unfolds its lists in the sidebar; picking one opens the board */
+let fwPeek=null;
+const peekOn=()=>!!(S.cfg&&S.cfg.fullWidth&&!S.space);
+function peekSub(sp){
+  const ls=S.lists.filter(l=>l.space===sp.id),n=id=>S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id)&&t.stage!=='done').length;
+  return `<div class="s-sub s-peek"><button class="s-list" data-pk="${sp.id}" data-pl="all" title="All lists"><span class="stack">${ls.slice(0,3).map(x=>`<span style="background:${x.c};border-color:var(--bg)"></span>`).join('')}</span><span class="s-name">All lists</span><span class="n">${n('all')}</span></button>`+
+    ls.map(l=>`<button class="s-list" data-pk="${sp.id}" data-pl="${l.id}" title="${esc(l.name)}"><i style="background:${l.c}"></i><span class="s-name">${esc(l.name)}</span><span class="n">${n(l.id)}</span></button>`).join('')+`</div>`;
+}
 function renderDesk(){
   const vis=visible();
   const todayT=vis.filter(t=>t.stage==='today');
@@ -43,7 +51,7 @@ function renderDesk(){
   $('sLists').innerHTML=`<button class="s-list s-home ${!S.space?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
     <button class="s-list s-home ${S.space==='all'?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
-    orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}`).join('')+
+    orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   if(!S.space){$('dHome').innerHTML=`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
   const gk=S.space?S.space+'|'+S.list:'';
@@ -61,7 +69,8 @@ $('sLists').onclick=e=>{
   if(e.target.closest('#sNewSp'))return openSpaceSheet(null);
   if(e.target.closest('#sEdit')){editing=true;nl=null;drawLists();openSheet('listSheet');return}
   const se=e.target.closest('[data-spedit]');if(se){e.stopPropagation();return openSpaceSheet(se.dataset.spedit)}
-  const spb=e.target.closest('[data-sp]');if(spb)return S.space===spb.dataset.sp?toggleSub():openSpaceSide(spb.dataset.sp);
+  const pl=e.target.closest('[data-pl]');if(pl){const id=pl.dataset.pk,l=pl.dataset.pl;fwPeek=null;openSpaceSide(id);S.list=l;haptic(5);render();return}
+  const spb=e.target.closest('[data-sp]');if(spb){if(peekOn()){fwPeek=fwPeek===spb.dataset.sp?null:spb.dataset.sp;haptic(5);render();return}return S.space===spb.dataset.sp?toggleSub():openSpaceSide(spb.dataset.sp)}
   if(e.target.closest('#sNew')){editing=false;nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();openSheet('listSheet');setTimeout(()=>$('nlIn').focus(),300);return}
   const b=e.target.closest('.s-list[data-l]');if(b){S.list=b.dataset.l;haptic(5);render()}
 };

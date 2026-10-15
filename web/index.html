@@ -1469,7 +1469,7 @@ html,body{overscroll-behavior-y:contain}
 /* desktop: "Add task" and "Section" stay out of sight until you point at their column */
 @media (hover:hover) and (min-width:1100px){
   .col-add{opacity:0;transition:opacity .18s ease}
-  .col:hover .col-add,.col:focus-within .col-add,.col.over .col-add,.col-add:has(.ca-in:not([hidden])){opacity:1}
+  .col:hover .col-add,.col:focus-within .col-add,.col.over .col-add,.col-add.typing{opacity:1}
 }
 
 /* priority: small signal bars, High 3 / Medium 2 / Low 1 */
@@ -1668,6 +1668,21 @@ body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
 .prp.edge .prp-row{position:relative;padding-left:10px}
 .prp.edge .prp-row::before{content:'';position:absolute;left:0;top:1px;bottom:1px;width:3px;border-radius:3px;background:var(--p-high)}
 .prp.tint .prp-row{padding:7px 8px;margin:-7px -4px;width:calc(100% + 8px);border-radius:10px;background:linear-gradient(90deg,color-mix(in srgb,var(--p-high) 22%,transparent),transparent)}
+
+/* Add task (board): opens as a new task line under the list; Enter adds it and leaves a fresh line ready */
+.col-add{flex-wrap:wrap}
+.col-add.typing .ca-btn,.col-add.typing .ca-sec{display:none}
+.ca-row{flex-basis:100%;display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);animation:caIn .25s cubic-bezier(.2,.8,.2,1)}
+.ca-row[hidden]{display:none}
+.ca-dot{flex:none;width:26px;height:26px;border-radius:50%;border:2px dashed color-mix(in srgb,var(--c) 70%,transparent)}
+.col-add .ca-row .ca-in{flex:1;min-width:0;border:0;padding:0;font-size:17px;font-weight:500;background:none}
+.ca-hint{flex:none;font-size:11px;font-weight:600;color:var(--muted);padding:3px 7px;border-radius:6px;background:var(--surface2);opacity:0;transition:opacity .2s}
+.ca-row:has(.ca-in:not(:placeholder-shown)) .ca-hint{opacity:1}
+@keyframes caIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+body.idle .col-add.typing{opacity:1!important}
+.col-add .ca-row{gap:14px}
+.col-add .ca-dot{width:22px;height:22px}
+.col-add .ca-row .ca-in{font-size:15.5px}
 </style>
 </head>
 <body>
@@ -1865,7 +1880,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=91; // bumped with every published update
+const APP_VERSION=92; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3257,6 +3272,14 @@ $('undoBtn').onclick=()=>{if(undoFn){sfx('undo');const f=undoFn;undoFn=null;f();
 const HOUSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg>';
 const PLUS_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 
+/* Full width: on Home, clicking a space first unfolds its lists in the sidebar; picking one opens the board */
+let fwPeek=null;
+const peekOn=()=>!!(S.cfg&&S.cfg.fullWidth&&!S.space);
+function peekSub(sp){
+  const ls=S.lists.filter(l=>l.space===sp.id),n=id=>S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id)&&t.stage!=='done').length;
+  return `<div class="s-sub s-peek"><button class="s-list" data-pk="${sp.id}" data-pl="all" title="All lists"><span class="stack">${ls.slice(0,3).map(x=>`<span style="background:${x.c};border-color:var(--bg)"></span>`).join('')}</span><span class="s-name">All lists</span><span class="n">${n('all')}</span></button>`+
+    ls.map(l=>`<button class="s-list" data-pk="${sp.id}" data-pl="${l.id}" title="${esc(l.name)}"><i style="background:${l.c}"></i><span class="s-name">${esc(l.name)}</span><span class="n">${n(l.id)}</span></button>`).join('')+`</div>`;
+}
 function renderDesk(){
   const vis=visible();
   const todayT=vis.filter(t=>t.stage==='today');
@@ -3287,7 +3310,7 @@ function renderDesk(){
   $('sLists').innerHTML=`<button class="s-list s-home ${!S.space?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
     <button class="s-list s-home ${S.space==='all'?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
-    orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}`).join('')+
+    orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   if(!S.space){$('dHome').innerHTML=`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
   const gk=S.space?S.space+'|'+S.list:'';
@@ -3305,7 +3328,8 @@ $('sLists').onclick=e=>{
   if(e.target.closest('#sNewSp'))return openSpaceSheet(null);
   if(e.target.closest('#sEdit')){editing=true;nl=null;drawLists();openSheet('listSheet');return}
   const se=e.target.closest('[data-spedit]');if(se){e.stopPropagation();return openSpaceSheet(se.dataset.spedit)}
-  const spb=e.target.closest('[data-sp]');if(spb)return S.space===spb.dataset.sp?toggleSub():openSpaceSide(spb.dataset.sp);
+  const pl=e.target.closest('[data-pl]');if(pl){const id=pl.dataset.pk,l=pl.dataset.pl;fwPeek=null;openSpaceSide(id);S.list=l;haptic(5);render();return}
+  const spb=e.target.closest('[data-sp]');if(spb){if(peekOn()){fwPeek=fwPeek===spb.dataset.sp?null:spb.dataset.sp;haptic(5);render();return}return S.space===spb.dataset.sp?toggleSub():openSpaceSide(spb.dataset.sp)}
   if(e.target.closest('#sNew')){editing=false;nl={name:'',c:PALETTE[S.lists.length%PALETTE.length]};drawLists();openSheet('listSheet');setTimeout(()=>$('nlIn').focus(),300);return}
   const b=e.target.closest('.s-list[data-l]');if(b){S.list=b.dataset.l;haptic(5);render()}
 };
@@ -3776,7 +3800,7 @@ function toggleSub(){
 /* column quick add */
 $('board').addEventListener('click',e=>{
   const b=e.target.closest('.ca-btn');if(!b)return;
-  const inp=b.nextElementSibling;b.hidden=true;inp.hidden=false;inp.focus();
+  const add=b.closest('.col-add'),row=add.querySelector('.ca-row');add.classList.add('typing');row.hidden=false;row.querySelector('.ca-in').focus();
 });
 $('board').addEventListener('keydown',e=>{
   const inp=e.target.closest('.ca-in');if(!inp)return;
@@ -3789,7 +3813,7 @@ $('board').addEventListener('keydown',e=>{
 });
 $('board').addEventListener('focusout',e=>{
   const inp=e.target.closest('.ca-in');if(!inp||inp.value.trim())return;
-  setTimeout(()=>{inp.hidden=true;inp.previousElementSibling.hidden=false},120);
+  setTimeout(()=>{if(document.activeElement===inp)return;const add=inp.closest('.col-add');add.classList.remove('typing');inp.closest('.ca-row').hidden=true},120);
 });
 
 /* drag between columns */
@@ -4036,7 +4060,7 @@ function buildShells(){
       <button class="col-fx" aria-label="Focus on ${esc(s.name)}"><svg class="ic-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg><svg class="ic-min" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button></div><span class="col-n"></span></header>
     <div class="col-sum"></div>
     <div class="col-scroll"><ul class="list col-list"></ul>
-    ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><input class="ca-in" placeholder="Task name, then Enter" hidden autocomplete="off"><button class="ca-sec" data-secnew="${s.id}" hidden>${PLUS_S}Section</button></div>`:''}
+    ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><div class="ca-row" hidden><span class="ca-dot"></span><input class="ca-in" placeholder="New task" autocomplete="off" enterkeyhint="next"><span class="ca-hint">Enter</span></div><button class="ca-sec" data-secnew="${s.id}" hidden>${PLUS_S}Section</button></div>`:''}
     </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Win the day</span></button>`:''}</section>`).join('');
   applyColFocus(false);
 }
