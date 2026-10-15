@@ -69,7 +69,7 @@ function secMenu(btn){
   requestAnimationFrame(()=>m.classList.add('on'));
 }
 function closeSecMenu(){const m=$('secPop');if(m)m.remove()}
-function secToggle(id){if(id==='__done'){S.cfg.doneOpen=!S.cfg.doneOpen;S.cfgU=Date.now();haptic(5);save();render();return}const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
+function secToggle(id){sfx('fold');if(id==='__done'){S.cfg.doneOpen=!S.cfg.doneOpen;S.cfgU=Date.now();haptic(5);save();render();return}const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
 
 document.addEventListener('click',e=>{
   const pop=e.target.closest('#secPop');

@@ -148,7 +148,7 @@ $('dSubs').onclick=e=>{
     confirmAsk({title:'Delete this step?',text:`“${s.t}” will be removed from this task.`,yes:'Yes, delete',no:'No',
       onYes:()=>{t.subs=t.subs.filter(x=>x!==s);haptic(8);save();render();if(cur===t)drawDetail()}});return}
   if(!e.target.closest('.sc'))return;   /* only the circle ticks a step; the text is for editing */
-  s.done=!s.done;haptic(8);drawDetail();
+  s.done=!s.done;haptic(8);sfx(s.done?'tick':'undone');drawDetail();
 };
 /* rename a step: click its text, type, Enter or click away to keep, Esc to undo the edit */
 $('dSubs').addEventListener('input',e=>{const ta=e.target.closest('.s-t');if(!ta)return;const s=cur.subs.find(x=>x.id===+ta.closest('.sub').dataset.s);
@@ -168,8 +168,8 @@ $('dMore').onclick=e=>{e.stopPropagation();const on=$('dMenu').classList.toggle(
 $('detailSheet').addEventListener('click',e=>{if(!e.target.closest('#dMenu,#dMore')){$('dMenu').classList.remove('on');$('dMore').classList.remove('on')}});
 $('dDel').onclick=()=>{const t=cur;if(!t)return;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');
   confirmAsk({title:'Delete this task?',text:`“${t.title||'Untitled'}” will be deleted for good. To keep it safe, choose Archive task instead.`,yes:'Yes, delete',no:'No',
-    onYes:()=>{if(cur===t){cur=null;onSheetClose=null;closeSheets()}haptic(10);render();commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Task deleted')}})};
-$('dArc').onclick=()=>{const t=cur;if(!t)return;cur=null;onSheetClose=null;closeSheets();haptic(8);render();
+    onYes:()=>{if(cur===t){cur=null;onSheetClose=null;closeSheets()}haptic(10);sfx('remove');render();commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Task deleted')}})};
+$('dArc').onclick=()=>{const t=cur;if(!t)return;cur=null;onSheetClose=null;closeSheets();haptic(8);sfx('remove');render();
   commit(()=>archiveTask(t),'Task archived')};
 $('dDup').onclick=()=>{
   const t=cur;const c={...JSON.parse(JSON.stringify(t)),id:newId(),title:t.title+' (copy)'};delete c.spawned;delete c.doneAt;

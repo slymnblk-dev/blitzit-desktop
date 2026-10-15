@@ -7,7 +7,7 @@ function toast(m,undo){
   t.classList.remove('on');void t.offsetWidth;t.classList.add('on');
   clearTimeout(tt);tt=setTimeout(()=>{t.classList.remove('on');undoFn=null},undo?4000:1800);
 }
-$('undoBtn').onclick=()=>{if(undoFn){const f=undoFn;undoFn=null;f();$('toast').classList.remove('on')}};
+$('undoBtn').onclick=()=>{if(undoFn){sfx('undo');const f=undoFn;undoFn=null;f();$('toast').classList.remove('on')}};
 
 /* ---------- desktop board ---------- */
 const HOUSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg>';

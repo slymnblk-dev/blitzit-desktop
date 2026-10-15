@@ -120,7 +120,7 @@ $('board').addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.stopPropagation();inp.value='';inp.blur();return}
   if(e.key!=='Enter')return;const v=inp.value.trim();if(!v)return;
   const t=newTask(v,inp.closest('.col').dataset.s,defaultList(),S.cfg.defEst);
-  S.tasks.push(t);enterId=t.id;inp.value='';haptic(6);render();
+  S.tasks.push(t);enterId=t.id;inp.value='';haptic(6);sfx('add');render();
   const sc=inp.closest('.col-scroll');sc.scrollTop=sc.scrollHeight;
 });
 $('board').addEventListener('focusout',e=>{

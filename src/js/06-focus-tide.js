@@ -13,7 +13,7 @@ function tSave(){
   S.tideRun=F&&F.on&&F.tide?{ids:F.q.map(t=>t.id),cid:F.q[F.i]&&F.q[F.i].id,i:F.i,done:F.done,focused:F.focused,T:{mode:T.mode,dur:T.dur,st:T.st,pa:T.pa,pt:T.pt,logged:T.logged||0}}:null;save();
 }
 function tPick(){T={mode:'pick',dur:(S.cfg.tideMin||25)*6e4,st:0,pa:0,pt:0,logged:0}}
-function startTide(q,from){
+function startTide(q,from){if(!from)sfx('start');
   clearInterval(F&&F.tick);
   F={on:true,tide:true,q,i:from?from.i:0,focused:from?from.focused:0,done:from?from.done:0,tick:null};
   if(from&&from.T)T=from.T;else tPick();

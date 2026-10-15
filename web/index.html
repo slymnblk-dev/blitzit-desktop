@@ -1686,7 +1686,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=82; // bumped with every published update
+const APP_VERSION=83; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1826,7 +1826,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const root=document.documentElement;
 const haptic=(p=8)=>{try{if(S.cfg&&!S.cfg.haptics)return;navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const defaultList=()=>{const h=listsHere();if(S.list!=='all'&&h.some(l=>l.id===S.list))return S.list;if(S.cfg&&S.cfg.defList&&h.some(l=>l.id===S.cfg.defList))return S.cfg.defList;return (h[0]||S.lists[0]).id};
-const addTask=t=>{S.cfg&&S.cfg.addTo==='bottom'?S.tasks.push(t):S.tasks.unshift(t)};
+const addTask=t=>{sfx('add');S.cfg&&S.cfg.addTo==='bottom'?S.tasks.push(t):S.tasks.unshift(t)};
 const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 const X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 const I_REP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>';
@@ -1834,6 +1834,50 @@ const I_SUB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const I_NOTE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg>';
 
 
+/* ---------- interface sounds: soft, short, made in code (no audio files). Settings → Appearance → Feel → Sounds ---------- */
+let sfxCtx=null,sfxBus=null,sfxLast={};
+function sfxReady(){
+  if(!sfxCtx){const A=window.AudioContext||window.webkitAudioContext;if(!A)return false;
+    sfxCtx=new A();
+    // a gentle low-pass and a soft limiter keep every sound warm and never sharp
+    const lp=sfxCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;lp.Q.value=.3;
+    const cmp=sfxCtx.createDynamicsCompressor();cmp.threshold.value=-18;cmp.ratio.value=4;
+    sfxBus=sfxCtx.createGain();sfxBus.gain.value=.55;
+    sfxBus.connect(lp).connect(cmp).connect(sfxCtx.destination)}
+  if(sfxCtx.state==='suspended')try{sfxCtx.resume()}catch(e){}
+  return true;
+}
+/* one soft note: a sine with a faint octave shimmer, quick attack, smooth fade */
+function sfxNote(f,at,dur,vol,glide,type){
+  const c=sfxCtx,t=c.currentTime+at;
+  [[1,1],[2,.12]].forEach(([m,k])=>{
+    const o=c.createOscillator(),g=c.createGain();
+    o.type=type||'sine';o.frequency.setValueAtTime(f*m,t);if(glide)o.frequency.exponentialRampToValueAtTime(glide*m,t+dur*.6);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol*k,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g).connect(sfxBus);o.start(t);o.stop(t+dur+.05)});
+}
+const SFX={
+  done:()=>{sfxNote(1046.5,0,.38,.16);sfxNote(1568,.075,.55,.13)},            // task finished: two bright, airy notes
+  undone:()=>{sfxNote(880,0,.22,.08,660)},                                       // back to open
+  tick:()=>{sfxNote(1760,0,.09,.07)},                                             // a step ticked off
+  move:()=>{sfxNote(620,0,.14,.06,880)},                                          // moved to another stage
+  add:()=>{sfxNote(784,0,.12,.07);sfxNote(1175,.05,.18,.06)},                     // new task
+  remove:()=>{sfxNote(330,0,.2,.09,220)},                                         // deleted or archived
+  undo:()=>{sfxNote(740,0,.16,.06,520)},
+  fold:()=>{sfxNote(1320,0,.05,.035)},                                            // open / close a section
+  toggle:()=>{sfxNote(1480,0,.045,.03)},                                          // a switch in Settings
+  start:()=>{[523.25,659.25,784].forEach((f,i)=>sfxNote(f,i*.07,.42,.09))},       // focus begins
+  win:()=>{[523.25,659.25,784,1046.5].forEach((f,i)=>sfxNote(f,i*.09,.9,.1))}    // the day's run is complete
+};
+let sfxAct=0;['pointerdown','pointerup','keydown'].forEach(k=>addEventListener(k,()=>{sfxAct=performance.now()},true));
+function sfx(name){
+  try{
+    if(performance.now()-sfxAct>1500)return;
+    if(!S.cfg||S.cfg.uiSounds===false||document.hidden||!SFX[name])return;
+    const now=performance.now();if(now-(sfxLast[name]||0)<(name==='done'||name==='undone'?500:60))return;sfxLast[name]=now; // never stack the same sound
+    if(!sfxReady())return;SFX[name]();
+  }catch(e){}
+}
 /* ---------- recurring ---------- */
 function nextDate(rep){
   let d=new Date();d.setHours(12,0,0,0);
@@ -1843,6 +1887,7 @@ function nextDate(rep){
 }
 function setStage(t,stage){
   const was=t.stage;t.stage=stage;
+  if(was!==stage)sfx(stage==='done'?'done':was==='done'?'undone':'move');
   if(stage==='done'&&was!=='done'){
     t.doneAt=Date.now();
     if(t.repeat!=='none'&&!t.spawned){
@@ -2074,7 +2119,7 @@ function rowClick(e){
   if(e.target.closest('[data-check]')){
     if(Date.now()-(window.__chk||0)<700)return;window.__chk=Date.now();
     row.dataset.busy=1;haptic(14);
-    const toDone=t.stage!=='done';
+    const toDone=t.stage!=='done';sfx(toDone?'done':'undone');
     row.classList.add('pop');row.classList.toggle('is-done',toDone);
     setTimeout(()=>moveRow(row,toDone?'done':'today',toDone?24:-24),420);return}
   if(e.target.closest('.row-in'))openDetail(id);
@@ -2358,7 +2403,7 @@ $('dSubs').onclick=e=>{
     confirmAsk({title:'Delete this step?',text:`“${s.t}” will be removed from this task.`,yes:'Yes, delete',no:'No',
       onYes:()=>{t.subs=t.subs.filter(x=>x!==s);haptic(8);save();render();if(cur===t)drawDetail()}});return}
   if(!e.target.closest('.sc'))return;   /* only the circle ticks a step; the text is for editing */
-  s.done=!s.done;haptic(8);drawDetail();
+  s.done=!s.done;haptic(8);sfx(s.done?'tick':'undone');drawDetail();
 };
 /* rename a step: click its text, type, Enter or click away to keep, Esc to undo the edit */
 $('dSubs').addEventListener('input',e=>{const ta=e.target.closest('.s-t');if(!ta)return;const s=cur.subs.find(x=>x.id===+ta.closest('.sub').dataset.s);
@@ -2378,8 +2423,8 @@ $('dMore').onclick=e=>{e.stopPropagation();const on=$('dMenu').classList.toggle(
 $('detailSheet').addEventListener('click',e=>{if(!e.target.closest('#dMenu,#dMore')){$('dMenu').classList.remove('on');$('dMore').classList.remove('on')}});
 $('dDel').onclick=()=>{const t=cur;if(!t)return;$('dMenu').classList.remove('on');$('dMore').classList.remove('on');
   confirmAsk({title:'Delete this task?',text:`“${t.title||'Untitled'}” will be deleted for good. To keep it safe, choose Archive task instead.`,yes:'Yes, delete',no:'No',
-    onYes:()=>{if(cur===t){cur=null;onSheetClose=null;closeSheets()}haptic(10);render();commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Task deleted')}})};
-$('dArc').onclick=()=>{const t=cur;if(!t)return;cur=null;onSheetClose=null;closeSheets();haptic(8);render();
+    onYes:()=>{if(cur===t){cur=null;onSheetClose=null;closeSheets()}haptic(10);sfx('remove');render();commit(()=>S.tasks=S.tasks.filter(x=>x!==t),'Task deleted')}})};
+$('dArc').onclick=()=>{const t=cur;if(!t)return;cur=null;onSheetClose=null;closeSheets();haptic(8);sfx('remove');render();
   commit(()=>archiveTask(t),'Task archived')};
 $('dDup').onclick=()=>{
   const t=cur;const c={...JSON.parse(JSON.stringify(t)),id:newId(),title:t.title+' (copy)'};delete c.spawned;delete c.doneAt;
@@ -2565,7 +2610,7 @@ $('goBtn').onclick=()=>{
   if(!q.length)return toast('Add a task to Today first');
   startBlitz(q);
 };
-function startBlitz(q,from){
+function startBlitz(q,from){if(!from)sfx('start');
   if(!from&&S.cfg.focusStyle==='tide')return startTide(q);
   focusLive=null;applyFocusColor();
   F={on:true,q,i:from?from.i:0,sec:0,run:true,mode:S.cfg.focusMode,phase:'work',left:POMO.work,round:1,focused:from?from.focused:0,done:from?from.done:0,last:Date.now(),tick:setInterval(step,500)};
@@ -2625,7 +2670,7 @@ function drawFocus(){
   const n=F.q[F.i+1];$('fNext').innerHTML=n?`Up next <b>${esc(n.title)}</b>`:'';
   $('fPause').innerHTML=F.run?PAUSE:PLAY;drawTime();
 }
-$('fStep').onclick=()=>{const b=$('fStep');if(b.classList.contains('tick'))return;const s=F.q[F.i].subs.find(x=>x.id===+b.dataset.s);if(!s)return;b.classList.add('tick');haptic(10);setTimeout(()=>{s.done=true;save();shuffleFocus();drawFocus()},380)};
+$('fStep').onclick=()=>{const b=$('fStep');if(b.classList.contains('tick'))return;const s=F.q[F.i].subs.find(x=>x.id===+b.dataset.s);if(!s)return;b.classList.add('tick');haptic(10);sfx('tick');setTimeout(()=>{s.done=true;save();shuffleFocus();drawFocus()},380)};
 $('fMode').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.m===F.mode)return;
   step();F.last=Date.now();F.mode=b.dataset.m;S.cfg.focusMode=F.mode;save();F.phase='work';F.left=POMO.work;F.round=1;$('focus').classList.remove('brk');haptic(6);drawFocus()};
 function nextFocus(){
@@ -2647,7 +2692,7 @@ function tSave(){
   S.tideRun=F&&F.on&&F.tide?{ids:F.q.map(t=>t.id),cid:F.q[F.i]&&F.q[F.i].id,i:F.i,done:F.done,focused:F.focused,T:{mode:T.mode,dur:T.dur,st:T.st,pa:T.pa,pt:T.pt,logged:T.logged||0}}:null;save();
 }
 function tPick(){T={mode:'pick',dur:(S.cfg.tideMin||25)*6e4,st:0,pa:0,pt:0,logged:0}}
-function startTide(q,from){
+function startTide(q,from){if(!from)sfx('start');
   clearInterval(F&&F.tick);
   F={on:true,tide:true,q,i:from?from.i:0,focused:from?from.focused:0,done:from?from.done:0,tick:null};
   if(from&&from.T)T=from.T;else tPick();
@@ -2938,7 +2983,7 @@ function showSummary(){
   clearInterval(F.tick);unlockScreen();
   $('sDone').textContent=F.done;$('sDoneL').textContent=F.done===1?'task done':'tasks done';$('sTime').textContent=fmt(Math.max(0,Math.round(F.focused/60)));
   F.sum=true;if(deskMini)deskSend();else closePip(); // desktop: celebrate in the mini timer, don't pull the big window up
-  $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);
+  $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);sfx('win');
 }
 function closeFocus(){if(UPD.pending)setTimeout(()=>showUpdate(true),700);closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
 /* remember a running Classic session, so a reload or restart picks it up where it was */
@@ -2959,7 +3004,7 @@ function toast(m,undo){
   t.classList.remove('on');void t.offsetWidth;t.classList.add('on');
   clearTimeout(tt);tt=setTimeout(()=>{t.classList.remove('on');undoFn=null},undo?4000:1800);
 }
-$('undoBtn').onclick=()=>{if(undoFn){const f=undoFn;undoFn=null;f();$('toast').classList.remove('on')}};
+$('undoBtn').onclick=()=>{if(undoFn){sfx('undo');const f=undoFn;undoFn=null;f();$('toast').classList.remove('on')}};
 
 /* ---------- desktop board ---------- */
 const HOUSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg>';
@@ -3120,7 +3165,7 @@ document.addEventListener('click',e=>{if(fwPop&&!e.target.closest('.fw-crumbs'))
 document.addEventListener('keydown',e=>{if(fwPop&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fwClose()}},true);
 $('fwMe').onclick=()=>openYou();
 /* "N more" / "Show less" in long columns (board and phone list) */
-document.addEventListener('click',e=>{const b=e.target.closest('.more-btn[data-more]');if(!b)return;e.stopPropagation();moreOpen[b.dataset.more]=!moreOpen[b.dataset.more];haptic(5);render()},true);
+document.addEventListener('click',e=>{const b=e.target.closest('.more-btn[data-more]');if(!b)return;e.stopPropagation();moreOpen[b.dataset.more]=!moreOpen[b.dataset.more];haptic(5);sfx('fold');render()},true);
 /* ---------- sections: optional named, foldable groups inside a column (Settings → Tasks, off by default) ----------
    A space keeps its sections: sp.secs=[{id,name,stage,shut}]. A task joins one with t.sec.
    A task only shows in a section while it sits in that section's column and space; otherwise it is a loose task. */
@@ -3192,7 +3237,7 @@ function secMenu(btn){
   requestAnimationFrame(()=>m.classList.add('on'));
 }
 function closeSecMenu(){const m=$('secPop');if(m)m.remove()}
-function secToggle(id){if(id==='__done'){S.cfg.doneOpen=!S.cfg.doneOpen;S.cfgU=Date.now();haptic(5);save();render();return}const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
+function secToggle(id){sfx('fold');if(id==='__done'){S.cfg.doneOpen=!S.cfg.doneOpen;S.cfgU=Date.now();haptic(5);save();render();return}const f=secFind(id);if(!f)return;f.sec.shut=!f.sec.shut;haptic(5);save();render()}
 
 document.addEventListener('click',e=>{
   const pop=e.target.closest('#secPop');
@@ -3340,7 +3385,7 @@ $('board').addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.stopPropagation();inp.value='';inp.blur();return}
   if(e.key!=='Enter')return;const v=inp.value.trim();if(!v)return;
   const t=newTask(v,inp.closest('.col').dataset.s,defaultList(),S.cfg.defEst);
-  S.tasks.push(t);enterId=t.id;inp.value='';haptic(6);render();
+  S.tasks.push(t);enterId=t.id;inp.value='';haptic(6);sfx('add');render();
   const sc=inp.closest('.col-scroll');sc.scrollTop=sc.scrollHeight;
 });
 $('board').addEventListener('focusout',e=>{
@@ -3566,7 +3611,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={uiSounds:true,doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -3707,6 +3752,7 @@ function settingsPage(id){
       <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>
     ${row('Animations',tg('motion'))}
     ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
+    ${row('Sounds',tg('uiSounds'),'Soft sounds when you add, move or finish tasks')}
     ${row('Haptics',tg('haptics'),'Vibration on Android')}</div>`;
   if(id==='stages')body=`<p class="sub-p">Tap a colour to change it. Tap a name to rename it.</p><div class="set-sec">
     ${STAGES.map(s=>`<div class="stg"><button class="stg-dot" data-sw="${s.id}" style="background:var(--${s.id})" aria-label="Change colour"></button>
@@ -3952,7 +3998,7 @@ $('setIn').addEventListener('click',e=>{
   const b=e.target.closest('[data-k]');
   if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt'].includes(b.dataset.k))v=+v;haptic(5);return setCfg(b.dataset.k,v)}
   const t=e.target.closest('[data-tg]');
-  if(t){const k=t.dataset.tg;t.setAttribute('aria-pressed',!c[k]);haptic(6);setTimeout(()=>setCfg(k,!c[k]),180);return}
+  if(t){const k=t.dataset.tg;t.setAttribute('aria-pressed',!c[k]);haptic(6);if(k==='uiSounds'&&!c[k])setTimeout(()=>sfx('done'),200);else sfx('toggle');setTimeout(()=>setCfg(k,!c[k]),180);return}
   const dl=e.target.closest('[data-deflist]');if(dl)return setCfg('defList',dl.dataset.deflist||null);
   const sw=e.target.closest('[data-sw]');if(sw){openSw=openSw===sw.dataset.sw?null:sw.dataset.sw;haptic(5);return drawSettings()}
   const pc=e.target.closest('.stg-sw [data-c]');

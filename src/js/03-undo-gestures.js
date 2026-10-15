@@ -41,7 +41,7 @@ function rowClick(e){
   if(e.target.closest('[data-check]')){
     if(Date.now()-(window.__chk||0)<700)return;window.__chk=Date.now();
     row.dataset.busy=1;haptic(14);
-    const toDone=t.stage!=='done';
+    const toDone=t.stage!=='done';sfx(toDone?'done':'undone');
     row.classList.add('pop');row.classList.toggle('is-done',toDone);
     setTimeout(()=>moveRow(row,toDone?'done':'today',toDone?24:-24),420);return}
   if(e.target.closest('.row-in'))openDetail(id);

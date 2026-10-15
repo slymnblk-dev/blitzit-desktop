@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=82; // bumped with every published update
+const APP_VERSION=83; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -147,7 +147,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const root=document.documentElement;
 const haptic=(p=8)=>{try{if(S.cfg&&!S.cfg.haptics)return;navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const defaultList=()=>{const h=listsHere();if(S.list!=='all'&&h.some(l=>l.id===S.list))return S.list;if(S.cfg&&S.cfg.defList&&h.some(l=>l.id===S.cfg.defList))return S.cfg.defList;return (h[0]||S.lists[0]).id};
-const addTask=t=>{S.cfg&&S.cfg.addTo==='bottom'?S.tasks.push(t):S.tasks.unshift(t)};
+const addTask=t=>{sfx('add');S.cfg&&S.cfg.addTo==='bottom'?S.tasks.push(t):S.tasks.unshift(t)};
 const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 const X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 const I_REP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>';

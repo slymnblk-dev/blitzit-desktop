@@ -192,7 +192,7 @@ function showSummary(){
   clearInterval(F.tick);unlockScreen();
   $('sDone').textContent=F.done;$('sDoneL').textContent=F.done===1?'task done':'tasks done';$('sTime').textContent=fmt(Math.max(0,Math.round(F.focused/60)));
   F.sum=true;if(deskMini)deskSend();else closePip(); // desktop: celebrate in the mini timer, don't pull the big window up
-  $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);
+  $('focus').classList.remove('brk','quiet');clearTimeout(fQ);$('focus').classList.add('sum');haptic([20,40,20]);sfx('win');
 }
 function closeFocus(){if(UPD.pending)setTimeout(()=>showUpdate(true),700);closePip();clearTimeout(fQ);$('focus').classList.remove('quiet');clearInterval(F.tick);unlockScreen();F.on=false;$('focus').classList.remove('on');render()}
 /* remember a running Classic session, so a reload or restart picks it up where it was */

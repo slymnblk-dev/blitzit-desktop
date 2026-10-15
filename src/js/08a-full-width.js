@@ -53,4 +53,4 @@ document.addEventListener('click',e=>{if(fwPop&&!e.target.closest('.fw-crumbs'))
 document.addEventListener('keydown',e=>{if(fwPop&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fwClose()}},true);
 $('fwMe').onclick=()=>openYou();
 /* "N more" / "Show less" in long columns (board and phone list) */
-document.addEventListener('click',e=>{const b=e.target.closest('.more-btn[data-more]');if(!b)return;e.stopPropagation();moreOpen[b.dataset.more]=!moreOpen[b.dataset.more];haptic(5);render()},true);
+document.addEventListener('click',e=>{const b=e.target.closest('.more-btn[data-more]');if(!b)return;e.stopPropagation();moreOpen[b.dataset.more]=!moreOpen[b.dataset.more];haptic(5);sfx('fold');render()},true);

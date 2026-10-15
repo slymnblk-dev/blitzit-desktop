@@ -13,7 +13,7 @@ $('goBtn').onclick=()=>{
   if(!q.length)return toast('Add a task to Today first');
   startBlitz(q);
 };
-function startBlitz(q,from){
+function startBlitz(q,from){if(!from)sfx('start');
   if(!from&&S.cfg.focusStyle==='tide')return startTide(q);
   focusLive=null;applyFocusColor();
   F={on:true,q,i:from?from.i:0,sec:0,run:true,mode:S.cfg.focusMode,phase:'work',left:POMO.work,round:1,focused:from?from.focused:0,done:from?from.done:0,last:Date.now(),tick:setInterval(step,500)};
@@ -73,7 +73,7 @@ function drawFocus(){
   const n=F.q[F.i+1];$('fNext').innerHTML=n?`Up next <b>${esc(n.title)}</b>`:'';
   $('fPause').innerHTML=F.run?PAUSE:PLAY;drawTime();
 }
-$('fStep').onclick=()=>{const b=$('fStep');if(b.classList.contains('tick'))return;const s=F.q[F.i].subs.find(x=>x.id===+b.dataset.s);if(!s)return;b.classList.add('tick');haptic(10);setTimeout(()=>{s.done=true;save();shuffleFocus();drawFocus()},380)};
+$('fStep').onclick=()=>{const b=$('fStep');if(b.classList.contains('tick'))return;const s=F.q[F.i].subs.find(x=>x.id===+b.dataset.s);if(!s)return;b.classList.add('tick');haptic(10);sfx('tick');setTimeout(()=>{s.done=true;save();shuffleFocus();drawFocus()},380)};
 $('fMode').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.m===F.mode)return;
   step();F.last=Date.now();F.mode=b.dataset.m;S.cfg.focusMode=F.mode;save();F.phase='work';F.left=POMO.work;F.round=1;$('focus').classList.remove('brk');haptic(6);drawFocus()};
 function nextFocus(){
