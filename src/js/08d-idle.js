@@ -9,4 +9,5 @@ function idleWake(){
   if(idleOk())idleT=setTimeout(()=>{if(idleOk())b.classList.add('idle')},5000);
 }
 ['mousemove','keydown','wheel','pointerdown'].forEach(k=>addEventListener(k,idleWake,{passive:true,capture:true}));
+document.body.classList.add('fresh');setTimeout(()=>document.body.classList.remove('fresh'),2200); // the summary drifts in once, when the app opens
 setTimeout(idleWake,0); // after every script has loaded (settings are ready then)

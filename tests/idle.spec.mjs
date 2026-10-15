@@ -20,3 +20,19 @@ test('quiet when idle: on by default, hides after 5s, mouse move brings it back,
   await expect(page.locator('body')).not.toHaveClass(/idle/);
   noErrors(errors);
 });
+
+test('quiet when idle also fades the summary in Full width mode', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.fullWidth = true; applySettings(); openSpaceSide(S.spaces[0].id); });
+  await page.mouse.move(600, 600);
+  const op = () => page.locator('.fw-sub').evaluate(e => +getComputedStyle(e).opacity);
+  await page.waitForTimeout(2500);
+  expect(await op()).toBeGreaterThan(.9);
+  await page.waitForTimeout(5000);
+  expect(await op()).toBeLessThan(.05);
+  await page.mouse.move(650, 640);
+  await page.waitForTimeout(700);
+  expect(await op()).toBeGreaterThan(.9);
+  noErrors(errors);
+});

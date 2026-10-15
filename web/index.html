@@ -1552,9 +1552,10 @@ html,body{overscroll-behavior-y:contain}
 .cb-halo i:nth-child(3){animation-delay:.28s;border-width:.75px;width:340px;height:340px;margin:-170px 0 0 -170px}
 @keyframes cbHalo{0%{transform:scale(.08);opacity:0}15%{opacity:.95}100%{transform:scale(1.6);opacity:0}}
 /* Count */
-.c-count{background:radial-gradient(circle at 50% 48%,color-mix(in srgb,var(--bg) 82%,transparent),transparent 62%)}
+.c-count{background:radial-gradient(circle at 50% 48%,color-mix(in srgb,var(--bg) 92%,transparent) 0,color-mix(in srgb,var(--bg) 55%,transparent) 55%,color-mix(in srgb,var(--bg) 25%,transparent));animation:cbDim .5s ease both}
+@keyframes cbDim{from{opacity:0}to{opacity:1}}
 .cb-count{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text)}
-.cb-count b{font-size:clamp(120px,22vw,220px);font-weight:800;letter-spacing:-.06em;line-height:.9;background:linear-gradient(180deg,var(--text) 30%,var(--done));-webkit-background-clip:text;background-clip:text;color:transparent;animation:cbNum 1.2s cubic-bezier(.2,.9,.2,1) both}
+.cb-count b{font-size:clamp(120px,22vw,220px);font-weight:800;letter-spacing:-.04em;line-height:1.05;padding:0 .14em .04em .1em;background:linear-gradient(180deg,var(--text) 30%,var(--done));-webkit-background-clip:text;background-clip:text;color:transparent;animation:cbNum 1.2s cubic-bezier(.2,.9,.2,1) both}
 .cb-count span{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:.02em;animation:cbCap .9s ease both .25s}
 @keyframes cbNum{0%{opacity:0;transform:scale(.82) translateY(14px);filter:blur(14px)}55%{opacity:1;filter:none}100%{opacity:1;transform:none}}
 @keyframes cbCap{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -1575,12 +1576,14 @@ html,body{overscroll-behavior-y:contain}
 
 /* quiet when idle (computers): summary and add buttons drift away after 5s still, and come back on any move */
 @media (hover:hover) and (pointer:fine){
-  #mSub{animation:subIn 1.1s cubic-bezier(.2,.8,.2,1) both .15s;transition:opacity .45s cubic-bezier(.2,.8,.2,1),filter .45s,transform .45s,letter-spacing .45s}
-  body.idle #mSub{opacity:0;filter:blur(8px);transform:translateY(-5px);letter-spacing:.06em;transition-duration:1.2s}
+  .fw-sub{display:inline-block}
+  #mSub,.fw-sub{transition:opacity .45s cubic-bezier(.2,.8,.2,1),filter .45s,transform .45s,letter-spacing .45s}
+  body.fresh #mSub,body.fresh .fw-sub{animation:subIn 1.1s cubic-bezier(.2,.8,.2,1) backwards .15s}
+  body.idle #mSub,body.idle .fw-sub{opacity:0;filter:blur(8px);transform:translateY(-5px);letter-spacing:.06em;transition-duration:1.2s}
   body.idle .col-add{opacity:0!important;transition:opacity 1s ease}
 }
 @keyframes subIn{from{opacity:0;filter:blur(10px);transform:translateY(6px);letter-spacing:.08em}to{opacity:1;filter:none;transform:none;letter-spacing:normal}}
-@media (prefers-reduced-motion:reduce){#mSub{animation:none;transition:opacity .3s}body.idle #mSub{filter:none;transform:none;letter-spacing:normal}}
+@media (prefers-reduced-motion:reduce){#mSub,.fw-sub{animation:none!important;transition:opacity .3s}body.idle #mSub,body.idle .fw-sub{filter:none;transform:none;letter-spacing:normal}}
 
 /* ---------- search & filter ---------- */
 .srch-btn{position:relative;color:var(--text)}
@@ -1839,7 +1842,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=87; // bumped with every published update
+const APP_VERSION=88; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3529,6 +3532,7 @@ function idleWake(){
   if(idleOk())idleT=setTimeout(()=>{if(idleOk())b.classList.add('idle')},5000);
 }
 ['mousemove','keydown','wheel','pointerdown'].forEach(k=>addEventListener(k,idleWake,{passive:true,capture:true}));
+document.body.classList.add('fresh');setTimeout(()=>document.body.classList.remove('fresh'),2200); // the summary drifts in once, when the app opens
 setTimeout(idleWake,0); // after every script has loaded (settings are ready then)
 /* ---------- search & filter (optional, Settings → Tasks; on by default) ----------
    The round search button opens into a bar. Typing finds tasks in every space (title, notes, steps).
