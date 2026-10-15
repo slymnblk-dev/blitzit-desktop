@@ -429,3 +429,7 @@ body.no-amb .amb-btn{display:none!important}
 .amb-vol{display:flex;align-items:center;gap:10px;margin:12px 4px 2px;color:rgba(243,242,238,.7)}
 .amb-vol svg{width:18px;height:18px;flex:none}
 .amb-vol input{flex:1;accent-color:#F3F2EE;height:4px}
+
+/* list editor: show every space as a choice (wrap, no sideways scrolling) */
+.opts.le-sp{display:flex;flex-wrap:wrap;gap:8px;overflow:visible;white-space:normal;margin-right:0;padding-right:0;-webkit-mask-image:none;mask-image:none}
+.opts.le-sp .opt{flex:none}
