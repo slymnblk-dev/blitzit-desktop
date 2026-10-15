@@ -1873,7 +1873,7 @@ let sfxAct=0;['pointerdown','pointerup','keydown'].forEach(k=>addEventListener(k
 function sfx(name){
   try{
     if(performance.now()-sfxAct>1500)return;
-    if(!S.cfg||S.cfg.uiSounds===false||document.hidden||!SFX[name])return;
+    if(!S.cfg||S.cfg.uiSounds===false||!SFX[name])return;
     const now=performance.now();if(now-(sfxLast[name]||0)<(name==='done'||name==='undone'?500:60))return;sfxLast[name]=now; // never stack the same sound
     if(window.__sfxLog)window.__sfxLog.push(name); // tests listen here (no speakers needed)
     if(!sfxReady())return;SFX[name]();
