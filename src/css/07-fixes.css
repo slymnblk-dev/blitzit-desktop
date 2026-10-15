@@ -397,13 +397,15 @@ body.idle .col-add.typing{opacity:1!important}
 @keyframes fwWave{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.fw-orb i{animation:none}}
 
-/* Settings → Lists: lists grouped under their spaces */
-.set-lists .lg{margin-top:22px;padding:6px 16px 4px;border-radius:22px;background:var(--surface)}
-.set-lists .lg:first-child{margin-top:14px}
-.lg-head{display:flex;align-items:center;gap:10px;padding:12px 2px 12px}
-.lg-head .sp-mini{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--ink)}
-.lg-head b{font-size:17px;font-weight:700;letter-spacing:-.02em}
-.lg-head span:last-child{margin-left:auto;font-size:12.5px;color:var(--muted)}
+/* Settings → Lists: each space is a titled group with its own tinted card */
+.set-lists .lg{margin-top:30px}
+.set-lists .lg:first-child{margin-top:18px}
+.lg-head{display:flex;align-items:center;gap:12px;padding:0 4px 12px}
+.lg-head .sp-mini{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;font-weight:800;color:var(--ink);background:var(--sc);box-shadow:0 6px 18px color-mix(in srgb,var(--sc) 35%,transparent)}
+.lg-head b{font-size:21px;font-weight:800;letter-spacing:-.03em}
+.lg-head span:last-child{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);padding:4px 10px;border-radius:999px;background:var(--surface)}
+.lg-card{padding:2px 16px;border-radius:20px;background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 9%,var(--surface)),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--sc) 24%,transparent)}
+.lg-card>.pick:first-child{border-top:0}
 .set-lists .pick{font-size:16px;padding:13px 2px}
 .set-lists .new-list{font-size:14.5px;padding:13px 2px}
 .set-lists .lg-new svg{width:14px;height:14px}

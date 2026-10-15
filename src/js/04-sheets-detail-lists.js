@@ -278,13 +278,13 @@ function drawLists(){
 }
 function listsGrouped(){
   return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);
-    return `<div class="lg"><div class="lg-head"><span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span>${ls.length} ${ls.length===1?'list':'lists'}</span></div>`+
+    return `<div class="lg" style="--sc:${sp.c}"><div class="lg-head"><span class="sp-mini">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span>${ls.length} ${ls.length===1?'list':'lists'}</span></div><div class="lg-card">`+
       ls.map(l=>{const n=S.tasks.filter(t=>t.list===l.id&&!t.archived).length,on=leOpen===l.id,only=ls.length<2;
         return `<button class="pick le-row ${on?'open':''}" data-l="${l.id}" data-le="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${n} ${n===1?'task':'tasks'}</span>${CHEV}</button>`+(on?lePanel(l,only):'')}).join('')+
       (nl&&nl.space===sp.id?`<div class="nl-form"><input id="nlIn" placeholder="List name in ${esc(sp.name)}" enterkeyhint="done" autocomplete="off" value="${esc(nl.name)}">
         <div class="sw" id="nlSw">${PALETTE.map(c=>`<button data-c="${c}" class="${nl.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
         <button class="primary" id="nlSave" style="background:${nl.c}" ${nl.name.trim()?'':'disabled'}>Create list</button></div>`
-       :`<button class="new-list lg-new" data-nlsp="${sp.id}">${PLUS_S}New list in ${esc(sp.name)}</button>`)+`</div>`}).join('');
+       :`<button class="new-list lg-new" data-nlsp="${sp.id}">${PLUS_S}New list in ${esc(sp.name)}</button>`)+`</div></div>`}).join('');
 }
 const tick=()=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`;
 $('listBtn').onclick=()=>{editing=false;nl=null;drawLists();openSheet('listSheet')};

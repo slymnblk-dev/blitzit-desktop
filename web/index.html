@@ -1728,13 +1728,15 @@ body.idle .col-add.typing{opacity:1!important}
 @keyframes fwWave{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.fw-orb i{animation:none}}
 
-/* Settings → Lists: lists grouped under their spaces */
-.set-lists .lg{margin-top:22px;padding:6px 16px 4px;border-radius:22px;background:var(--surface)}
-.set-lists .lg:first-child{margin-top:14px}
-.lg-head{display:flex;align-items:center;gap:10px;padding:12px 2px 12px}
-.lg-head .sp-mini{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--ink)}
-.lg-head b{font-size:17px;font-weight:700;letter-spacing:-.02em}
-.lg-head span:last-child{margin-left:auto;font-size:12.5px;color:var(--muted)}
+/* Settings → Lists: each space is a titled group with its own tinted card */
+.set-lists .lg{margin-top:30px}
+.set-lists .lg:first-child{margin-top:18px}
+.lg-head{display:flex;align-items:center;gap:12px;padding:0 4px 12px}
+.lg-head .sp-mini{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;font-weight:800;color:var(--ink);background:var(--sc);box-shadow:0 6px 18px color-mix(in srgb,var(--sc) 35%,transparent)}
+.lg-head b{font-size:21px;font-weight:800;letter-spacing:-.03em}
+.lg-head span:last-child{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);padding:4px 10px;border-radius:999px;background:var(--surface)}
+.lg-card{padding:2px 16px;border-radius:20px;background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 9%,var(--surface)),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--sc) 24%,transparent)}
+.lg-card>.pick:first-child{border-top:0}
 .set-lists .pick{font-size:16px;padding:13px 2px}
 .set-lists .new-list{font-size:14.5px;padding:13px 2px}
 .set-lists .lg-new svg{width:14px;height:14px}
@@ -1955,7 +1957,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=97; // bumped with every published update
+const APP_VERSION=98; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2869,13 +2871,13 @@ function drawLists(){
 }
 function listsGrouped(){
   return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);
-    return `<div class="lg"><div class="lg-head"><span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span>${ls.length} ${ls.length===1?'list':'lists'}</span></div>`+
+    return `<div class="lg" style="--sc:${sp.c}"><div class="lg-head"><span class="sp-mini">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span>${ls.length} ${ls.length===1?'list':'lists'}</span></div><div class="lg-card">`+
       ls.map(l=>{const n=S.tasks.filter(t=>t.list===l.id&&!t.archived).length,on=leOpen===l.id,only=ls.length<2;
         return `<button class="pick le-row ${on?'open':''}" data-l="${l.id}" data-le="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${n} ${n===1?'task':'tasks'}</span>${CHEV}</button>`+(on?lePanel(l,only):'')}).join('')+
       (nl&&nl.space===sp.id?`<div class="nl-form"><input id="nlIn" placeholder="List name in ${esc(sp.name)}" enterkeyhint="done" autocomplete="off" value="${esc(nl.name)}">
         <div class="sw" id="nlSw">${PALETTE.map(c=>`<button data-c="${c}" class="${nl.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
         <button class="primary" id="nlSave" style="background:${nl.c}" ${nl.name.trim()?'':'disabled'}>Create list</button></div>`
-       :`<button class="new-list lg-new" data-nlsp="${sp.id}">${PLUS_S}New list in ${esc(sp.name)}</button>`)+`</div>`}).join('');
+       :`<button class="new-list lg-new" data-nlsp="${sp.id}">${PLUS_S}New list in ${esc(sp.name)}</button>`)+`</div></div>`}).join('');
 }
 const tick=()=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`;
 $('listBtn').onclick=()=>{editing=false;nl=null;drawLists();openSheet('listSheet')};
