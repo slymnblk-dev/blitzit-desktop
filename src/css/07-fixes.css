@@ -401,7 +401,7 @@ body.idle .col-add.typing{opacity:1!important}
 .set-lists .lg{margin-top:30px}
 .set-lists .lg:first-child{margin-top:18px}
 .lg-head{display:flex;align-items:center;gap:12px;padding:0 4px 12px}
-.lg-head .sp-mini{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;font-weight:800;color:var(--ink);background:var(--sc);box-shadow:0 6px 18px color-mix(in srgb,var(--sc) 35%,transparent)}
+.lg-head .sp-mini{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;font-weight:800;color:var(--ink);background:var(--sc)}
 .lg-head b{font-size:21px;font-weight:800;letter-spacing:-.03em}
 .lg-head span:last-child{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);padding:4px 10px;border-radius:999px;background:var(--surface)}
 .lg-card{padding:2px 16px;border-radius:20px;background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 9%,var(--surface)),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--sc) 24%,transparent)}

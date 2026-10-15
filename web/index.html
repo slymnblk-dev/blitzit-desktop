@@ -1732,7 +1732,7 @@ body.idle .col-add.typing{opacity:1!important}
 .set-lists .lg{margin-top:30px}
 .set-lists .lg:first-child{margin-top:18px}
 .lg-head{display:flex;align-items:center;gap:12px;padding:0 4px 12px}
-.lg-head .sp-mini{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;font-weight:800;color:var(--ink);background:var(--sc);box-shadow:0 6px 18px color-mix(in srgb,var(--sc) 35%,transparent)}
+.lg-head .sp-mini{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;font-weight:800;color:var(--ink);background:var(--sc)}
 .lg-head b{font-size:21px;font-weight:800;letter-spacing:-.03em}
 .lg-head span:last-child{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);padding:4px 10px;border-radius:999px;background:var(--surface)}
 .lg-card{padding:2px 16px;border-radius:20px;background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 9%,var(--surface)),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--sc) 24%,transparent)}
@@ -1957,7 +1957,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=98; // bumped with every published update
+const APP_VERSION=99; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
