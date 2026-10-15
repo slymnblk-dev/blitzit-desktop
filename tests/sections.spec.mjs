@@ -127,3 +127,24 @@ test('tuck away finished tasks: Done shows one "Completed" section, off by defau
   await expect(done.locator('.row')).toHaveCount(0);
   noErrors(errors);
 });
+
+test('add tasks straight into a section; Enter keeps a fresh line ready', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.sections = true; const sp = S.spaces[0]; sp.secs = [{ id: 'xm', name: 'Marketing', stage: 'week' }]; openSpaceSide(sp.id); });
+  const col = page.locator('.col[data-s="week"]');
+  await col.hover();
+  await col.locator('[data-secadd="xm"]').click();
+  await expect(col.locator('[data-sectask="xm"]')).toBeFocused();
+  await page.keyboard.type('Write the newsletter');
+  await page.keyboard.press('Enter');
+  await expect(col.locator('[data-sectask="xm"]')).toBeFocused();
+  await page.keyboard.type('Plan ads');
+  await page.keyboard.press('Enter');
+  const r = await page.evaluate(() => S.tasks.filter(t => ['Write the newsletter', 'Plan ads'].includes(t.title)).map(t => [t.stage, t.sec]));
+  expect(r).toEqual([['week', 'xm'], ['week', 'xm']]);
+  await expect(col.locator('.sec-h[data-sec="xm"] .sec-c')).toHaveText('2');
+  await page.keyboard.press('Escape');
+  await expect(col.locator('[data-sectask="xm"]')).toHaveCount(0);
+  noErrors(errors);
+});

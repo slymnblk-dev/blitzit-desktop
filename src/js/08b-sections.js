@@ -25,10 +25,27 @@ function colRows(here,stage,key){
   here.forEach(t=>{const s=secOfTask(t);if(s&&by.has(s.id))by.get(s.id).push(t);else loose.push(t)});
   let out=foldRows(loose,key);
   secs.forEach(({s,sp})=>{const ts=by.get(s.id);if(all&&!ts.length)return;
-    out+=secHead(s,ts,all?sp:null)+(s.shut?'':ts.length?ts.map(rowHTML).join(''):`<li class="sec-empty">${desk?'Drag tasks here':'Empty. Open a task to add it here.'}</li>`)});
+    out+=secHead(s,ts,all?sp:null)+(s.shut?'':ts.map(rowHTML).join('')+secAddRow(s,!ts.length,desk))});
   if(!desk&&canAddSec())out+=`<li class="sec-new-row"><button class="sec-new" data-secnew="${stage}">${PLUS_S}New section</button></li>`;
   return out;
 }
+/* add a task straight into a section: a quiet "+ Add task" line under its tasks; it opens into a task line, Enter adds and keeps it open */
+let secAdding=null;
+function secAddRow(s,empty,desk){
+  if(secAdding===s.id)return `<li class="sec-add-row typing"><div class="ca-row"><span class="ca-dot"></span><input class="ca-in sec-task-in" data-sectask="${s.id}" placeholder="New task in ${esc(s.name)}" autocomplete="off" enterkeyhint="next"><span class="ca-hint">Enter</span></div></li>`;
+  return `<li class="sec-add-row ${empty?'is-empty':''}"><button class="sec-add" data-secadd="${s.id}">${PLUS_S}<span>Add task</span>${empty&&desk?'<small>or drag tasks here</small>':''}</button></li>`;
+}
+function secAddOpen(id){secAdding=id;render();const i=[...document.querySelectorAll(`[data-sectask="${id}"]`)].find(x=>x.offsetParent!==null);if(i)i.focus()}
+function secAddTask(inp){
+  const f=secFind(inp.dataset.sectask),v=inp.value.trim();if(!f||!v)return;
+  const inSp=S.lists.filter(l=>l.space===f.sp.id);let l=defaultList();if(!inSp.some(x=>x.id===l))l=(inSp[0]||{}).id;if(!l)return;
+  const t=newTask(v,f.sec.stage,l,S.cfg.defEst);t.sec=f.sec.id;S.tasks.push(t);enterId=t.id;haptic(6);sfx('add');
+  secAddOpen(f.sec.id);
+}
+document.addEventListener('keydown',e=>{const i=e.target.closest&&e.target.closest('[data-sectask]');if(!i)return;e.stopPropagation();
+  if(e.key==='Enter'){e.preventDefault();secAddTask(i)}else if(e.key==='Escape'){e.preventDefault();secAdding=null;render()}},true);
+document.addEventListener('focusout',e=>{const i=e.target.closest&&e.target.closest('[data-sectask]');if(!i||i.value.trim())return;
+  setTimeout(()=>{if(secAdding&&!document.activeElement?.closest?.('[data-sectask]')){secAdding=null;render()}},150)});
 /* the section a dropped row lands in: the closest section header above it */
 function secAbove(row){for(let n=row.previousElementSibling;n;n=n.previousElementSibling){if(n.classList.contains('sec-h'))return n.dataset.sec;}return null}
 
@@ -78,6 +95,7 @@ document.addEventListener('click',e=>{
   closeSecMenu();
   const m=e.target.closest('[data-secm]');if(m){e.stopPropagation();secMenu(m);return}
   const tg=e.target.closest('[data-sectg]');if(tg){e.stopPropagation();if(!tg.closest('.naming'))secToggle(tg.dataset.sectg);return}
+  const sa=e.target.closest('[data-secadd]');if(sa){e.stopPropagation();secAddOpen(sa.dataset.secadd);return}
   const nw=e.target.closest('[data-secnew]');if(nw){e.stopPropagation();secNew(nw.dataset.secnew);return}
 },true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('secPop')){e.stopPropagation();closeSecMenu()}},true);

@@ -372,3 +372,17 @@ body.idle .col-add.typing{opacity:1!important}
 .lp-new{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:150px;border-radius:26px;border:1.5px dashed var(--line);color:var(--muted);font-size:15px;font-weight:600;transition:color .15s,border-color .15s;animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
 .lp-new:hover{color:var(--text);border-color:var(--muted)}
 .lp-new svg{width:18px;height:18px}
+
+/* add a task straight into a section */
+.sec-add-row{list-style:none}
+.sec-add{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0 11px 2px;font-size:13.5px;font-weight:500;color:var(--muted);text-align:left;opacity:.7;transition:opacity .15s,color .15s}
+.sec-add:hover{opacity:1;color:var(--text)}
+.sec-add svg{width:13px;height:13px}
+.sec-add small{font-size:12px;color:var(--muted);opacity:.7;margin-left:2px}
+.sec-add-row.is-empty .sec-add{opacity:1;padding:14px 0 14px 2px}
+@media (hover:hover) and (min-width:1100px){.sec-add-row:not(.is-empty) .sec-add{opacity:0}.col:hover .sec-add-row .sec-add,.sec-add:focus-visible{opacity:.75}.col:hover .sec-add-row .sec-add:hover{opacity:1}}
+.sec-add-row .ca-row{border-bottom:1px solid var(--line)}
+.ca-dot{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,transparent)}
+#list .sec-add-row .ca-in{font-size:17px}
+.col-list .sec-add-row .ca-row{gap:14px}.col-list .sec-add-row .ca-dot{width:22px;height:22px}.col-list .sec-add-row .ca-in{font-size:15.5px}
+.sec-add-row .ca-in{flex:1;min-width:0;border:0;padding:0;background:none;color:var(--text);font:inherit;font-weight:500;outline:none}
