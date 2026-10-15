@@ -1,13 +1,13 @@
 /* ---------- desktop sign-in hand-off ----------
-   The desktop app asks Supabase to send the email link back here with ?desk=1.
-   This browser tab then passes the sign-in to the app (blitzit://) instead of signing itself in. */
+   The desktop app asks Supabase to send the email link back here with ?desk=1 (unchanged, so Supabase's allowed links stay the same).
+   This browser tab then passes the sign-in to the app (windaday://, or blitzit:// for apps older than 0.6) instead of signing itself in. */
 const HANDOFF=(()=>{try{
   const q=new URLSearchParams(location.search),h=location.hash.slice(1);
   if(q.get('desk')!=='1'||window.__TAURI__||!/access_token=|error=/.test(h))return null;
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=89; // bumped with every published update
+const APP_VERSION=90; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();

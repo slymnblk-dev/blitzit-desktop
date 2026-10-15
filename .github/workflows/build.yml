@@ -1,7 +1,7 @@
 name: Release Windows app
 
 # Builds the signed Windows installer in the cloud and publishes it as a GitHub release.
-# Installed Blitzit apps check the latest release and offer "Update now".
+# Installed Windaday apps check the latest release and offer "Update now".
 # It runs from the "Check and release" pipeline, only after every check has passed.
 # To ship a desktop update: bump "version" in src-tauri/tauri.conf.json, update RELEASE_NOTES.md, push to dev.
 
@@ -41,7 +41,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
         with:
           tagName: v__VERSION__
-          releaseName: Blitzit __VERSION__
+          releaseName: Windaday __VERSION__
           releaseBody: ${{ steps.notes.outputs.body }}
           releaseDraft: false
           prerelease: false

@@ -108,10 +108,10 @@ fn dock_position(app: &AppHandle, width: f64, height: f64) -> Option<(f64, f64)>
     Some((right - width - 12.0, bottom - height - 12.0))
 }
 
-/// Called when the browser opens blitzit://auth#... after the user clicks the email link.
+/// Called when the browser opens windaday://auth#... (or the older blitzit://) after the user clicks the email link.
 /// Keeps the link until the web app takes it, and pokes the page in case it is already loaded.
 fn handle_link(app: &AppHandle, url: String) {
-    if !url.starts_with("blitzit://") {
+    if !url.starts_with("windaday://") && !url.starts_with("blitzit://") {
         return;
     }
     if let Some(state) = app.try_state::<PendingLink>() {
@@ -302,7 +302,7 @@ pub fn run() {
             take_link
         ])
         .setup(|app| {
-            // blitzit:// links (email sign-in) open this app
+            // windaday:// links (email sign-in) open this app
             let _ = app.deep_link().register_all();
             if let Ok(Some(urls)) = app.deep_link().get_current() {
                 if let Some(u) = urls.first() {

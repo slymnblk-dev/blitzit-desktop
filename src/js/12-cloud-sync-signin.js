@@ -110,7 +110,7 @@ function onSignedIn(){reconcile(true).then(subscribe);drawMe();if(settingsOpen()
 function onSignedOut(){try{channel&&sb.removeChannel(channel)}catch(e){}channel=null;setSync('off');if(settingsOpen())drawSettings()}
 function loadSB(){return new Promise((res,rej)=>{if(window.supabase)return res();const s=document.createElement('script');
   s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
-/* desktop app: pick up a blitzit://auth#... link handed over by the browser */
+/* desktop app: pick up a windaday://auth#... link handed over by the browser */
 let DESK_LINK=false;
 function linkParams(u){const i=u.indexOf('#');return new URLSearchParams(i<0?u.split('?')[1]||'':u.slice(i+1))}
 window.blitzitLink=async function(){
@@ -201,13 +201,14 @@ async function accVerify(){
 
 /* ---------- browser tab that hands the sign-in to the desktop app ---------- */
 function showHandoff(){
-  const p=new URLSearchParams(HANDOFF),err=p.get('error'),link='blitzit://auth#'+HANDOFF;
+  const p=new URLSearchParams(HANDOFF),err=p.get('error'),link='windaday://auth#'+HANDOFF,old='blitzit://auth#'+HANDOFF;
   const d=document.createElement('div');d.className='handoff';
   d.innerHTML=err?`<div class="ho-in"><div class="brand">Windaday<i></i></div>
       <h1>Link expired</h1><p>${p.get('error_code')==='otp_expired'?'This sign-in link is too old or was already used.':'This sign-in link didn’t work.'} Go back to the Windaday app and send a new one.</p></div>`
     :`<div class="ho-in"><div class="brand">Windaday<i></i></div>
       <h1>Opening Windaday…</h1><p>If your browser asks, choose <b>Open</b>. You’ll be signed in, and you can close this tab.</p>
       <a class="primary ho-go" href="${link}">Open Windaday</a>
+      <a class="ghost-btn ho-old" href="${old}">Nothing happened? Open an older Windaday app</a>
       <button class="ghost-btn" id="hoHere">Not on your computer? Sign in here instead</button></div>`;
   document.body.appendChild(d);document.body.classList.add('ho-on');
   if(!err){setTimeout(()=>{location.href=link},350);

@@ -1,3 +1,3 @@
-- The app is now called Windaday in the Start menu and in Installed apps
-- A focus session you had open comes back after restarting the app
-- Add a photo as your avatar
+- Windaday now has its own home on your computer, so other apps can't get in its way
+- Email sign-in opens Windaday directly
+- Your tasks, settings and sign-in stay as they were
