@@ -8,6 +8,7 @@ function nextDate(rep){
 function setStage(t,stage){
   const was=t.stage;t.stage=stage;
   sfxStage(t,was,stage);
+  if(stage==='done'&&was!=='done'&&performance.now()-sfxAct<1500)setTimeout(()=>{try{maybeCelebrate()}catch(e){}},360);
   if(stage==='done'&&was!=='done'){
     t.doneAt=Date.now();
     if(t.repeat!=='none'&&!t.spawned){
@@ -56,19 +57,19 @@ const priIcon=n=>`<svg class="pri-i" viewBox="0 0 16 16" aria-hidden="true"><rec
 function rowHTML(t){
   const l=listOf(t.list);
   const sd=t.subs.filter(s=>s.done).length;
-  const pr=priOf(t);
+  const pr=t.stage!=='done'?priOf(t):null,ps=S.cfg.priStyle||'bars';
   const extra=[
-    pr&&t.stage!=='done'?`<span class="mi pri ${pr.id}" title="${pr.name} priority">${priIcon(pr.n)}${pr.name}</span>`:'',
+    pr&&ps==='bars'?`<span class="mi pri ${pr.id}" title="${pr.name} priority">${priIcon(pr.n)}${pr.name}</span>`:'',
     tagChips(t,3),
     t.repeat!=='none'?`<span class="mi">${I_REP}${REPEATS.find(r=>r.id===t.repeat).name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
     t.notes.trim()?`<span class="mi" aria-label="Has notes">${I_NOTE}</span>`:''
   ].join('');
-  return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''}" data-id="${t.id}">
+  return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''} ${pr&&ps==='ring'?'pr-'+pr.id:''}" data-id="${t.id}">
     <div class="under"><span></span></div>
     <div class="row-in">
       <button class="check" data-check aria-label="Complete">${CHECK}</button>
-      <div class="body"><div class="title"><span>${esc(t.title)}</span></div>
+      <div class="body"><div class="title"><span>${esc(t.title)}</span>${pr&&ps==='dot'?`<i class="pri-dt ${pr.id}" title="${pr.name} priority" aria-label="${pr.name} priority"></i>`:''}</div>
         ${(S.list==='all'||extra)?`<div class="meta">${S.list==='all'?`<span class="tag"><i style="background:${l.c}"></i>${esc(l.name)}</span>`:''}${extra}</div>`:''}</div>
       <div class="est">${fmt(t.est)}</div>
     </div></li>`;

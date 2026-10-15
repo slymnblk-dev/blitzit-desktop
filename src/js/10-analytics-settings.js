@@ -45,7 +45,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -208,7 +208,14 @@ function settingsPage(id){
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
+    <div class="set-row"><div class="set-l">Priority look<small>How High, Medium and Low show on your tasks.</small></div>
+      <div class="pri-pick">${[['bars','Label','Bars and the word.'],['dot','Dot','A small dot. Quiet.'],['ring','Ring','The circle takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${(c.priStyle||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
+        <span class="prp-row"><span class="pc"></span><span class="pt"><span>Call the bank${v==='dot'?'<i class="pri-dt high"></i>':''}</span>${v==='bars'?`<em>${priIcon(3)}High</em>`:''}</span></span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>
     ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}
+    </div><div class="set-sec"><h3>Celebrations</h3>
+    ${row('Celebrate finished tasks',tg('celebrate'),'A short, quiet moment, with a sound if sounds are on.')}
+    ${c.celebrate?row('Every',`<div class="segc">${sOpt('celebEvery',1,'1 task')}${sOpt('celebEvery',3,'3 tasks')}</div>`):''}
+    ${c.celebrate?`<p class="sub-p snd-p">Tap a style to see it.</p><div class="snd-list">${CELEBS.map(s=>`<button class="snd ${s.id===celebOf().id?'on':''}" data-celeb="${s.id}"><span class="snd-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></span><span class="snd-t"><b>${s.name}</b><small>${s.d}</small></span><span class="snd-ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>`).join('')}</div>`:''}
     </div><div class="set-sec"><h3>Daily</h3>
     ${row('Morning check-in',tg('checkin'),'Ask about leftover tasks each day')}</div>
     <div class="set-sec"><h3>Finished tasks</h3>

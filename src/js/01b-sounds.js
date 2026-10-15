@@ -73,7 +73,7 @@ function sfxPlay(name,style){
   const t0=sfxCtx.currentTime+.005;
   mel.forEach(([f,at,dur,vol,gl])=>st.v(f*st.shift,t0+at,dur,vol,gl&&gl*st.shift));
 }
-let sfxAct=0;['pointerdown','pointerup','keydown'].forEach(k=>addEventListener(k,()=>{sfxAct=performance.now()},true));
+let sfxAct=0,sfxPt=null;['pointerdown','pointerup','keydown'].forEach(k=>addEventListener(k,e=>{sfxAct=performance.now();sfxPt=k==='keydown'?null:{x:e.clientX,y:e.clientY}},true));
 /* a task's finish sound plays the moment it is ticked; the move that follows a moment later stays quiet */
 let sfxHold={id:null,until:0};
 const sfxHoldFor=id=>{sfxHold={id,until:performance.now()+2500}};
@@ -95,3 +95,16 @@ function sfxStage(t,was,stage){
 }
 /* try a sound in Settings, even while sounds are off */
 function sfxTry(name,styleId){try{if(!sfxReady())return;if(window.__sfxLog)window.__sfxLog.push('try:'+name);sfxPlay(name,SFX_STYLES.find(s=>s.id===styleId))}catch(e){}}
+
+/* celebration sounds: each look has its own little phrase */
+const SFX_CELEB={
+  halo:{v:'bell',m:[[784,0,1.1,.09],[987.8,.06,1.1,.08],[1174.7,.12,1.2,.08],[1568,.2,1.4,.07]]},
+  count:{v:'marimba',m:[[523.25,0,.5,.11],[659.25,.07,.5,.11],[784,.14,.5,.11],[1046.5,.21,.7,.12],[1318.5,.3,.9,.1]]},
+  aurora:{v:'breeze',m:[[392,0,1.6,.08],[493.9,.1,1.6,.07],[587.3,.2,1.7,.07],[784,.32,1.8,.06]]},
+  orbit:{v:'glass',m:[[880,0,.5,.08],[1108.7,.08,.5,.08],[1318.5,.16,.6,.08],[1760,.26,.9,.08]]}
+};
+function sfxCeleb(id){try{
+  if(!S.cfg||S.cfg.uiSounds===false)return;const c=SFX_CELEB[id];if(!c)return;
+  if(window.__sfxLog)window.__sfxLog.push('celeb:'+id);
+  if(!sfxReady())return;const st=SFX_STYLES.find(s=>s.id===c.v),t0=sfxCtx.currentTime+.01;
+  c.m.forEach(([f,at,dur,vol])=>st.v(f*st.shift,t0+at,dur,vol))}catch(e){}}
