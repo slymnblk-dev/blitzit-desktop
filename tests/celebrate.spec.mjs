@@ -8,7 +8,7 @@ test('priority look: Label, Dot, Ring', async ({ page }) => {
   const id = await page.evaluate(() => { const l = S.lists.find(x => x.space === S.spaces[0].id); const t = newTask('Pri test', 'week', l.id, 15); t.pri = 'high'; S.tasks.unshift(t); S.space = S.spaces[0].id; S.list = 'all'; S.stage = 'week'; render(); return t.id; });
   const row = page.locator(`#list .row[data-id="${id}"]`);
   await expect(row.locator('.mi.pri.high')).toHaveCount(1);
-  for (const [v, sel] of [['dot', '.pri-dt.high'], ['ring', null]]) {
+  for (const [v, sel] of [['marks', '.pri-mk.high'], ['ring', null]]) {
     await page.evaluate(() => { openSettings(); setView = 'tasks'; drawSettings(); });
     await page.locator(`.prp[data-v="${v}"]`).click();
     await page.evaluate(() => closeSettings());

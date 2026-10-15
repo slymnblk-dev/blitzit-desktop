@@ -1522,7 +1522,7 @@ html,body{overscroll-behavior-y:contain}
 .pri-dt.high{background:var(--p-high);box-shadow:0 0 0 3px color-mix(in srgb,var(--p-high) 18%,transparent)}
 .pri-dt.med{background:var(--p-med)}
 .pri-dt.low{background:var(--p-low);opacity:.8}
-.row.pr-high .check{border-color:var(--p-high);border-width:2.5px;box-shadow:0 0 0 4px color-mix(in srgb,var(--p-high) 22%,transparent)}
+.row.pr-high .check{border-color:var(--p-high);border-width:2.5px;background:color-mix(in srgb,var(--p-high) 18%,transparent)}
 .row.pr-med .check{border-color:var(--p-med)}
 .row.pr-low .check{border-color:var(--p-low);border-style:dashed}
 .pri-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
@@ -1536,7 +1536,7 @@ html,body{overscroll-behavior-y:contain}
 .prp-row .pt em{font-style:normal;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--p-high)}
 .prp-row .pt em .pri-i{width:11px;height:11px}
 .prp .pri-dt{width:6px;height:6px;margin-left:6px;top:-1px}
-.prp.ring .pc{border-color:var(--p-high);border-width:2.2px;box-shadow:0 0 0 3px color-mix(in srgb,var(--p-high) 25%,transparent)}
+.prp.ring .pc{border-color:var(--p-high);border-width:2.2px;background:color-mix(in srgb,var(--p-high) 20%,transparent)}
 @media (max-width:520px){.pri-pick{grid-template-columns:1fr}}
 
 /* celebrations */
@@ -1645,6 +1645,11 @@ body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
 @media (max-width:600px){.srch{border-radius:22px}.sr-bar{height:44px}}
 @media (prefers-reduced-motion:reduce){.srch{transition:opacity .2s}}
 @media (max-width:1099px){body::after{content:'';position:fixed;inset:0;z-index:690;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s}body.srch-on::after{opacity:1}}
+
+/* priority marks: !!! / !! / ! after the task name */
+.pri-mk{display:inline-block;margin-left:8px;font-style:normal;font-weight:800;font-size:.82em;letter-spacing:.04em;vertical-align:1px}
+.pri-mk.high{color:var(--p-high)}.pri-mk.med{color:var(--p-med)}.pri-mk.low{color:var(--p-low)}
+.prp .pri-mk{margin-left:6px}
 </style>
 </head>
 <body>
@@ -1842,7 +1847,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=88; // bumped with every published update
+const APP_VERSION=89; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2171,7 +2176,7 @@ function rowHTML(t){
     <div class="under"><span></span></div>
     <div class="row-in">
       <button class="check" data-check aria-label="Complete">${CHECK}</button>
-      <div class="body"><div class="title"><span>${esc(t.title)}</span>${pr&&ps==='dot'?`<i class="pri-dt ${pr.id}" title="${pr.name} priority" aria-label="${pr.name} priority"></i>`:''}</div>
+      <div class="body"><div class="title"><span>${esc(t.title)}</span>${pr&&(ps==='dot'||ps==='marks')?`<i class="pri-mk ${pr.id}" title="${pr.name} priority" aria-label="${pr.name} priority">${'!'.repeat(pr.n)}</i>`:''}</div>
         ${(S.list==='all'||extra)?`<div class="meta">${S.list==='all'?`<span class="tag"><i style="background:${l.c}"></i>${esc(l.name)}</span>`:''}${extra}</div>`:''}</div>
       <div class="est">${fmt(t.est)}</div>
     </div></li>`;
@@ -4153,8 +4158,8 @@ function settingsPage(id){
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
     <div class="set-row"><div class="set-l">Priority look<small>How High, Medium and Low show on your tasks.</small></div>
-      <div class="pri-pick">${[['bars','Label','Bars and the word.'],['dot','Dot','A small dot. Quiet.'],['ring','Ring','The circle takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${(c.priStyle||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
-        <span class="prp-row"><span class="pc"></span><span class="pt"><span>Call the bank${v==='dot'?'<i class="pri-dt high"></i>':''}</span>${v==='bars'?`<em>${priIcon(3)}High</em>`:''}</span></span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>
+      <div class="pri-pick">${[['bars','Label','Bars and the word.'],['marks','Marks','!!! / !! / ! after the name.'],['ring','Ring','The circle takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${((c.priStyle==='dot'?'marks':c.priStyle)||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
+        <span class="prp-row"><span class="pc"></span><span class="pt"><span>Call the bank${v==='marks'?'<i class="pri-mk high">!!!</i>':''}</span>${v==='bars'?`<em>${priIcon(3)}High</em>`:''}</span></span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>
     ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}
     </div><div class="set-sec"><h3>Celebrations</h3>
     ${row('Celebrate finished tasks',tg('celebrate'),'A short, quiet moment, with a sound if sounds are on.')}

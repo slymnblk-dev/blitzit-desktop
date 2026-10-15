@@ -69,7 +69,7 @@ function rowHTML(t){
     <div class="under"><span></span></div>
     <div class="row-in">
       <button class="check" data-check aria-label="Complete">${CHECK}</button>
-      <div class="body"><div class="title"><span>${esc(t.title)}</span>${pr&&ps==='dot'?`<i class="pri-dt ${pr.id}" title="${pr.name} priority" aria-label="${pr.name} priority"></i>`:''}</div>
+      <div class="body"><div class="title"><span>${esc(t.title)}</span>${pr&&(ps==='dot'||ps==='marks')?`<i class="pri-mk ${pr.id}" title="${pr.name} priority" aria-label="${pr.name} priority">${'!'.repeat(pr.n)}</i>`:''}</div>
         ${(S.list==='all'||extra)?`<div class="meta">${S.list==='all'?`<span class="tag"><i style="background:${l.c}"></i>${esc(l.name)}</span>`:''}${extra}</div>`:''}</div>
       <div class="est">${fmt(t.est)}</div>
     </div></li>`;
