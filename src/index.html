@@ -25,6 +25,7 @@
     <div class="top-l"><button class="icon-btn" id="homeBtn" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg></button><div class="brand" id="brandBtn">Windaday<i></i></div></div>
     <div class="top-r">
       <button class="chip" id="listBtn" aria-label="Choose list"><span class="stack" id="stack"></span><span id="listName">All lists</span></button>
+      <button class="icon-btn srch-btn" data-srch aria-label="Search and filter" title="Search ( / )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><i class="srch-dot"></i></button>
       <button class="me-btn" id="setBtn" aria-label="Your profile and settings"></button>
     </div>
   </header>
@@ -64,7 +65,7 @@
   <main class="main">
     <div class="m-head">
       <div class="m-left"><div class="fw-nav" id="fwNav"></div><div class="m-title"><div class="m-date" id="mDate"></div><button class="m-edit" id="mEdit" aria-label="Edit space" title="Edit space"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button></div><div class="m-sub" id="mSub"></div></div>
-      <div class="m-right"><button class="me-btn fw-me" id="fwMe" aria-label="Your profile" title="Your profile"></button><button class="icon-btn m-set" id="dSet" aria-label="Settings" title="Settings ( , )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div>
+      <div class="m-right"><button class="srch-chip" id="srchChip" hidden></button><button class="icon-btn srch-btn" data-srch aria-label="Search and filter" title="Search ( / )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><i class="srch-dot"></i></button><button class="me-btn fw-me" id="fwMe" aria-label="Your profile" title="Your profile"></button><button class="icon-btn m-set" id="dSet" aria-label="Settings" title="Settings ( , )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div>
     </div>
     <div class="d-home" id="dHome"></div>
     <div class="board" id="board"></div>

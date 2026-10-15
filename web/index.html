@@ -1581,6 +1581,67 @@ html,body{overscroll-behavior-y:contain}
 }
 @keyframes subIn{from{opacity:0;filter:blur(10px);transform:translateY(6px);letter-spacing:.08em}to{opacity:1;filter:none;transform:none;letter-spacing:normal}}
 @media (prefers-reduced-motion:reduce){#mSub{animation:none;transition:opacity .3s}body.idle #mSub{filter:none;transform:none;letter-spacing:normal}}
+
+/* ---------- search & filter ---------- */
+.srch-btn{position:relative;color:var(--text)}
+.srch-btn svg{width:18px;height:18px}
+.srch-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--today);box-shadow:0 0 0 2px var(--surface);transform:scale(0);transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.srch-btn.filtering .srch-dot{transform:scale(1)}
+@media (min-width:1100px){.m-right .srch-btn{width:44px;height:44px}.desk.fw .m-right .srch-btn{width:40px;height:40px}}
+body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
+.srch-chip{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 6px 0 12px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--text);font-size:12.5px;white-space:nowrap;animation:chipIn .35s cubic-bezier(.2,.9,.25,1.15)}
+.srch-chip[hidden]{display:none}
+.srch-chip span{color:var(--muted);font-weight:500}
+.srch-chip b{font-weight:700;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.srch-chip i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;cursor:pointer;color:var(--muted)}
+.srch-chip i:hover{background:var(--surface2);color:var(--text)}
+.srch-chip i svg{width:12px;height:12px}
+@keyframes chipIn{from{opacity:0;transform:translateX(8px) scale(.95)}to{opacity:1;transform:none}}
+
+.srch{position:fixed;z-index:700;display:flex;flex-direction:column;max-height:min(640px,calc(100vh - 40px));border-radius:24px;background:var(--surface);border:1px solid var(--line);box-shadow:0 28px 80px rgba(0,0,0,.42),0 2px 8px rgba(0,0,0,.18);
+  clip-path:inset(0 0 calc(100% - 44px) var(--from,90%) round 22px);opacity:0;pointer-events:none;transition:clip-path .42s cubic-bezier(.2,.85,.2,1),opacity .2s}
+.srch.on{clip-path:inset(0 0 0 0 round 24px);opacity:1;pointer-events:auto}
+.sr-bar{flex:none;display:flex;align-items:center;gap:10px;height:44px;padding:0 6px 0 16px;border-bottom:1px solid transparent;transition:border-color .3s}
+.srch.on .sr-bar{border-bottom-color:var(--line)}
+.sr-bar>svg{width:18px;height:18px;flex:none;color:var(--muted)}
+.sr-bar input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:15.5px;font-weight:500}
+.sr-bar input::placeholder{color:var(--muted)}
+.sr-x{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.sr-x:hover{background:var(--surface2);color:var(--text)}
+.sr-x svg{width:14px;height:14px}
+.sr-body{overflow-y:auto;padding:8px;opacity:0;transform:translateY(-6px);transition:opacity .3s .12s,transform .35s .12s cubic-bezier(.2,.8,.2,1)}
+.srch.on .sr-body{opacity:1;transform:none}
+.sr-hint{margin:10px 10px 14px;font-size:13.5px;color:var(--muted)}
+.sr-hint kbd{font:inherit;font-size:12px;font-weight:600;padding:1px 6px;border-radius:6px;background:var(--surface2);color:var(--text)}
+.sr-list{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.sr-item{display:flex;align-items:center;gap:12px;width:100%;padding:10px 10px;border-radius:14px;text-align:left;color:var(--text);transition:background .12s}
+.sr-item:hover,.sr-item.sel{background:var(--surface2)}
+.sr-st{flex:none;width:9px;height:9px;border-radius:50%}
+.sr-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.sr-tx b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-tx b mark{background:color-mix(in srgb,var(--week) 32%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.sr-tx small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-item.done .sr-tx b{color:var(--muted);text-decoration:line-through}
+.sr-pr{flex:none;display:grid}
+.sr-pr .pri-i{width:13px;height:13px}
+.sr-pr.high{color:var(--p-high)}.sr-pr.med{color:var(--p-med)}.sr-pr.low{color:var(--p-low)}
+/* the filter card: set apart with its own tinted surface */
+.sf-card{margin:4px 2px 2px;padding:14px;border-radius:18px;background:var(--surface2);display:flex;flex-direction:column;gap:12px}
+.sf-head{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sf-clear{font-size:12.5px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--text);padding:4px 10px;border-radius:999px;background:var(--surface)}
+.sf-row{display:flex;align-items:flex-start;gap:12px}
+.sf-l{flex:none;width:58px;padding-top:7px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.sf-chips{flex:1;display:flex;flex-wrap:wrap;gap:6px}
+.sf-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--text);transition:background .15s,border-color .15s,color .15s}
+.sf-chip .pri-i{width:12px;height:12px}
+.sf-chip.pri.high .pri-i{color:var(--p-high)}.sf-chip.pri.med .pri-i{color:var(--p-med)}.sf-chip.pri.low .pri-i{color:var(--p-low)}
+.sf-chip:hover{border-color:var(--muted)}
+.sf-chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.sf-chip.on .pri-i{color:var(--bg)!important}
+.sf-none{font-size:12.5px;color:var(--muted);padding-top:6px}
+@media (max-width:600px){.srch{border-radius:22px}.sr-bar{height:44px}}
+@media (prefers-reduced-motion:reduce){.srch{transition:opacity .2s}}
+@media (max-width:1099px){body::after{content:'';position:fixed;inset:0;z-index:690;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s}body.srch-on::after{opacity:1}}
 </style>
 </head>
 <body>
@@ -1589,6 +1650,7 @@ html,body{overscroll-behavior-y:contain}
     <div class="top-l"><button class="icon-btn" id="homeBtn" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg></button><div class="brand" id="brandBtn">Windaday<i></i></div></div>
     <div class="top-r">
       <button class="chip" id="listBtn" aria-label="Choose list"><span class="stack" id="stack"></span><span id="listName">All lists</span></button>
+      <button class="icon-btn srch-btn" data-srch aria-label="Search and filter" title="Search ( / )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><i class="srch-dot"></i></button>
       <button class="me-btn" id="setBtn" aria-label="Your profile and settings"></button>
     </div>
   </header>
@@ -1628,7 +1690,7 @@ html,body{overscroll-behavior-y:contain}
   <main class="main">
     <div class="m-head">
       <div class="m-left"><div class="fw-nav" id="fwNav"></div><div class="m-title"><div class="m-date" id="mDate"></div><button class="m-edit" id="mEdit" aria-label="Edit space" title="Edit space"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button></div><div class="m-sub" id="mSub"></div></div>
-      <div class="m-right"><button class="me-btn fw-me" id="fwMe" aria-label="Your profile" title="Your profile"></button><button class="icon-btn m-set" id="dSet" aria-label="Settings" title="Settings ( , )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div>
+      <div class="m-right"><button class="srch-chip" id="srchChip" hidden></button><button class="icon-btn srch-btn" data-srch aria-label="Search and filter" title="Search ( / )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><i class="srch-dot"></i></button><button class="me-btn fw-me" id="fwMe" aria-label="Your profile" title="Your profile"></button><button class="icon-btn m-set" id="dSet" aria-label="Settings" title="Settings ( , )"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div>
     </div>
     <div class="d-home" id="dHome"></div>
     <div class="board" id="board"></div>
@@ -1777,7 +1839,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=86; // bumped with every published update
+const APP_VERSION=87; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -1911,7 +1973,7 @@ const inSpace=t=>!inSpaceMode()||listOf(t.list).space===S.space;
 const fmt=m=>m>=60?(m%60?`${Math.floor(m/60)}h ${m%60}m`:`${m/60}h`):`${m}m`;
 const shown=t=>!t.archived&&(!t.showFrom||t.showFrom<=today());
 const VS=()=>STAGES.filter(s=>s.id!=='done'||!S.cfg||S.cfg.showDone);
-const visible=()=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(S.list==='all'||t.list===S.list));
+const visible=()=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(S.list==='all'||t.list===S.list)&&srchPass(t));
 const idx=id=>STAGES.findIndex(s=>s.id===id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const root=document.documentElement;
@@ -3468,6 +3530,111 @@ function idleWake(){
 }
 ['mousemove','keydown','wheel','pointerdown'].forEach(k=>addEventListener(k,idleWake,{passive:true,capture:true}));
 setTimeout(idleWake,0); // after every script has loaded (settings are ready then)
+/* ---------- search & filter (optional, Settings → Tasks; on by default) ----------
+   The round search button opens into a bar. Typing finds tasks in every space (title, notes, steps).
+   The filter card below narrows the board itself by priority and tags, and stays on until cleared. */
+const SF={pri:new Set(),tags:new Set()};
+let srchQ='',srchOpen=false,srchSel=0;
+const srchOn=()=>S.cfg.search!==false;
+const srchFiltering=()=>SF.pri.size>0||SF.tags.size>0;
+/* does a task pass the filters? (used by the board too) */
+function srchPass(t){
+  if(SF.pri.size&&!SF.pri.has(t.pri||''))return false;
+  if(SF.tags.size&&!tagsOf(t).some(n=>SF.tags.has(tagKey(n))))return false;
+  return true;
+}
+const srchNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+function srchHits(){
+  const q=srchNorm(srchQ.trim());if(!q&&!srchFiltering())return [];
+  const words=q.split(/\s+/).filter(Boolean);
+  const hay=t=>srchNorm([t.title,t.notes,...t.subs.map(s=>s.t),...tagsOf(t).map(n=>'#'+n)].join(' '));
+  return S.tasks.filter(t=>!t.archived&&shown(t)&&srchPass(t)&&words.every(w=>hay(t).includes(w)))
+    .sort((a,b)=>(a.stage==='done')-(b.stage==='done')||(srchNorm(b.title).startsWith(words[0]||'~'))-(srchNorm(a.title).startsWith(words[0]||'~'))).slice(0,30);
+}
+/* tags you can filter by: the lists of the open space (or all lists) */
+function srchTagPool(){
+  const ls=S.space&&S.space!=='all'?S.lists.filter(l=>l.space===S.space):S.lists,m=new Map();
+  ls.forEach(l=>ltags(l).forEach(n=>{if(!m.has(tagKey(n)))m.set(tagKey(n),n)}));
+  S.tasks.forEach(t=>{if(ls.some(l=>l.id===t.list))tagsOf(t).forEach(n=>{if(!m.has(tagKey(n)))m.set(tagKey(n),n)})});
+  SF.tags.forEach(k=>{if(!m.has(k))m.set(k,k)});
+  return [...m.entries()];
+}
+const srchMark=(s,q)=>{const w=srchNorm(q.trim()).split(/\s+/).filter(Boolean)[0];s=String(s||'');if(!w)return esc(s);const i=srchNorm(s).indexOf(w);return i<0?esc(s):esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+w.length))+'</mark>'+esc(s.slice(i+w.length))};
+function srchResults(){
+  const hits=srchHits();
+  if(!srchQ.trim()&&!srchFiltering())return `<p class="sr-hint">Find any task in any space. Press <kbd>Enter</kbd> to open the first one.</p>`;
+  if(!hits.length)return `<p class="sr-hint">No tasks match.</p>`;
+  return `<div class="sr-list" role="listbox">${hits.map((t,i)=>{const l=listOf(t.list),sp=spaceOf(l.space),pr=priOf(t);
+    return `<button class="sr-item ${i===srchSel?'sel':''} ${t.stage==='done'?'done':''}" data-srt="${t.id}" role="option"><i class="sr-st" style="background:${color(t.stage)}"></i><span class="sr-tx"><b>${srchMark(t.title,srchQ)}</b><small>${sp?esc(sp.name)+' › ':''}${esc(l.name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${pr?`<span class="sr-pr ${pr.id}">${priIcon(pr.n)}</span>`:''}</button>`}).join('')}</div>`;
+}
+function srchFilterCard(){
+  const pool=srchTagPool();
+  return `<div class="sf-card"><div class="sf-head"><span>Filter the board</span>${srchFiltering()?`<button class="sf-clear" data-sfclear>Clear</button>`:''}</div>
+    <div class="sf-row"><span class="sf-l">Priority</span><div class="sf-chips">${PRIS.map(p=>`<button class="sf-chip pri ${p.id} ${SF.pri.has(p.id)?'on':''}" data-sfp="${p.id}">${priIcon(p.n)}${p.name}</button>`).join('')}</div></div>
+    <div class="sf-row"><span class="sf-l">Tags</span><div class="sf-chips">${pool.length?pool.map(([k,n])=>`<button class="sf-chip ${SF.tags.has(k)?'on':''}" data-sft="${esc(k)}">#${esc(n)}</button>`).join(''):'<span class="sf-none">No tags yet. Add them in a task.</span>'}</div></div></div>`;
+}
+function srchDraw(){
+  const p=$('srch');if(!p)return;
+  p.querySelector('.sr-body').innerHTML=srchResults()+srchFilterCard();
+}
+function srchChip(){
+  const c=$('srchChip'),n=SF.pri.size+SF.tags.size;
+  document.querySelectorAll('.srch-btn').forEach(b=>b.classList.toggle('filtering',n>0));
+  if(!c)return;c.hidden=!n||!srchOn();
+  if(n)c.innerHTML=`<span>Filtered</span><b>${[...[...SF.pri].map(p=>PRIS.find(x=>x.id===p).name),...[...SF.tags].map(k=>'#'+k)].slice(0,2).map(esc).join(', ')}${n>2?` +${n-2}`:''}</b><i data-sfclear aria-label="Clear filters">${X}</i>`;
+}
+function srchPlace(){
+  const p=$('srch'),b=[...document.querySelectorAll('.srch-btn')].find(x=>x.offsetParent!==null);if(!p||!b)return;
+  const r=b.getBoundingClientRect(),w=Math.min(440,innerWidth-24);
+  p.style.top=r.top+'px';p.style.width=w+'px';
+  p.style.left=Math.max(12,Math.min(r.right-w,innerWidth-w-12))+'px';
+  p.style.setProperty('--from',(r.right-Math.max(12,Math.min(r.right-w,innerWidth-w-12))-r.width)+'px');
+}
+function openSearch(){
+  if(!srchOn())return;
+  if(!$('srch')){const p=document.createElement('div');p.id='srch';p.className='srch';p.setAttribute('role','dialog');p.setAttribute('aria-label','Search and filter');
+    p.innerHTML=`<div class="sr-bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><input id="srchIn" placeholder="Search tasks" autocomplete="off" spellcheck="false" enterkeyhint="search"><button class="sr-x" data-srx aria-label="Close search">${X}</button></div><div class="sr-body"></div>`;
+    document.body.appendChild(p)}
+  srchOpen=true;srchSel=0;srchPlace();srchDraw();
+  const p=$('srch'),inp=$('srchIn');inp.value=srchQ;
+  document.body.classList.add('srch-on');
+  try{inp.focus({preventScroll:true})}catch(e){} // right away, so phones open the keyboard
+  requestAnimationFrame(()=>p.classList.add('on'));
+  haptic(5);
+}
+function closeSearch(){
+  const p=$('srch');if(!p||!srchOpen)return;srchOpen=false;
+  p.classList.remove('on');document.body.classList.remove('srch-on');
+  try{document.activeElement&&document.activeElement.blur()}catch(e){}
+}
+function srchClear(){SF.pri.clear();SF.tags.clear();render();srchChip();if(srchOpen)srchDraw()}
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-srch]')){e.stopPropagation();srchOpen?closeSearch():openSearch();return}
+  if(e.target.closest('[data-sfclear]')){e.stopPropagation();haptic(5);srchClear();return}
+  const p=$('srch');if(!p||!srchOpen)return;
+  if(!e.target.closest('#srch')){closeSearch();return}
+  if(e.target.closest('[data-srx]')){closeSearch();return}
+  const it=e.target.closest('[data-srt]');if(it){const id=+it.dataset.srt;closeSearch();setTimeout(()=>openDetail(id),120);return}
+  const fp=e.target.closest('[data-sfp]');if(fp){const v=fp.dataset.sfp;SF.pri.has(v)?SF.pri.delete(v):SF.pri.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
+  const ft=e.target.closest('[data-sft]');if(ft){const v=ft.dataset.sft;SF.tags.has(v)?SF.tags.delete(v):SF.tags.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
+},true);
+document.addEventListener('input',e=>{if(e.target.id!=='srchIn')return;srchQ=e.target.value;srchSel=0;srchDraw()});
+document.addEventListener('keydown',e=>{
+  if(srchOpen&&e.target.id==='srchIn'){
+    const items=[...document.querySelectorAll('#srch .sr-item')];
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeSearch();return}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!items.length)return;srchSel=(srchSel+(e.key==='ArrowDown'?1:-1)+items.length)%items.length;items.forEach((x,i)=>x.classList.toggle('sel',i===srchSel));items[srchSel].scrollIntoView({block:'nearest'});return}
+    if(e.key==='Enter'){e.preventDefault();const it=items[srchSel];if(it)it.click();return}
+    e.stopPropagation();return;
+  }
+  if(srchOpen&&e.key==='Escape'){e.preventDefault();e.stopPropagation();closeSearch();return}
+  // "/" or Ctrl/⌘+K opens search (not while typing)
+  if(!srchOn()||e.target.closest('input,textarea,[contenteditable]')||document.querySelector('.sheet.on')||settingsOpen())return;
+  if(e.key==='/'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k')){e.preventDefault();e.stopPropagation();openSearch()}
+},true);
+addEventListener('resize',()=>{if(srchOpen)srchPlace()});
+/* show / hide the buttons with the setting */
+function srchApply(){document.body.classList.toggle('no-srch',!srchOn());if(!srchOn()){closeSearch();if(srchFiltering()){SF.pri.clear();SF.tags.clear();render()}}srchChip()}
 /* ---------- spaces ---------- */
 function openSpace(id){S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -3816,7 +3983,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -3877,7 +4044,7 @@ function shuffleFocus(){
   const cur=focusLive||S.cfg.focusColor||'red',keys=Object.keys(FOCUS_COLORS).filter(k=>k!==cur&&k!=='paper');
   focusLive=keys[Math.floor(Math.random()*keys.length)];applyFocusColor();
 }
-function applySettings(){
+function applySettings(){try{srchApply()}catch(e){}
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
   if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
@@ -3977,6 +4144,7 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Display</h3>
     ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Today progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
+    ${row('Search & filter',tg('search'),'A search button at the top. Find any task and filter the board by priority or tags.')}
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}

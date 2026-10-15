@@ -45,7 +45,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -106,7 +106,7 @@ function shuffleFocus(){
   const cur=focusLive||S.cfg.focusColor||'red',keys=Object.keys(FOCUS_COLORS).filter(k=>k!==cur&&k!=='paper');
   focusLive=keys[Math.floor(Math.random()*keys.length)];applyFocusColor();
 }
-function applySettings(){
+function applySettings(){try{srchApply()}catch(e){}
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
   if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
@@ -206,6 +206,7 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Display</h3>
     ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Today progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
+    ${row('Search & filter',tg('search'),'A search button at the top. Find any task and filter the board by priority or tags.')}
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}

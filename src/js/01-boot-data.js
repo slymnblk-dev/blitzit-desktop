@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=86; // bumped with every published update
+const APP_VERSION=87; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -141,7 +141,7 @@ const inSpace=t=>!inSpaceMode()||listOf(t.list).space===S.space;
 const fmt=m=>m>=60?(m%60?`${Math.floor(m/60)}h ${m%60}m`:`${m/60}h`):`${m}m`;
 const shown=t=>!t.archived&&(!t.showFrom||t.showFrom<=today());
 const VS=()=>STAGES.filter(s=>s.id!=='done'||!S.cfg||S.cfg.showDone);
-const visible=()=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(S.list==='all'||t.list===S.list));
+const visible=()=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(S.list==='all'||t.list===S.list)&&srchPass(t));
 const idx=id=>STAGES.findIndex(s=>s.id===id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const root=document.documentElement;
