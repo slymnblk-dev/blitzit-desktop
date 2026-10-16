@@ -1,1 +1,1 @@
-- A new Windaday icon: a sun rising over the horizon, with three rays for your three most important tasks of the day
+- A bolder Windaday icon: the sunrise is bigger inside its tile, so it's easier to spot on your taskbar
