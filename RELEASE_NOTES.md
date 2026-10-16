@@ -1,3 +1,1 @@
-- Windaday now has its own home on your computer, so other apps can't get in its way
-- Email sign-in opens Windaday directly
-- Your tasks, settings and sign-in stay as they were
+- A new Windaday icon: a sun rising over the horizon, with three rays for your three most important tasks of the day

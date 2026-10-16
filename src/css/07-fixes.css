@@ -459,3 +459,5 @@ body.no-amb .amb-btn{display:none!important}
 .acc-sec-h svg{width:20px;height:20px;color:var(--muted)}
 .acc-sec-h h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.03em}
 .acc-sec .sub-p{margin-top:6px}
+.td-go .td-sun{width:38px;height:38px}
+@media (max-width:360px){.td-go .td-sun{width:30px;height:30px}}
