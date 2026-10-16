@@ -35,7 +35,7 @@ function renderDesk(){
   const vis=visible();
   const todayT=vis.filter(t=>t.stage==='today');
   const dateTxt=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-  if(!S.space&&meName())$('mDate').innerHTML=esc(greeting())+sunIcon('m-sun');else $('mDate').textContent=dateTxt;
+  const greet=!S.space&&meName();$('mDate').classList.toggle('has-sun',!!greet);if(greet)$('mDate').innerHTML=sunIcon('m-sun')+'<span>'+esc(greeting())+'</span>';else $('mDate').textContent=dateTxt;
   $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
   document.querySelectorAll('.col').forEach(col=>{
     const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);

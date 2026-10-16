@@ -492,7 +492,16 @@ body.no-amb .amb-btn{display:none!important}
 @keyframes wlUp{from{opacity:0;transform:translateY(12px);filter:blur(6px)}}
 @media (prefers-reduced-motion:reduce){.welcome.play *{animation:none!important}}
 .wl-set{display:flex;align-items:center;gap:12px}.wl-replay{height:34px;padding:0 14px;margin:0;font-size:13px}
-/* sunrise mark: after the Home greeting, and on the Win the day buttons */
-.m-date .m-sun{width:.92em;height:.92em;margin-left:.22em;vertical-align:-.04em;color:var(--today);stroke-width:4}
-.ts-go .sun-ic,.col-go .sun-ic{width:22px;height:22px;stroke-width:4;fill:none;stroke:currentColor;margin:-2px 0}
-.col-go .sun-ic{width:20px;height:20px}
+/* sunrise mark: before the Home greeting at full text height (horizon on the text line, top ray level with the capitals) */
+.m-date.has-sun{display:flex;align-items:center}
+.m-date .m-sun{width:1.24em;height:1.24em;flex:none;margin:0 .12em 0 -.13em;position:relative;top:-.07em;color:var(--today);stroke-width:3.4}
+/* Win the day: white text, bigger sun, slow soft glow */
+.ts-go,.col-go{color:#fff!important;gap:10px}
+.ts-go{font-size:17px}.col-go{font-size:16px}
+.ts-go .sun-ic,.col-go .sun-ic{width:27px;height:27px;stroke-width:4.2;fill:none;stroke:currentColor;margin:-3px 0 -1px}
+.ts-go{--gc:var(--today)}.col-go{--gc:var(--c,var(--today))}
+.ts-go,.col-go{animation:goGlow 3.2s ease-in-out infinite}
+@keyframes goGlow{0%,100%{box-shadow:0 0 0 0 transparent,0 6px 18px -8px color-mix(in srgb,var(--gc) 70%,transparent)}
+  50%{box-shadow:0 0 22px 2px color-mix(in srgb,var(--gc) 38%,transparent),0 6px 18px -8px color-mix(in srgb,var(--gc) 70%,transparent)}}
+[data-motion="off"] .ts-go,[data-motion="off"] .col-go{animation:none}
+@media (prefers-reduced-motion:reduce){.ts-go,.col-go{animation:none}}

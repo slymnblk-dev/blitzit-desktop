@@ -1823,10 +1823,19 @@ body.no-amb .amb-btn{display:none!important}
 @keyframes wlUp{from{opacity:0;transform:translateY(12px);filter:blur(6px)}}
 @media (prefers-reduced-motion:reduce){.welcome.play *{animation:none!important}}
 .wl-set{display:flex;align-items:center;gap:12px}.wl-replay{height:34px;padding:0 14px;margin:0;font-size:13px}
-/* sunrise mark: after the Home greeting, and on the Win the day buttons */
-.m-date .m-sun{width:.92em;height:.92em;margin-left:.22em;vertical-align:-.04em;color:var(--today);stroke-width:4}
-.ts-go .sun-ic,.col-go .sun-ic{width:22px;height:22px;stroke-width:4;fill:none;stroke:currentColor;margin:-2px 0}
-.col-go .sun-ic{width:20px;height:20px}
+/* sunrise mark: before the Home greeting at full text height (horizon on the text line, top ray level with the capitals) */
+.m-date.has-sun{display:flex;align-items:center}
+.m-date .m-sun{width:1.24em;height:1.24em;flex:none;margin:0 .12em 0 -.13em;position:relative;top:-.07em;color:var(--today);stroke-width:3.4}
+/* Win the day: white text, bigger sun, slow soft glow */
+.ts-go,.col-go{color:#fff!important;gap:10px}
+.ts-go{font-size:17px}.col-go{font-size:16px}
+.ts-go .sun-ic,.col-go .sun-ic{width:27px;height:27px;stroke-width:4.2;fill:none;stroke:currentColor;margin:-3px 0 -1px}
+.ts-go{--gc:var(--today)}.col-go{--gc:var(--c,var(--today))}
+.ts-go,.col-go{animation:goGlow 3.2s ease-in-out infinite}
+@keyframes goGlow{0%,100%{box-shadow:0 0 0 0 transparent,0 6px 18px -8px color-mix(in srgb,var(--gc) 70%,transparent)}
+  50%{box-shadow:0 0 22px 2px color-mix(in srgb,var(--gc) 38%,transparent),0 6px 18px -8px color-mix(in srgb,var(--gc) 70%,transparent)}}
+[data-motion="off"] .ts-go,[data-motion="off"] .col-go{animation:none}
+@media (prefers-reduced-motion:reduce){.ts-go,.col-go{animation:none}}
 </style>
 </head>
 <body>
@@ -2024,7 +2033,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=106; // bumped with every published update
+const APP_VERSION=107; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3583,7 +3592,7 @@ function renderDesk(){
   const vis=visible();
   const todayT=vis.filter(t=>t.stage==='today');
   const dateTxt=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-  if(!S.space&&meName())$('mDate').innerHTML=esc(greeting())+sunIcon('m-sun');else $('mDate').textContent=dateTxt;
+  const greet=!S.space&&meName();$('mDate').classList.toggle('has-sun',!!greet);if(greet)$('mDate').innerHTML=sunIcon('m-sun')+'<span>'+esc(greeting())+'</span>';else $('mDate').textContent=dateTxt;
   $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
   document.querySelectorAll('.col').forEach(col=>{
     const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);
