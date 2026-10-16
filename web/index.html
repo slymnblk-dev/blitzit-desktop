@@ -1987,7 +1987,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=102; // bumped with every published update
+const APP_VERSION=103; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2252,6 +2252,15 @@ function nextDate(rep){
   do{d=new Date(d.getTime()+DAY)}while(rep==='weekdays'&&(d.getDay()===0||d.getDay()===6));
   return dkey(d);
 }
+/* priority order (optional, on by default): High, then Medium, then Low, then the rest; your own order stays within each level */
+const priSortOn=()=>!S.cfg||S.cfg.priSort!==false;
+const priRank=t=>({high:0,med:1,low:2})[t&&t.pri]??3;
+const priSorted=list=>priSortOn()?[...list].sort((a,b)=>priRank(a)-priRank(b)):list;
+/* after a drag: did the person drop the task where priority order won't let it stay? */
+function priBreaks(t,prev,next){return priSortOn()&&((prev&&priRank(prev)>priRank(t))||(next&&priRank(next)<priRank(t)))}
+let priHintAt=0;
+function priHint(t){if(Date.now()-priHintAt<1500)return;priHintAt=Date.now();
+  toast('Sorted by priority. To move this task, change its priority.')}
 function setStage(t,stage){
   const was=t.stage;t.stage=stage;
   sfxStage(t,was,stage);
@@ -2396,7 +2405,7 @@ function render(dir){
   if(dir!==undefined){h.classList.remove('in-l','in-r','in-u');void h.offsetWidth;h.classList.add(dir>0?'in-r':dir<0?'in-l':'in-u')}
 
   const vis=visible();
-  let here=vis.filter(t=>t.stage===S.stage);
+  let here=vis.filter(t=>t.stage===S.stage);if(S.stage!=='done')here=priSorted(here);
   const mins=here.reduce((a,t)=>a+t.est,0);
   const sum=$('summary'),wk=$('week');
   if(S.stage==='done'){
@@ -2559,6 +2568,7 @@ function endDrag(){
         const ids=d.rows.map(r=>+r.dataset.id);
         if(secOn()){const mv=S.tasks.find(x=>x.id===ids[d.idx]),nb=S.tasks.find(x=>x.id===ids[d.target]),s=secOfTask(nb);if(mv){if(s)mv.sec=s.id;else delete mv.sec}}
         const [m]=ids.splice(d.idx,1);ids.splice(d.target,0,m);
+        {const tk=id=>S.tasks.find(x=>x.id===id),mv=tk(m);if(priBreaks(mv,tk(ids[d.target-1]),tk(ids[d.target+1])))setTimeout(()=>priHint(mv),250)}
         const ordered=ids.map(id=>S.tasks.find(x=>x.id===id));let k=0;
         S.tasks=S.tasks.map(x=>ordered.includes(x)?ordered[k++]:x);
       }
@@ -3536,7 +3546,7 @@ function renderDesk(){
   $('mDate').textContent=!S.space&&meName()?greeting():dateTxt;
   $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
   document.querySelectorAll('.col').forEach(col=>{
-    const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);
+    const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);
     col.querySelector('.col-n').textContent=here.length;
     const sum=col.querySelector('.col-sum'),ul=col.querySelector('.col-list');
     if(sid==='done'){
@@ -4127,6 +4137,8 @@ window.addEventListener('pointerup',()=>{
   const col=d.col;if(!col){render();return}
   const target=col.dataset.s,t=S.tasks.find(x=>x.id===+d.row.dataset.id);
   const ids=[...col.querySelectorAll('.col-list .row')].map(r=>+r.dataset.id);
+  const nbr=(dir)=>{for(let n=dir<0?d.row.previousElementSibling:d.row.nextElementSibling;n;n=dir<0?n.previousElementSibling:n.nextElementSibling){if(n.classList.contains('sec-h'))return null;if(n.classList.contains('row'))return S.tasks.find(x=>x.id===+n.dataset.id)}return null};
+  const priBad=target!=='done'&&priBreaks(t,nbr(-1),nbr(1));
   const sec=secOn()&&target!=='done'?secAbove(d.row):undefined,secMoved=sec!==undefined&&(sec||null)!==((secOfTask(t)||{}).id||null);
   const apply=()=>{
     if(t.stage!==target)setStage(t,target);
@@ -4135,6 +4147,7 @@ window.addEventListener('pointerup',()=>{
       S.tasks=S.tasks.map(x=>ordered.includes(x)?ordered[k++]:x)}
   };
   haptic(8);
+  if(priBad)setTimeout(()=>priHint(t),250);
   if(t.stage!==target)commit(apply,target==='done'?doneMsg(t):sec?`Moved to ${secFind(sec).sec.name}`:`Moved to ${STAGES[idx(target)].name}`);
   else if(secMoved)commit(apply,sec?`Moved to ${secFind(sec).sec.name}`:'Moved out of the section');
   else{apply();render()}
@@ -4308,7 +4321,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -4476,6 +4489,7 @@ function settingsPage(id){
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
+    ${row('Sort by priority',tg('priSort'),'High priority tasks go to the top, then Medium, then Low.')}
     <div class="set-row"><div class="set-l">Priority look<small>How High, Medium and Low show on your tasks.</small></div>
       <div class="pri-pick">${[['bars','Label','Bars and the word.'],['marks','Marks','!!! / !! / ! after the name.'],['ring','Ring','The circle takes the colour.'],['edge','Edge','A coloured line at the start.'],['tint','Tint','The whole row softly takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${((c.priStyle==='dot'?'marks':c.priStyle)||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
         <span class="prp-row"><span class="pc"></span><span class="pt"><span>Call the bank${v==='marks'?'<i class="pri-mk high">!!!</i>':''}</span>${v==='bars'?`<em>${priIcon(3)}High</em>`:''}</span></span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>

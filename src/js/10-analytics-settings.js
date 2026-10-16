@@ -45,7 +45,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -213,6 +213,7 @@ function settingsPage(id){
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
+    ${row('Sort by priority',tg('priSort'),'High priority tasks go to the top, then Medium, then Low.')}
     <div class="set-row"><div class="set-l">Priority look<small>How High, Medium and Low show on your tasks.</small></div>
       <div class="pri-pick">${[['bars','Label','Bars and the word.'],['marks','Marks','!!! / !! / ! after the name.'],['ring','Ring','The circle takes the colour.'],['edge','Edge','A coloured line at the start.'],['tint','Tint','The whole row softly takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${((c.priStyle==='dot'?'marks':c.priStyle)||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
         <span class="prp-row"><span class="pc"></span><span class="pt"><span>Call the bank${v==='marks'?'<i class="pri-mk high">!!!</i>':''}</span>${v==='bars'?`<em>${priIcon(3)}High</em>`:''}</span></span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>

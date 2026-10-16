@@ -38,7 +38,7 @@ function renderDesk(){
   $('mDate').textContent=!S.space&&meName()?greeting():dateTxt;
   $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
   document.querySelectorAll('.col').forEach(col=>{
-    const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);
+    const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);
     col.querySelector('.col-n').textContent=here.length;
     const sum=col.querySelector('.col-sum'),ul=col.querySelector('.col-list');
     if(sid==='done'){

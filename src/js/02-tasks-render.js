@@ -5,6 +5,15 @@ function nextDate(rep){
   do{d=new Date(d.getTime()+DAY)}while(rep==='weekdays'&&(d.getDay()===0||d.getDay()===6));
   return dkey(d);
 }
+/* priority order (optional, on by default): High, then Medium, then Low, then the rest; your own order stays within each level */
+const priSortOn=()=>!S.cfg||S.cfg.priSort!==false;
+const priRank=t=>({high:0,med:1,low:2})[t&&t.pri]??3;
+const priSorted=list=>priSortOn()?[...list].sort((a,b)=>priRank(a)-priRank(b)):list;
+/* after a drag: did the person drop the task where priority order won't let it stay? */
+function priBreaks(t,prev,next){return priSortOn()&&((prev&&priRank(prev)>priRank(t))||(next&&priRank(next)<priRank(t)))}
+let priHintAt=0;
+function priHint(t){if(Date.now()-priHintAt<1500)return;priHintAt=Date.now();
+  toast('Sorted by priority. To move this task, change its priority.')}
 function setStage(t,stage){
   const was=t.stage;t.stage=stage;
   sfxStage(t,was,stage);
@@ -149,7 +158,7 @@ function render(dir){
   if(dir!==undefined){h.classList.remove('in-l','in-r','in-u');void h.offsetWidth;h.classList.add(dir>0?'in-r':dir<0?'in-l':'in-u')}
 
   const vis=visible();
-  let here=vis.filter(t=>t.stage===S.stage);
+  let here=vis.filter(t=>t.stage===S.stage);if(S.stage!=='done')here=priSorted(here);
   const mins=here.reduce((a,t)=>a+t.est,0);
   const sum=$('summary'),wk=$('week');
   if(S.stage==='done'){

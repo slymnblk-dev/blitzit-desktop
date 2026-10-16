@@ -113,6 +113,7 @@ function endDrag(){
         const ids=d.rows.map(r=>+r.dataset.id);
         if(secOn()){const mv=S.tasks.find(x=>x.id===ids[d.idx]),nb=S.tasks.find(x=>x.id===ids[d.target]),s=secOfTask(nb);if(mv){if(s)mv.sec=s.id;else delete mv.sec}}
         const [m]=ids.splice(d.idx,1);ids.splice(d.target,0,m);
+        {const tk=id=>S.tasks.find(x=>x.id===id),mv=tk(m);if(priBreaks(mv,tk(ids[d.target-1]),tk(ids[d.target+1])))setTimeout(()=>priHint(mv),250)}
         const ordered=ids.map(id=>S.tasks.find(x=>x.id===id));let k=0;
         S.tasks=S.tasks.map(x=>ordered.includes(x)?ordered[k++]:x);
       }

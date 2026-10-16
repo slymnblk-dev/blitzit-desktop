@@ -170,6 +170,8 @@ window.addEventListener('pointerup',()=>{
   const col=d.col;if(!col){render();return}
   const target=col.dataset.s,t=S.tasks.find(x=>x.id===+d.row.dataset.id);
   const ids=[...col.querySelectorAll('.col-list .row')].map(r=>+r.dataset.id);
+  const nbr=(dir)=>{for(let n=dir<0?d.row.previousElementSibling:d.row.nextElementSibling;n;n=dir<0?n.previousElementSibling:n.nextElementSibling){if(n.classList.contains('sec-h'))return null;if(n.classList.contains('row'))return S.tasks.find(x=>x.id===+n.dataset.id)}return null};
+  const priBad=target!=='done'&&priBreaks(t,nbr(-1),nbr(1));
   const sec=secOn()&&target!=='done'?secAbove(d.row):undefined,secMoved=sec!==undefined&&(sec||null)!==((secOfTask(t)||{}).id||null);
   const apply=()=>{
     if(t.stage!==target)setStage(t,target);
@@ -178,6 +180,7 @@ window.addEventListener('pointerup',()=>{
       S.tasks=S.tasks.map(x=>ordered.includes(x)?ordered[k++]:x)}
   };
   haptic(8);
+  if(priBad)setTimeout(()=>priHint(t),250);
   if(t.stage!==target)commit(apply,target==='done'?doneMsg(t):sec?`Moved to ${secFind(sec).sec.name}`:`Moved to ${STAGES[idx(target)].name}`);
   else if(secMoved)commit(apply,sec?`Moved to ${secFind(sec).sec.name}`:'Moved out of the section');
   else{apply();render()}
