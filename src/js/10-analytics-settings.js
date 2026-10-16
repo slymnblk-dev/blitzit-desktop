@@ -45,7 +45,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -110,6 +110,7 @@ function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   root.dataset.pri=(S.cfg&&S.cfg.priStyle)||'bars';
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
+  if(DESK()){trayInit();traySync()}
   if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
   const c=C();
   if(c.theme==='system')delete root.dataset.theme;else root.dataset.theme=c.theme;
@@ -277,6 +278,9 @@ function settingsPage(id){
     <div class="set-sec"><h3>Tasks</h3>
     <button class="link-row" id="demo">Load demo tasks</button>
     <button class="link-row warn" id="wipe">Delete all tasks</button></div>
+    ${DESK()&&TRAY.ok?`<div class="set-sec"><h3>Windows app</h3>
+    ${row('Keep in tray when closed',tg('trayKeep'),'Closing the window keeps Windaday ready in the tray, so it opens instantly. Quit from the tray icon.')}
+    ${row('Start with Windows',`<button class="tg" id="autoStart" aria-pressed="${TRAY.auto}" aria-label="Toggle"></button>`,'Starts quietly in the tray when you sign in to your computer')}</div>`:''}
     <div class="set-sec"><h3>Help</h3><button class="link-row" id="replayIntro">Replay intro</button></div>
     <div class="set-sec"><h3>About</h3>
     ${row('Version',`<span class="acc-val">${VER}${BUILD?` <span class="build">(build ${BUILD})</span>`:''}</span>`)}

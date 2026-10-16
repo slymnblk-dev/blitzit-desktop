@@ -139,6 +139,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#dlWeb')){if(installEvt){const ev=installEvt;ev.prompt();ev.userChoice.then(()=>{installEvt=null;drawSettings()}).catch(()=>{})}return}
   const dw=e.target.closest('#dlWin');if(dw){haptic(6);return dlWindows(dw)}
   if(e.target.closest('#avRemove')){delete S.cfg.avatarImg;haptic(6);save();drawMe();return drawSettings()}
+  const as=e.target.closest('#autoStart');if(as){const on=as.getAttribute('aria-pressed')!=='true';as.setAttribute('aria-pressed',on);haptic(6);sfx('toggle');setTimeout(()=>setAutostart(on),180);return}
   if(e.target.closest('#wlPlay')){closeSettings();setTimeout(()=>{sfxReady();playWelcome()},250);return}
   if(e.target.closest('#avToggle')){avOpen=!avOpen;haptic(5);return drawSettings()}
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}

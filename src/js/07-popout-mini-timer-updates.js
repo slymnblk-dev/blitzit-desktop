@@ -205,3 +205,25 @@ $('fSkip').onclick=()=>{if(Date.now()-(F.tapAt||0)<600)return;F.tapAt=Date.now()
 $('fClose').onclick=()=>F.done&&!F.sum?showSummary():closeFocus();
 $('fBack').onclick=closeFocus;
 
+
+/* ---------- Windows app: keep in tray + start with Windows ----------
+   X hides Windaday to the tray (it stays loaded, so it opens instantly); Quit is in the tray menu.
+   Needs desktop app 0.6.3+; on older versions the switches stay hidden. */
+const TRAY={ok:false,auto:false};
+async function trayInit(){
+  if(!DESK()||TRAY.init)return;TRAY.init=1;
+  try{TRAY.auto=!!await window.__TAURI__.core.invoke('autostart',{on:null});TRAY.ok=true}catch(e){return}
+  traySync();
+  try{await window.__TAURI__.event.listen('windaday-tray',()=>{try{if(!localStorage.getItem('trayTipSeen'))localStorage.setItem('trayTipDue','1')}catch(_){}})}catch(_){}
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden)return;
+    try{if(localStorage.getItem('trayTipDue')){localStorage.removeItem('trayTipDue');localStorage.setItem('trayTipSeen','1');
+      setTimeout(()=>toast('Windaday stays in your tray when you close it. Right-click the tray icon to quit.'),400)}}catch(_){}
+  });
+  if(settingsOpen())drawSettings();
+}
+function traySync(){if(TRAY.ok)window.__TAURI__.core.invoke('set_tray',{keep:S.cfg.trayKeep!==false}).catch(()=>{})}
+async function setAutostart(on){
+  try{TRAY.auto=!!await window.__TAURI__.core.invoke('autostart',{on})}catch(e){toast('Couldn’t change this setting')}
+  if(settingsOpen())drawSettings();
+}

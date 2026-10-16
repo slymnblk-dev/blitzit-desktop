@@ -1,1 +1,2 @@
-- A bolder Windaday icon: the sunrise is bigger inside its tile, so it's easier to spot on your taskbar
+- Windaday now stays in your tray when you close the window, so it opens instantly. To quit, right-click the tray icon
+- New in Settings: Start with Windows (off by default) and Keep in tray when closed

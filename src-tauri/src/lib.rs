@@ -9,6 +9,7 @@ use tauri::{
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_updater::UpdaterExt;
+use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 use std::sync::Mutex;
 
 /// Where the mini timer was last left: its bottom-right corner, in logical pixels.
@@ -19,6 +20,41 @@ struct MiniSpot(Mutex<Option<(f64, f64)>>);
 /// True while the app itself is closing the mini timer (so its own "closed" handling can be skipped).
 #[derive(Default)]
 struct MiniClosing(std::sync::atomic::AtomicBool);
+
+/// Keep in tray: clicking X hides Windaday instead of quitting (on unless the page turns it off).
+struct KeepInTray(std::sync::atomic::AtomicBool);
+
+/// Set when the person picks Quit, so the close is not turned into a hide.
+#[derive(Default)]
+struct Quitting(std::sync::atomic::AtomicBool);
+
+/// The page tells the app whether X should hide to the tray (Settings → Keep in tray when closed).
+#[tauri::command]
+fn set_tray(app: AppHandle, keep: bool) {
+    if let Some(k) = app.try_state::<KeepInTray>() {
+        k.0.store(keep, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+
+/// Start with Windows: read or change it (Settings → Start with Windows). Starts hidden in the tray.
+#[tauri::command]
+fn autostart(app: AppHandle, on: Option<bool>) -> bool {
+    let a = app.autolaunch();
+    match on {
+        Some(true) => { let _ = a.enable(); }
+        Some(false) => { let _ = a.disable(); }
+        None => {}
+    }
+    a.is_enabled().unwrap_or(false)
+}
+
+fn quit_app(app: &AppHandle) {
+    if let Some(q) = app.try_state::<Quitting>() {
+        q.0.store(true, std::sync::atomic::Ordering::SeqCst);
+    }
+    save_spot(app);
+    app.exit(0);
+}
 
 fn spot_file(app: &AppHandle) -> Option<std::path::PathBuf> {
     app.path().app_config_dir().ok().map(|d| d.join("mini-position.json"))
@@ -255,14 +291,27 @@ pub fn run() {
                 .build(),
         )
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec!["--hidden"])))
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingLink::default())
         .manage(MiniSpot::default())
         .manage(MiniClosing::default())
+        .manage(KeepInTray(std::sync::atomic::AtomicBool::new(true)))
+        .manage(Quitting::default())
         .on_window_event(|window, event| {
-            // closing the main window quits Blitzit, so the mini timer must not linger on its own
             if window.label() == "main" {
-                if let tauri::WindowEvent::CloseRequested { .. } = event {
+                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                    // Keep in tray: X hides the window; the app keeps running until Quit in the tray
+                    let app = window.app_handle();
+                    let keep = app.try_state::<KeepInTray>().map(|k| k.0.load(std::sync::atomic::Ordering::SeqCst)).unwrap_or(true);
+                    let quitting = app.try_state::<Quitting>().map(|q| q.0.load(std::sync::atomic::Ordering::SeqCst)).unwrap_or(false);
+                    if keep && !quitting {
+                        api.prevent_close();
+                        let _ = window.hide();
+                        let _ = app.emit("windaday-tray", "hidden");
+                        return;
+                    }
+                    // really closing: the mini timer must not linger on its own
                     if let Some(m) = window.app_handle().get_webview_window("mini") {
                         if let Some(flag) = window.app_handle().try_state::<MiniClosing>() {
                             flag.0.store(true, std::sync::atomic::Ordering::SeqCst);
@@ -299,6 +348,8 @@ pub fn run() {
             resize_mini,
             check_update,
             install_update,
+            set_tray,
+            autostart,
             take_link
         ])
         .setup(|app| {
@@ -319,7 +370,7 @@ pub fn run() {
             // tray icon: left click opens Blitzit, right click shows the menu
             let open = MenuItem::with_id(app, "open", "Open Windaday", true, None::<&str>)?;
             let blitz = MenuItem::with_id(app, "blitz", "Win the day   Ctrl+Alt+Shift+B", true, None::<&str>)?;
-            let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+            let quit = MenuItem::with_id(app, "quit", "Quit Windaday", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&open, &blitz, &quit])?;
             let mut tray = TrayIconBuilder::new()
                 .tooltip(format!("Windaday {}", app.package_info().version))
@@ -328,7 +379,7 @@ pub fn run() {
                 .on_menu_event(|app, e| match e.id.as_ref() {
                     "open" => show_main(app),
                     "blitz" => start_blitz(app),
-                    "quit" => app.exit(0),
+                    "quit" => quit_app(app),
                     _ => {}
                 })
                 .on_tray_icon_event(|tray, e| {
@@ -345,6 +396,13 @@ pub fn run() {
                 tray = tray.icon(icon.clone());
             }
             tray.build(app)?;
+
+            // started with Windows: stay quietly in the tray until the person opens it
+            if std::env::args().any(|a| a == "--hidden") {
+                if let Some(w) = app.get_webview_window("main") {
+                    let _ = w.hide();
+                }
+            }
 
             // Ctrl+Alt+Shift+B starts a blitz from anywhere (ignored if another app already uses it).
             // Not Ctrl+Shift+B (Chrome, Edge, VS Code) or Ctrl+Alt+B (AltGr+B types a character on some keyboards).

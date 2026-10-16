@@ -1826,16 +1826,10 @@ body.no-amb .amb-btn{display:none!important}
 /* sunrise mark: before the Home greeting at full text height (horizon on the text line, top ray level with the capitals) */
 .m-date.has-sun{display:flex;align-items:center}
 .m-date .m-sun{width:1.24em;height:1.24em;flex:none;margin:0 .12em 0 -.13em;position:relative;top:-.07em;color:var(--today);stroke-width:3.4}
-/* Win the day: white text, bigger sun, slow soft glow */
+/* Win the day: white text, bigger sun */
 .ts-go,.col-go{color:#fff!important;gap:10px}
 .ts-go{font-size:17px}.col-go{font-size:16px}
 .ts-go .sun-ic,.col-go .sun-ic{width:27px;height:27px;stroke-width:4.2;fill:none;stroke:currentColor;margin:-3px 0 -1px}
-.ts-go{--gc:var(--today)}.col-go{--gc:var(--c,var(--today))}
-.ts-go,.col-go{animation:goGlow 3.2s ease-in-out infinite}
-@keyframes goGlow{0%,100%{box-shadow:0 0 0 0 transparent,0 6px 18px -8px color-mix(in srgb,var(--gc) 70%,transparent)}
-  50%{box-shadow:0 0 22px 2px color-mix(in srgb,var(--gc) 38%,transparent),0 6px 18px -8px color-mix(in srgb,var(--gc) 70%,transparent)}}
-[data-motion="off"] .ts-go,[data-motion="off"] .col-go{animation:none}
-@media (prefers-reduced-motion:reduce){.ts-go,.col-go{animation:none}}
 </style>
 </head>
 <body>
@@ -2033,7 +2027,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=107; // bumped with every published update
+const APP_VERSION=108; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3555,6 +3549,28 @@ $('fSkip').onclick=()=>{if(Date.now()-(F.tapAt||0)<600)return;F.tapAt=Date.now()
 $('fClose').onclick=()=>F.done&&!F.sum?showSummary():closeFocus();
 $('fBack').onclick=closeFocus;
 
+
+/* ---------- Windows app: keep in tray + start with Windows ----------
+   X hides Windaday to the tray (it stays loaded, so it opens instantly); Quit is in the tray menu.
+   Needs desktop app 0.6.3+; on older versions the switches stay hidden. */
+const TRAY={ok:false,auto:false};
+async function trayInit(){
+  if(!DESK()||TRAY.init)return;TRAY.init=1;
+  try{TRAY.auto=!!await window.__TAURI__.core.invoke('autostart',{on:null});TRAY.ok=true}catch(e){return}
+  traySync();
+  try{await window.__TAURI__.event.listen('windaday-tray',()=>{try{if(!localStorage.getItem('trayTipSeen'))localStorage.setItem('trayTipDue','1')}catch(_){}})}catch(_){}
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden)return;
+    try{if(localStorage.getItem('trayTipDue')){localStorage.removeItem('trayTipDue');localStorage.setItem('trayTipSeen','1');
+      setTimeout(()=>toast('Windaday stays in your tray when you close it. Right-click the tray icon to quit.'),400)}}catch(_){}
+  });
+  if(settingsOpen())drawSettings();
+}
+function traySync(){if(TRAY.ok)window.__TAURI__.core.invoke('set_tray',{keep:S.cfg.trayKeep!==false}).catch(()=>{})}
+async function setAutostart(on){
+  try{TRAY.auto=!!await window.__TAURI__.core.invoke('autostart',{on})}catch(e){toast('Couldn’t change this setting')}
+  if(settingsOpen())drawSettings();
+}
 /* ---------- toast ---------- */
 let tt,undoFn=null;
 function dropUndo(){if(undoFn){undoFn=null;$('undoBtn').style.display='none';clearTimeout(tt);tt=setTimeout(()=>$('toast').classList.remove('on'),600)}}
@@ -4417,7 +4433,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -4482,6 +4498,7 @@ function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   root.dataset.pri=(S.cfg&&S.cfg.priStyle)||'bars';
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
+  if(DESK()){trayInit();traySync()}
   if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
   const c=C();
   if(c.theme==='system')delete root.dataset.theme;else root.dataset.theme=c.theme;
@@ -4649,6 +4666,9 @@ function settingsPage(id){
     <div class="set-sec"><h3>Tasks</h3>
     <button class="link-row" id="demo">Load demo tasks</button>
     <button class="link-row warn" id="wipe">Delete all tasks</button></div>
+    ${DESK()&&TRAY.ok?`<div class="set-sec"><h3>Windows app</h3>
+    ${row('Keep in tray when closed',tg('trayKeep'),'Closing the window keeps Windaday ready in the tray, so it opens instantly. Quit from the tray icon.')}
+    ${row('Start with Windows',`<button class="tg" id="autoStart" aria-pressed="${TRAY.auto}" aria-label="Toggle"></button>`,'Starts quietly in the tray when you sign in to your computer')}</div>`:''}
     <div class="set-sec"><h3>Help</h3><button class="link-row" id="replayIntro">Replay intro</button></div>
     <div class="set-sec"><h3>About</h3>
     ${row('Version',`<span class="acc-val">${VER}${BUILD?` <span class="build">(build ${BUILD})</span>`:''}</span>`)}
@@ -4806,6 +4826,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#dlWeb')){if(installEvt){const ev=installEvt;ev.prompt();ev.userChoice.then(()=>{installEvt=null;drawSettings()}).catch(()=>{})}return}
   const dw=e.target.closest('#dlWin');if(dw){haptic(6);return dlWindows(dw)}
   if(e.target.closest('#avRemove')){delete S.cfg.avatarImg;haptic(6);save();drawMe();return drawSettings()}
+  const as=e.target.closest('#autoStart');if(as){const on=as.getAttribute('aria-pressed')!=='true';as.setAttribute('aria-pressed',on);haptic(6);sfx('toggle');setTimeout(()=>setAutostart(on),180);return}
   if(e.target.closest('#wlPlay')){closeSettings();setTimeout(()=>{sfxReady();playWelcome()},250);return}
   if(e.target.closest('#avToggle')){avOpen=!avOpen;haptic(5);return drawSettings()}
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
