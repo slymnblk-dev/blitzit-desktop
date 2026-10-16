@@ -45,7 +45,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -114,6 +114,7 @@ function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
   const c=C();
   if(c.theme==='system')delete root.dataset.theme;else root.dataset.theme=c.theme;
+  try{themeApply()}catch(e){}
   root.dataset.size=c.size;root.dataset.density=c.density;
   root.dataset.done=c.showDone?'on':'off';if(!c.showDone&&S.stage==='done')S.stage='today';
   root.dataset.bars=c.bars||'tabs';
@@ -160,7 +161,7 @@ function pageSummary(id){
   return {
     account:!CLOUD?'Preview here, works in the installed app':user?esc(user.email||'Signed in'):'Sign in to sync your devices',
     stats:`${wk} done in the last 7 days`,
-    appearance:`${{system:'Auto',light:'Light',dark:'Dark'}[c.theme]} theme, ${c.size==='large'?'large':'default'} text`,
+    appearance:`${{system:'Auto',light:'Light',dark:'Dark'}[c.theme]} · ${themeOf(modeNow(),modeNow()==='light'?c.lightTheme:c.darkTheme).name} look, ${c.size==='large'?'large':'default'} text`,
     stages:`<span class="cat-dots">${STAGES.map(s=>`<i style="background:var(--${s.id})"></i>`).join('')}</span>`,
     tasks:`${fmt(c.defEst)} default, new tasks on ${c.addTo}`,
     focus:`${c.focusMode==='pomo'?'Pomodoro':'Free timer'}, ${c.pomoWork} / ${c.pomoBreak} min`,
@@ -181,7 +182,8 @@ function settingsPage(id){
   const head=`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><h1 class="sub-h">${title}</h1>`;
   let body='';
   if(id==='appearance')body=`<div class="set-sec">
-    ${row('Theme',`<div class="segc">${sOpt('theme','system','Auto')}${sOpt('theme','light','Light')}${sOpt('theme','dark','Dark')}</div>`)}
+    ${row('Mode',`<div class="segc">${sOpt('theme','system','Auto')}${sOpt('theme','light','Light')}${sOpt('theme','dark','Dark')}</div>`,'Auto follows your device')}</div>
+    ${themesSection()}<div class="set-sec"><h3>Text and layout</h3>
     ${row('Text size',`<div class="segc">${sOpt('size','default','Default')}${sOpt('size','large','Large')}</div>`)}
     ${row('Density',`<div class="segc">${sOpt('density','comfortable','Roomy')}${sOpt('density','compact','Compact')}</div>`)}
     ${row('Home style',`<div class="segc">${sOpt('homeStyle','calm','Calm')}${sOpt('homeStyle','colorful','Colourful')}</div>`,(c.homeStyle||'calm')==='calm'?'A quiet list of spaces. Only Today stands out.':'Colourful space cards with stage bars.')}
