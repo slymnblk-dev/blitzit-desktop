@@ -492,3 +492,7 @@ body.no-amb .amb-btn{display:none!important}
 @keyframes wlUp{from{opacity:0;transform:translateY(12px);filter:blur(6px)}}
 @media (prefers-reduced-motion:reduce){.welcome.play *{animation:none!important}}
 .wl-set{display:flex;align-items:center;gap:12px}.wl-replay{height:34px;padding:0 14px;margin:0;font-size:13px}
+/* sunrise mark: after the Home greeting, and on the Win the day buttons */
+.m-date .m-sun{width:.92em;height:.92em;margin-left:.22em;vertical-align:-.04em;color:var(--today);stroke-width:4}
+.ts-go .sun-ic,.col-go .sun-ic{width:22px;height:22px;stroke-width:4;fill:none;stroke:currentColor;margin:-2px 0}
+.col-go .sun-ic{width:20px;height:20px}

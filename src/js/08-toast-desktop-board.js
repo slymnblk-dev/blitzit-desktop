@@ -35,7 +35,7 @@ function renderDesk(){
   const vis=visible();
   const todayT=vis.filter(t=>t.stage==='today');
   const dateTxt=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-  $('mDate').textContent=!S.space&&meName()?greeting():dateTxt;
+  if(!S.space&&meName())$('mDate').innerHTML=esc(greeting())+sunIcon('m-sun');else $('mDate').textContent=dateTxt;
   $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
   document.querySelectorAll('.col').forEach(col=>{
     const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);
@@ -105,7 +105,7 @@ function todayStrip(){
   const m=td.reduce((a,t)=>a+t.est,0);
   return `<div class="ts"><div class="ts-l"><span class="ts-k">Today</span><b>${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}</b></div>
     <div class="ts-t">${td.slice(0,3).map(t=>`<span><i style="background:${listOf(t.list).c}"></i>${esc(t.title)}</span>`).join('')}${td.length>3?`<span class="ts-more">+${td.length-3} more</span>`:''}</div>
-    <button class="ts-go" id="tsGo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Win the day</button></div>`;
+    <button class="ts-go" id="tsGo">${sunIcon()}Win the day</button></div>`;
 }
 
 /* ---------- backup reminder (only for people not signed in) ---------- */

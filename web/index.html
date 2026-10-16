@@ -1823,6 +1823,10 @@ body.no-amb .amb-btn{display:none!important}
 @keyframes wlUp{from{opacity:0;transform:translateY(12px);filter:blur(6px)}}
 @media (prefers-reduced-motion:reduce){.welcome.play *{animation:none!important}}
 .wl-set{display:flex;align-items:center;gap:12px}.wl-replay{height:34px;padding:0 14px;margin:0;font-size:13px}
+/* sunrise mark: after the Home greeting, and on the Win the day buttons */
+.m-date .m-sun{width:.92em;height:.92em;margin-left:.22em;vertical-align:-.04em;color:var(--today);stroke-width:4}
+.ts-go .sun-ic,.col-go .sun-ic{width:22px;height:22px;stroke-width:4;fill:none;stroke:currentColor;margin:-2px 0}
+.col-go .sun-ic{width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -2168,6 +2172,9 @@ const I_SUB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const I_NOTE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg>';
 
 
+
+/* the Windaday sunrise mark (logo), drawn in currentColor */
+const sunIcon=(cls='')=>`<svg class="sun-ic ${cls}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg>`;
 /* ---------- interface sounds: soft, short, made in code (no audio files) ----------
    Settings → Appearance → Feel → Sounds (on/off) and Sound style (pick a style, set the volume, try each sound). */
 let sfxCtx=null,sfxBus=null,sfxLast={},sfxNoise=null;
@@ -3576,7 +3583,7 @@ function renderDesk(){
   const vis=visible();
   const todayT=vis.filter(t=>t.stage==='today');
   const dateTxt=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-  $('mDate').textContent=!S.space&&meName()?greeting():dateTxt;
+  if(!S.space&&meName())$('mDate').innerHTML=esc(greeting())+sunIcon('m-sun');else $('mDate').textContent=dateTxt;
   $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
   document.querySelectorAll('.col').forEach(col=>{
     const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);
@@ -3646,7 +3653,7 @@ function todayStrip(){
   const m=td.reduce((a,t)=>a+t.est,0);
   return `<div class="ts"><div class="ts-l"><span class="ts-k">Today</span><b>${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}</b></div>
     <div class="ts-t">${td.slice(0,3).map(t=>`<span><i style="background:${listOf(t.list).c}"></i>${esc(t.title)}</span>`).join('')}${td.length>3?`<span class="ts-more">+${td.length-3} more</span>`:''}</div>
-    <button class="ts-go" id="tsGo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Win the day</button></div>`;
+    <button class="ts-go" id="tsGo">${sunIcon()}Win the day</button></div>`;
 }
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
@@ -4428,7 +4435,7 @@ function buildShells(){
     <div class="col-sum"></div>
     <div class="col-scroll"><ul class="list col-list"></ul>
     ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><div class="ca-row" hidden><span class="ca-dot"></span><input class="ca-in" placeholder="New task" autocomplete="off" enterkeyhint="next"><span class="ca-hint">Enter</span></div><button class="ca-sec" data-secnew="${s.id}" hidden>${PLUS_S}Section</button></div>`:''}
-    </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Win the day</span></button>`:''}</section>`).join('');
+    </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden>${sunIcon()}<span>Win the day</span></button>`:''}</section>`).join('');
   applyColFocus(false);
 }
 /* focus page colours: [background, text, break colour] */

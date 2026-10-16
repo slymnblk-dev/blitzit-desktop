@@ -155,3 +155,6 @@ const I_SUB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const I_NOTE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg>';
 
 
+
+/* the Windaday sunrise mark (logo), drawn in currentColor */
+const sunIcon=(cls='')=>`<svg class="sun-ic ${cls}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg>`;

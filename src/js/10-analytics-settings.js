@@ -72,7 +72,7 @@ function buildShells(){
     <div class="col-sum"></div>
     <div class="col-scroll"><ul class="list col-list"></ul>
     ${s.id!=='done'?`<div class="col-add"><button class="ca-btn">${PLUS_S}Add task</button><div class="ca-row" hidden><span class="ca-dot"></span><input class="ca-in" placeholder="New task" autocomplete="off" enterkeyhint="next"><span class="ca-hint">Enter</span></div><button class="ca-sec" data-secnew="${s.id}" hidden>${PLUS_S}Section</button></div>`:''}
-    </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Win the day</span></button>`:''}</section>`).join('');
+    </div>${s.id==='today'?`<span class="glint" aria-hidden="true"><i></i></span><button class="col-go" id="colGo" hidden>${sunIcon()}<span>Win the day</span></button>`:''}</section>`).join('');
   applyColFocus(false);
 }
 /* focus page colours: [background, text, break colour] */
