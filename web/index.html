@@ -1792,6 +1792,37 @@ body.no-amb .amb-btn{display:none!important}
 .acc-sec .sub-p{margin-top:6px}
 .td-go .td-sun{width:38px;height:38px}
 @media (max-width:360px){.td-go .td-sun{width:30px;height:30px}}
+
+/* welcome: the sunrise logo, once a day (always dark: the day begins at night) */
+.welcome{position:fixed;inset:0;z-index:2000;background:#0F1013;color:#F3F2EE;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;text-align:center;font-family:var(--font);padding:env(safe-area-inset-top,0px) 24px env(safe-area-inset-bottom,0px);cursor:pointer;transition:opacity .55s ease}
+.welcome.out{opacity:0;pointer-events:none}
+.wl-logo{width:min(150px,36vw);overflow:visible;color:#FF5B47}
+.wl-logo path{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
+.wl-logo .wl-fill{fill:currentColor;fill-opacity:.3;stroke:none}
+.wl-hz,.wl-sun{transform-box:fill-box}
+.wl-hz{transform-origin:center}
+.wl-ray{stroke-dasharray:1;stroke-dashoffset:0}
+.wl-word{font-size:clamp(38px,6vw,52px);font-weight:800;letter-spacing:-.045em;line-height:1}
+.wl-word i{display:inline-block;width:.16em;height:.16em;border-radius:50%;background:#FF5B47;margin-left:.04em}
+.wl-tag{font-size:clamp(15px,2vw,18px);font-weight:600;color:#9A9BA3;line-height:1.45}
+.wl-tag b{display:block;color:#F3F2EE;font-weight:700;margin-top:2px}
+.wl-skip{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:12px;font-weight:600;letter-spacing:.06em;color:rgba(243,242,238,.32)}
+.welcome.play .wl-hz{animation:wlHz .7s cubic-bezier(.6,0,.2,1) both}
+.welcome.play .wl-sun{animation:wlRise 1.1s .45s cubic-bezier(.2,.8,.2,1) both}
+.welcome.play .wl-fill{animation:wlFade .9s .9s ease both}
+.welcome.play .r1{animation:wlRay .45s 1.45s cubic-bezier(.3,0,.2,1) both}
+.welcome.play .r2{animation:wlRay .45s 1.7s cubic-bezier(.3,0,.2,1) both}
+.welcome.play .r3{animation:wlRay .45s 1.95s cubic-bezier(.3,0,.2,1) both}
+.welcome.play .wl-word{animation:wlUp .8s 2.35s cubic-bezier(.2,.8,.2,1) both}
+.welcome.play .wl-tag{animation:wlUp .8s 2.75s cubic-bezier(.2,.8,.2,1) both}
+.welcome.play .wl-skip{animation:wlFade .6s 1s ease both}
+@keyframes wlHz{from{transform:scaleX(0)}}
+@keyframes wlRise{from{transform:translateY(18px)}}
+@keyframes wlFade{from{opacity:0}}
+@keyframes wlRay{from{stroke-dashoffset:1;opacity:0}12%{opacity:1}}
+@keyframes wlUp{from{opacity:0;transform:translateY(12px);filter:blur(6px)}}
+@media (prefers-reduced-motion:reduce){.welcome.play *{animation:none!important}}
+.wl-set{display:flex;align-items:center;gap:12px}.wl-replay{height:34px;padding:0 14px;margin:0;font-size:13px}
 </style>
 </head>
 <body>
@@ -1989,7 +2020,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=104; // bumped with every published update
+const APP_VERSION=105; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3967,6 +3998,53 @@ document.addEventListener('keydown',e=>{
 addEventListener('resize',()=>{if(srchOpen)srchPlace()});
 /* show / hide the buttons with the setting */
 function srchApply(){document.body.classList.toggle('no-srch',!srchOn());if(!srchOn()){closeSearch();if(srchFiltering()){SF.pri.clear();SF.tags.clear();render()}}srchChip()}
+/* ---------- welcome (optional, on by default; Settings → Appearance → Feel) ----------
+   The sun rises over the horizon and its three rays draw one by one: your three tasks that win the day.
+   Plays once a day, the first time Windaday opens. Click, tap or any key skips it. */
+const WELCOME_SVG=`<svg class="wl-logo" viewBox="0 0 48 48" aria-hidden="true"><defs><clipPath id="wlClip"><rect x="0" y="-10" width="48" height="47.5"/></clipPath></defs><g clip-path="url(#wlClip)"><g class="wl-sun"><path class="wl-fill" d="M12 36a12 12 0 0 1 24 0z"/><path d="M12 36a12 12 0 0 1 24 0"/></g></g><path class="wl-hz" d="M5 36h38"/><path class="wl-ray r1" pathLength="1" d="M12.4 15.4l4 4"/><path class="wl-ray r2" pathLength="1" d="M24 11v7"/><path class="wl-ray r3" pathLength="1" d="M35.6 15.4l-4 4"/></svg>`;
+const welcomeOn=()=>!S.cfg||S.cfg.welcome!==false;
+let wlT=[];
+/* the matching sound: a warm pad as the horizon draws, three soft bells for the three rays, a quiet chord for the name */
+function welcomeSound(){
+  try{
+    if(!S.cfg||S.cfg.uiSounds===false||!sfxReady()||sfxCtx.state!=='running')return; // browsers keep sound off until the first click
+    const c=sfxCtx,out=sfxBus,t=c.currentTime+.05;
+    const note=(f,at,dur,vol,parts)=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t+at);g.gain.exponentialRampToValueAtTime(vol,t+at+.02);g.gain.exponentialRampToValueAtTime(.0001,t+at+dur);
+      o.connect(g).connect(out);o.start(t+at);o.stop(t+at+dur+.05);(parts||[]).forEach(([m,k])=>note(f*m,at,dur*.6,vol*k))};
+    [[130.81,-6],[196,6],[261.63,0]].forEach(([f,dt])=>{const o=c.createOscillator(),lp=c.createBiquadFilter(),g=c.createGain();
+      o.type='triangle';o.frequency.value=f;o.detune.value=dt;lp.type='lowpass';lp.frequency.setValueAtTime(380,t);lp.frequency.linearRampToValueAtTime(1100,t+2.2);
+      g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.09,t+1.3);g.gain.setValueAtTime(.09,t+2.6);g.gain.linearRampToValueAtTime(.0001,t+4.4);
+      o.connect(lp).connect(g).connect(out);o.start(t);o.stop(t+4.5)});
+    [[659.25,1.45],[783.99,1.7],[1046.5,1.95]].forEach(([f,d])=>note(f,d,1.1,.12,[[2.76,.18],[5.4,.06]]));
+    [523.25,659.25,783.99].forEach((f,i)=>note(f,2.35+i*.03,1.8,.06));
+  }catch(e){}
+}
+function welcomeEnd(){
+  wlT.forEach(clearTimeout);wlT=[];
+  const w=$('welcome');if(!w||w.classList.contains('out'))return;
+  w.classList.add('out');setTimeout(()=>w.remove(),600);
+}
+function playWelcome(){
+  if($('welcome'))return;
+  const w=document.createElement('div');w.id='welcome';w.className='welcome';w.setAttribute('role','dialog');w.setAttribute('aria-label','Welcome to Windaday');
+  w.innerHTML=`${WELCOME_SVG}<div class="wl-word">Windaday<i></i></div><div class="wl-tag">Three tasks that matter.<b>Win the day.</b></div><span class="wl-skip">Tap to skip</span>`;
+  document.body.appendChild(w);
+  requestAnimationFrame(()=>w.classList.add('play'));
+  welcomeSound();
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  wlT.push(setTimeout(welcomeEnd,reduce?1600:4300));
+  w.addEventListener('pointerdown',welcomeEnd);
+}
+document.addEventListener('keydown',e=>{if($('welcome')&&!$('welcome').classList.contains('out')){e.preventDefault();e.stopPropagation();welcomeEnd()}},true);
+/* once a day, on the first open */
+function maybeWelcome(){
+  if(!welcomeOn()||(navigator.webdriver&&!window.__wlTest))return; // automated checks skip it
+  let last='';try{last=localStorage.getItem('welcomeDay')||''}catch(e){}
+  if(last===today())return;
+  try{localStorage.setItem('welcomeDay',today())}catch(e){}
+  playWelcome();
+}
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -4323,7 +4401,7 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
@@ -4467,6 +4545,7 @@ function settingsPage(id){
       <span class="lay-th ${v?'full':''}"><i class="lt-side"></i><span class="lt-main"><i class="lt-top"></i><span class="lt-cols"><i></i><i></i><i></i><i></i></span></span></span>
       <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>
     ${row('Animations',tg('motion'))}
+    ${row('Welcome animation',`<div class="wl-set">${tg('welcome')}<button class="ghost-btn wl-replay" id="wlPlay" type="button">Play</button></div>`,'The sunrise logo, once a day when you open Windaday')}
     ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
     ${HAS_KEYS()?row('Quiet when idle',tg('idleHide'),'After 5 seconds without moving, the day’s summary and Add task fade away. Move the mouse to bring them back.'):''}
     ${row('Sounds',tg('uiSounds'),'Soft sounds when you add, move or finish tasks')}
@@ -4711,6 +4790,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#dlWeb')){if(installEvt){const ev=installEvt;ev.prompt();ev.userChoice.then(()=>{installEvt=null;drawSettings()}).catch(()=>{})}return}
   const dw=e.target.closest('#dlWin');if(dw){haptic(6);return dlWindows(dw)}
   if(e.target.closest('#avRemove')){delete S.cfg.avatarImg;haptic(6);save();drawMe();return drawSettings()}
+  if(e.target.closest('#wlPlay')){closeSettings();setTimeout(()=>{sfxReady();playWelcome()},250);return}
   if(e.target.closest('#avToggle')){avOpen=!avOpen;haptic(5);return drawSettings()}
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
@@ -5103,6 +5183,7 @@ checkNewDay();
 runCleanup(false);
 if(HANDOFF)showHandoff();else{
 initCloud();
+try{maybeWelcome()}catch(e){}
 if(!S.onboarded)openIntro(false);
 try{const cr=S.classicRun;window.__crHold=false;if(cr&&cr.ids&&!(S.tideRun&&S.tideRun.ids)){
   const q=cr.ids.map(id=>S.tasks.find(t=>t.id===id)).filter(Boolean),ci=q.findIndex(t=>t.id===cr.cid);

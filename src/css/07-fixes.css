@@ -461,3 +461,34 @@ body.no-amb .amb-btn{display:none!important}
 .acc-sec .sub-p{margin-top:6px}
 .td-go .td-sun{width:38px;height:38px}
 @media (max-width:360px){.td-go .td-sun{width:30px;height:30px}}
+
+/* welcome: the sunrise logo, once a day (always dark: the day begins at night) */
+.welcome{position:fixed;inset:0;z-index:2000;background:#0F1013;color:#F3F2EE;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;text-align:center;font-family:var(--font);padding:env(safe-area-inset-top,0px) 24px env(safe-area-inset-bottom,0px);cursor:pointer;transition:opacity .55s ease}
+.welcome.out{opacity:0;pointer-events:none}
+.wl-logo{width:min(150px,36vw);overflow:visible;color:#FF5B47}
+.wl-logo path{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
+.wl-logo .wl-fill{fill:currentColor;fill-opacity:.3;stroke:none}
+.wl-hz,.wl-sun{transform-box:fill-box}
+.wl-hz{transform-origin:center}
+.wl-ray{stroke-dasharray:1;stroke-dashoffset:0}
+.wl-word{font-size:clamp(38px,6vw,52px);font-weight:800;letter-spacing:-.045em;line-height:1}
+.wl-word i{display:inline-block;width:.16em;height:.16em;border-radius:50%;background:#FF5B47;margin-left:.04em}
+.wl-tag{font-size:clamp(15px,2vw,18px);font-weight:600;color:#9A9BA3;line-height:1.45}
+.wl-tag b{display:block;color:#F3F2EE;font-weight:700;margin-top:2px}
+.wl-skip{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:12px;font-weight:600;letter-spacing:.06em;color:rgba(243,242,238,.32)}
+.welcome.play .wl-hz{animation:wlHz .7s cubic-bezier(.6,0,.2,1) both}
+.welcome.play .wl-sun{animation:wlRise 1.1s .45s cubic-bezier(.2,.8,.2,1) both}
+.welcome.play .wl-fill{animation:wlFade .9s .9s ease both}
+.welcome.play .r1{animation:wlRay .45s 1.45s cubic-bezier(.3,0,.2,1) both}
+.welcome.play .r2{animation:wlRay .45s 1.7s cubic-bezier(.3,0,.2,1) both}
+.welcome.play .r3{animation:wlRay .45s 1.95s cubic-bezier(.3,0,.2,1) both}
+.welcome.play .wl-word{animation:wlUp .8s 2.35s cubic-bezier(.2,.8,.2,1) both}
+.welcome.play .wl-tag{animation:wlUp .8s 2.75s cubic-bezier(.2,.8,.2,1) both}
+.welcome.play .wl-skip{animation:wlFade .6s 1s ease both}
+@keyframes wlHz{from{transform:scaleX(0)}}
+@keyframes wlRise{from{transform:translateY(18px)}}
+@keyframes wlFade{from{opacity:0}}
+@keyframes wlRay{from{stroke-dashoffset:1;opacity:0}12%{opacity:1}}
+@keyframes wlUp{from{opacity:0;transform:translateY(12px);filter:blur(6px)}}
+@media (prefers-reduced-motion:reduce){.welcome.play *{animation:none!important}}
+.wl-set{display:flex;align-items:center;gap:12px}.wl-replay{height:34px;padding:0 14px;margin:0;font-size:13px}

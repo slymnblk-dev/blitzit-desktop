@@ -88,6 +88,7 @@ checkNewDay();
 runCleanup(false);
 if(HANDOFF)showHandoff();else{
 initCloud();
+try{maybeWelcome()}catch(e){}
 if(!S.onboarded)openIntro(false);
 try{const cr=S.classicRun;window.__crHold=false;if(cr&&cr.ids&&!(S.tideRun&&S.tideRun.ids)){
   const q=cr.ids.map(id=>S.tasks.find(t=>t.id===id)).filter(Boolean),ci=q.findIndex(t=>t.id===cr.cid);
