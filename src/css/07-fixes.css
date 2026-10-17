@@ -534,3 +534,8 @@ body.no-amb .amb-btn{display:none!important}
 .th-peek,.th-peek *{transition:background-color .24s ease,border-color .24s ease,color .24s ease,box-shadow .24s ease!important}
 @media (prefers-reduced-motion:reduce){.th-peek,.th-peek *{transition:none!important}}
 .thc.on:hover{box-shadow:0 0 0 2px var(--text),0 10px 24px -14px rgba(0,0,0,.45)}
+/* Account tab: a small dot when tasks aren't backed up yet */
+.you-tabs button{position:relative}
+.yt-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--week);margin-left:6px;vertical-align:2px}
+.acc-tab{margin-top:6px}
+.you-tabs + .safe-card{margin-top:18px}

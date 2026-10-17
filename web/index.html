@@ -1865,6 +1865,11 @@ body.no-amb .amb-btn{display:none!important}
 .th-peek,.th-peek *{transition:background-color .24s ease,border-color .24s ease,color .24s ease,box-shadow .24s ease!important}
 @media (prefers-reduced-motion:reduce){.th-peek,.th-peek *{transition:none!important}}
 .thc.on:hover{box-shadow:0 0 0 2px var(--text),0 10px 24px -14px rgba(0,0,0,.45)}
+/* Account tab: a small dot when tasks aren't backed up yet */
+.you-tabs button{position:relative}
+.yt-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--week);margin-left:6px;vertical-align:2px}
+.acc-tab{margin-top:6px}
+.you-tabs + .safe-card{margin-top:18px}
 </style>
 </head>
 <body>
@@ -2062,7 +2067,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=109; // bumped with every published update
+const APP_VERSION=110; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -4842,10 +4847,11 @@ function openYou(tab){
   $('settings').classList.add('on');$('scrim').classList.add('on');$('settings').scrollTop=0;haptic(5);
 }
 function youHead(){
-  const tabs=[['profile','Profile'],['stats','Stats'],['download','Download']];
+  const tabs=[['profile','Profile'],['account','Account'],['stats','Stats'],['download','Download']];
+  const warn=CLOUD&&!window.__u; // not backed up yet: a small dot on the Account tab
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close">${BACK_SVG}</button><button class="you-set" id="youSet">Settings${CHEV}</button></div>
   <div class="you-head">${avatarHTML('xl')}<div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
-  <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}</button>`).join('')}</div>`;
+  <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}${k==='account'&&warn?'<i class="yt-dot" aria-label="Not backed up"></i>':''}</button>`).join('')}</div>`;
 }
 /* is my data safe? a clear card at the top of Profile */
 function youSafety(){
@@ -4854,12 +4860,12 @@ function youSafety(){
   return `<div class="safe-card warn"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M12 8.5v4.5"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></span><span class="safe-t"><b>Your tasks are only on this device</b><small>Clear your browser or lose this device and they’re gone. Sign in to back them up and use them everywhere.</small></span><button class="safe-go" data-yt="account">Sign in</button></div>`;
 }
 let avOpen=false;
-/* Account (sign in, sync, sign out) as its own clearly separated part of Profile */
+/* Account tab: is my data safe, then sign in / sync / sign out */
 function youAccount(){if(!CLOUD&&typeof accountPage!=='function')return '';accInYou=true;let h='';try{h=accountPage()}finally{accInYou=false}
-  return `<section class="acc-sec" id="accSec"><div class="acc-sec-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><h2>Account</h2></div>${h}</section>`}
+  return `${youSafety()}<div class="acc-tab" id="accSec">${h}</div>`}
 function youProfile(){
   const c=C(),g=goalMin();
-  return `${youSafety()}<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
+  return `<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
   <div class="set-sec"><h3>Avatar</h3><button class="av-row ${avOpen?'open':''}" id="avToggle" aria-expanded="${avOpen}">${avatarHTML('sm')}<span>${avOpen?'Done':'Change avatar'}</span>${CHEV}</button>
     ${avOpen?`<div class="av-grid av-drop">
     <label class="av-up ${c.avatarImg?'on':''}" title="${c.avatarImg?'Change photo':'Upload a photo'}">${c.avatarImg?`<img src="${c.avatarImg}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`}<input type="file" id="avFile" accept="image/*" hidden></label>
@@ -4932,9 +4938,8 @@ function youBody(){
     el.insertAdjacentHTML('afterbegin',youHead()+'<div class="you-range"></div>');if(seg)el.querySelector('.you-range').appendChild(seg);return;
   }
   if(youTab==='download'){el.innerHTML=youHead()+youDownload();return}
-  let toAcc=false;if(youTab==='account'){youTab='profile';toAcc=true}  // Account now lives inside Profile
-  el.innerHTML=youHead()+youProfile()+youAccount();
-  if(toAcc)requestAnimationFrame(()=>{const a=$('accSec');if(a)a.scrollIntoView({behavior:'smooth',block:'start'})});
+  if(youTab==='account'){el.innerHTML=youHead()+youAccount();return}
+  el.innerHTML=youHead()+youProfile();
 }
 function setCfg(k,v){S.cfg[k]=v;applySettings();save();render();if(k==='cleanup'||k==='cleanupAfter')runCleanup(true);drawSettings()}
 
@@ -5187,7 +5192,7 @@ function accountPage(){
   const syncState=PV?'synced':window.__ss;
   if(PV&&pvState==='sent'&&!authEmail)authEmail='you@gmail.com';
   if(!PV&&!sb)return head+`<p class="sub-p">Can’t reach the sync service right now. Check your connection and try again.</p>`;
-  if(user)return head+`<p class="sub-p">Your tasks sync across every device you sign in on.</p>
+  if(user)return head+`${accInYou?'':'<p class="sub-p">Your tasks sync across every device you sign in on.</p>'}
     <div class="set-sec">${row('Signed in as',`<span class="acc-val">${esc(user.email||'')}</span>`)}
     ${row('Sync',`<span class="acc-val" id="syncStatus">${SYNC_LABEL[syncState]}</span>`)}</div>
     <div class="set-sec"><button class="link-row" id="accSync">Sync now</button><button class="link-row warn" id="accOut">Sign out</button></div>

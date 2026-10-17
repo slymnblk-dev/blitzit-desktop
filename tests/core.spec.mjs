@@ -87,17 +87,19 @@ test('Download tab: web app, Windows app and Mac (coming soon); no stray install
   noErrors(errors);
 });
 
-test('profile: a clear card says whether tasks are backed up', async ({ page }) => {
+test('account tab: a clear card says whether tasks are backed up', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.evaluate(() => openYou('profile'));
-  const card = page.locator('#setIn .safe-card');
+  await expect(page.locator('#setIn .safe-card')).toHaveCount(0);                 // Profile is just you: name, avatar, goal
+  await page.locator('[data-yt="account"]').click();
+  expect(await page.evaluate(() => youTab)).toBe('account');
+  await expect(page.locator('#accSec')).toBeAttached();
   if (await page.evaluate(() => typeof CLOUD !== 'undefined' && !!CLOUD)) {
+    const card = page.locator('#setIn .safe-card');
     await expect(card).toHaveClass(/warn/);
     await expect(card).toContainText('only on this device');
-    await card.locator('[data-yt="account"]').click();
-    expect(await page.evaluate(() => youTab)).toBe('profile');                         // Account lives inside Profile
-    await expect(page.locator('#accSec')).toBeVisible();
+    await expect(page.locator('[data-yt="account"] .yt-dot')).toBeVisible();
   }
   noErrors(errors);
 });

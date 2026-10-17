@@ -150,7 +150,7 @@ function accountPage(){
   const syncState=PV?'synced':window.__ss;
   if(PV&&pvState==='sent'&&!authEmail)authEmail='you@gmail.com';
   if(!PV&&!sb)return head+`<p class="sub-p">Can’t reach the sync service right now. Check your connection and try again.</p>`;
-  if(user)return head+`<p class="sub-p">Your tasks sync across every device you sign in on.</p>
+  if(user)return head+`${accInYou?'':'<p class="sub-p">Your tasks sync across every device you sign in on.</p>'}
     <div class="set-sec">${row('Signed in as',`<span class="acc-val">${esc(user.email||'')}</span>`)}
     ${row('Sync',`<span class="acc-val" id="syncStatus">${SYNC_LABEL[syncState]}</span>`)}</div>
     <div class="set-sec"><button class="link-row" id="accSync">Sync now</button><button class="link-row warn" id="accOut">Sign out</button></div>
