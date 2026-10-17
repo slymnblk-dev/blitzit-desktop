@@ -51,32 +51,9 @@ function themesSection(){
   const c=C(),cur=modeNow();
   const grp=(mode,label)=>`<div class="thg"><div class="thg-h"><span>${label}</span>${cur===mode?'<em>Showing now</em>':`<small>Used when the app is ${mode}</small>`}</div>
     <div class="thg-row">${THEMES[mode].map(t=>themeCard(mode,t,(mode==='light'?c.lightTheme:c.darkTheme||'default')===t.id||(t.id==='default'&&!(mode==='light'?c.lightTheme:c.darkTheme)))).join('')}</div></div>`;
-  return `<div class="set-sec" id="themesSec"><h3>Themes</h3><p class="sub-p thp">Hover a look to preview it on the whole app.</p>${grp('light','Light')}${grp('dark','Dark')}</div>`;
+  return `<div class="set-sec" id="themesSec"><h3>Themes</h3>${grp('light','Light')}${grp('dark','Dark')}</div>`;
 }
-/* hover = live preview on the whole app; leaving puts your choice back */
-let thPrev=null;
-function themePreview(mode,id){
-  if(!thPrev)thPrev={theme:root.dataset.theme,lt:root.dataset.lt,dt:root.dataset.dt};
-  root.classList.add('th-peek');
-  root.dataset.theme=mode;
-  if(mode==='light'){if(id==='default')delete root.dataset.lt;else root.dataset.lt=id}
-  else{if(id==='default')delete root.dataset.dt;else root.dataset.dt=id}
-}
-function themePreviewEnd(){
-  if(!thPrev)return;
-  const p=thPrev;thPrev=null;
-  ['theme','lt','dt'].forEach(k=>{if(p[k]==null)delete root.dataset[k];else root.dataset[k]=p[k]});
-  setTimeout(()=>root.classList.remove('th-peek'),260);
-}
-document.addEventListener('pointerover',e=>{
-  if(e.pointerType!=='mouse')return;
-  const b=e.target.closest&&e.target.closest('.thc');
-  if(b)themePreview(b.dataset.thm,b.dataset.thid);
-  else if(thPrev&&!(e.target.closest&&e.target.closest('.thg-row')))themePreviewEnd();
-});
-document.addEventListener('pointerleave',()=>themePreviewEnd());
 function themePick(mode,id){
-  thPrev=null;root.classList.add('th-peek');setTimeout(()=>root.classList.remove('th-peek'),300);
   haptic(6);sfx('toggle');
   setCfg(mode==='light'?'lightTheme':'darkTheme',id);
   // picking a look for the other mode while it isn't showing: say when it will appear

@@ -530,9 +530,6 @@ body.no-amb .amb-btn{display:none!important}
 .thc-ok svg{width:13px;height:13px;fill:none;stroke:var(--bg);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .thc.on .thc-ok{opacity:1;transform:none}
 @media (max-width:420px){.thg-row{gap:7px}.thc-n small{display:none}.thc-pv{height:56px}}
-/* smooth colour change while previewing or picking a look */
-.th-peek,.th-peek *{transition:background-color .24s ease,border-color .24s ease,color .24s ease,box-shadow .24s ease!important}
-@media (prefers-reduced-motion:reduce){.th-peek,.th-peek *{transition:none!important}}
 .thc.on:hover{box-shadow:0 0 0 2px var(--text),0 10px 24px -14px rgba(0,0,0,.45)}
 /* Account tab: a small dot when tasks aren't backed up yet */
 .you-tabs button{position:relative}
