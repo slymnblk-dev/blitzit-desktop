@@ -67,6 +67,42 @@ fn open_splash(app: &AppHandle) {
         .build();
 }
 
+/// Splash sound: a warm swell and three soft bells (one per ray). Follows Settings → Sounds,
+/// which the page passes on with `set_sounds` and the app remembers in a small file.
+fn sound_file(app: &AppHandle) -> Option<std::path::PathBuf> {
+    app.path().app_config_dir().ok().map(|d| d.join("sounds-off"))
+}
+
+#[tauri::command]
+fn set_sounds(app: AppHandle, on: bool) {
+    if let Some(f) = sound_file(&app) {
+        if on {
+            let _ = std::fs::remove_file(f);
+        } else {
+            if let Some(dir) = f.parent() {
+                let _ = std::fs::create_dir_all(dir);
+            }
+            let _ = std::fs::write(f, b"1");
+        }
+    }
+}
+
+#[cfg(windows)]
+fn play_splash_sound(app: &AppHandle) {
+    if sound_file(app).map(|f| f.exists()).unwrap_or(false) {
+        return;
+    }
+    static WAV: &[u8] = include_bytes!("splash.wav");
+    use windows_sys::Win32::Media::Audio::{PlaySoundW, SND_ASYNC, SND_MEMORY, SND_NODEFAULT};
+    // SND_MEMORY: the bytes are a whole WAV file; SND_ASYNC: returns at once while it plays
+    unsafe {
+        PlaySoundW(WAV.as_ptr() as *const u16, std::ptr::null_mut(), SND_ASYNC | SND_MEMORY | SND_NODEFAULT);
+    }
+}
+
+#[cfg(not(windows))]
+fn play_splash_sound(_app: &AppHandle) {}
+
 /// The page finished loading (or the safety timer ran out): show the app and close the splash.
 /// Only acts while the splash is still open, so reloads later never pop the window up from the tray.
 fn reveal(app: &AppHandle) {
@@ -395,6 +431,7 @@ pub fn run() {
             install_update,
             set_tray,
             autostart,
+            set_sounds,
             take_link
         ])
         .setup(|app| {
@@ -450,6 +487,7 @@ pub fn run() {
                 }
             } else {
                 open_splash(app.handle());
+                play_splash_sound(app.handle());
                 // safety net: never leave someone looking at the splash (slow or no internet)
                 let h = app.handle().clone();
                 std::thread::spawn(move || {

@@ -1,1 +1,1 @@
-- A Windaday splash screen while the app starts, instead of an empty window
+- A soft Windaday sound when the app starts (follows your Sounds setting)

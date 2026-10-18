@@ -1,6 +1,6 @@
 [package]
 name = "blitzit"
-version = "0.6.4"
+version = "0.6.5"
 description = "Windaday"
 edition = "2021"
 
@@ -26,3 +26,7 @@ codegen-units = 1
 lto = true
 opt-level = "s"
 strip = true
+
+# Windows only: plays the splash sound through Windows itself (no browser autoplay rules)
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Media_Audio", "Win32_Foundation"] }

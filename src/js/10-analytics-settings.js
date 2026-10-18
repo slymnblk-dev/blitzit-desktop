@@ -110,7 +110,7 @@ function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   root.dataset.pri=(S.cfg&&S.cfg.priStyle)||'bars';
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
-  if(DESK()){trayInit();traySync()}
+  if(DESK()){trayInit();traySync();try{window.__TAURI__.core.invoke('set_sounds',{on:S.cfg.uiSounds!==false}).catch(()=>{})}catch(e){}}
   if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
   const c=C();
   if(c.theme==='system')delete root.dataset.theme;else root.dataset.theme=c.theme;
