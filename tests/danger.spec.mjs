@@ -38,3 +38,12 @@ test('reset needs RESET typed and gives a fresh start (tasks, spaces, lists, set
   expect(r).toEqual({ n: 0, sp: 1, ls: 1, pri: 'bars', lt: 'default', onb: false });
   noErrors(errors);
 });
+
+test('onboarding "Explore with demo data" loads the Work + Personal demo, also after a reset', async ({ page }) => {
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.tasks = []; S.spaces = [S.spaces[0]]; S.lists = [S.lists[0]]; save(); openIntro(false); inStep = 2; drawIntro(); });
+  await page.locator('#inDemo').click();
+  const r = await page.evaluate(() => ({ sp: S.spaces.map(s => s.name), n: S.tasks.length, onb: S.onboarded }));
+  expect(r).toEqual({ sp: ['Work', 'Personal'], n: 18, onb: true });
+  noErrors(errors);
+});

@@ -2076,7 +2076,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=115; // bumped with every published update
+const APP_VERSION=116; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5381,7 +5381,14 @@ $('inNext').onclick=()=>{
 };
 $('inSkip').onclick=()=>{inStep=2;haptic(5);drawIntro()};
 $('inPicks').onclick=e=>{const b=e.target.closest('.in-pick');if(!b)return;const n=b.dataset.n;inPick.has(n)?inPick.delete(n):inPick.add(n);haptic(5);drawIntro()};
-$('inDemo').onclick=()=>{S.onboarded=true;closeIntro();render(0);toast('Demo data loaded. Clear it anytime in Settings')};
+/* "Explore with demo data": always the Work + Personal demo (2 spaces, 1 list each, 9 tasks per list).
+   Replaces only empty or example data, never real tasks. */
+$('inDemo').onclick=()=>{
+  if(!S.tasks.length||S.tasks.every(t=>DEMO_TITLES.has(t.title))){
+    const d=demoSet();S.spaces=d.spaces;S.lists=d.lists;S.tasks=d.tasks;S.arch=[];S.space=null;S.list='all';S.stage='today';
+  }
+  S.onboarded=true;closeIntro();applySettings();save();render(0);haptic(12);toast('Demo data loaded. Clear it anytime in Settings');
+};
 $('inSignin').onclick=()=>{S.tasks=[];S.onboarded=true;closeIntro();render(0);openSettings();setView='account';drawSettings()};
 $('inDots').onclick=e=>{const i=[...$('inDots').children].indexOf(e.target);if(i>-1){inStep=i;drawIntro()}};
 let inX=null;

@@ -60,7 +60,14 @@ $('inNext').onclick=()=>{
 };
 $('inSkip').onclick=()=>{inStep=2;haptic(5);drawIntro()};
 $('inPicks').onclick=e=>{const b=e.target.closest('.in-pick');if(!b)return;const n=b.dataset.n;inPick.has(n)?inPick.delete(n):inPick.add(n);haptic(5);drawIntro()};
-$('inDemo').onclick=()=>{S.onboarded=true;closeIntro();render(0);toast('Demo data loaded. Clear it anytime in Settings')};
+/* "Explore with demo data": always the Work + Personal demo (2 spaces, 1 list each, 9 tasks per list).
+   Replaces only empty or example data, never real tasks. */
+$('inDemo').onclick=()=>{
+  if(!S.tasks.length||S.tasks.every(t=>DEMO_TITLES.has(t.title))){
+    const d=demoSet();S.spaces=d.spaces;S.lists=d.lists;S.tasks=d.tasks;S.arch=[];S.space=null;S.list='all';S.stage='today';
+  }
+  S.onboarded=true;closeIntro();applySettings();save();render(0);haptic(12);toast('Demo data loaded. Clear it anytime in Settings');
+};
 $('inSignin').onclick=()=>{S.tasks=[];S.onboarded=true;closeIntro();render(0);openSettings();setView='account';drawSettings()};
 $('inDots').onclick=e=>{const i=[...$('inDots').children].indexOf(e.target);if(i>-1){inStep=i;drawIntro()}};
 let inX=null;
