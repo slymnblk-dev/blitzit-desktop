@@ -91,11 +91,26 @@ async function reconcile(first){
   if(!S.tasks.length||isDemo()){applyRemote(remote);return setSync('synced')}
   if(first)askMerge(remote);
 }
+/* first sign-in on a device that already has its own tasks.
+   Neither choice can ever wipe the account: "Keep both" adds this device's tasks to it,
+   "Use only my account's tasks" leaves the account as it is and replaces this device's copy. */
 function askMerge(remote){
-  $('mergeTxt').textContent=`This device has ${S.tasks.length} ${S.tasks.length===1?'task':'tasks'}. Your account has ${remote.tasks.length}. Which do you want to keep?`;
+  $('mergeTxt').textContent=`This device has ${S.tasks.length} ${S.tasks.length===1?'task':'tasks'}. Your account has ${remote.tasks.length}. Your account’s tasks are always kept.`;
   openSheet('mergeSheet');
+  $('mergeBoth').onclick=()=>{closeSheets();mergeBoth(remote)};
   $('mergeCloud').onclick=()=>{closeSheets();applyRemote(remote);setSync('synced');toast('Tasks loaded from your account')};
-  $('mergeLocal').onclick=()=>{closeSheets();push().then(()=>toast('This device’s tasks saved to your account'))};
+}
+function mergeBoth(remote){
+  const mine=localDoc();
+  mine.tasks=mine.tasks.filter(t=>!DEMO_TITLES.has(t.title)); // leave the example tasks behind
+  // only bring lists and spaces this device actually uses (so example lists don't come back)
+  const rl=new Set((remote.lists||[]).map(l=>l.id)),rs=new Set((remote.spaces||[]).map(x=>x.id));
+  mine.lists=mine.lists.filter(l=>rl.has(l.id)||mine.tasks.some(t=>t.list===l.id));
+  mine.spaces=mine.spaces.filter(x=>rs.has(x.id)||mine.lists.some(l=>l.space===x.id));
+  const m=mergeDocs(mine,remote);
+  m.cfg=remote.cfg||m.cfg;m.cfgU=Math.max(remote.cfgU||0,m.cfgU||0); // keep the account's settings
+  applyDoc(m);S.syncedUser=user.id;S.dirty=true;saveLocal();
+  push().then(()=>toast('Both kept: your account now has every task'));
 }
 function subscribe(){
   try{
