@@ -1867,6 +1867,18 @@ body.no-amb .amb-btn{display:none!important}
 .yt-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--week);margin-left:6px;vertical-align:2px}
 .acc-tab{margin-top:6px}
 .you-tabs + .safe-card{margin-top:18px}
+/* danger zone: type a word to confirm */
+.dz-box{display:flex;flex-direction:column;gap:10px;margin:8px 0 6px;padding:16px;border-radius:18px;background:color-mix(in srgb,var(--today) 8%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 35%,transparent)}
+.dz-box b{font-size:16px;font-weight:800;color:var(--today)}
+.dz-box p{margin:0;font-size:14px;line-height:1.45;color:var(--muted)}
+.dz-l{font-size:13px;font-weight:600}
+.dz-l code{font-family:inherit;font-weight:800;letter-spacing:.06em;padding:1px 6px;border-radius:6px;background:var(--surface2)}
+.dz-in{text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.dz-btns{display:flex;justify-content:flex-end;gap:8px}
+.dz-btns .ghost-btn{margin:0}
+.dz-go{height:42px;padding:0 18px;border-radius:999px;background:var(--today);color:#fff;font-weight:800;font-size:14px;transition:opacity .15s,transform .15s}
+.dz-go:disabled{opacity:.35;cursor:not-allowed}
+.dz-go:not(:disabled):active{transform:scale(.97)}
 </style>
 </head>
 <body>
@@ -2064,7 +2076,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=112; // bumped with every published update
+const APP_VERSION=113; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2099,6 +2111,25 @@ const SEED=[
   {id:10,title:'Clean up sample folders',stage:'done',list:'dj',est:45,doneAt:NOW-2*DAY},
   {id:11,title:'Review open positions',stage:'done',list:'swing',est:20,doneAt:NOW-3*DAY}
 ];
+/* "Load demo tasks" (Settings → Data): two spaces, one list each, 9 tasks per list (3 Backlog, 3 My week, 3 Today) */
+const DEMO={
+  work:{space:{name:'Work',c:'#5AB8F5',e:'💼'},list:{name:'Projects',c:'#5AB8F5'},tasks:{
+    backlog:[['Plan the Q1 roadmap',60],['Clean up the shared drive',45],['Draft the onboarding guide',90]],
+    week:[['Prepare Monday’s team meeting',30],['Update the client presentation',60],['Review last month’s numbers',45]],
+    today:[['Reply to important emails',20],['Finish the project proposal',90],['Call with the design team',30]]}},
+  personal:{space:{name:'Personal',c:'#9C95FF',e:'🌱'},list:{name:'Life',c:'#9C95FF'},tasks:{
+    backlog:[['Plan a weekend trip',30],['Learn 20 new words',20],['Sort old photos',60]],
+    week:[['Book a dentist appointment',10],['Call grandma',20],['Meal prep for the week',60]],
+    today:[['30 minute workout',30],['Read 20 pages',20],['Groceries',30]]}}};
+const DEMO_LIST_TITLES=Object.values(DEMO).flatMap(d=>Object.values(d.tasks).flat().map(t=>t[0]));
+function demoSet(){
+  const spaces=[],lists=[],tasks=[];
+  Object.values(DEMO).forEach(d=>{
+    const sp={id:'s'+newId(),...d.space,autoSet:true},l={id:'l'+newId(),...d.list,space:sp.id};spaces.push(sp);lists.push(l);
+    ['backlog','week','today'].forEach(st=>d.tasks[st].forEach(([title,est])=>tasks.push({id:newId(),title,stage:st,list:l.id,est,subs:[],notes:'',repeat:'none'})));
+  });
+  return {spaces,lists,tasks};
+}
 const KEY='blitzit-v1';
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
@@ -4764,8 +4795,9 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Archive</h3>
     <button class="link-row" data-page="archive">Archived<span class="hint">${(()=>{const n=arcTotal();return n?`${n} ${n===1?'item':'items'}`:'Empty'})()}</span></button></div>
     <div class="set-sec"><h3>Tasks</h3>
-    <button class="link-row" id="demo">Load demo tasks</button>
-    <button class="link-row warn" id="wipe">Delete all tasks</button></div>
+    ${hasData()?'':`<button class="link-row" id="demo">Load demo tasks<span class="hint">2 spaces · 18 tasks</span></button>`}
+    ${S.tasks.length?(dzOpen==='wipe'?dzBox('wipe'):`<button class="link-row warn" id="wipe">Delete all tasks</button>`):''}
+    ${dzOpen==='reset'?dzBox('reset'):`<button class="link-row warn" id="resetAll">Reset Windaday<span class="hint">Fresh start</span></button>`}</div>
     ${DESK()&&TRAY.ok?`<div class="set-sec"><h3>Windows app</h3>
     ${row('Keep in tray when closed',tg('trayKeep'),'Closing the window keeps Windaday ready in the tray, so it opens instantly. Quit from the tray icon.')}
     ${row('Start with Windows',`<button class="tg" id="autoStart" aria-pressed="${TRAY.auto}" aria-label="Toggle"></button>`,'Starts quietly in the tray when you sign in to your computer')}</div>`:''}
@@ -4777,7 +4809,7 @@ function settingsPage(id){
 }
 
 function openSettings(){setView='main';lastView='main';drawSettings();$('settings').classList.add('on');$('scrim').classList.add('on');$('settings').scrollTop=0;haptic(5)}
-function closeSettings(){try{listsBack()}catch(e){}
+function closeSettings(){try{listsBack()}catch(e){}try{dzOpen=null}catch(e){}
   const ae=document.activeElement;if(ae&&ae.closest&&ae.closest('.settings'))ae.blur();
   $('settings').classList.remove('on');
   if(!document.querySelector('.sheet.on'))$('scrim').classList.remove('on');
@@ -4996,14 +5028,11 @@ $('setIn').addEventListener('click',e=>{
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
   }
-  if(e.target.closest('#demo')){commit(()=>{const base=S.nid+100;
-    SEED.forEach(t=>S.tasks.push({...t,id:t.id+base,subs:(t.subs||[]).map(s=>({...s})),notes:t.notes||'',repeat:t.repeat||'none'}));
-    SEED_SPACES.forEach(x=>{if(!S.spaces.find(y=>y.id===x.id))S.spaces.push({...x})});SEED_LISTS.forEach(l=>{if(!S.lists.find(x=>x.id===l.id))S.lists.push({...l})});S.nid=base+50},'Demo tasks added');drawSettings();return}
-  const w=e.target.closest('#wipe');
-  if(w){
-    if(!w.dataset.arm){w.dataset.arm=1;w.textContent='Tap again to delete everything';haptic(10);setTimeout(()=>{if(w.isConnected){delete w.dataset.arm;w.textContent='Delete all tasks'}},3000);return}
-    commit(()=>S.tasks=[],'All tasks deleted');drawSettings();
-  }
+  if(e.target.closest('#demo')){haptic(6);return loadDemo()}
+  if(e.target.closest('#wipe')||e.target.closest('#resetAll')){dzOpen=e.target.closest('#wipe')?'wipe':'reset';haptic(8);drawSettings();setTimeout(()=>{const i=$('dzIn');if(i){i.focus();i.scrollIntoView({block:'center',behavior:'smooth'})}},60);return}
+  if(e.target.closest('#dzCancel')){dzOpen=null;haptic(5);return drawSettings()}
+  if(e.target.closest('#dzGo')){const i=$('dzIn');if(!i||i.value.trim().toUpperCase()!==i.dataset.word)return;
+    haptic(14);if(dzOpen==='wipe'){dzOpen=null;commit(()=>S.tasks=[],'All tasks deleted');drawSettings()}else resetAll();return}
 });
 $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.files[0])return;
   const r=new FileReader();r.onload=()=>{$('bkTxt').value=r.result;$('bkGo').click()};r.readAsText(e.target.files[0])});
@@ -5014,6 +5043,43 @@ $('setIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='acc
 $('setBtn').onclick=()=>openYou();
 $('dSet').onclick=openSettings;
 
+
+/* ---------- danger zone: typed confirmation ----------
+   Delete all tasks → type DELETE. Reset Windaday (tasks, spaces, lists, settings) → type RESET. */
+let dzOpen=null;
+const hasData=()=>S.tasks.length>0||(S.arch||[]).length>0;
+function dzBox(kind){
+  const signed=CLOUD&&window.__u,word=kind==='wipe'?'DELETE':'RESET';
+  const txt=kind==='wipe'
+    ?`This deletes all ${S.tasks.length} ${S.tasks.length===1?'task':'tasks'}${signed?' on every device you’re signed in on':''}. Your spaces, lists and settings stay.`
+    :`This deletes every task, space and list, and puts all settings back to how they were at the start${signed?', on every device you’re signed in on':''}. You stay signed in.`;
+  return `<div class="dz-box" id="dzBox"><b>${kind==='wipe'?'Delete all tasks?':'Reset Windaday?'}</b><p>${txt}</p>
+    <label class="dz-l" for="dzIn">Type <code>${word}</code> to confirm</label>
+    <input class="acc-in dz-in" id="dzIn" data-word="${word}" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${word}">
+    <div class="dz-btns"><button class="ghost-btn" id="dzCancel" type="button">Cancel</button><button class="dz-go" id="dzGo" type="button" disabled>${kind==='wipe'?'Delete all tasks':'Reset everything'}</button></div></div>`;
+}
+function dzReady(){const i=$('dzIn'),g=$('dzGo');if(i&&g)g.disabled=i.value.trim().toUpperCase()!==i.dataset.word}
+function loadDemo(){
+  if(hasData())return toast('Demo tasks can only be added to an empty Windaday');
+  // Windaday is empty (no tasks anywhere), so the demo replaces the empty spaces and lists: exactly 2 spaces, 1 list each. Undo brings them back.
+  const d=demoSet();
+  commit(()=>{S.spaces=d.spaces;S.lists=d.lists;S.tasks=d.tasks;S.space=null;S.list='all'},'Demo tasks added');
+  drawSettings();
+}
+function resetAll(){
+  const keep={lastBackup:S.lastBackup,syncedUser:S.syncedUser,syncV:S.syncV,tomb:S.tomb,nid:S.nid};
+  S.tasks=[];S.arch=[];
+  const sp={id:'s'+newId(),name:'Personal',c:'#9C95FF',e:'🌱',autoSet:true};
+  S.spaces=[sp];S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:sp.id}];
+  S.cfg=JSON.parse(JSON.stringify(DEF_CFG));S.focusLog={};S.resetAt=Date.now();
+  S.space=null;S.list='all';S.stage='today';S.sideCollapsed=false;S.onboarded=false;
+  Object.assign(S,keep);dzOpen=null;
+  applySettings();save();render();try{applySide()}catch(e){}
+  closeSettings();toast('Windaday is reset. Fresh start!');
+  setTimeout(()=>{try{openIntro(false)}catch(e){}},400);
+}
+$('setIn').addEventListener('input',e=>{if(e.target.id==='dzIn')dzReady()});
+$('setIn').addEventListener('keydown',e=>{if(e.target.id==='dzIn'&&e.key==='Enter'&&!$('dzGo').disabled)$('dzGo').click()});
 /* ---------- sidebar collapse ---------- */
 function applySide(){const c=!!S.sideCollapsed;$('desk').classList.toggle('collapsed',c);
   $('sToggle').setAttribute('aria-label',c?'Expand sidebar':'Collapse sidebar');$('sToggle').title=(c?'Expand':'Collapse')+' sidebar  [ '}
@@ -5040,7 +5106,7 @@ function cloudDirty(){
   S.dirty=true;S.editAt=Date.now();saveLocal();clearTimeout(syncTimer);syncTimer=setTimeout(push,1500);
 }
 /* ---- merge: combine two copies item by item, newest change wins, deletions respected ---- */
-const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{}});
+const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
 const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog]);
 function mergeDocs(L,Rm){
   const tomb={...(Rm.tomb||{})};Object.entries(L.tomb||{}).forEach(([k,v])=>{if(!tomb[k]||tomb[k]<v)tomb[k]=v});
@@ -5053,15 +5119,17 @@ function mergeDocs(L,Rm){
     base.concat(other).forEach(x=>{if(!seen.has(x.id)){seen.add(x.id);ids.push(x.id)}});
     return ids.map(id=>map.get(id)).filter(x=>{const t=tomb[k+':'+x.id];return !(t&&t>=(x.u||0))});
   };
-  const fl={...(Rm.focusLog||{})};Object.entries(L.focusLog||{}).forEach(([k,v])=>{fl[k]=Math.max(fl[k]||0,v)});
+  // after a full reset, focus history from before the reset must not come back
+  const lr=L.resetAt||0,rr=Rm.resetAt||0;
+  const fl=lr!==rr?{...((lr>rr?L:Rm).focusLog||{})}:{...(Rm.focusLog||{})};if(lr===rr)Object.entries(L.focusLog||{}).forEach(([k,v])=>{fl[k]=Math.max(fl[k]||0,v)});
   const lc=(L.cfgU||0)>=(Rm.cfgU||0);
   return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),
-    cfg:lc?L.cfg:(Rm.cfg||L.cfg),cfgU:Math.max(L.cfgU||0,Rm.cfgU||0),orderU:Math.max(L.orderU||0,Rm.orderU||0),tomb,nid:Math.max(L.nid||0,Rm.nid||0),focusLog:fl};
+    cfg:lc?L.cfg:(Rm.cfg||L.cfg),cfgU:Math.max(L.cfgU||0,Rm.cfgU||0),orderU:Math.max(L.orderU||0,Rm.orderU||0),tomb,nid:Math.max(L.nid||0,Rm.nid||0),focusLog:fl,resetAt:Math.max(lr,rr)};
 }
 function applyDoc(d){
   applying=true;
   S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
-  S.cfgU=d.cfgU||0;S.orderU=d.orderU||0;S.tomb=d.tomb||{};S.nid=Math.max(S.nid||0,d.nid||0);S.focusLog=d.focusLog||{};
+  S.cfgU=d.cfgU||0;S.orderU=d.orderU||0;S.tomb=d.tomb||{};S.nid=Math.max(S.nid||0,d.nid||0);S.focusLog=d.focusLog||{};if(d.resetAt)S.resetAt=d.resetAt;
   if(d.cfg)S.cfg=Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors)});
   migrateSpaces();
   S.tasks.forEach(t=>{t.subs=t.subs||[];t.notes=t.notes||'';t.repeat=t.repeat||'none'});
@@ -5096,7 +5164,7 @@ async function pullRemote(){
   const {data,error}=await sb.from('user_data').select('data').eq('user_id',user.id).maybeSingle();
   if(error)throw error;return data&&data.data;
 }
-const DEMO_TITLES=new Set(SEED.map(x=>x.title));Object.freeze(SEED);
+const DEMO_TITLES=new Set([...SEED.map(x=>x.title),...DEMO_LIST_TITLES]);Object.freeze(SEED);
 const isDemo=()=>S.tasks.every(t=>DEMO_TITLES.has(t.title));
 async function reconcile(first){
   if(!sb||!user)return;if(!navigator.onLine)return setSync('offline');

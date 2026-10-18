@@ -278,8 +278,9 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Archive</h3>
     <button class="link-row" data-page="archive">Archived<span class="hint">${(()=>{const n=arcTotal();return n?`${n} ${n===1?'item':'items'}`:'Empty'})()}</span></button></div>
     <div class="set-sec"><h3>Tasks</h3>
-    <button class="link-row" id="demo">Load demo tasks</button>
-    <button class="link-row warn" id="wipe">Delete all tasks</button></div>
+    ${hasData()?'':`<button class="link-row" id="demo">Load demo tasks<span class="hint">2 spaces · 18 tasks</span></button>`}
+    ${S.tasks.length?(dzOpen==='wipe'?dzBox('wipe'):`<button class="link-row warn" id="wipe">Delete all tasks</button>`):''}
+    ${dzOpen==='reset'?dzBox('reset'):`<button class="link-row warn" id="resetAll">Reset Windaday<span class="hint">Fresh start</span></button>`}</div>
     ${DESK()&&TRAY.ok?`<div class="set-sec"><h3>Windows app</h3>
     ${row('Keep in tray when closed',tg('trayKeep'),'Closing the window keeps Windaday ready in the tray, so it opens instantly. Quit from the tray icon.')}
     ${row('Start with Windows',`<button class="tg" id="autoStart" aria-pressed="${TRAY.auto}" aria-label="Toggle"></button>`,'Starts quietly in the tray when you sign in to your computer')}</div>`:''}
@@ -291,7 +292,7 @@ function settingsPage(id){
 }
 
 function openSettings(){setView='main';lastView='main';drawSettings();$('settings').classList.add('on');$('scrim').classList.add('on');$('settings').scrollTop=0;haptic(5)}
-function closeSettings(){try{listsBack()}catch(e){}
+function closeSettings(){try{listsBack()}catch(e){}try{dzOpen=null}catch(e){}
   const ae=document.activeElement;if(ae&&ae.closest&&ae.closest('.settings'))ae.blur();
   $('settings').classList.remove('on');
   if(!document.querySelector('.sheet.on'))$('scrim').classList.remove('on');

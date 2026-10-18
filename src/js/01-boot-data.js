@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=112; // bumped with every published update
+const APP_VERSION=113; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -42,6 +42,25 @@ const SEED=[
   {id:10,title:'Clean up sample folders',stage:'done',list:'dj',est:45,doneAt:NOW-2*DAY},
   {id:11,title:'Review open positions',stage:'done',list:'swing',est:20,doneAt:NOW-3*DAY}
 ];
+/* "Load demo tasks" (Settings → Data): two spaces, one list each, 9 tasks per list (3 Backlog, 3 My week, 3 Today) */
+const DEMO={
+  work:{space:{name:'Work',c:'#5AB8F5',e:'💼'},list:{name:'Projects',c:'#5AB8F5'},tasks:{
+    backlog:[['Plan the Q1 roadmap',60],['Clean up the shared drive',45],['Draft the onboarding guide',90]],
+    week:[['Prepare Monday’s team meeting',30],['Update the client presentation',60],['Review last month’s numbers',45]],
+    today:[['Reply to important emails',20],['Finish the project proposal',90],['Call with the design team',30]]}},
+  personal:{space:{name:'Personal',c:'#9C95FF',e:'🌱'},list:{name:'Life',c:'#9C95FF'},tasks:{
+    backlog:[['Plan a weekend trip',30],['Learn 20 new words',20],['Sort old photos',60]],
+    week:[['Book a dentist appointment',10],['Call grandma',20],['Meal prep for the week',60]],
+    today:[['30 minute workout',30],['Read 20 pages',20],['Groceries',30]]}}};
+const DEMO_LIST_TITLES=Object.values(DEMO).flatMap(d=>Object.values(d.tasks).flat().map(t=>t[0]));
+function demoSet(){
+  const spaces=[],lists=[],tasks=[];
+  Object.values(DEMO).forEach(d=>{
+    const sp={id:'s'+newId(),...d.space,autoSet:true},l={id:'l'+newId(),...d.list,space:sp.id};spaces.push(sp);lists.push(l);
+    ['backlog','week','today'].forEach(st=>d.tasks[st].forEach(([title,est])=>tasks.push({id:newId(),title,stage:st,list:l.id,est,subs:[],notes:'',repeat:'none'})));
+  });
+  return {spaces,lists,tasks};
+}
 const KEY='blitzit-v1';
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}

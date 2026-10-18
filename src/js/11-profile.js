@@ -209,14 +209,11 @@ $('setIn').addEventListener('click',e=>{
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
   }
-  if(e.target.closest('#demo')){commit(()=>{const base=S.nid+100;
-    SEED.forEach(t=>S.tasks.push({...t,id:t.id+base,subs:(t.subs||[]).map(s=>({...s})),notes:t.notes||'',repeat:t.repeat||'none'}));
-    SEED_SPACES.forEach(x=>{if(!S.spaces.find(y=>y.id===x.id))S.spaces.push({...x})});SEED_LISTS.forEach(l=>{if(!S.lists.find(x=>x.id===l.id))S.lists.push({...l})});S.nid=base+50},'Demo tasks added');drawSettings();return}
-  const w=e.target.closest('#wipe');
-  if(w){
-    if(!w.dataset.arm){w.dataset.arm=1;w.textContent='Tap again to delete everything';haptic(10);setTimeout(()=>{if(w.isConnected){delete w.dataset.arm;w.textContent='Delete all tasks'}},3000);return}
-    commit(()=>S.tasks=[],'All tasks deleted');drawSettings();
-  }
+  if(e.target.closest('#demo')){haptic(6);return loadDemo()}
+  if(e.target.closest('#wipe')||e.target.closest('#resetAll')){dzOpen=e.target.closest('#wipe')?'wipe':'reset';haptic(8);drawSettings();setTimeout(()=>{const i=$('dzIn');if(i){i.focus();i.scrollIntoView({block:'center',behavior:'smooth'})}},60);return}
+  if(e.target.closest('#dzCancel')){dzOpen=null;haptic(5);return drawSettings()}
+  if(e.target.closest('#dzGo')){const i=$('dzIn');if(!i||i.value.trim().toUpperCase()!==i.dataset.word)return;
+    haptic(14);if(dzOpen==='wipe'){dzOpen=null;commit(()=>S.tasks=[],'All tasks deleted');drawSettings()}else resetAll();return}
 });
 $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.files[0])return;
   const r=new FileReader();r.onload=()=>{$('bkTxt').value=r.result;$('bkGo').click()};r.readAsText(e.target.files[0])});
@@ -227,3 +224,40 @@ $('setIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='acc
 $('setBtn').onclick=()=>openYou();
 $('dSet').onclick=openSettings;
 
+
+/* ---------- danger zone: typed confirmation ----------
+   Delete all tasks → type DELETE. Reset Windaday (tasks, spaces, lists, settings) → type RESET. */
+let dzOpen=null;
+const hasData=()=>S.tasks.length>0||(S.arch||[]).length>0;
+function dzBox(kind){
+  const signed=CLOUD&&window.__u,word=kind==='wipe'?'DELETE':'RESET';
+  const txt=kind==='wipe'
+    ?`This deletes all ${S.tasks.length} ${S.tasks.length===1?'task':'tasks'}${signed?' on every device you’re signed in on':''}. Your spaces, lists and settings stay.`
+    :`This deletes every task, space and list, and puts all settings back to how they were at the start${signed?', on every device you’re signed in on':''}. You stay signed in.`;
+  return `<div class="dz-box" id="dzBox"><b>${kind==='wipe'?'Delete all tasks?':'Reset Windaday?'}</b><p>${txt}</p>
+    <label class="dz-l" for="dzIn">Type <code>${word}</code> to confirm</label>
+    <input class="acc-in dz-in" id="dzIn" data-word="${word}" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${word}">
+    <div class="dz-btns"><button class="ghost-btn" id="dzCancel" type="button">Cancel</button><button class="dz-go" id="dzGo" type="button" disabled>${kind==='wipe'?'Delete all tasks':'Reset everything'}</button></div></div>`;
+}
+function dzReady(){const i=$('dzIn'),g=$('dzGo');if(i&&g)g.disabled=i.value.trim().toUpperCase()!==i.dataset.word}
+function loadDemo(){
+  if(hasData())return toast('Demo tasks can only be added to an empty Windaday');
+  // Windaday is empty (no tasks anywhere), so the demo replaces the empty spaces and lists: exactly 2 spaces, 1 list each. Undo brings them back.
+  const d=demoSet();
+  commit(()=>{S.spaces=d.spaces;S.lists=d.lists;S.tasks=d.tasks;S.space=null;S.list='all'},'Demo tasks added');
+  drawSettings();
+}
+function resetAll(){
+  const keep={lastBackup:S.lastBackup,syncedUser:S.syncedUser,syncV:S.syncV,tomb:S.tomb,nid:S.nid};
+  S.tasks=[];S.arch=[];
+  const sp={id:'s'+newId(),name:'Personal',c:'#9C95FF',e:'🌱',autoSet:true};
+  S.spaces=[sp];S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:sp.id}];
+  S.cfg=JSON.parse(JSON.stringify(DEF_CFG));S.focusLog={};S.resetAt=Date.now();
+  S.space=null;S.list='all';S.stage='today';S.sideCollapsed=false;S.onboarded=false;
+  Object.assign(S,keep);dzOpen=null;
+  applySettings();save();render();try{applySide()}catch(e){}
+  closeSettings();toast('Windaday is reset. Fresh start!');
+  setTimeout(()=>{try{openIntro(false)}catch(e){}},400);
+}
+$('setIn').addEventListener('input',e=>{if(e.target.id==='dzIn')dzReady()});
+$('setIn').addEventListener('keydown',e=>{if(e.target.id==='dzIn'&&e.key==='Enter'&&!$('dzGo').disabled)$('dzGo').click()});
