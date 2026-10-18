@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Windaday</title>
+<style>
+  html,body{margin:0;height:100%;background:#0F1013;color:#F3F2EE;overflow:hidden;user-select:none;cursor:default;
+    font-family:"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;-webkit-app-region:drag}
+  svg{width:88px;height:88px;overflow:visible;color:#FF5B47}
+  svg path{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
+  .fill{fill:currentColor!important;fill-opacity:.3;stroke:none!important}
+  .hz{transform-origin:center;transform-box:fill-box;animation:hz .6s cubic-bezier(.6,0,.2,1) both}
+  .sun{transform-box:fill-box;animation:rise .9s .3s cubic-bezier(.2,.8,.2,1) both}
+  .ray{stroke-dasharray:1;animation:ray .4s cubic-bezier(.3,0,.2,1) both,glow 2.4s 1.6s ease-in-out infinite}
+  .r1{animation-delay:1s,1.6s}.r2{animation-delay:1.2s,1.8s}.r3{animation-delay:1.4s,2s}
+  .word{font-size:26px;font-weight:800;letter-spacing:-.045em;animation:up .7s 1.1s cubic-bezier(.2,.8,.2,1) both}
+  .word i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#FF5B47;margin-left:2px}
+  @keyframes hz{from{transform:scaleX(0)}}
+  @keyframes rise{from{transform:translateY(16px)}}
+  @keyframes ray{from{stroke-dashoffset:1;opacity:0}}
+  @keyframes glow{50%{opacity:.45}}
+  @keyframes up{from{opacity:0;transform:translateY(8px)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+  <svg viewBox="0 0 48 48" aria-hidden="true">
+    <defs><clipPath id="c"><rect x="0" y="-10" width="48" height="47.5"/></clipPath></defs>
+    <g clip-path="url(#c)"><g class="sun"><path class="fill" d="M12 36a12 12 0 0 1 24 0z"/><path d="M12 36a12 12 0 0 1 24 0"/></g></g>
+    <path class="hz" d="M5 36h38"/>
+    <path class="ray r1" pathLength="1" d="M12.4 15.4l4 4"/><path class="ray r2" pathLength="1" d="M24 11v7"/><path class="ray r3" pathLength="1" d="M35.6 15.4l-4 4"/>
+  </svg>
+  <div class="word">Windaday<i></i></div>
+</body>
+</html>

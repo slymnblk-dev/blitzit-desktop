@@ -1,2 +1,1 @@
-- Windaday now stays in your tray when you close the window, so it opens instantly. To quit, right-click the tray icon
-- New in Settings: Start with Windows (off by default) and Keep in tray when closed
+- A Windaday splash screen while the app starts, instead of an empty window

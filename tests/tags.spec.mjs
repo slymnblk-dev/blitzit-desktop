@@ -22,7 +22,7 @@ test('deleting a task asks Yes / No first', async ({ page }) => {
 test('tags: add in a task, shown on the row, managed in list settings, survive a reload', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   const errors = await openApp(page);
-  const id = await page.evaluate(() => { const t = S.tasks.find(x => !x.archived && x.stage !== 'done'); S.list = t.list; S.space = listOf(t.list).space; render(); openDetail(t.id); return t.id; });
+  const id = await page.evaluate(() => { const t = S.tasks.find(x => !x.archived && x.stage === 'today'); S.list = t.list; S.space = listOf(t.list).space; render(); openDetail(t.id); return t.id; });
   await page.locator('.pill[data-p="tags"]').click();
   await page.locator('#dTagIn').fill('#Design');
   await page.locator('#dTagIn').press('Enter');

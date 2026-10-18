@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=113; // bumped with every published update
+const APP_VERSION=114; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -54,18 +54,23 @@ const DEMO={
     today:[['30 minute workout',30],['Read 20 pages',20],['Groceries',30]]}}};
 const DEMO_LIST_TITLES=Object.values(DEMO).flatMap(d=>Object.values(d.tasks).flat().map(t=>t[0]));
 function demoSet(){
+  // its own ids (time-based, like newId) so it also works at first start, before anything else is set up
+  let n=Math.max((typeof S==='object'&&S&&S.nid)||0,Date.now()*1000+Math.floor(Math.random()*1000));const newId=()=>n++;
   const spaces=[],lists=[],tasks=[];
   Object.values(DEMO).forEach(d=>{
     const sp={id:'s'+newId(),...d.space,autoSet:true},l={id:'l'+newId(),...d.list,space:sp.id};spaces.push(sp);lists.push(l);
     ['backlog','week','today'].forEach(st=>d.tasks[st].forEach(([title,est])=>tasks.push({id:newId(),title,stage:st,list:l.id,est,subs:[],notes:'',repeat:'none'})));
   });
-  return {spaces,lists,tasks};
+  if(typeof S==='object'&&S)S.nid=Math.max(S.nid||0,n);
+  return {spaces,lists,tasks,nid:n};
 }
+/* a brand-new Windaday starts with the demo (Work + Personal), and the onboarding intro */
+function freshState(){const d=demoSet();return {tasks:d.tasks,lists:d.lists,spaces:d.spaces,stage:'today',list:'all',theme:null,nid:d.nid,lastDay:today(),onboarded:false}}
 const KEY='blitzit-v1';
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 const FRESH=!S||!S.tasks;
-if(FRESH)S={tasks:JSON.parse(JSON.stringify(SEED)),stage:'today',list:'all',theme:null,nid:20,lastDay:today(),onboarded:false};
+if(FRESH)S=freshState();
 else if(S.onboarded===undefined)S.onboarded=true;
 /* make sure the saved data has the right shape before anything reads it (old, partial or damaged saves) */
 function sanitize(){
@@ -85,7 +90,7 @@ function sanitize(){
   if(!obj(S.cfg))delete S.cfg;
   if(!obj(S.tomb))S.tomb={};
 }
-if(!S||typeof S!=='object'||Array.isArray(S))S={tasks:JSON.parse(JSON.stringify(SEED)),stage:'today',list:'all',theme:null,nid:20,lastDay:today(),onboarded:false};
+if(!S||typeof S!=='object'||Array.isArray(S))S=freshState();
 sanitize();
 window.__crHold=!!(S.classicRun&&S.classicRun.ids); // keep a saved Classic session until startup has resumed it
 /* migrate older saves */

@@ -48,6 +48,34 @@ fn autostart(app: AppHandle, on: Option<bool>) -> bool {
     a.is_enabled().unwrap_or(false)
 }
 
+/// Splash: a small branded window that shows straight away (it is built into the app, so it needs no internet)
+/// while the main window stays hidden and loads. When the page is ready, the splash closes and the app appears.
+const SPLASH_HTML: &str = include_str!("splash.html");
+
+fn open_splash(app: &AppHandle) {
+    let Ok(url) = tauri::Url::parse("http://splash.localhost/") else { return };
+    let _ = WebviewWindowBuilder::new(app, "splash", WebviewUrl::CustomProtocol(url))
+        .title("Windaday")
+        .inner_size(380.0, 300.0)
+        .resizable(false)
+        .maximizable(false)
+        .decorations(false)
+        .shadow(true)
+        .center()
+        .focused(true)
+        .background_color(tauri::window::Color(15, 16, 19, 255))
+        .build();
+}
+
+/// The page finished loading (or the safety timer ran out): show the app and close the splash.
+/// Only acts while the splash is still open, so reloads later never pop the window up from the tray.
+fn reveal(app: &AppHandle) {
+    if let Some(s) = app.get_webview_window("splash") {
+        show_main(app);
+        let _ = s.close();
+    }
+}
+
 fn quit_app(app: &AppHandle) {
     if let Some(q) = app.try_state::<Quitting>() {
         q.0.store(true, std::sync::atomic::Ordering::SeqCst);
@@ -290,6 +318,23 @@ pub fn run() {
                 })
                 .build(),
         )
+        .register_uri_scheme_protocol("splash", |_ctx, _req| {
+            tauri::http::Response::builder()
+                .header("Content-Type", "text/html; charset=utf-8")
+                .body(SPLASH_HTML.as_bytes().to_vec())
+                .unwrap()
+        })
+        .on_page_load(|webview, payload| {
+            if webview.label() == "main" && payload.event() == tauri::webview::PageLoadEvent::Finished {
+                // a short pause so the first paint has happened before the window appears
+                let app = webview.app_handle().clone();
+                std::thread::spawn(move || {
+                    std::thread::sleep(std::time::Duration::from_millis(250));
+                    let a = app.clone();
+                    let _ = app.run_on_main_thread(move || reveal(&a));
+                });
+            }
+        })
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec!["--hidden"])))
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -397,11 +442,21 @@ pub fn run() {
             }
             tray.build(app)?;
 
-            // started with Windows: stay quietly in the tray until the person opens it
+            // started with Windows: stay quietly in the tray until the person opens it.
+            // Otherwise show the splash while the (hidden) main window loads.
             if std::env::args().any(|a| a == "--hidden") {
                 if let Some(w) = app.get_webview_window("main") {
                     let _ = w.hide();
                 }
+            } else {
+                open_splash(app.handle());
+                // safety net: never leave someone looking at the splash (slow or no internet)
+                let h = app.handle().clone();
+                std::thread::spawn(move || {
+                    std::thread::sleep(std::time::Duration::from_secs(12));
+                    let a = h.clone();
+                    let _ = h.run_on_main_thread(move || reveal(&a));
+                });
             }
 
             // Ctrl+Alt+Shift+B starts a blitz from anywhere (ignored if another app already uses it).
