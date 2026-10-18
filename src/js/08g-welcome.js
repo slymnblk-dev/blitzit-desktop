@@ -40,6 +40,11 @@ document.addEventListener('keydown',e=>{if($('welcome')&&!$('welcome').classList
 /* once a day, on the first open */
 function maybeWelcome(){
   if(!welcomeOn()||(navigator.webdriver&&!window.__wlTest))return; // automated checks skip it
+  // Windows app 0.6.6+: its splash is the welcome (every start), so don't play the sunrise twice
+  if(DESK()){try{window.__TAURI__.core.invoke('set_splash',{on:true}).then(()=>{},()=>welcomeDaily())}catch(e){welcomeDaily()}return}
+  welcomeDaily();
+}
+function welcomeDaily(){
   let last='';try{last=localStorage.getItem('welcomeDay')||''}catch(e){}
   if(last===today())return;
   try{localStorage.setItem('welcomeDay',today())}catch(e){}

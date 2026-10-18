@@ -52,19 +52,61 @@ fn autostart(app: AppHandle, on: Option<bool>) -> bool {
 /// while the main window stays hidden and loads. When the page is ready, the splash closes and the app appears.
 const SPLASH_HTML: &str = include_str!("splash.html");
 
-fn open_splash(app: &AppHandle) {
-    let Ok(url) = tauri::Url::parse("http://splash.localhost/") else { return };
-    let _ = WebviewWindowBuilder::new(app, "splash", WebviewUrl::CustomProtocol(url))
+/// Start-up state: when it began, whether the splash is showing, whether the page has loaded,
+/// whether the app window has been revealed, and whether Windows started us quietly in the tray.
+struct Boot {
+    start: std::time::Instant,
+    splash: std::sync::atomic::AtomicBool,
+    loaded: std::sync::atomic::AtomicBool,
+    revealed: std::sync::atomic::AtomicBool,
+    hidden: bool,
+}
+
+/// The splash always plays its whole sunrise before the app appears (about 2.4 s).
+const SPLASH_MIN_MS: u64 = 2400;
+
+/// Settings → Appearance → Welcome animation also switches the splash; the page passes it on
+/// with `set_splash` and the app remembers it in a small file (no file = on).
+fn splash_file(app: &AppHandle) -> Option<std::path::PathBuf> {
+    app.path().app_config_dir().ok().map(|d| d.join("splash-off"))
+}
+
+#[tauri::command]
+fn set_splash(app: AppHandle, on: bool) -> bool {
+    if let Some(f) = splash_file(&app) {
+        if on {
+            let _ = std::fs::remove_file(f);
+        } else {
+            if let Some(dir) = f.parent() {
+                let _ = std::fs::create_dir_all(dir);
+            }
+            let _ = std::fs::write(f, b"1");
+        }
+    }
+    true
+}
+
+fn splash_wanted(app: &AppHandle) -> bool {
+    !splash_file(app).map(|f| f.exists()).unwrap_or(false)
+}
+
+fn open_splash(app: &AppHandle) -> bool {
+    let Ok(url) = tauri::Url::parse("http://splash.localhost/") else { return false };
+    // a see-through window holding a rounded card, so the card can fade away over whatever is behind it
+    WebviewWindowBuilder::new(app, "splash", WebviewUrl::CustomProtocol(url))
         .title("Windaday")
-        .inner_size(380.0, 300.0)
+        .inner_size(420.0, 340.0)
         .resizable(false)
         .maximizable(false)
         .decorations(false)
-        .shadow(true)
+        .transparent(true)
+        .shadow(false)
+        .always_on_top(true)
         .center()
         .focused(true)
-        .background_color(tauri::window::Color(15, 16, 19, 255))
-        .build();
+        .background_color(tauri::window::Color(0, 0, 0, 0))
+        .build()
+        .is_ok()
 }
 
 /// Splash sound: a warm swell and three soft bells (one per ray). Follows Settings → Sounds,
@@ -103,13 +145,54 @@ fn play_splash_sound(app: &AppHandle) {
 #[cfg(not(windows))]
 fn play_splash_sound(_app: &AppHandle) {}
 
-/// The page finished loading (or the safety timer ran out): show the app and close the splash.
-/// Only acts while the splash is still open, so reloads later never pop the window up from the tray.
-fn reveal(app: &AppHandle) {
-    if let Some(s) = app.get_webview_window("splash") {
-        show_main(app);
-        let _ = s.close();
+fn later(app: &AppHandle, ms: u64, f: impl FnOnce(&AppHandle) + Send + 'static) {
+    let h = app.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(std::time::Duration::from_millis(ms));
+        let a = h.clone();
+        let _ = h.run_on_main_thread(move || f(&a));
+    });
+}
+
+/// The page has loaded: reveal the app once the splash has finished its sunrise.
+/// Only the first load counts, so later reloads never pop the window up from the tray.
+fn page_loaded(app: &AppHandle) {
+    let Some(b) = app.try_state::<Boot>() else { return };
+    if b.loaded.swap(true, std::sync::atomic::Ordering::SeqCst) || b.hidden {
+        return;
     }
+    let wait = if b.splash.load(std::sync::atomic::Ordering::SeqCst) {
+        SPLASH_MIN_MS.saturating_sub(b.start.elapsed().as_millis() as u64)
+    } else {
+        150 // no splash: just let the first paint happen
+    };
+    later(app, wait, reveal);
+}
+
+/// Calm hand-over: the splash card fades away while the app window appears with its content fading in.
+fn reveal(app: &AppHandle) {
+    let Some(b) = app.try_state::<Boot>() else { return };
+    if b.hidden || b.revealed.swap(true, std::sync::atomic::Ordering::SeqCst) {
+        return;
+    }
+    if let Some(m) = app.get_webview_window("main") {
+        let _ = m.eval("document.documentElement.classList.add('win-pre')");
+    }
+    let splash = app.get_webview_window("splash");
+    if let Some(s) = &splash {
+        let _ = s.eval("document.body.classList.add('out')");
+    }
+    later(app, if splash.is_some() { 160 } else { 0 }, |app| {
+        show_main(app);
+        if let Some(m) = app.get_webview_window("main") {
+            let _ = m.eval("requestAnimationFrame(()=>{const r=document.documentElement;r.classList.add('win-in');r.classList.remove('win-pre');setTimeout(()=>r.classList.remove('win-in'),900)})");
+        }
+        later(app, 520, |app| {
+            if let Some(s) = app.get_webview_window("splash") {
+                let _ = s.close();
+            }
+        });
+    });
 }
 
 fn quit_app(app: &AppHandle) {
@@ -362,13 +445,7 @@ pub fn run() {
         })
         .on_page_load(|webview, payload| {
             if webview.label() == "main" && payload.event() == tauri::webview::PageLoadEvent::Finished {
-                // a short pause so the first paint has happened before the window appears
-                let app = webview.app_handle().clone();
-                std::thread::spawn(move || {
-                    std::thread::sleep(std::time::Duration::from_millis(250));
-                    let a = app.clone();
-                    let _ = app.run_on_main_thread(move || reveal(&a));
-                });
+                page_loaded(webview.app_handle());
             }
         })
         .plugin(tauri_plugin_deep_link::init())
@@ -432,6 +509,7 @@ pub fn run() {
             set_tray,
             autostart,
             set_sounds,
+            set_splash,
             take_link
         ])
         .setup(|app| {
@@ -481,20 +559,25 @@ pub fn run() {
 
             // started with Windows: stay quietly in the tray until the person opens it.
             // Otherwise show the splash while the (hidden) main window loads.
-            if std::env::args().any(|a| a == "--hidden") {
+            let hidden = std::env::args().any(|a| a == "--hidden");
+            let splash = !hidden && splash_wanted(app.handle()) && open_splash(app.handle());
+            app.manage(Boot {
+                start: std::time::Instant::now(),
+                splash: std::sync::atomic::AtomicBool::new(splash),
+                loaded: std::sync::atomic::AtomicBool::new(false),
+                revealed: std::sync::atomic::AtomicBool::new(false),
+                hidden,
+            });
+            if hidden {
                 if let Some(w) = app.get_webview_window("main") {
                     let _ = w.hide();
                 }
             } else {
-                open_splash(app.handle());
-                play_splash_sound(app.handle());
-                // safety net: never leave someone looking at the splash (slow or no internet)
-                let h = app.handle().clone();
-                std::thread::spawn(move || {
-                    std::thread::sleep(std::time::Duration::from_secs(12));
-                    let a = h.clone();
-                    let _ = h.run_on_main_thread(move || reveal(&a));
-                });
+                if splash {
+                    play_splash_sound(app.handle());
+                }
+                // safety net: never leave someone waiting (slow or no internet)
+                later(app.handle(), 12000, reveal);
             }
 
             // Ctrl+Alt+Shift+B starts a blitz from anywhere (ignored if another app already uses it).

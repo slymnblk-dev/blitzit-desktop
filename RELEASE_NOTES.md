@@ -1,1 +1,2 @@
-- A soft Windaday sound when the app starts (follows your Sounds setting)
+- A soft Windaday sound and a calmer start: the splash plays its whole sunrise, then gently fades into the app
+- The splash follows Settings → Appearance → Welcome animation

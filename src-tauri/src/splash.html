@@ -4,9 +4,16 @@
 <meta charset="utf-8">
 <title>Windaday</title>
 <style>
-  html,body{margin:0;height:100%;background:#0F1013;color:#F3F2EE;overflow:hidden;user-select:none;cursor:default;
+  /* the window is see-through; the card sits in the middle with room for its soft shadow */
+  html,body{margin:0;height:100%;background:transparent;color:#F3F2EE;overflow:hidden;user-select:none;cursor:default;
     font-family:"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif}
-  body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;-webkit-app-region:drag}
+  body{display:flex;align-items:center;justify-content:center;-webkit-app-region:drag}
+  .card{width:380px;height:300px;border-radius:22px;background:#0F1013;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 14px 34px -14px rgba(0,0,0,.65);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;animation:cin .35s ease both}
+  /* hand-over to the app: the card softly fades and settles away */
+  body.out .card{animation:cout .5s cubic-bezier(.4,0,.2,1) both}
+  @keyframes cin{from{opacity:0;transform:scale(.97)}}
+  @keyframes cout{to{opacity:0;transform:scale(.985);filter:blur(2px)}}
   svg{width:88px;height:88px;overflow:visible;color:#FF5B47}
   svg path{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
   .fill{fill:currentColor!important;fill-opacity:.3;stroke:none!important}
@@ -24,7 +31,7 @@
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
-<body>
+<body><div class="card">
   <svg viewBox="0 0 48 48" aria-hidden="true">
     <defs><clipPath id="c"><rect x="0" y="-10" width="48" height="47.5"/></clipPath></defs>
     <g clip-path="url(#c)"><g class="sun"><path class="fill" d="M12 36a12 12 0 0 1 24 0z"/><path d="M12 36a12 12 0 0 1 24 0"/></g></g>
@@ -32,5 +39,5 @@
     <path class="ray r1" pathLength="1" d="M12.4 15.4l4 4"/><path class="ray r2" pathLength="1" d="M24 11v7"/><path class="ray r3" pathLength="1" d="M35.6 15.4l-4 4"/>
   </svg>
   <div class="word">Windaday<i></i></div>
-</body>
+</div></body>
 </html>

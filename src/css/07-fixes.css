@@ -548,3 +548,9 @@ body.no-amb .amb-btn{display:none!important}
 .dz-go{height:42px;padding:0 18px;border-radius:999px;background:var(--today);color:#fff;font-weight:800;font-size:14px;transition:opacity .15s,transform .15s}
 .dz-go:disabled{opacity:.35;cursor:not-allowed}
 .dz-go:not(:disabled):active{transform:scale(.97)}
+
+/* Windows app: after the splash, the app's content fades in calmly (classes are set by the desktop app) */
+.win-pre body>*{opacity:0!important}
+.win-in body>*{animation:winIn .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes winIn{from{opacity:0;transform:translateY(4px)}}
+@media (prefers-reduced-motion:reduce){.win-in body>*{animation:none}}

@@ -110,7 +110,7 @@ function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   root.dataset.pri=(S.cfg&&S.cfg.priStyle)||'bars';
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
-  if(DESK()){trayInit();traySync();try{window.__TAURI__.core.invoke('set_sounds',{on:S.cfg.uiSounds!==false}).catch(()=>{})}catch(e){}}
+  if(DESK()){trayInit();traySync();try{window.__TAURI__.core.invoke('set_sounds',{on:S.cfg.uiSounds!==false}).catch(()=>{});window.__TAURI__.core.invoke('set_splash',{on:S.cfg.welcome!==false}).catch(()=>{})}catch(e){}}
   if(DESK()&&!window.__updT){window.__updT=1;setTimeout(()=>checkUpdate(false),4000);setInterval(()=>checkUpdate(false),6*3600e3)}
   const c=C();
   if(c.theme==='system')delete root.dataset.theme;else root.dataset.theme=c.theme;
@@ -192,7 +192,7 @@ function settingsPage(id){
       <span class="lay-th ${v?'full':''}"><i class="lt-side"></i><span class="lt-main"><i class="lt-top"></i><span class="lt-cols"><i></i><i></i><i></i><i></i></span></span></span>
       <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>
     ${row('Animations',tg('motion'))}
-    ${row('Welcome animation',`<div class="wl-set">${tg('welcome')}<button class="ghost-btn wl-replay" id="wlPlay" type="button">Play</button></div>`,'The sunrise logo, once a day when you open Windaday')}
+    ${row('Welcome animation',`<div class="wl-set">${tg('welcome')}<button class="ghost-btn wl-replay" id="wlPlay" type="button">Play</button></div>`,DESK()?'The sunrise splash each time you open Windaday':'The sunrise logo, once a day when you open Windaday')}
     ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
     ${HAS_KEYS()?row('Quiet when idle',tg('idleHide'),'After 5 seconds without moving, the day’s summary and Add task fade away. Move the mouse to bring them back.'):''}
     ${row('Sounds',tg('uiSounds'),'Soft sounds when you add, move or finish tasks')}
