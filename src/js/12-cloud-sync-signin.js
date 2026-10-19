@@ -177,11 +177,11 @@ function accountPage(){
     <p class="acc-msg">${esc(authMsg)}</p></div>`;
   if(user)return head+`${accInYou?'':'<p class="sub-p">Your tasks sync across every device you sign in on.</p>'}
     <div class="set-sec">${row('Signed in as',`<span class="acc-val">${esc(user.email||'')}</span>`)}
-    ${row('Sync',`<span class="acc-val" id="syncStatus">${SYNC_LABEL[syncState]}</span>`)}</div>
+    ${row('Sync',`<span class="sync-r"><span class="acc-val" id="syncStatus">${SYNC_LABEL[syncState]}</span><button class="sync-now" id="accSync" type="button" aria-label="Sync now" title="Sync now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 21v-5h-5"/></svg></button></span>`)}</div>
     <div class="set-sec"><h3>Password</h3>${pwOpen?`<div class="pw-box">${pwField('accNewPw','new-password','New password')}${pwHint()}
       <div class="dz-btns"><button class="ghost-btn" id="accPwCancel" type="button">Cancel</button><button class="pw-save" id="accSavePw" type="button" ${authBusy?'disabled':''}>${authBusy?'Saving…':'Save password'}</button></div>
-      <p class="acc-msg">${esc(authMsg)}</p></div>`:`<button class="link-row" id="accPwOpen">Set or change password<span class="hint">Sign in with email + password</span></button>`}</div>
-    <div class="set-sec"><button class="link-row" id="accSync">Sync now</button><button class="link-row warn" id="accOut">Sign out</button></div>
+      <p class="acc-msg">${esc(authMsg)}</p></div>`:`<button class="link-row" id="accPwOpen">Set or change password</button>`}</div>
+    <div class="set-sec"><button class="link-row warn" id="accOut">Sign out</button></div>
     <div class="ver">Signing out keeps your tasks on this device.</div>`;
   if(authStep==='resetSent')return head+mailWait('Check your email',`We sent a link to set a new password to <b>${esc(authEmail)}</b>. ${DESK()?'Click it, then come back here.':'Tap it to choose your new password.'}`,'Can’t find it? Check your spam folder.');
   if(authStep==='confirm')return head+mailWait('Confirm your email',`We sent a confirmation link to <b>${esc(authEmail)}</b>. ${DESK()?'Click it and Windaday signs you in.':'Tap it and you’re in.'}`,'Didn’t get it? Check your spam folder, or resend.',true);
@@ -213,7 +213,7 @@ function accountPage(){
       <p class="mail-small">Can’t find it? Check your spam folder.</p></div>`;
   }
   // sign in: email + password first, the email link as the other way
-  return head+`<div class="auth-h"><h2>Sign in</h2><p>Sync your tasks across your phone and computer.</p></div>
+  return head+`<div class="auth-h"><h2>Sign in</h2>${PV?'':'<p class="auth-warn"><i></i>Your tasks are only on this device.</p>'}<p>Sign in to back them up and sync your phone and computer.</p></div>
     <div class="acc-form">${emailField()}${pwField('accPw','current-password','Password')}
     <div class="auth-row"><button class="auth-link" id="accToForgot" type="button">Forgot password?</button></div>
     <button class="primary" id="accSignin" ${authBusy?'disabled':''}>${authBusy?'Signing in…':'Sign in'}</button>
@@ -226,8 +226,8 @@ function accountPage(){
 let pwOpen=false,pwShow=false;
 const EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.6A10 10 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.7M6.6 6.6C3.9 8.3 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.4-1.1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
-const emailField=()=>`<input class="acc-in" id="accEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" value="${esc(authEmail)}">`;
-const pwField=(id,ac,ph)=>`<div class="pw-wrap"><input class="acc-in pw-in" id="${id}" type="${pwShow?'text':'password'}" autocomplete="${ac}" placeholder="${ph}" spellcheck="false"><button class="pw-eye" id="pwEye" type="button" aria-label="${pwShow?'Hide password':'Show password'}" aria-pressed="${pwShow}">${pwShow?EYE_OFF:EYE}</button></div>`;
+const emailField=()=>`<input class="acc-in" id="accEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" enterkeyhint="next" placeholder="you@email.com" value="${esc(authEmail)}">`;
+const pwField=(id,ac,ph)=>`<div class="pw-wrap"><input class="acc-in pw-in" id="${id}" type="${pwShow?'text':'password'}" autocomplete="${ac}" autocapitalize="off" enterkeyhint="go" placeholder="${ph}" spellcheck="false"><button class="pw-eye" id="pwEye" type="button" aria-label="${pwShow?'Hide password':'Show password'}" aria-pressed="${pwShow}">${pwShow?EYE_OFF:EYE}</button></div>`;
 const pwHint=()=>`<p class="pw-hint" id="pwHint"><i></i>At least 8 characters</p>`;
 const PW_MIN=8;
 const validEmail=em=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em);

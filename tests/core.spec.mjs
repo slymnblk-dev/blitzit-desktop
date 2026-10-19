@@ -96,9 +96,8 @@ test('account tab: a clear card says whether tasks are backed up', async ({ page
   expect(await page.evaluate(() => youTab)).toBe('account');
   await expect(page.locator('#accSec')).toBeAttached();
   if (await page.evaluate(() => typeof CLOUD !== 'undefined' && !!CLOUD)) {
-    const card = page.locator('#setIn .safe-card');
-    await expect(card).toHaveClass(/warn/);
-    await expect(card).toContainText('only on this device');
+    await expect(page.locator('#setIn .auth-warn')).toContainText('only on this device');   // one quiet line, no big card
+    await expect(page.locator('#setIn .safe-card')).toHaveCount(0);
     await expect(page.locator('[data-yt="account"] .yt-dot')).toBeVisible();
   }
   noErrors(errors);

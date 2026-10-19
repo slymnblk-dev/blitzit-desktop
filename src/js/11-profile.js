@@ -49,7 +49,7 @@ function youSafety(){
 let avOpen=false;
 /* Account tab: is my data safe, then sign in / sync / sign out */
 function youAccount(){if(!CLOUD&&typeof accountPage!=='function')return '';accInYou=true;let h='';try{h=accountPage()}finally{accInYou=false}
-  return `${youSafety()}<div class="acc-tab" id="accSec">${h}</div>`}
+  return `<div class="acc-tab" id="accSec">${h}</div>`}
 function youProfile(){
   const c=C(),g=goalMin();
   return `<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
