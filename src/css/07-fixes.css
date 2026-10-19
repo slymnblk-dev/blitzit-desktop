@@ -607,3 +607,20 @@ body.no-amb .amb-btn{display:none!important}
 .sync-now:hover{color:var(--text)}
 .sync-now:active{transform:rotate(180deg)}
 .sync-now svg{width:16px;height:16px}
+/* profile tabs: breathing room on the right on small phones */
+.you-tabs{padding:4px;gap:2px}
+.you-tabs button{flex:1 1 auto;padding:0 10px;font-size:clamp(13px,3.7vw,15px)}
+/* tap your photo to change it */
+.you-av{position:relative;flex:none;border-radius:50%;padding:0;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.you-av:active{transform:scale(.96)}
+.you-av:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+.you-av-ed{position:absolute;right:2px;bottom:2px;width:28px;height:28px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;box-shadow:0 0 0 3px var(--bg);transition:transform .2s}
+.you-av:hover .you-av-ed{transform:scale(1.08)}
+.you-av-ed svg{width:13px;height:13px}
+/* avatar picker: soft round tiles, selected one gets a ring */
+.av-grid{grid-template-columns:repeat(6,1fr);gap:10px}
+.av-grid button,.av-up{height:auto;aspect-ratio:1;border-radius:50%;font-size:26px;background:var(--surface2)}
+.av-grid button:hover{background:color-mix(in srgb,var(--text) 10%,var(--surface2));transform:translateY(-2px)}
+.av-grid button:active{transform:scale(.92)}
+.av-grid button.on,.av-up.on{background:var(--surface2);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--text);transform:scale(1.04)}
+.av-up{border:1.5px dashed color-mix(in srgb,var(--text) 22%,transparent);background:transparent}

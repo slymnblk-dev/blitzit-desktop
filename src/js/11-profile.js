@@ -1,5 +1,6 @@
 /* ---------- you: profile, stats and account ---------- */
-const AVATARS=['🙂','😎','🦊','🐼','🐯','🦁','🐙','🦄','🐸','🐨','🌞','⚡','🔥','🌿','🎧','🚀','🎯','💎'];
+/* a calm, curated set: sky, nature, animals and a few focus objects */
+const AVATARS=['🌅','☀️','🌙','🌊','🌿','🌸','🦊','🐼','🐯','🦁','🐨','🦉','🐙','🦋','🔥','⚡','💎','🎯','🚀','🎧','☕','🎨'];
 const PERSON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg>';
 let youTab='profile',accInYou=false;
 function meName(){return String((S.cfg&&S.cfg.name)||'').trim()}
@@ -37,7 +38,7 @@ function youHead(){
   const tabs=[['profile','Profile'],['account','Account'],['stats','Stats'],['download','Download']];
   const warn=CLOUD&&!window.__u; // not backed up yet: a small dot on the Account tab
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close">${BACK_SVG}</button><button class="you-set" id="youSet">Settings${CHEV}</button></div>
-  <div class="you-head">${avatarHTML('xl')}<div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
+  <div class="you-head"><button class="you-av" id="youAv" type="button" aria-label="Change avatar">${avatarHTML('xl')}<span class="you-av-ed" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span></button><div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
   <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}${k==='account'&&warn?'<i class="yt-dot" aria-label="Not backed up"></i>':''}</button>`).join('')}</div>`;
 }
 /* is my data safe? a clear card at the top of Profile */
@@ -143,6 +144,8 @@ $('setIn').addEventListener('click',e=>{
   const as=e.target.closest('#autoStart');if(as){const on=as.getAttribute('aria-pressed')!=='true';as.setAttribute('aria-pressed',on);haptic(6);sfx('toggle');setTimeout(()=>setAutostart(on),180);return}
   if(e.target.closest('#wlPlay')){closeSettings();setTimeout(()=>{sfxReady();playWelcome()},250);return}
   if(e.target.closest('#avToggle')){avOpen=!avOpen;haptic(5);return drawSettings()}
+  if(e.target.closest('#youAv')){youTab='profile';avOpen=true;haptic(6);drawSettings();
+    setTimeout(()=>{const g=document.querySelector('#setIn .av-drop');if(g)g.scrollIntoView({behavior:'smooth',block:'center'})},80);return}
   const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
