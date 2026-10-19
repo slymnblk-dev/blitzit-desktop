@@ -3,7 +3,11 @@ import { expect } from '@playwright/test';
 
 /** A stand-in for Supabase so the app runs without a network. */
 export const FAKE_SUPABASE = `window.__sb={sets:[],otps:[]};window.supabase={createClient:()=>({
-  auth:{onAuthStateChange(){},setSession:async x=>{__sb.sets.push(x);return{error:null}},signInWithOtp:async o=>{__sb.otps.push(o);return{error:null}},verifyOtp:async()=>({error:null}),signOut:async()=>({})},
+  auth:{onAuthStateChange(){},setSession:async x=>{__sb.sets.push(x);return{error:null}},signInWithOtp:async o=>{__sb.otps.push(o);return{error:null}},
+  signInWithPassword:async o=>{__sb.pw=(__sb.pw||[]).concat([['in',o]]);return o.password==='right-password'?{data:{},error:null}:{error:{message:'Invalid login credentials'}}},
+  signUp:async o=>{__sb.pw=(__sb.pw||[]).concat([['up',o]]);return{data:{user:{identities:[{}]},session:null},error:null}},
+  resetPasswordForEmail:async(em,o)=>{__sb.pw=(__sb.pw||[]).concat([['reset',em,o]]);return{error:null}},
+  updateUser:async o=>{__sb.pw=(__sb.pw||[]).concat([['update',o]]);return{error:null}},resend:async()=>({error:null}),verifyOtp:async()=>({error:null}),signOut:async()=>({})},
   from(){return{select(){return this},eq(){return this},upsert:async()=>({error:null}),maybeSingle:async()=>({data:null,error:null})}},
   channel(){return{on(){return this},subscribe(){return this}}},removeChannel(){}})};`;
 

@@ -554,3 +554,34 @@ body.no-amb .amb-btn{display:none!important}
 .win-in body>*{animation:winIn .55s cubic-bezier(.2,.8,.2,1) both}
 @keyframes winIn{from{opacity:0;transform:translateY(4px)}}
 @media (prefers-reduced-motion:reduce){.win-in body>*{animation:none}}
+/* ---------- sign in with password ---------- */
+.auth-h{margin-top:22px}
+.auth-h h2{margin:0;font-size:28px;font-weight:800;letter-spacing:-.035em}
+.auth-h p{margin:6px 0 0;font-size:15px;line-height:1.45;color:var(--muted)}
+.auth-h p b{color:var(--text)}
+.acc-form>.acc-in+.pw-wrap,.acc-form>.acc-in+.acc-in{margin-top:10px}
+.acc-form .auth-h+.acc-form{margin-top:18px}
+.pw-wrap{position:relative}
+.pw-in{padding-right:56px}
+.pw-eye{position:absolute;top:0;right:4px;width:50px;height:58px;display:grid;place-items:center;color:var(--muted);border-radius:16px}
+.pw-eye:hover{color:var(--text)}
+.pw-eye svg{width:20px;height:20px}
+.pw-eye:focus-visible{outline:2px solid var(--text);outline-offset:-6px}
+.pw-hint{display:flex;align-items:center;gap:8px;margin:10px 4px 0;font-size:13px;color:var(--muted);transition:color .2s}
+.pw-hint i{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1.5px currentColor;flex:none;transition:background .2s,box-shadow .2s;position:relative}
+.pw-hint.ok{color:var(--done)}
+.pw-hint.ok i{background:var(--done);box-shadow:none}
+.pw-hint.ok i::after{content:"";position:absolute;left:5px;top:2.5px;width:4px;height:8px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.auth-row{display:flex;justify-content:flex-end;margin-top:8px}
+.auth-link{background:none;border:0;padding:4px 2px;font:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+.auth-link:hover{color:var(--text)}
+.auth-row+.primary{margin-top:6px}
+.auth-or{display:flex;align-items:center;gap:12px;margin:14px 0 4px;font-size:13px;color:var(--muted)}
+.auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.acc-form .auth-alt{margin-top:8px;height:52px;font-weight:700;font-size:15px}
+.auth-foot{margin:18px 0 0;text-align:center;font-size:14px;color:var(--muted)}
+.auth-foot .auth-link{color:var(--text);font-weight:700}
+.pw-box{display:flex;flex-direction:column;gap:0;padding-top:12px}
+.pw-box .dz-btns{margin-top:14px}
+.pw-save{height:42px;padding:0 18px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:800;font-size:14px}
+.pw-save:disabled{opacity:.5}

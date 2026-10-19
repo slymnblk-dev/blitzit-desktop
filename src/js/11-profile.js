@@ -44,7 +44,7 @@ function youHead(){
 function youSafety(){
   if(!CLOUD)return '';const u=window.__u;
   if(u)return `<div class="safe-card ok"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M8.8 12.2l2.2 2.2 4.4-4.6"/></svg></span><span class="safe-t"><b>Your tasks are backed up</b><small>Signed in${u.email?' as '+esc(u.email):''}. They sync to all your devices.</small></span></div>`;
-  return `<div class="safe-card warn"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M12 8.5v4.5"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></span><span class="safe-t"><b>Your tasks are only on this device</b><small>Clear your browser or lose this device and they’re gone. Sign in to back them up and use them everywhere.</small></span><button class="safe-go" data-yt="account">Sign in</button></div>`;
+  return `<div class="safe-card warn"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M12 8.5v4.5"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></span><span class="safe-t"><b>Your tasks are only on this device</b><small>Clear your browser or lose this device and they’re gone. Sign in to back them up and use them everywhere.</small></span></div>`;
 }
 let avOpen=false;
 /* Account tab: is my data safe, then sign in / sync / sign out */
@@ -158,7 +158,28 @@ $('setIn').addEventListener('click',e=>{
     if(e.target.closest('#accSync'))return toast('Preview: sync runs in the installed app');
     if(e.target.closest('#accOut')){pvState='out';toast('Preview: signed out');return drawSettings()}
     if(e.target.closest('.mail-open')){e.preventDefault();return toast('Preview: opens your inbox')}
+    // preview: walk through the password screens without a real account
+    if(e.target.closest('#accSignin')){pvState='in';authStep='email';toast('Preview: signed in');return drawSettings()}
+    if(e.target.closest('#accSignup')){authEmail=($('accEmail').value||'').trim()||'you@email.com';authStep='confirm';return drawSettings()}
+    if(e.target.closest('#accReset')){authEmail=($('accEmail').value||'').trim()||'you@email.com';authStep='resetSent';return drawSettings()}
+    if(e.target.closest('#accSavePw')){pwOpen=false;authStep='email';toast('Preview: password saved');return drawSettings()}
+    if(e.target.closest('#accResendConfirm'))return toast('Preview: email would be resent');
   }
+  // password screens (shared by the real app and the preview)
+  const eye=e.target.closest('#pwEye');
+  if(eye){pwShow=!pwShow;const i=eye.parentNode.querySelector('input');if(i){i.type=pwShow?'text':'password';i.focus()}
+    eye.innerHTML=pwShow?EYE_OFF:EYE;eye.setAttribute('aria-pressed',pwShow);eye.setAttribute('aria-label',pwShow?'Hide password':'Show password');return}
+  const go=s=>{const em=$('accEmail');if(em)authEmail=em.value.trim();authStep=s;authMsg='';pwShow=false;haptic(5);drawSettings();setTimeout(()=>{const f=$('accEmail');if(f&&!f.value)f.focus()},60)};
+  if(e.target.closest('#accToForgot'))return go('forgot');
+  if(e.target.closest('#accToSignup'))return go('signup');
+  if(e.target.closest('#accToSignin'))return go('email');
+  if(e.target.closest('#accPwOpen')){pwOpen=true;authMsg='';haptic(5);drawSettings();setTimeout(()=>{const f=$('accNewPw');if(f)f.focus()},60);return}
+  if(e.target.closest('#accPwCancel')){pwOpen=false;authMsg='';return drawSettings()}
+  if(e.target.closest('#accSignin'))return accSignin();
+  if(e.target.closest('#accSignup'))return accSignup();
+  if(e.target.closest('#accReset'))return accReset();
+  if(e.target.closest('#accSavePw'))return accSavePw();
+  if(e.target.closest('#accResendConfirm'))return accResendConfirm();
   if(e.target.closest('#accSend'))return accSend();
   if(e.target.closest('#accVerify'))return accVerify();
   if(e.target.closest('#accLinkGo')){const v=($('accLink').value||'').trim();
@@ -220,7 +241,11 @@ $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.
 $('setIn').addEventListener('change',e=>{if(e.target.id==='avFile'){setAvatarPhoto(e.target.files&&e.target.files[0]);e.target.value=''}});
 $('setIn').addEventListener('input',e=>{if(e.target.id==='youName'){S.cfg.name=e.target.value.slice(0,40);const t=$('youTitle');if(t)t.textContent=meName()||'You';drawMe();clearTimeout(window.__nmT);window.__nmT=setTimeout(()=>{save();render()},500);return}const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
 $('setIn').addEventListener('change',e=>{const n=e.target.dataset.name;if(n){C().names[n]=e.target.value.trim()||DEF_CFG.names[n];applySettings();save();render();if(!e.target.value.trim())e.target.value=C().names[n]}});
-$('setIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='accEmail'){e.preventDefault();return CLOUD?accSend():$('accSend').click()}if(e.key==='Enter'&&e.target.id==='accCode'){e.preventDefault();return accVerify()}if(e.target.dataset.name&&e.key==='Enter')e.target.blur()});
+$('setIn').addEventListener('input',e=>{if(e.target.classList.contains('pw-in')){const h=$('pwHint');if(h)h.classList.toggle('ok',e.target.value.length>=PW_MIN)}});
+$('setIn').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.classList.contains('pw-in')){e.preventDefault();const b=$('accSignin')||$('accSignup')||$('accSavePw');if(b)b.click();return}
+  if(e.key==='Enter'&&e.target.id==='accEmail'&&(authStep==='forgot'||$('accPw'))){e.preventDefault();if(authStep==='forgot')return $('accReset').click();return $('accPw').focus()}
+  if(e.key==='Enter'&&e.target.id==='accEmail'){e.preventDefault();return CLOUD?accSend():$('accSend').click()}if(e.key==='Enter'&&e.target.id==='accCode'){e.preventDefault();return accVerify()}if(e.target.dataset.name&&e.key==='Enter')e.target.blur()});
 $('setBtn').onclick=()=>openYou();
 $('dSet').onclick=openSettings;
 

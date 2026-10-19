@@ -1885,6 +1885,37 @@ body.no-amb .amb-btn{display:none!important}
 .win-in body>*{animation:winIn .55s cubic-bezier(.2,.8,.2,1) both}
 @keyframes winIn{from{opacity:0;transform:translateY(4px)}}
 @media (prefers-reduced-motion:reduce){.win-in body>*{animation:none}}
+/* ---------- sign in with password ---------- */
+.auth-h{margin-top:22px}
+.auth-h h2{margin:0;font-size:28px;font-weight:800;letter-spacing:-.035em}
+.auth-h p{margin:6px 0 0;font-size:15px;line-height:1.45;color:var(--muted)}
+.auth-h p b{color:var(--text)}
+.acc-form>.acc-in+.pw-wrap,.acc-form>.acc-in+.acc-in{margin-top:10px}
+.acc-form .auth-h+.acc-form{margin-top:18px}
+.pw-wrap{position:relative}
+.pw-in{padding-right:56px}
+.pw-eye{position:absolute;top:0;right:4px;width:50px;height:58px;display:grid;place-items:center;color:var(--muted);border-radius:16px}
+.pw-eye:hover{color:var(--text)}
+.pw-eye svg{width:20px;height:20px}
+.pw-eye:focus-visible{outline:2px solid var(--text);outline-offset:-6px}
+.pw-hint{display:flex;align-items:center;gap:8px;margin:10px 4px 0;font-size:13px;color:var(--muted);transition:color .2s}
+.pw-hint i{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1.5px currentColor;flex:none;transition:background .2s,box-shadow .2s;position:relative}
+.pw-hint.ok{color:var(--done)}
+.pw-hint.ok i{background:var(--done);box-shadow:none}
+.pw-hint.ok i::after{content:"";position:absolute;left:5px;top:2.5px;width:4px;height:8px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.auth-row{display:flex;justify-content:flex-end;margin-top:8px}
+.auth-link{background:none;border:0;padding:4px 2px;font:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+.auth-link:hover{color:var(--text)}
+.auth-row+.primary{margin-top:6px}
+.auth-or{display:flex;align-items:center;gap:12px;margin:14px 0 4px;font-size:13px;color:var(--muted)}
+.auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.acc-form .auth-alt{margin-top:8px;height:52px;font-weight:700;font-size:15px}
+.auth-foot{margin:18px 0 0;text-align:center;font-size:14px;color:var(--muted)}
+.auth-foot .auth-link{color:var(--text);font-weight:700}
+.pw-box{display:flex;flex-direction:column;gap:0;padding-top:12px}
+.pw-box .dz-btns{margin-top:14px}
+.pw-save{height:42px;padding:0 18px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:800;font-size:14px}
+.pw-save:disabled{opacity:.5}
 </style>
 </head>
 <body>
@@ -2082,7 +2113,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=117; // bumped with every published update
+const APP_VERSION=119; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -4879,7 +4910,7 @@ function youHead(){
 function youSafety(){
   if(!CLOUD)return '';const u=window.__u;
   if(u)return `<div class="safe-card ok"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M8.8 12.2l2.2 2.2 4.4-4.6"/></svg></span><span class="safe-t"><b>Your tasks are backed up</b><small>Signed in${u.email?' as '+esc(u.email):''}. They sync to all your devices.</small></span></div>`;
-  return `<div class="safe-card warn"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M12 8.5v4.5"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></span><span class="safe-t"><b>Your tasks are only on this device</b><small>Clear your browser or lose this device and they’re gone. Sign in to back them up and use them everywhere.</small></span><button class="safe-go" data-yt="account">Sign in</button></div>`;
+  return `<div class="safe-card warn"><span class="safe-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M12 8.5v4.5"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></span><span class="safe-t"><b>Your tasks are only on this device</b><small>Clear your browser or lose this device and they’re gone. Sign in to back them up and use them everywhere.</small></span></div>`;
 }
 let avOpen=false;
 /* Account tab: is my data safe, then sign in / sync / sign out */
@@ -4993,7 +5024,28 @@ $('setIn').addEventListener('click',e=>{
     if(e.target.closest('#accSync'))return toast('Preview: sync runs in the installed app');
     if(e.target.closest('#accOut')){pvState='out';toast('Preview: signed out');return drawSettings()}
     if(e.target.closest('.mail-open')){e.preventDefault();return toast('Preview: opens your inbox')}
+    // preview: walk through the password screens without a real account
+    if(e.target.closest('#accSignin')){pvState='in';authStep='email';toast('Preview: signed in');return drawSettings()}
+    if(e.target.closest('#accSignup')){authEmail=($('accEmail').value||'').trim()||'you@email.com';authStep='confirm';return drawSettings()}
+    if(e.target.closest('#accReset')){authEmail=($('accEmail').value||'').trim()||'you@email.com';authStep='resetSent';return drawSettings()}
+    if(e.target.closest('#accSavePw')){pwOpen=false;authStep='email';toast('Preview: password saved');return drawSettings()}
+    if(e.target.closest('#accResendConfirm'))return toast('Preview: email would be resent');
   }
+  // password screens (shared by the real app and the preview)
+  const eye=e.target.closest('#pwEye');
+  if(eye){pwShow=!pwShow;const i=eye.parentNode.querySelector('input');if(i){i.type=pwShow?'text':'password';i.focus()}
+    eye.innerHTML=pwShow?EYE_OFF:EYE;eye.setAttribute('aria-pressed',pwShow);eye.setAttribute('aria-label',pwShow?'Hide password':'Show password');return}
+  const go=s=>{const em=$('accEmail');if(em)authEmail=em.value.trim();authStep=s;authMsg='';pwShow=false;haptic(5);drawSettings();setTimeout(()=>{const f=$('accEmail');if(f&&!f.value)f.focus()},60)};
+  if(e.target.closest('#accToForgot'))return go('forgot');
+  if(e.target.closest('#accToSignup'))return go('signup');
+  if(e.target.closest('#accToSignin'))return go('email');
+  if(e.target.closest('#accPwOpen')){pwOpen=true;authMsg='';haptic(5);drawSettings();setTimeout(()=>{const f=$('accNewPw');if(f)f.focus()},60);return}
+  if(e.target.closest('#accPwCancel')){pwOpen=false;authMsg='';return drawSettings()}
+  if(e.target.closest('#accSignin'))return accSignin();
+  if(e.target.closest('#accSignup'))return accSignup();
+  if(e.target.closest('#accReset'))return accReset();
+  if(e.target.closest('#accSavePw'))return accSavePw();
+  if(e.target.closest('#accResendConfirm'))return accResendConfirm();
   if(e.target.closest('#accSend'))return accSend();
   if(e.target.closest('#accVerify'))return accVerify();
   if(e.target.closest('#accLinkGo')){const v=($('accLink').value||'').trim();
@@ -5055,7 +5107,11 @@ $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.
 $('setIn').addEventListener('change',e=>{if(e.target.id==='avFile'){setAvatarPhoto(e.target.files&&e.target.files[0]);e.target.value=''}});
 $('setIn').addEventListener('input',e=>{if(e.target.id==='youName'){S.cfg.name=e.target.value.slice(0,40);const t=$('youTitle');if(t)t.textContent=meName()||'You';drawMe();clearTimeout(window.__nmT);window.__nmT=setTimeout(()=>{save();render()},500);return}const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
 $('setIn').addEventListener('change',e=>{const n=e.target.dataset.name;if(n){C().names[n]=e.target.value.trim()||DEF_CFG.names[n];applySettings();save();render();if(!e.target.value.trim())e.target.value=C().names[n]}});
-$('setIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='accEmail'){e.preventDefault();return CLOUD?accSend():$('accSend').click()}if(e.key==='Enter'&&e.target.id==='accCode'){e.preventDefault();return accVerify()}if(e.target.dataset.name&&e.key==='Enter')e.target.blur()});
+$('setIn').addEventListener('input',e=>{if(e.target.classList.contains('pw-in')){const h=$('pwHint');if(h)h.classList.toggle('ok',e.target.value.length>=PW_MIN)}});
+$('setIn').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.classList.contains('pw-in')){e.preventDefault();const b=$('accSignin')||$('accSignup')||$('accSavePw');if(b)b.click();return}
+  if(e.key==='Enter'&&e.target.id==='accEmail'&&(authStep==='forgot'||$('accPw'))){e.preventDefault();if(authStep==='forgot')return $('accReset').click();return $('accPw').focus()}
+  if(e.key==='Enter'&&e.target.id==='accEmail'){e.preventDefault();return CLOUD?accSend():$('accSend').click()}if(e.key==='Enter'&&e.target.id==='accCode'){e.preventDefault();return accVerify()}if(e.target.dataset.name&&e.key==='Enter')e.target.blur()});
 $('setBtn').onclick=()=>openYou();
 $('dSet').onclick=openSettings;
 
@@ -5238,7 +5294,8 @@ window.blitzitLink=async function(){
   for(let i=0;i<40&&!sb;i++)await new Promise(r=>setTimeout(r,250));
   if(!sb)return toast('Couldn’t reach the sync service');
   try{const {error}=await sb.auth.setSession({access_token:at,refresh_token:rt});if(error)throw error;
-    authStep='email';authMsg='';haptic(12);toast('Signed in');if(settingsOpen())drawSettings()}
+    authMsg='';haptic(12);if(p.get('type')==='recovery'){openNewPassword();return}
+    authStep='email';toast('Signed in');if(settingsOpen())drawSettings()}
   catch(e){authMsg=friendly(e);if(settingsOpen())drawSettings()}
 };
 async function initCloud(){
@@ -5246,6 +5303,7 @@ async function initCloud(){
   try{await loadSB()}catch(e){return}
   sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   sb.auth.onAuthStateChange((ev,session)=>{
+    if(ev==='PASSWORD_RECOVERY')setTimeout(openNewPassword,300);
     const u=session&&session.user||null,changed=(u&&u.id)!==(user&&user.id);user=u;
     if(changed)setTimeout(()=>user?onSignedIn():onSignedOut(),0);
   });
@@ -5254,6 +5312,7 @@ async function initCloud(){
   window.addEventListener('offline',()=>user&&setSync('offline'));
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&user)reconcile(false)});
 }
+function openNewPassword(){authStep='newpass';authMsg='';pwShow=false;try{openYou('account')}catch(e){}}
 let pvState='out';
 function accountPage(){
   const PV=!CLOUD;
@@ -5261,15 +5320,35 @@ function accountPage(){
     <div class="segc pv-seg">${[['out','Signed out'],['sent','Email sent'],['in','Signed in']].map(([k,l])=>`<button data-pv="${k}" class="${pvState===k?'on':''}">${l}</button>`).join('')}</div>`:'';
   const head=accInYou?pvBar:`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><h1 class="sub-h">Account</h1>`+pvBar;
   const user=PV?(pvState==='in'?{email:'you@email.com'}:null):window.__u;
-  const authStep=PV?(pvState==='sent'?'code':'email'):window.__step;
+  const authStep=PV?(pvState==='sent'?'code':(window.__step==='code'?'email':window.__step)):window.__step;
   const syncState=PV?'synced':window.__ss;
   if(PV&&pvState==='sent'&&!authEmail)authEmail='you@gmail.com';
   if(!PV&&!sb)return head+`<p class="sub-p">Can’t reach the sync service right now. Check your connection and try again.</p>`;
+  // opened from the "reset password" email: choose the new password first
+  if(user&&authStep==='newpass')return head+`<div class="auth-h"><h2>Set a new password</h2><p>For <b>${esc(user.email||'')}</b>. You’ll use it to sign in on all your devices.</p></div>
+    <div class="acc-form">${pwField('accNewPw','new-password','New password')}${pwHint()}
+    <button class="primary" id="accSavePw" ${authBusy?'disabled':''}>${authBusy?'Saving…':'Save password'}</button>
+    <p class="acc-msg">${esc(authMsg)}</p></div>`;
   if(user)return head+`${accInYou?'':'<p class="sub-p">Your tasks sync across every device you sign in on.</p>'}
     <div class="set-sec">${row('Signed in as',`<span class="acc-val">${esc(user.email||'')}</span>`)}
     ${row('Sync',`<span class="acc-val" id="syncStatus">${SYNC_LABEL[syncState]}</span>`)}</div>
+    <div class="set-sec"><h3>Password</h3>${pwOpen?`<div class="pw-box">${pwField('accNewPw','new-password','New password')}${pwHint()}
+      <div class="dz-btns"><button class="ghost-btn" id="accPwCancel" type="button">Cancel</button><button class="pw-save" id="accSavePw" type="button" ${authBusy?'disabled':''}>${authBusy?'Saving…':'Save password'}</button></div>
+      <p class="acc-msg">${esc(authMsg)}</p></div>`:`<button class="link-row" id="accPwOpen">Set or change password<span class="hint">Sign in with email + password</span></button>`}</div>
     <div class="set-sec"><button class="link-row" id="accSync">Sync now</button><button class="link-row warn" id="accOut">Sign out</button></div>
     <div class="ver">Signing out keeps your tasks on this device.</div>`;
+  if(authStep==='resetSent')return head+mailWait('Check your email',`We sent a link to set a new password to <b>${esc(authEmail)}</b>. ${DESK()?'Click it, then come back here.':'Tap it to choose your new password.'}`,'Can’t find it? Check your spam folder.');
+  if(authStep==='confirm')return head+mailWait('Confirm your email',`We sent a confirmation link to <b>${esc(authEmail)}</b>. ${DESK()?'Click it and Windaday signs you in.':'Tap it and you’re in.'}`,'Didn’t get it? Check your spam folder, or resend.',true);
+  if(authStep==='forgot')return head+`<div class="auth-h"><h2>Forgot your password?</h2><p>Enter your email and we’ll send you a link to set a new one.</p></div>
+    <div class="acc-form">${emailField()}
+    <button class="primary" id="accReset" ${authBusy?'disabled':''}>${authBusy?'Sending…':'Send reset link'}</button>
+    <p class="acc-msg">${esc(authMsg)}</p>
+    <p class="auth-foot"><button class="auth-link" id="accToSignin" type="button">Back to sign in</button></p></div>`;
+  if(authStep==='signup')return head+`<div class="auth-h"><h2>Create your account</h2><p>Your tasks sync across your phone and computer.</p></div>
+    <div class="acc-form">${emailField()}${pwField('accPw','new-password','Create a password')}${pwHint()}
+    <button class="primary" id="accSignup" ${authBusy?'disabled':''}>${authBusy?'Creating…':'Create account'}</button>
+    <p class="acc-msg">${esc(authMsg)}</p>
+    <p class="auth-foot">Already have an account? <button class="auth-link" id="accToSignin" type="button">Sign in</button></p></div>`;
   if(authStep==='code'){
     const dom=(authEmail.split('@')[1]||'').toLowerCase();
     const inbox=dom==='gmail.com'||dom==='googlemail.com'?'https://mail.google.com/mail/u/0/#inbox':/^(outlook|hotmail|live|msn)\./.test(dom)?'https://outlook.live.com/mail/':dom==='yahoo.com'?'https://mail.yahoo.com':/^(icloud|me|mac)\.com$/.test(dom)?'https://www.icloud.com/mail':'';
@@ -5287,13 +5366,76 @@ function accountPage(){
       <div class="acc-links"><button class="ghost-btn" id="accResend">Resend email</button><button class="ghost-btn" id="accBack">Use a different email</button></div>
       <p class="mail-small">Can’t find it? Check your spam folder.</p></div>`;
   }
-  return head+`<p class="sub-p">Sign in to sync your tasks across your phone and computer. No password needed.</p>
-    <div class="acc-form"><input class="acc-in" id="accEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" value="${esc(authEmail)}">
-    <button class="primary" id="accSend" ${authBusy?'disabled':''}>${authBusy?'Sending…':'Email me a sign-in link'}</button>
-    <p class="acc-msg">${esc(authMsg)}</p></div>`;
+  // sign in: email + password first, the email link as the other way
+  return head+`<div class="auth-h"><h2>Sign in</h2><p>Sync your tasks across your phone and computer.</p></div>
+    <div class="acc-form">${emailField()}${pwField('accPw','current-password','Password')}
+    <div class="auth-row"><button class="auth-link" id="accToForgot" type="button">Forgot password?</button></div>
+    <button class="primary" id="accSignin" ${authBusy?'disabled':''}>${authBusy?'Signing in…':'Sign in'}</button>
+    <p class="acc-msg">${esc(authMsg)}</p>
+    <div class="auth-or"><span>or</span></div>
+    <button class="secondary auth-alt" id="accSend" type="button">Email me a sign-in link</button>
+    <p class="auth-foot">New to Windaday? <button class="auth-link" id="accToSignup" type="button">Create an account</button></p></div>`;
+}
+/* ---------- password sign-in ---------- */
+let pwOpen=false,pwShow=false;
+const EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.6A10 10 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.7M6.6 6.6C3.9 8.3 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.4-1.1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+const emailField=()=>`<input class="acc-in" id="accEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" value="${esc(authEmail)}">`;
+const pwField=(id,ac,ph)=>`<div class="pw-wrap"><input class="acc-in pw-in" id="${id}" type="${pwShow?'text':'password'}" autocomplete="${ac}" placeholder="${ph}" spellcheck="false"><button class="pw-eye" id="pwEye" type="button" aria-label="${pwShow?'Hide password':'Show password'}" aria-pressed="${pwShow}">${pwShow?EYE_OFF:EYE}</button></div>`;
+const pwHint=()=>`<p class="pw-hint" id="pwHint"><i></i>At least 8 characters</p>`;
+const PW_MIN=8;
+const validEmail=em=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em);
+const backTo=()=>location.origin+location.pathname+(DESK()&&DESK_LINK?'?desk=1':'');
+async function authRun(fn){authBusy=true;authMsg='';drawSettings();try{await fn()}catch(e){authMsg=friendly(e)}authBusy=false;drawSettings()}
+function accSignin(){
+  const em=($('accEmail').value||'').trim(),pw=$('accPw').value||'';authEmail=em;
+  if(!validEmail(em)){authMsg='Please enter a valid email.';return drawSettings()}
+  if(!pw){authMsg='Enter your password.';return drawSettings()}
+  return authRun(async()=>{const {error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;
+    authStep='email';pwShow=false;haptic(12);toast('Signed in')});
+}
+function accSignup(){
+  const em=($('accEmail').value||'').trim(),pw=$('accPw').value||'';authEmail=em;
+  if(!validEmail(em)){authMsg='Please enter a valid email.';return drawSettings()}
+  if(pw.length<PW_MIN){authMsg=`Use at least ${PW_MIN} characters.`;return drawSettings()}
+  return authRun(async()=>{const {data,error}=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:backTo()}});if(error)throw error;
+    // an existing email comes back without identities: say so instead of pretending to send
+    if(data&&data.user&&Array.isArray(data.user.identities)&&!data.user.identities.length)throw new Error('already registered');
+    pwShow=false;if(data&&data.session){authStep='email';haptic(12);toast('Account created')}else{authStep='confirm';resendAt=Date.now()+60000}});
+}
+function accReset(){
+  const em=($('accEmail').value||'').trim();authEmail=em;
+  if(!validEmail(em)){authMsg='Please enter a valid email.';return drawSettings()}
+  return authRun(async()=>{const {error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:backTo()});if(error)throw error;authStep='resetSent'});
+}
+function accSavePw(){
+  const pw=$('accNewPw').value||'';
+  if(pw.length<PW_MIN){authMsg=`Use at least ${PW_MIN} characters.`;return drawSettings()}
+  return authRun(async()=>{const {error}=await sb.auth.updateUser({password:pw});if(error)throw error;
+    authStep='email';pwOpen=false;pwShow=false;haptic(12);toast('Password saved')});
+}
+function accResendConfirm(){
+  if(Date.now()<resendAt){authMsg=`You can resend in ${Math.ceil((resendAt-Date.now())/1000)}s.`;return drawSettings()}
+  return authRun(async()=>{const {error}=await sb.auth.resend({type:'signup',email:authEmail,options:{emailRedirectTo:backTo()}});if(error)throw error;resendAt=Date.now()+60000;toast('Email sent again')});
+}
+function mailWait(title,html,small,resend){
+  const dom=(authEmail.split('@')[1]||'').toLowerCase();
+  const inbox=dom==='gmail.com'||dom==='googlemail.com'?'https://mail.google.com/mail/u/0/#inbox':/^(outlook|hotmail|live|msn)\./.test(dom)?'https://outlook.live.com/mail/':dom==='yahoo.com'?'https://mail.yahoo.com':/^(icloud|me|mac)\.com$/.test(dom)?'https://www.icloud.com/mail':'';
+  return `<div class="mail-wait">
+    <div class="mail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/></svg></div>
+    <h2>${title}</h2><p>${html}</p>
+    ${inbox?`<a class="primary mail-open" href="${inbox}" target="_blank" rel="noopener">Open ${dom.startsWith('gmail')||dom.startsWith('google')?'Gmail':'your inbox'}</a>`:''}
+    <p class="acc-msg">${esc(authMsg)}</p>
+    <div class="acc-links">${resend?'<button class="ghost-btn" id="accResendConfirm">Resend email</button>':''}<button class="ghost-btn" id="accToSignin">Back to sign in</button></div>
+    <p class="mail-small">${small}</p></div>`;
 }
 const friendly=e=>{const m=(e&&e.message||'').toLowerCase();
-  if(m.includes('rate')||m.includes('too many')||m.includes('seconds'))return 'Too many emails. Please wait a minute and try again.';
+  if(m.includes('invalid login')||m.includes('invalid credentials'))return 'Wrong email or password.';
+  if(m.includes('already registered')||m.includes('already been registered')||m.includes('already exists'))return 'This email already has an account. Sign in instead.';
+  if(m.includes('not confirmed'))return 'Please confirm your email first. Check your inbox for the link.';
+  if(m.includes('different from the old')||m.includes('same password'))return 'That’s your current password. Choose a new one.';
+  if(m.includes('password')&&(m.includes('least')||m.includes('short')||m.includes('weak')))return `Use at least ${PW_MIN} characters.`;
+  if(m.includes('rate')||m.includes('too many')||m.includes('seconds'))return 'Too many attempts. Please wait a minute and try again.';
   if(m.includes('expired')||m.includes('invalid'))return 'That code didn’t work. Check it, or resend the email.';
   if(m.includes('fetch')||m.includes('network'))return 'No connection. Try again when you’re online.';
   return 'Something went wrong. Please try again.'};
