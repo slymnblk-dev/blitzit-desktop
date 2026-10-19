@@ -5,7 +5,8 @@
   "description": "Plan your day, then win it, one focused task at a time.",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
   "background_color": "#0F1013",
   "theme_color": "#0F1013",
   "icons": [
