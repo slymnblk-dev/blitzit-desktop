@@ -649,3 +649,16 @@ body.no-amb .amb-btn{display:none!important}
 .lpm-note{margin:0;padding:0 12px 8px;font-size:13px;color:var(--muted);line-height:1.4}
 .lpm-hr{display:block;height:1px;background:var(--line);margin:6px 4px}
 .lp-ren{width:100%;background:var(--surface2);border:0;border-radius:10px;padding:2px 8px;margin-left:-8px;color:var(--text);font:inherit;font-size:22px;font-weight:700;letter-spacing:-.03em;outline:none;box-shadow:0 0 0 2px var(--text)}
+/* phone: Win the day matches the computer (white text, the sunrise mark) */
+.go{color:#fff;gap:10px}
+.go .sun-ic{width:26px;height:26px;margin:-3px 0 -1px}
+.d-focus .sun-ic{width:20px;height:20px;color:var(--today)}
+.in-bolt .sun-ic{color:var(--today)}
+/* phone Today card: warmer, lighter, calmer */
+.td-card{background:linear-gradient(155deg,color-mix(in srgb,var(--today) 88%,#fff) 0%,var(--today) 48%,color-mix(in srgb,var(--today) 90%,#000) 100%);
+  box-shadow:0 18px 40px -24px color-mix(in srgb,var(--today) 80%,#000)}
+.td-space{background:rgba(255,255,255,.22)}
+.td-go{background:radial-gradient(120% 120% at 30% 20%,#2A1D1A 0%,#170F0E 60%);
+  box-shadow:0 0 0 6px rgba(255,255,255,.16),0 14px 30px -12px color-mix(in srgb,var(--today) 55%,#000),inset 0 1px 0 rgba(255,255,255,.1)}
+.td-go:active{box-shadow:0 0 0 4px rgba(255,255,255,.2),0 4px 12px -6px rgba(0,0,0,.4)}
+.td-ring{border-color:rgba(255,255,255,.7)}

@@ -1980,6 +1980,19 @@ body.no-amb .amb-btn{display:none!important}
 .lpm-note{margin:0;padding:0 12px 8px;font-size:13px;color:var(--muted);line-height:1.4}
 .lpm-hr{display:block;height:1px;background:var(--line);margin:6px 4px}
 .lp-ren{width:100%;background:var(--surface2);border:0;border-radius:10px;padding:2px 8px;margin-left:-8px;color:var(--text);font:inherit;font-size:22px;font-weight:700;letter-spacing:-.03em;outline:none;box-shadow:0 0 0 2px var(--text)}
+/* phone: Win the day matches the computer (white text, the sunrise mark) */
+.go{color:#fff;gap:10px}
+.go .sun-ic{width:26px;height:26px;margin:-3px 0 -1px}
+.d-focus .sun-ic{width:20px;height:20px;color:var(--today)}
+.in-bolt .sun-ic{color:var(--today)}
+/* phone Today card: warmer, lighter, calmer */
+.td-card{background:linear-gradient(155deg,color-mix(in srgb,var(--today) 88%,#fff) 0%,var(--today) 48%,color-mix(in srgb,var(--today) 90%,#000) 100%);
+  box-shadow:0 18px 40px -24px color-mix(in srgb,var(--today) 80%,#000)}
+.td-space{background:rgba(255,255,255,.22)}
+.td-go{background:radial-gradient(120% 120% at 30% 20%,#2A1D1A 0%,#170F0E 60%);
+  box-shadow:0 0 0 6px rgba(255,255,255,.16),0 14px 30px -12px color-mix(in srgb,var(--today) 55%,#000),inset 0 1px 0 rgba(255,255,255,.1)}
+.td-go:active{box-shadow:0 0 0 4px rgba(255,255,255,.2),0 4px 12px -6px rgba(0,0,0,.4)}
+.td-ring{border-color:rgba(255,255,255,.7)}
 </style>
 </head>
 <body>
@@ -2010,7 +2023,7 @@ body.no-amb .amb-btn{display:none!important}
 </div>
 
 <div class="dock"><div class="dock-in">
-  <button class="go" id="goBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Win the day</button>
+  <button class="go" id="goBtn"><svg class="sun-ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg>Win the day</button>
   <button class="plus" id="addBtn" aria-label="Add task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="plus-l">Add task</span></button>
 </div></div>
 
@@ -2069,7 +2082,7 @@ body.no-amb .amb-btn{display:none!important}
   </div>
   <div class="d-foot2">
     <button class="d-complete" id="dComplete"></button>
-    <button class="d-focus" id="dFocus"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Focus</button>
+    <button class="d-focus" id="dFocus"><svg class="sun-ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg>Focus</button>
   </div>
 </div></div>
 
@@ -2150,7 +2163,7 @@ body.no-amb .amb-btn{display:none!important}
       <p>Park ideas in <b>Backlog</b>, plan <b>My week</b>, commit to <b>Today</b>, and watch them land in <b>Done</b>.</p>
     </section>
     <section class="in-step">
-      <div class="in-art in-bolt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+      <div class="in-art in-bolt"><svg class="sun-ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg></div>
       <h1>Win the day.</h1>
       <p>Tap <b>Win the day</b> and work through Today one task at a time, with a timer that keeps you honest.</p>
     </section>
@@ -2177,7 +2190,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=122; // bumped with every published update
+const APP_VERSION=123; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
