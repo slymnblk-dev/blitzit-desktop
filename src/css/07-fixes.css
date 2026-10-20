@@ -682,3 +682,6 @@ body.no-amb .amb-btn{display:none!important}
 @keyframes avFade{from{opacity:0}}
 @keyframes avUp{from{opacity:0;transform:translateY(24px) scale(.98)}}
 @media (prefers-reduced-motion:reduce){.av-modal,.av-card{animation:none}}
+/* sync status: always show the full words ("Up to date"), the button sits right after them */
+.sync-r{flex:1 1 auto;justify-content:flex-end;min-width:0}
+.sync-r .acc-val{max-width:none;overflow:visible;white-space:nowrap}
