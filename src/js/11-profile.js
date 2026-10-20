@@ -38,7 +38,7 @@ function youHead(){
   const tabs=[['profile','Profile'],['account','Account'],['stats','Stats'],['download','Download']];
   const warn=CLOUD&&!window.__u; // not backed up yet: a small dot on the Account tab
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close">${BACK_SVG}</button><button class="you-set" id="youSet">Settings${CHEV}</button></div>
-  <div class="you-head"><button class="you-av" id="youAv" type="button" aria-label="Change avatar">${avatarHTML('xl')}<span class="you-av-ed" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span></button><div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
+  <div class="you-head"><button class="you-av" id="youAv" type="button" aria-label="Change avatar">${avatarHTML('xl')}<span class="you-av-ed" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span></button><div class="you-hl"><input class="you-name you-name-in" id="youName" maxlength="40" autocomplete="name" autocapitalize="words" enterkeyhint="done" spellcheck="false" placeholder="Your name" aria-label="Your name" value="${esc(S.cfg.name||'')}"><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
   <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}${k==='account'&&warn?'<i class="yt-dot" aria-label="Not backed up"></i>':''}</button>`).join('')}</div>`;
 }
 /* is my data safe? a clear card at the top of Profile */
@@ -53,13 +53,13 @@ function youAccount(){if(!CLOUD&&typeof accountPage!=='function')return '';accIn
   return `<div class="acc-tab" id="accSec">${h}</div>`}
 function youProfile(){
   const c=C(),g=goalMin();
-  return `<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
-  <div class="set-sec"><h3>Avatar</h3><button class="av-row ${avOpen?'open':''}" id="avToggle" aria-expanded="${avOpen}">${avatarHTML('sm')}<span>${avOpen?'Done':'Change avatar'}</span>${CHEV}</button>
-    ${avOpen?`<div class="av-grid av-drop">
+  return `${avOpen?`<div class="av-modal" id="avModal" role="dialog" aria-modal="true" aria-label="Choose your avatar"><div class="av-card">
+    <div class="av-mh"><b>Choose your avatar</b><button class="icon-btn" id="avClose" type="button" aria-label="Close">${X}</button></div>
+    <div class="av-grid">
     <label class="av-up ${c.avatarImg?'on':''}" title="${c.avatarImg?'Change photo':'Upload a photo'}">${c.avatarImg?`<img src="${c.avatarImg}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`}<input type="file" id="avFile" accept="image/*" hidden></label>
     <button data-av="" class="${!c.avatar&&!c.avatarImg?'on':''}" aria-label="Initials">${initials()?`<b>${esc(initials())}</b>`:PERSON}</button>
     ${AVATARS.map(a=>`<button data-av="${a}" class="${!c.avatarImg&&c.avatar===a?'on':''}">${a}</button>`).join('')}</div>
-    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}`:''}</div>
+    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}</div></div>`:''}
   <div class="set-sec"><h3>Daily focus goal</h3>
     ${row('Goal',`<div class="segc">${[[0,'Off'],[60,'1h'],[120,'2h'],[180,'3h'],[240,'4h']].map(([v,l])=>`<button data-goal="${v}" class="${g===v?'on':''}">${l}</button>`).join('')}</div>`,'A ring around your avatar fills as you focus')}
     ${g?`<div class="you-goal"><div class="you-bar"><span style="width:${goalPct()}%"></span></div><span>${goalPct()>=100?'Goal reached today':`${fmt(Math.max(0,g-focusToday()))} to go today`}</span></div>${goalWeek()}`:''}
@@ -144,9 +144,10 @@ $('setIn').addEventListener('click',e=>{
   const as=e.target.closest('#autoStart');if(as){const on=as.getAttribute('aria-pressed')!=='true';as.setAttribute('aria-pressed',on);haptic(6);sfx('toggle');setTimeout(()=>setAutostart(on),180);return}
   if(e.target.closest('#wlPlay')){closeSettings();setTimeout(()=>{sfxReady();playWelcome()},250);return}
   if(e.target.closest('#avToggle')){avOpen=!avOpen;haptic(5);return drawSettings()}
-  if(e.target.closest('#youAv')){youTab='profile';avOpen=true;haptic(6);drawSettings();
-    setTimeout(()=>{const g=document.querySelector('#setIn .av-drop');if(g)g.scrollIntoView({behavior:'smooth',block:'center'})},80);return}
-  const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
+  if(e.target.closest('#youAv')){youTab='profile';avOpen=true;haptic(6);return drawSettings()}
+  if(e.target.closest('#avClose')||e.target.id==='avModal'){avOpen=false;haptic(5);return drawSettings()}
+  const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();drawSettings();
+    setTimeout(()=>{if(avOpen){avOpen=false;drawSettings()}},260);return}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
   if(pg){const id=pg.dataset.page;haptic(5);if(id==='archive'){arcFrom=setView;if(pg.dataset.arct)arcTab=pg.dataset.arct}
@@ -242,7 +243,10 @@ $('setIn').addEventListener('click',e=>{
 $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.files[0])return;
   const r=new FileReader();r.onload=()=>{$('bkTxt').value=r.result;$('bkGo').click()};r.readAsText(e.target.files[0])});
 $('setIn').addEventListener('change',e=>{if(e.target.id==='avFile'){setAvatarPhoto(e.target.files&&e.target.files[0]);e.target.value=''}});
-$('setIn').addEventListener('input',e=>{if(e.target.id==='youName'){S.cfg.name=e.target.value.slice(0,40);const t=$('youTitle');if(t)t.textContent=meName()||'You';drawMe();clearTimeout(window.__nmT);window.__nmT=setTimeout(()=>{save();render()},500);return}const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
+$('setIn').addEventListener('keydown',e=>{if(e.target.id==='youName'&&e.key==='Enter'){e.preventDefault();e.target.blur()}});
+/* Esc closes just the avatar popup, not the whole page */
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&avOpen&&$('avModal')){e.preventDefault();e.stopImmediatePropagation();avOpen=false;drawSettings()}},true);
+$('setIn').addEventListener('input',e=>{if(e.target.id==='youName'){S.cfg.name=e.target.value.slice(0,40);drawMe();clearTimeout(window.__nmT);window.__nmT=setTimeout(()=>{save();render()},500);return}const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
 $('setIn').addEventListener('change',e=>{const n=e.target.dataset.name;if(n){C().names[n]=e.target.value.trim()||DEF_CFG.names[n];applySettings();save();render();if(!e.target.value.trim())e.target.value=C().names[n]}});
 $('setIn').addEventListener('input',e=>{if(e.target.classList.contains('pw-in')){const h=$('pwHint');if(h)h.classList.toggle('ok',e.target.value.length>=PW_MIN)}});
 $('setIn').addEventListener('keydown',e=>{

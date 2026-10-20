@@ -1993,6 +1993,26 @@ body.no-amb .amb-btn{display:none!important}
   box-shadow:0 0 0 6px rgba(255,255,255,.16),0 14px 30px -12px color-mix(in srgb,var(--today) 55%,#000),inset 0 1px 0 rgba(255,255,255,.1)}
 .td-go:active{box-shadow:0 0 0 4px rgba(255,255,255,.2),0 4px 12px -6px rgba(0,0,0,.4)}
 .td-ring{border-color:rgba(255,255,255,.7)}
+/* profile: your name is edited right in the big heading */
+.you-name-in{display:block;width:100%;min-width:0;background:transparent;border:0;padding:2px 0;margin:0;color:var(--text);font-family:inherit;
+  font-size:clamp(32px,9vw,44px);font-weight:800;letter-spacing:-.045em;line-height:1;outline:none;border-radius:8px;text-overflow:ellipsis;
+  background-image:linear-gradient(var(--line),var(--line));background-size:0 2px;background-position:0 100%;background-repeat:no-repeat;transition:background-size .25s}
+.you-name-in::placeholder{color:var(--muted);opacity:.7}
+.you-name-in:hover,.you-name-in:focus{background-size:100% 2px}
+.you-name-in:focus{background-image:linear-gradient(var(--today),var(--today))}
+/* avatar picker: a calm popup from the ✎ on your photo */
+.av-modal{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  background:color-mix(in srgb,#000 45%,transparent);animation:avFade .2s ease both}
+@media (min-width:640px){.av-modal{align-items:center}}
+.av-card{width:100%;max-width:420px;background:var(--surface);border-radius:26px;padding:16px 18px 20px;box-shadow:0 0 0 1px var(--line),0 30px 60px -20px rgba(0,0,0,.55);animation:avUp .32s cubic-bezier(.2,.8,.2,1) both}
+.av-mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.av-mh b{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.av-mh .icon-btn{background:var(--surface2)}
+.av-mh .icon-btn svg{width:16px;height:16px}
+.av-card .ghost-btn{margin-top:12px}
+@keyframes avFade{from{opacity:0}}
+@keyframes avUp{from{opacity:0;transform:translateY(24px) scale(.98)}}
+@media (prefers-reduced-motion:reduce){.av-modal,.av-card{animation:none}}
 </style>
 </head>
 <body>
@@ -2190,7 +2210,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=123; // bumped with every published update
+const APP_VERSION=124; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5027,7 +5047,7 @@ function youHead(){
   const tabs=[['profile','Profile'],['account','Account'],['stats','Stats'],['download','Download']];
   const warn=CLOUD&&!window.__u; // not backed up yet: a small dot on the Account tab
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close">${BACK_SVG}</button><button class="you-set" id="youSet">Settings${CHEV}</button></div>
-  <div class="you-head"><button class="you-av" id="youAv" type="button" aria-label="Change avatar">${avatarHTML('xl')}<span class="you-av-ed" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span></button><div class="you-hl"><h1 class="you-name" id="youTitle">${esc(meName()||'You')}</h1><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
+  <div class="you-head"><button class="you-av" id="youAv" type="button" aria-label="Change avatar">${avatarHTML('xl')}<span class="you-av-ed" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span></button><div class="you-hl"><input class="you-name you-name-in" id="youName" maxlength="40" autocomplete="name" autocapitalize="words" enterkeyhint="done" spellcheck="false" placeholder="Your name" aria-label="Your name" value="${esc(S.cfg.name||'')}"><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
   <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}${k==='account'&&warn?'<i class="yt-dot" aria-label="Not backed up"></i>':''}</button>`).join('')}</div>`;
 }
 /* is my data safe? a clear card at the top of Profile */
@@ -5042,13 +5062,13 @@ function youAccount(){if(!CLOUD&&typeof accountPage!=='function')return '';accIn
   return `<div class="acc-tab" id="accSec">${h}</div>`}
 function youProfile(){
   const c=C(),g=goalMin();
-  return `<div class="set-sec"><h3>Name</h3><input class="acc-in you-in" id="youName" maxlength="40" autocomplete="name" placeholder="Your name" value="${esc(c.name||'')}"></div>
-  <div class="set-sec"><h3>Avatar</h3><button class="av-row ${avOpen?'open':''}" id="avToggle" aria-expanded="${avOpen}">${avatarHTML('sm')}<span>${avOpen?'Done':'Change avatar'}</span>${CHEV}</button>
-    ${avOpen?`<div class="av-grid av-drop">
+  return `${avOpen?`<div class="av-modal" id="avModal" role="dialog" aria-modal="true" aria-label="Choose your avatar"><div class="av-card">
+    <div class="av-mh"><b>Choose your avatar</b><button class="icon-btn" id="avClose" type="button" aria-label="Close">${X}</button></div>
+    <div class="av-grid">
     <label class="av-up ${c.avatarImg?'on':''}" title="${c.avatarImg?'Change photo':'Upload a photo'}">${c.avatarImg?`<img src="${c.avatarImg}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`}<input type="file" id="avFile" accept="image/*" hidden></label>
     <button data-av="" class="${!c.avatar&&!c.avatarImg?'on':''}" aria-label="Initials">${initials()?`<b>${esc(initials())}</b>`:PERSON}</button>
     ${AVATARS.map(a=>`<button data-av="${a}" class="${!c.avatarImg&&c.avatar===a?'on':''}">${a}</button>`).join('')}</div>
-    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}`:''}</div>
+    ${c.avatarImg?`<button class="ghost-btn" id="avRemove">Remove photo</button>`:''}</div></div>`:''}
   <div class="set-sec"><h3>Daily focus goal</h3>
     ${row('Goal',`<div class="segc">${[[0,'Off'],[60,'1h'],[120,'2h'],[180,'3h'],[240,'4h']].map(([v,l])=>`<button data-goal="${v}" class="${g===v?'on':''}">${l}</button>`).join('')}</div>`,'A ring around your avatar fills as you focus')}
     ${g?`<div class="you-goal"><div class="you-bar"><span style="width:${goalPct()}%"></span></div><span>${goalPct()>=100?'Goal reached today':`${fmt(Math.max(0,g-focusToday()))} to go today`}</span></div>${goalWeek()}`:''}
@@ -5133,9 +5153,10 @@ $('setIn').addEventListener('click',e=>{
   const as=e.target.closest('#autoStart');if(as){const on=as.getAttribute('aria-pressed')!=='true';as.setAttribute('aria-pressed',on);haptic(6);sfx('toggle');setTimeout(()=>setAutostart(on),180);return}
   if(e.target.closest('#wlPlay')){closeSettings();setTimeout(()=>{sfxReady();playWelcome()},250);return}
   if(e.target.closest('#avToggle')){avOpen=!avOpen;haptic(5);return drawSettings()}
-  if(e.target.closest('#youAv')){youTab='profile';avOpen=true;haptic(6);drawSettings();
-    setTimeout(()=>{const g=document.querySelector('#setIn .av-drop');if(g)g.scrollIntoView({behavior:'smooth',block:'center'})},80);return}
-  const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();return drawSettings()}
+  if(e.target.closest('#youAv')){youTab='profile';avOpen=true;haptic(6);return drawSettings()}
+  if(e.target.closest('#avClose')||e.target.id==='avModal'){avOpen=false;haptic(5);return drawSettings()}
+  const av=e.target.closest('[data-av]');if(av){delete S.cfg.avatarImg;S.cfg.avatar=av.dataset.av;haptic(6);save();drawMe();drawSettings();
+    setTimeout(()=>{if(avOpen){avOpen=false;drawSettings()}},260);return}
   const gl=e.target.closest('[data-goal]');if(gl){S.cfg.goalMin=+gl.dataset.goal;haptic(5);save();render();return drawSettings()}
   const pg=e.target.closest('[data-page]');
   if(pg){const id=pg.dataset.page;haptic(5);if(id==='archive'){arcFrom=setView;if(pg.dataset.arct)arcTab=pg.dataset.arct}
@@ -5231,7 +5252,10 @@ $('setIn').addEventListener('click',e=>{
 $('setIn').addEventListener('change',e=>{if(e.target.id!=='bkFileIn'||!e.target.files[0])return;
   const r=new FileReader();r.onload=()=>{$('bkTxt').value=r.result;$('bkGo').click()};r.readAsText(e.target.files[0])});
 $('setIn').addEventListener('change',e=>{if(e.target.id==='avFile'){setAvatarPhoto(e.target.files&&e.target.files[0]);e.target.value=''}});
-$('setIn').addEventListener('input',e=>{if(e.target.id==='youName'){S.cfg.name=e.target.value.slice(0,40);const t=$('youTitle');if(t)t.textContent=meName()||'You';drawMe();clearTimeout(window.__nmT);window.__nmT=setTimeout(()=>{save();render()},500);return}const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
+$('setIn').addEventListener('keydown',e=>{if(e.target.id==='youName'&&e.key==='Enter'){e.preventDefault();e.target.blur()}});
+/* Esc closes just the avatar popup, not the whole page */
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&avOpen&&$('avModal')){e.preventDefault();e.stopImmediatePropagation();avOpen=false;drawSettings()}},true);
+$('setIn').addEventListener('input',e=>{if(e.target.id==='youName'){S.cfg.name=e.target.value.slice(0,40);drawMe();clearTimeout(window.__nmT);window.__nmT=setTimeout(()=>{save();render()},500);return}const n=e.target.dataset.name;if(n)C().names[n]=e.target.value});
 $('setIn').addEventListener('change',e=>{const n=e.target.dataset.name;if(n){C().names[n]=e.target.value.trim()||DEF_CFG.names[n];applySettings();save();render();if(!e.target.value.trim())e.target.value=C().names[n]}});
 $('setIn').addEventListener('input',e=>{if(e.target.classList.contains('pw-in')){const h=$('pwHint');if(h)h.classList.toggle('ok',e.target.value.length>=PW_MIN)}});
 $('setIn').addEventListener('keydown',e=>{
@@ -5493,7 +5517,7 @@ function accountPage(){
       <p class="mail-small">Can’t find it? Check your spam folder.</p></div>`;
   }
   // sign in: email + password first, the email link as the other way
-  return head+`<div class="auth-h"><h2>Sign in</h2>${PV?'':'<p class="auth-warn"><i></i>Your tasks are only on this device.</p>'}<p>Sign in to back them up and sync your phone and computer.</p></div>
+  return head+`<div class="auth-h"><h2>Sign in</h2>${PV?'':'<p class="auth-warn"><i></i>Your tasks are only on this device.</p>'}<p>Sign in to back up and sync them.</p></div>
     <div class="acc-form">${emailField()}${pwField('accPw','current-password','Password')}
     <div class="auth-row"><button class="auth-link" id="accToForgot" type="button">Forgot password?</button></div>
     <button class="primary" id="accSignin" ${authBusy?'disabled':''}>${authBusy?'Signing in…':'Sign in'}</button>

@@ -213,7 +213,7 @@ function accountPage(){
       <p class="mail-small">Can’t find it? Check your spam folder.</p></div>`;
   }
   // sign in: email + password first, the email link as the other way
-  return head+`<div class="auth-h"><h2>Sign in</h2>${PV?'':'<p class="auth-warn"><i></i>Your tasks are only on this device.</p>'}<p>Sign in to back them up and sync your phone and computer.</p></div>
+  return head+`<div class="auth-h"><h2>Sign in</h2>${PV?'':'<p class="auth-warn"><i></i>Your tasks are only on this device.</p>'}<p>Sign in to back up and sync them.</p></div>
     <div class="acc-form">${emailField()}${pwField('accPw','current-password','Password')}
     <div class="auth-row"><button class="auth-link" id="accToForgot" type="button">Forgot password?</button></div>
     <button class="primary" id="accSignin" ${authBusy?'disabled':''}>${authBusy?'Signing in…':'Sign in'}</button>

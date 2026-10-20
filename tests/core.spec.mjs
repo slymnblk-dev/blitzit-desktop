@@ -46,10 +46,12 @@ test('profile: name, emoji avatar and goal are saved', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 860 });
   const errors = await openApp(page);
   await page.locator('#dMe').click();
-  await page.locator('#youName').fill('Suly');
+  await page.locator('#youName').fill('Suly');                                     // the big name is the field
   await expect(page.locator('[data-av="🦊"]')).toHaveCount(0);                     // avatars tucked away
-  await page.locator('#avToggle').click();
+  await page.locator('#youAv').click();                                            // ✎ on the photo opens the picker
+  await expect(page.locator('#avModal')).toBeVisible();
   await page.locator('[data-av="🦊"]').click();
+  await expect(page.locator('#avModal')).toHaveCount(0);                           // picking closes it
   await page.locator('[data-goal="120"]').click();
   await page.waitForTimeout(700);
   await page.reload();

@@ -662,3 +662,23 @@ body.no-amb .amb-btn{display:none!important}
   box-shadow:0 0 0 6px rgba(255,255,255,.16),0 14px 30px -12px color-mix(in srgb,var(--today) 55%,#000),inset 0 1px 0 rgba(255,255,255,.1)}
 .td-go:active{box-shadow:0 0 0 4px rgba(255,255,255,.2),0 4px 12px -6px rgba(0,0,0,.4)}
 .td-ring{border-color:rgba(255,255,255,.7)}
+/* profile: your name is edited right in the big heading */
+.you-name-in{display:block;width:100%;min-width:0;background:transparent;border:0;padding:2px 0;margin:0;color:var(--text);font-family:inherit;
+  font-size:clamp(32px,9vw,44px);font-weight:800;letter-spacing:-.045em;line-height:1;outline:none;border-radius:8px;text-overflow:ellipsis;
+  background-image:linear-gradient(var(--line),var(--line));background-size:0 2px;background-position:0 100%;background-repeat:no-repeat;transition:background-size .25s}
+.you-name-in::placeholder{color:var(--muted);opacity:.7}
+.you-name-in:hover,.you-name-in:focus{background-size:100% 2px}
+.you-name-in:focus{background-image:linear-gradient(var(--today),var(--today))}
+/* avatar picker: a calm popup from the ✎ on your photo */
+.av-modal{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  background:color-mix(in srgb,#000 45%,transparent);animation:avFade .2s ease both}
+@media (min-width:640px){.av-modal{align-items:center}}
+.av-card{width:100%;max-width:420px;background:var(--surface);border-radius:26px;padding:16px 18px 20px;box-shadow:0 0 0 1px var(--line),0 30px 60px -20px rgba(0,0,0,.55);animation:avUp .32s cubic-bezier(.2,.8,.2,1) both}
+.av-mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.av-mh b{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.av-mh .icon-btn{background:var(--surface2)}
+.av-mh .icon-btn svg{width:16px;height:16px}
+.av-card .ghost-btn{margin-top:12px}
+@keyframes avFade{from{opacity:0}}
+@keyframes avUp{from{opacity:0;transform:translateY(24px) scale(.98)}}
+@media (prefers-reduced-motion:reduce){.av-modal,.av-card{animation:none}}
