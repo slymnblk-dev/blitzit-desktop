@@ -129,7 +129,10 @@ function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
 }
 const sOpt=(key,val,label)=>`<button data-k="${key}" data-v="${val}" class="${String(C()[key])===String(val)?'on':''}">${label}</button>`;
 const tg=(key)=>`<button class="tg" data-tg="${key}" aria-pressed="${!!C()[key]}" aria-label="Toggle"></button>`;
-const row=(label,ctrl,sub)=>`<div class="set-row"><div class="set-l">${label}${sub?`<small>${sub}</small>`:''}</div>${ctrl}</div>`;
+/* one rule for every settings row: switches, values and arrows sit on the right;
+   choices (segments, chips) get their own full-width line under the label */
+const row=(label,ctrl,sub)=>{const stack=/^\s*<div class="(segc|chips)/.test(ctrl);
+  return `<div class="set-row ${stack?'r-stack':'r-side'}"><div class="set-l">${label}${sub?`<small>${sub}</small>`:''}</div><div class="set-c">${ctrl}</div></div>`};
 let openSw=null;
 const HAS_KEYS=()=>matchMedia('(min-width:1100px)').matches||matchMedia('(hover:hover) and (pointer:fine)').matches;
 const BACK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
@@ -213,7 +216,7 @@ function settingsPage(id){
     ${row('Add to',`<div class="segc">${sOpt('addTo','top','Top')}${sOpt('addTo','bottom','Bottom')}</div>`)}
     ${row('Default list',`<div class="chips">${[{id:'',name:'First list'},...S.lists].map(l=>`<button class="opt ${(c.defList||'')===l.id?'on':''}" data-deflist="${l.id}">${l.c?`<i style="background:${l.c}"></i>`:''}${esc(l.name)}</button>`).join('')}</div>`)}
     </div><div class="set-sec"><h3>Display</h3>
-    ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Today progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
+    ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
     ${row('Search & filter',tg('search'),'A search button at the top. Find any task and filter the board by priority or tags.')}
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}

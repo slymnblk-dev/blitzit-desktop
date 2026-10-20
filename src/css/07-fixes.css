@@ -685,3 +685,17 @@ body.no-amb .amb-btn{display:none!important}
 /* sync status: always show the full words ("Up to date"), the button sits right after them */
 .sync-r{flex:1 1 auto;justify-content:flex-end;min-width:0}
 .sync-r .acc-val{max-width:none;overflow:visible;white-space:nowrap}
+/* ---------- settings rows: one tidy layout everywhere ---------- */
+.set-row.r-side{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:18px}
+.set-row.r-side .set-c{display:flex;align-items:center;justify-content:flex-end;min-width:0}
+.set-row.r-stack{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.set-row.r-stack .set-c{width:100%}
+.set-row.r-stack .segc{display:flex;width:100%}
+.set-row.r-stack .segc button{flex:1 1 0;min-width:0;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.set-row.r-stack .chips{display:flex;flex-wrap:wrap;gap:8px}
+.set-l{min-width:0}
+.set-l small{line-height:1.4}
+.set-row .tg{flex:none}
+/* Welcome animation: Play sits just left of the switch */
+.wl-set{display:flex;align-items:center;gap:10px}
+.wl-replay{order:-1;height:30px!important;padding:0 12px!important;border-radius:999px;background:var(--surface2);color:var(--text);font-size:13px!important;font-weight:600}
