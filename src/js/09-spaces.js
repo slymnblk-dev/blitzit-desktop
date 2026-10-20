@@ -14,6 +14,23 @@ const homeClick=e=>{
   const ed=e.target.closest('[data-edit]');if(ed){closePops();return openSpaceSheet(ed.dataset.edit)}
   const ar=e.target.closest('[data-sparc]');if(ar){closePops();return askArchiveSpace(ar.dataset.sparc)}
   const dl=e.target.closest('[data-del]');if(dl){closePops();return askDeleteSpace(dl.dataset.del)}
+  // list card ⋯ menu (Full width → a space's lists)
+  const lpm=e.target.closest('[data-lpm]');
+  if(lpm){e.stopPropagation();const pop=lpm.parentNode.querySelector('.lp-pop'),was=pop.classList.contains('on');closePops();
+    if(!was){pop.classList.remove('up');pop.classList.add('on');if(pop.getBoundingClientRect().bottom>innerHeight-8)pop.classList.add('up')}haptic(5);return}
+  if(e.target.closest('.lp-pop')){
+    const ls=id=>S.lists.find(x=>x.id===id);
+    const rn=e.target.closest('[data-lpren]');if(rn){closePops();return lpRename(rn.dataset.lpren)}
+    const c=e.target.closest('[data-lpc]');if(c){const l=ls(c.dataset.lpl);if(l){l.c=c.dataset.lpc;haptic(5);save();render()}return}
+    const mv=e.target.closest('[data-lpmv]');if(mv){const l=ls(mv.dataset.lpl),nx=spaceOf(mv.dataset.lpmv);if(!l||!nx)return;
+      commit(()=>{l.space=nx.id;if(S.list===l.id)S.list='all'},`${l.name} moved to ${nx.name}`);return}
+    const ed=e.target.closest('[data-lped]');if(ed){closePops();const id=ed.dataset.lped,l=ls(id);if(!l)return;openSpaceSide(l.space);editing=true;nl=null;leOpen=id;drawLists();openSheet('listSheet');return}
+    const ar=e.target.closest('[data-lparc]');if(ar){closePops();const l=ls(ar.dataset.lparc);if(l)commit(()=>archiveList(l),`${l.name} archived`);return}
+    const dl=e.target.closest('[data-lpdel]');if(dl){closePops();const l=ls(dl.dataset.lpdel);if(!l)return;const n=S.tasks.filter(t=>t.list===l.id).length;
+      confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'} for good. To keep them safe, choose Archive list instead.`,word:l.name,yes:'Delete list',
+        onYes:()=>commit(()=>{S.lists=S.lists.filter(x=>x!==l);S.tasks=S.tasks.filter(t=>t.list!==l.id);if(S.list===l.id)S.list='all'},`${l.name} deleted`)});return}
+    return;
+  }
   if(document.querySelector('.sp-pop.on')){closePops();return}
   if(e.target.closest('[data-spback]')){spPage=null;fwPeek=null;haptic(5);render();return}
   const lp=e.target.closest('[data-lp]');if(lp){const id=spPage,l=lp.dataset.lp;openSpaceSide(id);S.list=l;haptic(5);render();return}
@@ -32,7 +49,16 @@ const homeClick=e=>{
   if(e.target.closest('#bkLater')){S.bkSnooze=Date.now()+7*DAY;save();render();toast('We’ll remind you next week');return}
 };
 $('homeView').addEventListener('click',homeClick);$('dHome').addEventListener('click',homeClick);
-document.addEventListener('click',e=>{if(!e.target.closest('.sp-card'))closePops()});
+document.addEventListener('click',e=>{if(!e.target.closest('.sp-card')&&!e.target.closest('.lp-pop'))closePops()});
+/* rename a list right on its card: Enter saves, Esc cancels */
+function lpRename(id){
+  const l=S.lists.find(x=>x.id===id),card=document.querySelector(`.lp-card[data-lp="${id}"]`);if(!l||!card)return;
+  const nm=card.querySelector('.lp-name'),inp=document.createElement('input');
+  inp.className='lp-name lp-ren';inp.value=l.name;inp.maxLength=40;inp.setAttribute('aria-label','List name');nm.replaceWith(inp);inp.focus();inp.select();
+  let done=false;const fin=ok=>{if(done)return;done=true;const v=inp.value.trim();if(ok&&v&&v!==l.name)commit(()=>{l.name=v},'List renamed');else render()};
+  inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();fin(true)}else if(e.key==='Escape'){e.preventDefault();fin(false)}});
+  inp.addEventListener('click',e=>e.stopPropagation());inp.addEventListener('blur',()=>fin(true));
+}
 const cardKey=e=>{const c=e.target.closest('.sp-card');if(c&&e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openSpace(c.dataset.space)}};
 $('homeView').addEventListener('keydown',cardKey);$('dHome').addEventListener('keydown',cardKey);
 let spDraft=null;

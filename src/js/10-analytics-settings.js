@@ -45,10 +45,12 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
+/* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
+if(S.cfg.fwDefault!==1){S.cfg.fullWidth=true;S.cfg.fwDefault=1}
 S.cfg.names=Object.assign({},DEF_CFG.names,S.cfg.names);S.cfg.colors=Object.assign({},DEF_CFG.colors,S.cfg.colors);
 if(S.theme&&S.cfg.theme==='system'){S.cfg.theme=S.theme;delete S.theme}
 if(!S.cfg.shuffleDefault){S.cfg.shuffleDefault=1;S.cfg.focusShuffle=true}

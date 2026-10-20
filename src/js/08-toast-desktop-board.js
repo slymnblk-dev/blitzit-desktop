@@ -19,12 +19,30 @@ let fwPeek=null,spPage=null;
 const spPageOn=()=>peekOn()&&matchMedia('(min-width:1100px)').matches;
 function spaceListsPage(sp){
   const ls=S.lists.filter(l=>l.space===sp.id),st=id=>{const ts=S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id));return {today:ts.filter(t=>t.stage==='today').length,open:ts.filter(t=>t.stage!=='done').length}};
-  const card=(id,name,ico,c,i)=>{const s=st(id);return `<div class="lp-card" role="button" tabindex="0" data-lp="${id}" style="--sc:${c};animation-delay:${i*.04}s"><span class="lp-ico">${ico}</span><span class="lp-name">${esc(name)}</span><span class="lp-meta">${s.today?`<b>${s.today}</b> today · `:''}${s.open} open</span></div>`};
+  const card=(id,name,ico,c,i)=>{const s=st(id);return `<div class="lp-card" role="button" tabindex="0" data-lp="${id}" style="--sc:${c};animation-delay:${i*.04}s"><span class="lp-ico">${ico}</span><span class="lp-name">${esc(name)}</span><span class="lp-meta">${s.today?`<b>${s.today}</b> today · `:''}${s.open} open</span>${id==='all'?'':lpMenu(id,ls.length===1)}</div>`};
   return `<button class="lp-back" data-spback>${BACK_SVG}<span>All spaces</span></button>
     <div class="lp-grid">${card('all','All lists',`<span class="stack">${ls.slice(0,3).map(x=>`<span style="background:${x.c}"></span>`).join('')}</span>`,sp.c,0)}
     ${ls.map((l,i)=>card(l.id,l.name,'',l.c,i+1)).join('')}
     <button class="lp-new" data-lpnew style="animation-delay:${(ls.length+1)*.04}s">${PLUS_S}<span>New list</span></button></div>`;
 }
+/* ⋯ on a list card: rename, colour, move to another space, tags, archive, delete */
+function lpMenu(id,only){
+  const l=S.lists.find(x=>x.id===id);if(!l)return '';
+  const others=S.spaces.filter(x=>x.id!==l.space);
+  return `<button class="lp-more" data-lpm="${id}" aria-label="List options" title="List options">${DOTS3}</button>
+  <div class="sp-pop lp-pop" data-lpop="${id}">
+    <button data-lpren="${id}"><span class="lpm-i">${PEN_S}</span>Rename</button>
+    <div class="lpm-lbl">Colour</div><div class="lpm-sw">${PALETTE.map(c=>`<button data-lpc="${c}" data-lpl="${id}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
+    ${others.length?`<div class="lpm-lbl">Move to</div>${only?`<p class="lpm-note">It’s the only list in this space, so it stays here.</p>`:`<div class="lpm-sp">${others.map(x=>`<button data-lpmv="${x.id}" data-lpl="${id}"><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</button>`).join('')}</div>`}`:''}
+    <i class="lpm-hr"></i>
+    <button data-lped="${id}"><span class="lpm-i">${TAG_S}</span>Tags and more…</button>
+    ${only?'':`<button data-lparc="${id}"><span class="lpm-i">${ARC_S}</span>Archive list</button><button class="warn" data-lpdel="${id}"><span class="lpm-i">${BIN_S}</span>Delete list</button>`}
+  </div>`;
+}
+const PEN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
+const TAG_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>';
+const ARC_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9M10 13h4"/></svg>';
+const BIN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
 const peekOn=()=>!!(S.cfg&&S.cfg.fullWidth&&!S.space);
 function peekSub(sp){
   const ls=S.lists.filter(l=>l.space===sp.id),n=id=>S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id)&&t.stage!=='done').length;
