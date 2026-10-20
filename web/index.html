@@ -2213,7 +2213,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=125; // bumped with every published update
+const APP_VERSION=126; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2638,7 +2638,7 @@ function todayCard(td,m){
 }
 function homeHTML(){
   const all=S.tasks.filter(shown),td=bySpaceOrder(all.filter(t=>t.stage==='today')),m=td.reduce((a,t)=>a+t.est,0);
-  return `<section class="home-hero"><div class="home-date">${meName()?esc(greeting())+' · ':''}${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</div>
+  return `<section class="home-hero"><div class="home-date">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</div>
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
