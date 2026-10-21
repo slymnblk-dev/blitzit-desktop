@@ -824,3 +824,7 @@ body.no-amb .amb-btn{display:none!important}
    and the symbol no longer picks up the grey of the row arrow) */
 .settings .cat-ic{background:color-mix(in srgb,var(--ic) 17%,transparent);color:color-mix(in srgb,var(--ic) 88%,var(--text))}
 .settings .cat .cat-ic svg{width:18px;height:18px;color:inherit}
+/* account: show the whole email; a very long one wraps instead of being cut */
+.r-side .set-c .acc-email{max-width:none;overflow:visible;white-space:normal;overflow-wrap:anywhere;text-align:right}
+.set-row.r-side:has(.acc-email){grid-template-columns:auto minmax(0,1fr)}
+.set-row.r-side:has(.acc-email) .set-l{white-space:nowrap}

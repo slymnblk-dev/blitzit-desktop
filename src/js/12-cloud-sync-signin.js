@@ -176,7 +176,7 @@ function accountPage(){
     <button class="primary" id="accSavePw" ${authBusy?'disabled':''}>${authBusy?'Saving…':'Save password'}</button>
     <p class="acc-msg">${esc(authMsg)}</p></div>`;
   if(user)return head+`${accInYou?'':'<p class="sub-p">Your tasks sync across every device you sign in on.</p>'}
-    <div class="set-sec">${row('Signed in as',`<span class="acc-val">${esc(user.email||'')}</span>`)}
+    <div class="set-sec">${row('Signed in as',`<span class="acc-val acc-email">${esc(user.email||'')}</span>`)}
     ${row('Sync',`<span class="sync-r"><span class="acc-val" id="syncStatus">${SYNC_LABEL[syncState]}</span><button class="sync-now" id="accSync" type="button" aria-label="Sync now" title="Sync now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 21v-5h-5"/></svg></button></span>`)}</div>
     <div class="set-sec"><h3>Password</h3>${pwOpen?`<div class="pw-box">${pwField('accNewPw','new-password','New password')}${pwHint()}
       <div class="dz-btns"><button class="ghost-btn" id="accPwCancel" type="button">Cancel</button><button class="pw-save" id="accSavePw" type="button" ${authBusy?'disabled':''}>${authBusy?'Saving…':'Save password'}</button></div>

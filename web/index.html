@@ -2155,6 +2155,10 @@ body.no-amb .amb-btn{display:none!important}
    and the symbol no longer picks up the grey of the row arrow) */
 .settings .cat-ic{background:color-mix(in srgb,var(--ic) 17%,transparent);color:color-mix(in srgb,var(--ic) 88%,var(--text))}
 .settings .cat .cat-ic svg{width:18px;height:18px;color:inherit}
+/* account: show the whole email; a very long one wraps instead of being cut */
+.r-side .set-c .acc-email{max-width:none;overflow:visible;white-space:normal;overflow-wrap:anywhere;text-align:right}
+.set-row.r-side:has(.acc-email){grid-template-columns:auto minmax(0,1fr)}
+.set-row.r-side:has(.acc-email) .set-l{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -2349,7 +2353,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=132; // bumped with every published update
+const APP_VERSION=133; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5674,7 +5678,7 @@ function accountPage(){
     <button class="primary" id="accSavePw" ${authBusy?'disabled':''}>${authBusy?'Saving…':'Save password'}</button>
     <p class="acc-msg">${esc(authMsg)}</p></div>`;
   if(user)return head+`${accInYou?'':'<p class="sub-p">Your tasks sync across every device you sign in on.</p>'}
-    <div class="set-sec">${row('Signed in as',`<span class="acc-val">${esc(user.email||'')}</span>`)}
+    <div class="set-sec">${row('Signed in as',`<span class="acc-val acc-email">${esc(user.email||'')}</span>`)}
     ${row('Sync',`<span class="sync-r"><span class="acc-val" id="syncStatus">${SYNC_LABEL[syncState]}</span><button class="sync-now" id="accSync" type="button" aria-label="Sync now" title="Sync now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 21v-5h-5"/></svg></button></span>`)}</div>
     <div class="set-sec"><h3>Password</h3>${pwOpen?`<div class="pw-box">${pwField('accNewPw','new-password','New password')}${pwHint()}
       <div class="dz-btns"><button class="ghost-btn" id="accPwCancel" type="button">Cancel</button><button class="pw-save" id="accSavePw" type="button" ${authBusy?'disabled':''}>${authBusy?'Saving…':'Save password'}</button></div>
