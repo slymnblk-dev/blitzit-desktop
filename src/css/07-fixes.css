@@ -799,9 +799,9 @@ body.no-amb .amb-btn{display:none!important}
 /* ---------- Settings home: grouped cards with small coloured icons ---------- */
 .cat-cap{margin:26px 4px 8px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .settings .cats{margin-top:0;border-top:0;background:var(--surface);border-radius:20px;overflow:hidden}
-.settings .cat{padding:13px 16px;border-bottom:0;border-top:1px solid var(--line);gap:14px;justify-content:flex-start;transition:background .15s}
+.settings .cat{padding:14px 18px;border-bottom:0;border-top:1px solid var(--line);gap:14px;justify-content:flex-start;transition:background .15s}
 .settings .cat:first-child{border-top:0}
-.settings .cat:hover{background:var(--surface2);padding:13px 16px}
+.settings .cat:hover{background:var(--surface2);padding:14px 18px}
 .settings .cat>svg{width:16px;height:16px;color:var(--muted);flex:none;margin-left:auto}
 .cat-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;color:#0F1013}
 .cat-ic svg{width:18px;height:18px}

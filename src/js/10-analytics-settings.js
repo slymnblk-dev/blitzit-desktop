@@ -151,14 +151,8 @@ const PAGES=[
   {id:'data',name:'Data'}
 ];
 let lastView='main';
-/* Settings home: two calm groups, each row with a small coloured icon */
+/* Settings home: two calm groups (no icons, by choice: quieter) */
 const SET_GROUPS=[['App',['appearance','stages','tasks','focus']],['Organise',['lists','shortcuts','data']]];
-const SET_IC={appearance:['#9C95FF','pal'],stages:['#FFB547','bars'],tasks:['#34D399','chk'],focus:['#FF5B47','sun'],lists:['#5AB8F5','list'],shortcuts:['#A1A1AA','key'],data:['#3EC6C6','db']};
-const SET_P={pal:'<path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.6-1 1-2s0-2 1.5-2H17a4 4 0 0 0 4-4c0-5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="12" cy="7.5" r="1.1"/><circle cx="16.5" cy="11" r="1.1"/>',
-  bars:'<path d="M4 6h16M4 12h11M4 18h6"/>',chk:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',sun:'<path d="M4 18h16M8 18a4 4 0 0 1 8 0M12 6v3M6.5 9.5l2 2M17.5 9.5l-2 2"/>',
-  list:'<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>',key:'<rect x="3" y="6.5" width="18" height="11" rx="2.5"/><path d="M7 10.5h.01M11 10.5h.01M15 10.5h.01M8 14h8"/>',
-  db:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>'};
-const setIco=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${SET_P[k]}</svg>`;
 function drawSettings(){
   try{listsBack()}catch(e){}
   const el=$('setIn'),anim=lastView!==setView;
@@ -188,7 +182,7 @@ function settingsMain(){
   <h1>Settings</h1>
   <button class="you-card" id="youOpen">${avatarHTML()}<span><b>${esc(meName()||'Your profile')}</b><small>${esc(meSub())} · stats, account</small></span>${CHEV}</button>
   ${SET_GROUPS.map(([g,ids])=>{const ps=ids.map(id=>PAGES.find(p=>p.id===id)).filter(p=>p&&!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS()));
-    return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-ic" style="--ic:${SET_IC[p.id][0]}">${setIco(SET_IC[p.id][1])}</span><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
+    return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
   <div class="ver">Windaday, version ${VER}. ${user?'Your tasks sync to your account.':'Your data stays on this device.'}</div>`;
 }
 function settingsPage(id){

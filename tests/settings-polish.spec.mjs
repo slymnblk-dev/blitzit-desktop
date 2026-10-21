@@ -8,7 +8,7 @@ test('settings groups, data danger zone, search filters only on a board, blank n
   const errors = await openApp(page);
   await page.evaluate(() => openSettings());
   await expect(page.locator('#setIn .cat-cap')).toHaveText(['App', 'Organise']);
-  await expect(page.locator('#setIn .cat .cat-ic')).toHaveCount(await page.locator('#setIn .cat').count());
+  await expect(page.locator('#setIn .cat-ic')).toHaveCount(0);
   await page.locator('#setIn [data-page="data"]').click();
   await expect(page.locator('#setIn .bk-last').first()).toHaveText('Never');
   const w = await page.locator('#setIn .bk-last').first().evaluate(e => e.scrollWidth <= e.clientWidth + 1);
