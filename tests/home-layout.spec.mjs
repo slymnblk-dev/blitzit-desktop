@@ -7,7 +7,7 @@ test('desktop home layouts: rich space cards by default, Today first from settin
   await page.setViewportSize({ width: 1400, height: 860 });
   const errors = await openApp(page);
   expect(await page.evaluate(() => C().homeLayout)).toBe('spaces');
-  await expect(page.locator('#dHome .sp-next').first()).toBeVisible();
+  await expect(page.locator('#dHome .sp-bars')).toHaveCount(0); // Calm (default) stays quiet
   await expect(page.locator('#dHome .ts-up')).toBeVisible();
   await page.evaluate(() => { openSettings(); setView = 'appearance'; drawSettings(); });
   await page.locator('#setIn [data-k="homeLayout"][data-v="today"]').click();

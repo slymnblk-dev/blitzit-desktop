@@ -196,7 +196,7 @@ function settingsPage(id){
     ${row('Density',`<div class="segc">${sOpt('density','comfortable','Roomy')}${sOpt('density','compact','Compact')}</div>`)}
     ${row('Home style',`<div class="segc">${sOpt('homeStyle','calm','Calm')}${sOpt('homeStyle','colorful','Colourful')}</div>`,(c.homeStyle||'calm')==='calm'?'A quiet list of spaces. Only Today stands out.':'Colourful space cards with stage bars.')}
     </div>${(matchMedia('(min-width:1100px)').matches||DESK())?`<div class="set-sec"><h3>Layout on computers</h3>
-    ${row('Home',`<div class="segc">${sOpt('homeLayout','spaces','Spaces')}${sOpt('homeLayout','today','Today first')}</div>`,(c.homeLayout||'spaces')==='today'?'Your Today list to tick off, with spaces in a slim column.':'Space cards with stage bars and the next task in each.')}
+    ${row('Home',`<div class="segc">${sOpt('homeLayout','spaces','Spaces')}${sOpt('homeLayout','today','Today first')}</div>`,(c.homeLayout||'spaces')==='today'?'Your Today list to tick off, with spaces in a slim column.':'Your spaces as cards, styled by Home style above.')}
     <div class="lay-pick">${[[0,'With sidebar','Spaces and lists on the left.'],[1,'Full width','Hides the sidebar inside a space. Switch spaces and lists from the top.']].map(([v,n,d])=>`<button class="lay ${!!c.fullWidth===!!v?'on':''}" data-fw="${v}">
       <span class="lay-th ${v?'full':''}"><i class="lt-side"></i><span class="lt-main"><i class="lt-top"></i><span class="lt-cols"><i></i><i></i><i></i><i></i></span></span></span>
       <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>

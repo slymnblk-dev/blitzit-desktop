@@ -97,16 +97,12 @@ function togglePin(id){
   commit(()=>{sp.pinned=on},on?`${sp.name} pinned to top`:`${sp.name} unpinned`);haptic(on?[8,40,8]:6);
 }
 const DOTS3='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
-/* desktop Home cards (calm style): stage bars and the next task in the space; hidden on phones */
+/* desktop Home cards (Colourful style): the next task in the space under the stage bar; hidden on phones.
+   Calm stays quiet: name, counts, nothing coloured. */
 function spNext(sp){
   const ls=S.lists.filter(l=>l.space===sp.id).map(l=>l.id),ts=S.tasks.filter(t=>shown(t)&&ls.includes(t.list));
   for(const st of ['today','week','backlog']){const t=ts.find(x=>x.stage===st);if(t)return t}
   return null;
-}
-function spRich(sp,st){
-  const nx=spNext(sp);
-  return `<span class="sp-bars" aria-hidden="true">${st.total?VS().map(x=>st.by[x.id]?`<i style="flex:${st.by[x.id]};background:var(--${x.id})"></i>`:'').join(''):'<i class="sp-bars-0"></i>'}</span>
-      <span class="sp-next">${nx?`<span class="sp-nk">Next</span><span class="sp-nt">${esc(nx.title)}</span>`:`<span class="sp-nk">All clear</span>`}</span>`;
 }
 function spaceRows(){
   return orderedSpaces().map(sp=>{const st=spaceStats(sp);
@@ -115,7 +111,6 @@ function spaceRows(){
       <span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>
       <span class="sp-rt"><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="sp-sub">${sub}</span></span>
       <button class="sp-more" data-more="${sp.id}" aria-label="Space options">${DOTS3}</button>
-      ${spRich(sp,st)}
       <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
     </div>`}).join('')+`<button class="sp-new sp-row-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
 }
@@ -128,6 +123,7 @@ function spaceCards(){
       <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
       <div class="sp-bar">${st.total?VS().map(x=>st.by[x.id]?`<span style="flex:${st.by[x.id]};background:var(--${x.id})"></span>`:'').join(''):''}</div>
       <div class="sp-meta"><span><b>${st.today}</b> today</span><span><b>${st.open}</b> open</span><span>${st.lists} ${st.lists===1?'list':'lists'}</span></div>
+      ${(()=>{const nx=spNext(sp);return `<span class="sp-next">${nx?`<span class="sp-nk">Next</span><span class="sp-nt">${esc(nx.title)}</span>`:`<span class="sp-nk">All clear</span>`}</span>`})()}
     </div>`}).join('')+`<button class="sp-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
 }
 /* Today's tasks ordered like the space list: pinned spaces first, then the rest top to bottom */

@@ -829,19 +829,15 @@ body.no-amb .amb-btn{display:none!important}
 .set-row.r-side:has(.acc-email){grid-template-columns:auto minmax(0,1fr)}
 .set-row.r-side:has(.acc-email) .set-l{white-space:nowrap}
 
-/* ---------- desktop Home, "Spaces" layout: richer cards (stage bars + next task) ---------- */
+/* ---------- desktop Home, Colourful cards: the next task under the stage bar (Calm stays as it was) ---------- */
 .sp-bars,.sp-next{display:none}
-:root[data-home="calm"] .d-grid .sp-row{grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto 1fr;column-gap:14px;min-height:0;padding:18px 18px 16px}
-:root[data-home="calm"] .d-grid .sp-row .sp-ico{grid-column:1;grid-row:1}
-:root[data-home="calm"] .d-grid .sp-rt{grid-column:2;grid-row:1;align-self:center;margin-top:0;gap:2px;min-width:0}
-:root[data-home="calm"] .d-grid .sp-row .sp-more{grid-column:3;grid-row:1;align-self:start}
-:root[data-home="calm"] .d-grid .sp-row .sp-name{font-size:18px}
-.d-grid .sp-bars{display:flex;grid-column:1/-1;grid-row:2;gap:4px;height:6px;margin-top:18px}
 .sp-bars i{display:block;height:100%;border-radius:3px;min-width:6px}
 .sp-bars .sp-bars-0{flex:1;background:var(--surface2)}
-.d-grid .sp-next{display:flex;grid-column:1/-1;grid-row:3;align-self:end;align-items:baseline;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px;min-width:0}
+.d-grid .sp-card .sp-next{display:flex;align-items:baseline;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px;min-width:0}
 .sp-nk{color:var(--muted);flex:none}
 .sp-nt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+/* Today first, Calm style: the space bars in quiet greys */
+:root[data-home="calm"] .hf-sp .sp-bars i:not(.sp-bars-0){background:color-mix(in srgb,var(--text) 22%,transparent)!important}
 /* Today strip: "Up next" instead of chips */
 .ts-up{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;font-size:15px}
 .ts-up span{color:var(--muted);flex:none}
