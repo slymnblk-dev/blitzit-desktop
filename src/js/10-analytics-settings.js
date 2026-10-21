@@ -46,7 +46,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -196,6 +196,7 @@ function settingsPage(id){
     ${row('Density',`<div class="segc">${sOpt('density','comfortable','Roomy')}${sOpt('density','compact','Compact')}</div>`)}
     ${row('Home style',`<div class="segc">${sOpt('homeStyle','calm','Calm')}${sOpt('homeStyle','colorful','Colourful')}</div>`,(c.homeStyle||'calm')==='calm'?'A quiet list of spaces. Only Today stands out.':'Colourful space cards with stage bars.')}
     </div>${(matchMedia('(min-width:1100px)').matches||DESK())?`<div class="set-sec"><h3>Layout on computers</h3>
+    ${row('Home',`<div class="segc">${sOpt('homeLayout','spaces','Spaces')}${sOpt('homeLayout','today','Today first')}</div>`,(c.homeLayout||'spaces')==='today'?'Your Today list to tick off, with spaces in a slim column.':'Space cards with stage bars and the next task in each.')}
     <div class="lay-pick">${[[0,'With sidebar','Spaces and lists on the left.'],[1,'Full width','Hides the sidebar inside a space. Switch spaces and lists from the top.']].map(([v,n,d])=>`<button class="lay ${!!c.fullWidth===!!v?'on':''}" data-fw="${v}">
       <span class="lay-th ${v?'full':''}"><i class="lt-side"></i><span class="lt-main"><i class="lt-top"></i><span class="lt-cols"><i></i><i></i><i></i><i></i></span></span></span>
       <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>

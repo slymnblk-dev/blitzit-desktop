@@ -53,7 +53,8 @@ function peekSub(sp){
 }
 function renderDesk(){
   const vis=visible();
-  const todayT=vis.filter(t=>t.stage==='today');
+  // on Home, count every space's Today (like the Today strip); inside a space, what the board shows
+  const todayT=(S.space?vis:S.tasks.filter(t=>shown(t))).filter(t=>t.stage==='today');
   const dateTxt=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
   const greet=!S.space&&meName();$('mDate').classList.toggle('has-sun',!!greet);if(greet)$('mDate').innerHTML=sunIcon('m-sun')+'<span>'+esc(greeting())+'</span>';else $('mDate').textContent=dateTxt;
   $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
@@ -84,7 +85,7 @@ function renderDesk(){
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   const spp=!S.space&&spPage&&spPageOn()?spaceOf(spPage):null;if(!spp)spPage=null;
-  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`}
+  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
   const gk=S.space?S.space+'|'+S.list:'';
   if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
@@ -122,11 +123,31 @@ $('dHome').addEventListener('click',e=>{if(e.target.closest('#tsGo'))$('goBtn').
 function todayStrip(){
   const td=bySpaceOrder(S.tasks.filter(t=>shown(t)&&t.stage==='today'));
   if(!td.length)return '';
-  const m=td.reduce((a,t)=>a+t.est,0);
+  const m=td.reduce((a,t)=>a+t.est,0),nx=td[0];
   return `<div class="ts"><div class="ts-l"><span class="ts-k">Today</span><b>${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}</b></div>
-    <div class="ts-t">${td.slice(0,3).map(t=>`<span><i style="background:${listOf(t.list).c}"></i>${esc(t.title)}</span>`).join('')}${td.length>3?`<span class="ts-more">+${td.length-3} more</span>`:''}</div>
+    <div class="ts-up"><span>Up next</span><b>${esc(nx.title)}</b></div>
     <button class="ts-go" id="tsGo">${sunIcon()}Win the day</button></div>`;
 }
+
+/* Home layout "Today first" (Settings → Appearance): the real Today list to tick off, spaces in a slim column */
+function todayFirst(){
+  const td=bySpaceOrder(S.tasks.filter(t=>shown(t)&&t.stage==='today')),m=td.reduce((a,t)=>a+t.est,0);
+  const rows=td.map(t=>{const l=listOf(t.list),sp=spaceOf(l.space)||{};
+    return `<div class="hf-tk" data-hft="${t.id}" role="button" tabindex="0"><button class="hf-ck" data-hfdone="${t.id}" aria-label="Complete ${esc(t.title)}"></button>
+      <span class="hf-t"><b>${esc(t.title)}</b><small>${sp.e?esc(sp.e)+' ':''}${esc(sp.name||'')}<i style="background:${l.c}"></i>${esc(l.name)}</small></span><span class="hf-e">${fmt(t.est)}</span></div>`}).join('');
+  const side=orderedSpaces().map(sp=>{const st=spaceStats(sp);
+    return `<button class="hf-sp" data-space="${sp.id}"><span class="hf-sph"><span class="hf-ic">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span class="hf-n">${st.today?st.today+' today':st.open?st.open+' open':'Clear'}</span></span>
+      <span class="sp-bars">${st.total?VS().map(x=>st.by[x.id]?`<i style="flex:${st.by[x.id]};background:var(--${x.id})"></i>`:'').join(''):'<i class="sp-bars-0"></i>'}</span></button>`}).join('');
+  return `${backupCard()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
+    ${rows||`<p class="hf-empty">Open a space and move a few tasks to Today. They’ll show up here, ready to tick off.</p>`}</section>
+    <aside class="hf-side"><div class="hf-cap">Spaces</div>${side}<button class="hf-new" id="spNew">${PLUS_S}New space</button></aside></div>`;
+}
+$('dHome').addEventListener('click',e=>{
+  const ck=e.target.closest('[data-hfdone]');if(ck){e.stopPropagation();const t=S.tasks.find(x=>x.id===+ck.dataset.hfdone);if(!t)return;
+    const row=ck.closest('.hf-tk');row.classList.add('done');haptic(10);setTimeout(()=>commit(()=>setStage(t,'done'),doneMsg(t)),260);return}
+  const r=e.target.closest('[data-hft]');if(r)openDetail(+r.dataset.hft);
+});
+$('dHome').addEventListener('keydown',e=>{const r=e.target.closest('[data-hft]');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDetail(+r.dataset.hft)}});
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
 const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
