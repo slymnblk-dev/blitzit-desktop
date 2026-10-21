@@ -2151,6 +2151,10 @@ body.no-amb .amb-btn{display:none!important}
 
 /* new space before it has a name: a soft + tile in the chosen colour */
 #spaceSheet .sp-prev.blank{background:color-mix(in srgb,var(--spc) 22%,transparent);color:var(--spc);font-weight:500;font-size:32px}
+/* settings icons: a soft tint of the colour with the symbol in the colour itself (calmer than solid tiles,
+   and the symbol no longer picks up the grey of the row arrow) */
+.settings .cat-ic{background:color-mix(in srgb,var(--ic) 17%,transparent);color:color-mix(in srgb,var(--ic) 88%,var(--text))}
+.settings .cat .cat-ic svg{width:18px;height:18px;color:inherit}
 </style>
 </head>
 <body>
@@ -2345,7 +2349,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=131; // bumped with every published update
+const APP_VERSION=132; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5072,7 +5076,7 @@ function settingsMain(){
   <h1>Settings</h1>
   <button class="you-card" id="youOpen">${avatarHTML()}<span><b>${esc(meName()||'Your profile')}</b><small>${esc(meSub())} · stats, account</small></span>${CHEV}</button>
   ${SET_GROUPS.map(([g,ids])=>{const ps=ids.map(id=>PAGES.find(p=>p.id===id)).filter(p=>p&&!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS()));
-    return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-ic" style="background:${SET_IC[p.id][0]}">${setIco(SET_IC[p.id][1])}</span><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
+    return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-ic" style="--ic:${SET_IC[p.id][0]}">${setIco(SET_IC[p.id][1])}</span><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
   <div class="ver">Windaday, version ${VER}. ${user?'Your tasks sync to your account.':'Your data stays on this device.'}</div>`;
 }
 function settingsPage(id){

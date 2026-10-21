@@ -188,7 +188,7 @@ function settingsMain(){
   <h1>Settings</h1>
   <button class="you-card" id="youOpen">${avatarHTML()}<span><b>${esc(meName()||'Your profile')}</b><small>${esc(meSub())} · stats, account</small></span>${CHEV}</button>
   ${SET_GROUPS.map(([g,ids])=>{const ps=ids.map(id=>PAGES.find(p=>p.id===id)).filter(p=>p&&!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS()));
-    return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-ic" style="background:${SET_IC[p.id][0]}">${setIco(SET_IC[p.id][1])}</span><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
+    return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-ic" style="--ic:${SET_IC[p.id][0]}">${setIco(SET_IC[p.id][1])}</span><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
   <div class="ver">Windaday, version ${VER}. ${user?'Your tasks sync to your account.':'Your data stays on this device.'}</div>`;
 }
 function settingsPage(id){
