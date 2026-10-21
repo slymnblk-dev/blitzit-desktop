@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=135; // bumped with every published update
+const APP_VERSION=136; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -142,7 +142,7 @@ function repairData(){
   S.tasks=S.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);
   S.tasks.forEach(t=>{
     if(!SIDS.includes(t.stage))t.stage='backlog';
-    if(!lids.has(t.list))t.list=S.lists[0].id;
+    if(t.inbox)t.list=null;else if(!lids.has(t.list))t.list=S.lists[0].id;
     if(typeof t.title!=='string')t.title=t.title==null?'':String(t.title);
     if(!Array.isArray(t.subs))t.subs=[];
     if(typeof t.est!=='number'||!(t.est>=0))t.est=30;
@@ -163,7 +163,7 @@ const inSpaceMode=()=>S.space&&S.space!=='all';
 const listsHere=()=>inSpaceMode()?S.lists.filter(l=>l.space===S.space):S.lists;
 const inSpace=t=>!inSpaceMode()||listOf(t.list).space===S.space;
 const fmt=m=>m>=60?(m%60?`${Math.floor(m/60)}h ${m%60}m`:`${m/60}h`):`${m}m`;
-const shown=t=>!t.archived&&(!t.showFrom||t.showFrom<=today());
+const shown=t=>!t.inbox&&!t.archived&&(!t.showFrom||t.showFrom<=today());
 const VS=()=>STAGES.filter(s=>s.id!=='done'||!S.cfg||S.cfg.showDone);
 const visible=()=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(S.list==='all'||t.list===S.list)&&srchPass(t));
 const idx=id=>STAGES.findIndex(s=>s.id===id);
@@ -171,6 +171,16 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const root=document.documentElement;
 const haptic=(p=8)=>{try{if(S.cfg&&!S.cfg.haptics)return;navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const defaultList=()=>{const h=listsHere();if(S.list!=='all'&&h.some(l=>l.id===S.list))return S.list;if(S.cfg&&S.cfg.defList&&h.some(l=>l.id===S.cfg.defList))return S.cfg.defList;return (h[0]||S.lists[0]).id};
+/* focus limits: each list holds at most 10 tasks per stage (Backlog, My week, Today); each task at most 10 steps.
+   Done has no limit. Older lists that are already over keep their tasks; nothing new goes in until there's room. */
+const STAGE_MAX=10,SUB_MAX=10;
+const stageCount=(list,stage,skip)=>S.tasks.filter(t=>t!==skip&&shown(t)&&t.list===list&&t.stage===stage).length;
+const stageRoom=(list,stage,skip)=>stage==='done'||stageCount(list,stage,skip)<STAGE_MAX;
+function canPut(list,stage,skip){
+  if(stageRoom(list,stage,skip))return true;
+  toast(`${listOf(list).name} already has ${STAGE_MAX} in ${STAGES[idx(stage)].name}. Finish or move one first.`);haptic([10,40,10]);return false;
+}
+function canStep(t){if((t.subs||[]).length<SUB_MAX)return true;toast(`Up to ${SUB_MAX} steps per task. Keep it focused.`);haptic([10,40,10]);return false}
 const addTask=t=>{sfx('add');S.cfg&&S.cfg.addTo==='bottom'?S.tasks.push(t):S.tasks.unshift(t)};
 const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 const X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';

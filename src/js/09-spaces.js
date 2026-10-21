@@ -159,6 +159,7 @@ $('board').addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.stopPropagation();inp.value='';inp.blur();return}
   if(e.key!=='Enter')return;const v=inp.value.trim();if(!v)return;
   const t=newTask(v,inp.closest('.col').dataset.s,defaultList(),S.cfg.defEst);
+  if(!canPut(t.list,t.stage))return;
   S.tasks.push(t);enterId=t.id;inp.value='';haptic(6);sfx('add');render();
   const sc=inp.closest('.col-scroll');sc.scrollTop=sc.scrollHeight;
 });
@@ -215,6 +216,7 @@ window.addEventListener('pointerup',()=>{
   };
   haptic(8);
   if(priBad)setTimeout(()=>priHint(t),250);
+  if(t.stage!==target&&!canPut(t.list,target,t)){render();return}
   if(t.stage!==target)commit(apply,target==='done'?doneMsg(t):sec?`Moved to ${secFind(sec).sec.name}`:`Moved to ${STAGES[idx(target)].name}`);
   else if(secMoved)commit(apply,sec?`Moved to ${secFind(sec).sec.name}`:'Moved out of the section');
   else{apply();render()}

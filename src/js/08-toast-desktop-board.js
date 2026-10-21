@@ -60,7 +60,8 @@ function renderDesk(){
   $('mSub').innerHTML=(!S.space&&meName()?esc(dateTxt)+' · ':'')+(todayT.length?`<b>${todayT.length}</b> ${todayT.length===1?'task':'tasks'} today, <b>${fmt(todayT.reduce((a,t)=>a+t.est,0))}</b> planned`:'Today is clear');
   document.querySelectorAll('.col').forEach(col=>{
     const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);
-    col.querySelector('.col-n').textContent=here.length;
+    const cn=col.querySelector('.col-n'),one=inSpaceMode()&&S.list!=='all'&&sid!=='done';
+    cn.textContent=one?`${here.length}/${STAGE_MAX}`:here.length;cn.classList.toggle('full',one&&here.length>=STAGE_MAX);cn.classList.toggle('over',one&&here.length>STAGE_MAX);
     const sum=col.querySelector('.col-sum'),ul=col.querySelector('.col-list');
     if(sid==='done'){
       sum.innerHTML=here.length?`<span><b>${here.length}</b> finished</span>`:'';
@@ -79,8 +80,8 @@ function renderDesk(){
   const sub=S.space?`<div class="s-sub"><button class="s-list ${S.list==='all'?'on':''}" data-l="all" title="All lists"><span class="stack">${listsHere().slice(0,3).map(x=>`<span style="background:${x.c};border-color:var(--bg)"></span>`).join('')}</span><span class="s-name">All lists</span><span class="n">${open('all')}</span></button>`+
     listsHere().map(l=>`<button class="s-list ${S.list===l.id?'on':''}" data-l="${l.id}" title="${esc(l.name)}"><i style="background:${l.c}"></i><span class="s-name">${esc(l.name)}</span><span class="n">${open(l.id)}</span></button>`).join('')+
     `<button class="s-list s-mini" id="sNew" title="New list">${PLUS_S}<span class="s-name">New list</span></button><button class="s-list s-mini" id="sEdit" title="Edit lists"><span class="s-name">Edit lists</span></button></div>`:'';
-  $('sLists').innerHTML=`<button class="s-list s-home ${!S.space?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
-    <button class="s-list s-home ${S.space==='all'?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}
+  $('sLists').innerHTML=`<button class="s-list s-home ${!S.space&&!ibOn?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
+    <button class="s-list s-home ${S.space==='all'&&!ibOn?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="s-list s-home s-inbox ${ibOn?'on':''}" id="sInbox" title="Inbox">${IB_ICON}<span class="s-name">Inbox</span>${n?`<span class="n">${n}</span>`:''}</button>`})():''}
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
@@ -97,6 +98,8 @@ function renderDesk(){
 }
 
 $('sLists').onclick=e=>{
+  if(e.target.closest('#sInbox'))return ibOn?closeInbox():openInbox();
+  if(ibOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeInbox();
   if(e.target.closest('#sHome'))return goHome();
   if(e.target.closest('#sAll'))return S.space==='all'?toggleSub():openSpaceSide('all');
   if(e.target.closest('#sNewSp'))return openSpaceSheet(null);

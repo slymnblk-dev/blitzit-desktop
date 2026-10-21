@@ -39,6 +39,7 @@ function secAddOpen(id){secAdding=id;render();const i=[...document.querySelector
 function secAddTask(inp){
   const f=secFind(inp.dataset.sectask),v=inp.value.trim();if(!f||!v)return;
   const inSp=S.lists.filter(l=>l.space===f.sp.id);let l=defaultList();if(!inSp.some(x=>x.id===l))l=(inSp[0]||{}).id;if(!l)return;
+  if(!canPut(l,f.sec.stage))return;
   const t=newTask(v,f.sec.stage,l,S.cfg.defEst);t.sec=f.sec.id;S.tasks.push(t);enterId=t.id;haptic(6);sfx('add');
   secAddOpen(f.sec.id);
 }

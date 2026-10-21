@@ -24,6 +24,7 @@ function collapse(row,cb,dx=24){
 const doneMsg=t=>t.repeat!=='none'?`Done. Back ${t.repeat==='weekly'?'next week':t.repeat==='daily'?'tomorrow':'next weekday'}`:'Done';
 function moveRow(row,stage,dx){
   const t=S.tasks.find(x=>x.id===+row.dataset.id);
+  if(!canPut(t.list,stage,t)){render();return}
   collapse(row,()=>commit(()=>setStage(t,stage),stage==='done'?doneMsg(t):`Moved to ${STAGES[idx(stage)].name}`),dx);
 }
 
@@ -171,6 +172,7 @@ $('quickIn').addEventListener('keydown',e=>{
   const v=e.target.value.trim();if(!v)return closeQuick();
   const st=S.stage==='done'?'today':S.stage;
   const t=newTask(v,st,defaultList(),S.cfg.defEst);
+  if(!canPut(t.list,st))return;
   addTask(t);enterId=t.id;e.target.value='';haptic(8);
   if(S.stage!==st){S.stage=st;render(1)}else render();
 });

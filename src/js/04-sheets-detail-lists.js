@@ -39,6 +39,7 @@ $('newTitle').onkeydown=e=>{if(e.key==='Enter'&&e.target.value.trim())$('saveBtn
 let addLock=0;
 $('saveBtn').onclick=()=>{
   if(Date.now()-addLock<700)return;addLock=Date.now(); // ignore accidental double taps
+  if(!canPut(draft.list,draft.stage))return;
   const nt=newTask($('newTitle').value.trim(),draft.stage,draft.list,draft.est);addTask(nt);enterId=nt.id;haptic(8);
   closeSheets();const d=idx(draft.stage)-idx(S.stage);S.stage=draft.stage;render(d||undefined);
   if(!inSpaceMode()){const sp=spaceOf(draft.space);if(sp)toast(`Added to ${sp.name}`)}
@@ -70,6 +71,7 @@ function carryTags(t){if(!tagsOf(t).length)return;const l=listOf(t.list);t.tags=
 const tagChips=(t,max)=>{const a=tagsOf(t);if(!a.length)return '';return a.slice(0,max).map(n=>`<span class="ttag">#${esc(n)}</span>`).join('')+(a.length>max?`<span class="ttag more">+${a.length-max}</span>`:'')};
 function drawDetail(){
   const t=cur;if(!t)return;
+  {const full=t.subs.length>=SUB_MAX;$('dSubIn').closest('.sub-add').classList.toggle('full',full);$('dSubIn').placeholder=full?`${SUB_MAX} steps, the most for one task`:'Add a step'}
   $('detailSheet').style.setProperty('--accent',color(t.stage==='done'?'done':t.stage));
   const l=listOf(t.list),st=STAGES[idx(t.stage)],rp=REPEATS.find(r=>r.id===t.repeat);
   const P=(k,inner,muted)=>`<button class="pill ${pickOpen===k?'open':''} ${muted?'muted':''}" data-p="${k}">${inner}</button>`;
@@ -123,8 +125,8 @@ $('dPicker').onclick=e=>{
   const b=e.target.closest('.pk');if(!b)return;const k=$('dPicker').dataset.k,v=b.dataset.v,t=cur;
   if(k==='tags'){toggleTaskTag(t,v);haptic(5);save();render();return drawDetail()}
   pickOpen=null;haptic(6);
-  if(k==='stage'){if(v!==t.stage)commit(()=>setStage(t,v),v==='done'?doneMsg(t):`Moved to ${STAGES[idx(v)].name}`)}
-  else if(k==='list'){t.list=v;carryTags(t)}
+  if(k==='stage'){if(v!==t.stage&&!canPut(t.list,v,t)){drawDetail();return}if(v!==t.stage)commit(()=>setStage(t,v),v==='done'?doneMsg(t):`Moved to ${STAGES[idx(v)].name}`)}
+  else if(k==='list'){if(v!==t.list&&!canPut(v,t.stage,t)){drawDetail();return}t.list=v;carryTags(t)}
   else if(k==='est')t.est=+v;
   else if(k==='repeat')t.repeat=v;
   else if(k==='pri'){if(v)t.pri=v;else delete t.pri}
@@ -137,6 +139,7 @@ $('dTitle').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('dSubIn').foc
 $('dNotes').oninput=e=>{cur.notes=e.target.value;grow(e.target);save()};
 $('dSubIn').onkeydown=e=>{
   if(e.key!=='Enter')return;e.preventDefault();const v=e.target.value.trim();if(!v)return;
+  if(!canStep(cur))return;
   cur.subs.push({id:newId(),t:v,done:false});e.target.value='';haptic(6);drawDetail();
   const box=$('dSubs');box.scrollTop=box.scrollHeight;subsFade();
 };
@@ -175,11 +178,12 @@ $('dDup').onclick=()=>{
   const t=cur;const c={...JSON.parse(JSON.stringify(t)),id:newId(),title:t.title+' (copy)'};delete c.spawned;delete c.doneAt;
   if(c.stage==='done')c.stage='today';c.subs.forEach(s=>s.id=newId());
   $('dMenu').classList.remove('on');
+  if(!canPut(c.list,c.stage))return;
   commit(()=>{S.tasks.splice(S.tasks.indexOf(t)+1,0,c);enterId=c.id},'Duplicated');
   openDetail(c.id);
 };
 $('dComplete').onclick=()=>{
-  const t=cur,toDone=t.stage!=='done';haptic(14);
+  const t=cur,toDone=t.stage!=='done';if(!toDone&&!canPut(t.list,'today',t))return;haptic(14);
   closeSheets();
   setTimeout(()=>commit(()=>setStage(t,toDone?'done':'today'),toDone?doneMsg(t):'Moved to Today'),200);
 };
