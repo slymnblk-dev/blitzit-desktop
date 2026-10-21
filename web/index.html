@@ -2045,6 +2045,87 @@ body.no-amb .amb-btn{display:none!important}
 .sw button{width:100%;height:auto;aspect-ratio:1}
 .lp-pop{min-width:292px}
 .lpm-sw{gap:6px}.lpm-sw button{width:21px;height:21px}
+
+/* ---------- list editor and space sheet: calm cards with foldable rows ----------
+   Name on top; colour, space, icon and tags show their current value and unfold on tap.
+   Everything slides open and shut (grid rows 0fr → 1fr), never snaps. */
+.le-coll{display:grid;grid-template-rows:1fr}
+.le-coll>.le-panel{min-height:0;overflow:hidden;animation:none;padding:2px 0 14px}
+.le-coll.anim{animation:leIn .38s cubic-bezier(.2,.8,.2,1) both}
+.le-coll.closing{animation:leOut .3s cubic-bezier(.4,0,.2,1) both;pointer-events:none}
+@keyframes leIn{from{grid-template-rows:0fr;opacity:0}}
+@keyframes leOut{to{grid-template-rows:0fr;opacity:0}}
+.le-coll.anim .le-card{animation:leCard .38s cubic-bezier(.2,.8,.2,1) both}
+@keyframes leCard{from{transform:translateY(-6px) scale(.985)}}
+.le-row svg{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.le-row.open{border-bottom-color:transparent}
+
+.le-card{background:var(--surface2);border-radius:18px;overflow:hidden}
+.le-nm{display:flex;align-items:center;gap:10px;padding:0 16px;cursor:text}
+.le-nm svg{width:16px;height:16px;color:var(--muted);flex:none;opacity:.7}
+.le-card .le-name{flex:1;min-width:0;height:54px;background:transparent;border-radius:0;padding:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.le-card .le-name:focus{box-shadow:none}
+.le-nm:focus-within svg{color:var(--text);opacity:1}
+
+.lx{border-top:1px solid var(--line)}
+.le-card>.lx:first-child{border-top:0}
+.lx-h{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0 16px;text-align:left;font-size:15px;font-weight:600;color:var(--text);transition:background .15s}
+.lx-h:hover{background:color-mix(in srgb,var(--text) 4%,transparent)}
+.lx-h:focus-visible{outline:2px solid var(--text);outline-offset:-2px;border-radius:12px}
+.lx-l{flex:1;min-width:0}
+.lx-v{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-weight:500;font-size:14px;min-width:0}
+.lx-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.lx-dot{width:18px;height:18px;border-radius:6px;display:inline-block;transition:background .25s}
+.lx-ico{font-size:18px;line-height:1;min-width:20px;text-align:center;color:var(--text);font-weight:800}
+.lx .sp-mini{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;flex:none;color:#0F1013;font-weight:800}
+.lx-chev{width:16px;height:16px;color:var(--muted);flex:none;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.lx.on .lx-chev{transform:rotate(180deg)}
+.lx-h .tg{pointer-events:none}
+.lx-b{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;
+  transition:grid-template-rows .36s cubic-bezier(.2,.8,.2,1),opacity .24s ease,visibility 0s .36s}
+.lx.on .lx-b{grid-template-rows:1fr;opacity:1;visibility:visible;transition:grid-template-rows .38s cubic-bezier(.2,.8,.2,1),opacity .3s ease .05s,visibility 0s}
+.lx-in{min-height:0;overflow:hidden}
+.lx-pad{padding:4px 16px 16px}
+.lx-pad .sw{padding:4px}
+.lx-pad .ico-grid{padding:3px}
+.lx-pad .le-note{margin:10px 0 0}
+
+/* space choices: a short vertical list with a tick, easier to scan than wrapped chips */
+.lx-list{display:flex;flex-direction:column;gap:2px;margin:0 -8px}
+.lx-opt{display:flex;align-items:center;gap:12px;width:100%;padding:9px 8px;border-radius:12px;text-align:left;font-size:15px;font-weight:500;color:var(--text);transition:background .15s}
+.lx-opt:hover{background:color-mix(in srgb,var(--text) 5%,transparent)}
+.lx-opt span:not(.sp-mini){flex:1}
+.lx-opt.on{font-weight:700}
+.lx-opt svg{width:18px;height:18px;color:var(--text)}
+.lx-opt:disabled{opacity:.35}
+
+/* archive / delete: two quiet buttons side by side */
+.le-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.le-acts[hidden]{display:none}
+.le-btn{height:46px;border-radius:14px;background:var(--surface2);color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;font-size:14.5px;font-weight:600;transition:background .15s,transform .15s}
+.le-btn:active{transform:scale(.98)}
+.le-btn svg,.le-bi svg{width:17px;height:17px}
+.le-bi{display:grid;place-items:center}
+.le-btn.warn{color:var(--today);background:color-mix(in srgb,var(--today) 11%,transparent)}
+.le-btn:hover{background:color-mix(in srgb,var(--text) 9%,var(--surface2))}
+.le-btn.warn:hover{background:color-mix(in srgb,var(--today) 17%,transparent)}
+.le-coll .le-note{margin:12px 4px 0;font-size:13px;color:var(--muted);line-height:1.4}
+
+/* space sheet */
+#spaceSheet .sp-form{margin:4px 0 16px}
+#spaceSheet .sp-prev{cursor:pointer;transition:background .25s,transform .2s cubic-bezier(.3,1.5,.5,1)}
+#spaceSheet .sp-prev:active{transform:scale(.95)}
+.sp-opts{margin-bottom:16px}
+#spaceSheet .sp-acts{margin-top:10px}
+@media (prefers-reduced-motion:reduce){.le-coll.anim,.le-coll.closing,.le-coll.anim .le-card{animation-duration:.01s}.lx-b,.lx.on .lx-b{transition:none}}
+.le-nm{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;column-gap:10px;padding:10px 16px 2px}
+.le-cap{grid-column:1/-1;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.le-card .le-name{height:40px}
+.le-nm svg{align-self:center}
+.lx .tg[aria-pressed="false"]{background:color-mix(in srgb,var(--text) 16%,transparent)}
+.sp-opts{margin-bottom:6px}
+.lx .le-tg{background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.lx .le-tg button:hover{background:var(--surface2)}
 </style>
 </head>
 <body>
@@ -2155,12 +2236,9 @@ body.no-amb .amb-btn{display:none!important}
   <div class="grab"></div>
   <h2 id="spTitle">New space</h2>
   <div class="sp-form"><span class="sp-prev" id="spPrev"></span><input class="field sp-name-in" id="spName" placeholder="Space name" autocomplete="off" enterkeyhint="done"></div>
-  <div class="lbl">Icon</div><div class="ico-grid" id="spIcons"></div>
-  <div class="lbl">Colour</div><div class="sw" id="spSw"></div>
-  <button class="sp-pinrow" id="spPin" hidden><span>Pin to top</span><span class="tg" id="spPinTg" aria-pressed="false"></span></button>
+  <div class="le-card sp-opts" id="spOpts"></div>
   <button class="primary" id="spSave" disabled>Create space</button>
-  <button class="link-row sp-del sp-arc" id="spArc" hidden>Archive space</button>
-  <button class="link-row warn sp-del" id="spDel" hidden>Delete space</button>
+  <div class="le-acts sp-acts" id="spActs" hidden><button class="le-btn" id="spArc" type="button"><span class="le-bi" data-ic="arc"></span>Archive</button><button class="le-btn warn" id="spDel" type="button"><span class="le-bi" data-ic="bin"></span>Delete</button></div>
 </div></div>
 <div class="sheet" id="resetSheet"><div class="sheet-in reset">
   <div class="grab"></div>
@@ -2242,7 +2320,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=129; // bumped with every published update
+const APP_VERSION=130; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3157,14 +3235,42 @@ $('dDrag').addEventListener('pointercancel',endSheetDrag);
 
 /* lists sheet */
 let editing=false,nl=null,leOpen=null;
-function lePanel(l,only){return `<div class="le-panel">
-        <input class="le-name" data-ren="${l.id}" value="${esc(l.name)}" maxlength="40" placeholder="List name" enterkeyhint="done" autocomplete="off">
-        <div class="lbl">Colour</div><div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
-        ${S.spaces.length>1?`<div class="lbl">Space</div><div class="opts row-scroll le-sp">${S.spaces.map(x=>`<button class="opt sp-opt ${l.space===x.id?'on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</button>`).join('')}</div>`:''}
-        <div class="lbl">Tags</div><div class="le-tags">${ltags(l).map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
-          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>
-        ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<div class="le-acts"><button class="le-arc" data-larc="${l.id}">Archive list</button><button class="le-del" data-ldel="${l.id}">Delete list</button></div>`}
-      </div>`}
+let leSub=null; // which part of the open list editor is unfolded: 'c' colour, 's' space, 't' tags
+const LX_CHEV='<svg class="lx-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+/* one foldable row: label and current value on top, the choices slide open underneath */
+const lxRow=(key,label,value,body,open)=>`<div class="lx${open?' on':''}" data-lx="${key}"><button class="lx-h" type="button" data-lxt="${key}" aria-expanded="${!!open}"><span class="lx-l">${label}</span><span class="lx-v">${value}</span>${LX_CHEV}</button><div class="lx-b"><div class="lx-in"><div class="lx-pad">${body}</div></div></div></div>`;
+const spMini=x=>`<span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>`;
+function lePanel(l,only,anim){
+  const sp=spaceOf(l.space)||{name:'',c:'#888'},tg=ltags(l);
+  return `<div class="le-coll${anim?' anim':''}" data-lec="${l.id}"><div class="le-panel">
+    <div class="le-card">
+      <label class="le-nm"><span class="le-cap">Name</span><input class="le-name" data-ren="${l.id}" value="${esc(l.name)}" maxlength="40" placeholder="List name" enterkeyhint="done" autocomplete="off" aria-label="List name">${PEN_S}</label>
+      ${lxRow('c','Colour',`<i class="lx-dot" style="background:${l.c}"></i>`,`<div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>`,leSub==='c')}
+      ${S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name)}</span>`,
+        `<div class="lx-list">${S.spaces.map(x=>`<button class="lx-opt${l.space===x.id?' on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}>${spMini(x)}<span>${esc(x.name)}</span>${l.space===x.id?tick():''}</button>`).join('')}</div>${only?`<p class="le-note">It’s the only list in ${esc(sp.name)}, so it stays here.</p>`:''}`,leSub==='s'):''}
+      ${lxRow('t','Tags',tg.length?`${tg.length} ${tg.length===1?'tag':'tags'}`:'None',`<div class="le-tags">${tg.map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
+          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>`,leSub==='t')}
+    </div>
+    ${only?`<p class="le-note">The only list in ${esc(sp.name)} can’t be archived or deleted.</p>`:`<div class="le-acts"><button class="le-btn" data-larc="${l.id}">${ARC_S}Archive</button><button class="le-btn warn" data-ldel="${l.id}">${BIN_S}Delete</button></div>`}
+  </div></div>`}
+/* fold a section open or shut in place, without redrawing, so it glides */
+function lxToggle(btn,setSub){
+  const box=btn.closest('.lx'),was=box.classList.contains('on');
+  box.parentNode.querySelectorAll(':scope>.lx.on').forEach(x=>{x.classList.remove('on');x.querySelector('.lx-h').setAttribute('aria-expanded','false')});
+  if(!was){box.classList.add('on');btn.setAttribute('aria-expanded','true')}
+  haptic(4);setSub(was?null:box.dataset.lx);
+  if(!was&&box.dataset.lx==='t')setTimeout(()=>{const i=box.querySelector('#leTagIn');if(i&&!ltags(S.lists.find(x=>x.id===leOpen)||{}).length)i.focus()},280);
+}
+/* open or close a list's editor with a smooth slide; the old one folds away while the new one unfolds */
+function leToggle(id){
+  haptic(5);
+  const pk=$('picks'),old=pk.querySelector('.le-coll:not(.closing)');
+  if(old){old.classList.remove('anim');old.classList.add('closing');const r=old.previousElementSibling;if(r)r.classList.remove('open');setTimeout(()=>old.remove(),320)}
+  if(leOpen===id){leOpen=null;leSub=null;return}
+  leOpen=id;leSub=null;
+  const row=pk.querySelector(`.le-row[data-le="${id}"]`),l=S.lists.find(x=>x.id===id);if(!row||!l){drawLists();return}
+  row.classList.add('open');row.insertAdjacentHTML('afterend',lePanel(l,S.lists.filter(x=>x.space===l.space).length<2,true));
+}
 /* Settings → Lists shows the same list editor inside the settings page, grouped by space */
 let listsInSet=false;
 const picksHome={parent:null,next:null};
@@ -3208,6 +3314,7 @@ $('editLists').onclick=()=>{editing=false;nl=null;leOpen=null;drawLists()};
 $('listsMore').onclick=e=>{e.stopPropagation();const p=$('listsPop'),was=p.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);p.classList.add('on')}};
 $('lmEdit').onclick=()=>{editing=true;nl=null;leOpen=null;drawLists()};
 $('picks').addEventListener('click',e=>{
+  const lt=e.target.closest('[data-lxt]');if(lt){lxToggle(lt,v=>leSub=v);return}
   const nb=e.target.closest('#nlBtn,[data-nlsp]');if(nb){nl={name:'',c:PALETTE[S.lists.length%PALETTE.length],space:nb.dataset.nlsp||null};drawLists();try{$('nlIn').focus()}catch(_){}setTimeout(()=>$('nlIn')&&$('nlIn').focus(),50);return}
   const sw=e.target.closest('#nlSw button');if(sw){nl.c=sw.dataset.c;drawLists();return}
   if(e.target.closest('#nlSave'))return createList();
@@ -3220,7 +3327,7 @@ $('picks').addEventListener('click',e=>{
     if(!used.length){go();return}
     confirmAsk({title:`Remove #${name}?`,text:`It comes off ${used.length} ${used.length===1?'task':'tasks'}. The tasks stay.`,yes:'Yes, remove',no:'No',onYes:go});return}
   const la=e.target.closest('[data-larc]');if(la){const l=S.lists.find(x=>x.id===la.dataset.larc);if(!l)return;
-    commit(()=>archiveList(l),`${l.name} archived`);leOpen=null;drawLists();return}
+    commit(()=>archiveList(l),`${l.name} archived`);leOpen=null;leSub=null;drawLists();return}
   const ld=e.target.closest('[data-ldel]');if(ld){const l=S.lists.find(x=>x.id===ld.dataset.ldel);if(!l)return;
     const n=S.tasks.filter(t=>t.list===l.id).length;
     confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'} for good. To keep them safe, choose Archive list instead.`,word:l.name,yes:'Delete list',
@@ -3228,7 +3335,7 @@ $('picks').addEventListener('click',e=>{
   const p=e.target.closest('.pick');if(!p)return;const id=p.dataset.l;
   if(editing){
     const l=S.lists.find(x=>x.id===id);
-    if(e.target.closest('[data-le]')){leOpen=leOpen===id?null:id;haptic(5);drawLists();return}
+    if(e.target.closest('[data-le]')){leToggle(id);return}
     if(e.target.closest('[data-mv]')){const i=S.spaces.findIndex(x=>x.id===l.space),nx=S.spaces[(i+1)%S.spaces.length];
       if(S.lists.filter(x=>x.space===l.space).length<2)return toast('A space needs at least one list');
       l.space=nx.id;if(inSpaceMode()&&S.list===l.id)S.list='all';haptic(6);drawLists();render();return toast(`${l.name} moved to ${nx.name}`)}
@@ -3252,7 +3359,7 @@ $('picks').addEventListener('focusout',e=>{if(e.target.dataset&&e.target.dataset
 $('picks').addEventListener('keydown',e=>{
   if(e.target.dataset.tren!=null&&e.key==='Enter'){e.preventDefault();e.target.blur();return}
   if(e.target.id==='leTagIn'&&e.key==='Enter'){e.preventDefault();const l=S.lists.find(x=>x.id===leOpen);if(l&&addListTag(l,e.target.value)){haptic(6);save();drawLists();setTimeout(()=>$('leTagIn')&&$('leTagIn').focus(),0)}return}
-if(e.target.dataset.ren&&e.key==='Enter'){e.target.blur();leOpen=null;drawLists();render();return}if(e.target.id==='nlIn'&&e.key==='Enter')createList()});
+if(e.target.dataset.ren&&e.key==='Enter'){e.target.blur();leToggle(leOpen);render();return}if(e.target.id==='nlIn'&&e.key==='Enter')createList()});
 function createList(){
   if(!nl||!nl.name.trim())return;
   const l={id:'l'+newId(),name:nl.name.trim(),c:nl.c,space:nl.space||(inSpaceMode()?S.space:S.spaces[0].id)};S.lists.push(l);nl=null;haptic(8);
@@ -3859,7 +3966,7 @@ const PEN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const TAG_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>';
 const ARC_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9M10 13h4"/></svg>';
 const BIN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
-$('listsMore').innerHTML=DOTS3;$('lmEditI').innerHTML=PEN_S;$('lmSpaceI').innerHTML=GEAR_S;
+$('listsMore').innerHTML=DOTS3;document.querySelectorAll('.le-bi').forEach(x=>x.innerHTML=x.dataset.ic==='arc'?ARC_S:BIN_S);$('lmEditI').innerHTML=PEN_S;$('lmSpaceI').innerHTML=GEAR_S;
 const peekOn=()=>!!(S.cfg&&S.cfg.fullWidth&&!S.space);
 function peekSub(sp){
   const ls=S.lists.filter(l=>l.space===sp.id),n=id=>S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id)&&t.stage!=='done').length;
@@ -4370,7 +4477,7 @@ const homeClick=e=>{
     const c=e.target.closest('[data-lpc]');if(c){const l=ls(c.dataset.lpl);if(l){l.c=c.dataset.lpc;haptic(5);save();render()}return}
     const mv=e.target.closest('[data-lpmv]');if(mv){const l=ls(mv.dataset.lpl),nx=spaceOf(mv.dataset.lpmv);if(!l||!nx)return;
       commit(()=>{l.space=nx.id;if(S.list===l.id)S.list='all'},`${l.name} moved to ${nx.name}`);return}
-    const ed=e.target.closest('[data-lped]');if(ed){closePops();const id=ed.dataset.lped,l=ls(id);if(!l)return;openSpaceSide(l.space);editing=true;nl=null;leOpen=id;drawLists();openSheet('listSheet');return}
+    const ed=e.target.closest('[data-lped]');if(ed){closePops();const id=ed.dataset.lped,l=ls(id);if(!l)return;openSpaceSide(l.space);editing=true;nl=null;leOpen=id;leSub=null;drawLists();openSheet('listSheet');return}
     const ar=e.target.closest('[data-lparc]');if(ar){closePops();const l=ls(ar.dataset.lparc);if(l)commit(()=>archiveList(l),`${l.name} archived`);return}
     const dl=e.target.closest('[data-lpdel]');if(dl){closePops();const l=ls(dl.dataset.lpdel);if(!l)return;const n=S.tasks.filter(t=>t.list===l.id).length;
       confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'} for good. To keep them safe, choose Archive list instead.`,word:l.name,yes:'Delete list',
@@ -4407,26 +4514,35 @@ function lpRename(id){
 }
 const cardKey=e=>{const c=e.target.closest('.sp-card');if(c&&e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openSpace(c.dataset.space)}};
 $('homeView').addEventListener('keydown',cardKey);$('dHome').addEventListener('keydown',cardKey);
-let spDraft=null;
+let spDraft=null,spSub=null;
 function openSpaceSheet(id){
   const sp=id?spaceOf(id):null;
   spDraft=sp?{...sp}:{id:null,name:'',c:PALETTE[S.spaces.length%PALETTE.length],e:''};
-  spDraft.touched=!!(sp&&sp.e);
+  spDraft.touched=!!(sp&&sp.e);spSub=null;
   $('spTitle').textContent=sp?'Edit space':'New space';$('spName').value=spDraft.name;
-  $('spDel').hidden=$('spArc').hidden=!sp||S.spaces.length<2;$('spPin').hidden=!sp;
+  $('spActs').hidden=!sp||S.spaces.length<2;
   drawSpaceSheet();openSheet('spaceSheet');setTimeout(()=>{if($('spaceSheet').classList.contains('on'))$('spName').focus()},300);
 }
 function drawSpaceSheet(){
-  $('spSw').innerHTML=PALETTE.map(c=>`<button data-c="${c}" class="${spDraft.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('');
-  $('spPinTg').setAttribute('aria-pressed',!!spDraft.pinned);
-  $('spSave').textContent=spDraft.id?'Save':'Create space';$('spSave').disabled=!spDraft.name.trim();
-  $('spSave').style.background=spDraft.c;
-  const pv=$('spPrev');pv.style.background=spDraft.c;pv.textContent=spDraft.e||((spDraft.name.trim()[0]||'?').toUpperCase());
-  $('spIcons').innerHTML=`<button data-ico="" class="ico-none ${!spDraft.e?'on':''}" aria-label="No icon">${esc((spDraft.name.trim()[0]||'A').toUpperCase())}</button>`+ICONS.map(i=>`<button data-ico="${i}" class="${spDraft.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('');
+  const d=spDraft,letter=(d.name.trim()[0]||'?').toUpperCase();
+  $('spSave').textContent=d.id?'Save':'Create space';$('spSave').disabled=!d.name.trim();
+  $('spSave').style.background=d.c;
+  const pv=$('spPrev');pv.style.background=d.c;pv.textContent=d.e||letter;
+  // name sits up top; icon and colour fold away until wanted, so the sheet stays calm
+  $('spOpts').innerHTML=
+    lxRow('i','Icon',`<span class="lx-ico">${esc(d.e||letter)}</span>`,`<div class="ico-grid" id="spIcons"><button data-ico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">${esc((d.name.trim()[0]||'A').toUpperCase())}</button>${ICONS.map(i=>`<button data-ico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,spSub==='i')+
+    lxRow('c','Colour',`<i class="lx-dot" style="background:${d.c}"></i>`,`<div class="sw" id="spSw">${PALETTE.map(c=>`<button data-c="${c}" class="${d.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>`,spSub==='c')+
+    (d.id?`<div class="lx"><button class="lx-h" id="spPin" type="button" aria-label="Pin to top"><span class="lx-l">Pin to top</span><span class="tg" id="spPinTg" aria-pressed="${!!d.pinned}"></span></button></div>`:'');
 }
-$('spSw').onclick=e=>{const b=e.target.closest('[data-c]');if(b){spDraft.c=b.dataset.c;haptic(5);drawSpaceSheet()}};
+$('spOpts').onclick=e=>{
+  const t=e.target.closest('[data-lxt]');if(t){lxToggle(t,v=>spSub=v);return}
+  const c=e.target.closest('#spSw [data-c]');if(c){spDraft.c=c.dataset.c;haptic(5);drawSpaceSheet();return}
+  const i=e.target.closest('#spIcons [data-ico]');if(i){spDraft.e=i.dataset.ico;spDraft.touched=true;haptic(5);drawSpaceSheet();return}
+  if(e.target.closest('#spPin')){spDraft.pinned=!spDraft.pinned;haptic(5);$('spPinTg').setAttribute('aria-pressed',!!spDraft.pinned)}
+};
+/* tapping the big preview tile unfolds the icon choices */
+$('spPrev').onclick=()=>{const t=$('spOpts').querySelector('[data-lxt="i"]');if(t&&spSub!=='i')lxToggle(t,v=>spSub=v)};
 $('spName').oninput=e=>{spDraft.name=e.target.value;if(!spDraft.touched)spDraft.e=autoIcon(spDraft.name);drawSpaceSheet()};
-$('spIcons').onclick=e=>{const b=e.target.closest('[data-ico]');if(!b)return;spDraft.e=b.dataset.ico;spDraft.touched=true;haptic(5);drawSpaceSheet()};
 $('spName').onkeydown=e=>{if(e.key==='Enter'&&spDraft.name.trim())$('spSave').click()};
 $('spSave').onclick=()=>{
   const d=spDraft;if(!d.name.trim())return;
@@ -4435,7 +4551,6 @@ $('spSave').onclick=()=>{
   S.lists.push({id:'l'+newId(),name:'General',c:d.c,space:sp.id});
   closeSheets();openSpace(sp.id);toast(`${sp.name} created`);
 };
-$('spPin').onclick=()=>{spDraft.pinned=!spDraft.pinned;haptic(5);drawSpaceSheet()};
 $('spArc').onclick=()=>{const id=spDraft.id;closeSheets();setTimeout(()=>askArchiveSpace(id),250)};
 $('spDel').onclick=()=>{const id=spDraft.id;closeSheets();setTimeout(()=>askDeleteSpace(id),250)};
 function askArchiveSpace(id){

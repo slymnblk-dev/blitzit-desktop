@@ -714,3 +714,84 @@ body.no-amb .amb-btn{display:none!important}
 .sw button{width:100%;height:auto;aspect-ratio:1}
 .lp-pop{min-width:292px}
 .lpm-sw{gap:6px}.lpm-sw button{width:21px;height:21px}
+
+/* ---------- list editor and space sheet: calm cards with foldable rows ----------
+   Name on top; colour, space, icon and tags show their current value and unfold on tap.
+   Everything slides open and shut (grid rows 0fr → 1fr), never snaps. */
+.le-coll{display:grid;grid-template-rows:1fr}
+.le-coll>.le-panel{min-height:0;overflow:hidden;animation:none;padding:2px 0 14px}
+.le-coll.anim{animation:leIn .38s cubic-bezier(.2,.8,.2,1) both}
+.le-coll.closing{animation:leOut .3s cubic-bezier(.4,0,.2,1) both;pointer-events:none}
+@keyframes leIn{from{grid-template-rows:0fr;opacity:0}}
+@keyframes leOut{to{grid-template-rows:0fr;opacity:0}}
+.le-coll.anim .le-card{animation:leCard .38s cubic-bezier(.2,.8,.2,1) both}
+@keyframes leCard{from{transform:translateY(-6px) scale(.985)}}
+.le-row svg{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.le-row.open{border-bottom-color:transparent}
+
+.le-card{background:var(--surface2);border-radius:18px;overflow:hidden}
+.le-nm{display:flex;align-items:center;gap:10px;padding:0 16px;cursor:text}
+.le-nm svg{width:16px;height:16px;color:var(--muted);flex:none;opacity:.7}
+.le-card .le-name{flex:1;min-width:0;height:54px;background:transparent;border-radius:0;padding:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.le-card .le-name:focus{box-shadow:none}
+.le-nm:focus-within svg{color:var(--text);opacity:1}
+
+.lx{border-top:1px solid var(--line)}
+.le-card>.lx:first-child{border-top:0}
+.lx-h{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0 16px;text-align:left;font-size:15px;font-weight:600;color:var(--text);transition:background .15s}
+.lx-h:hover{background:color-mix(in srgb,var(--text) 4%,transparent)}
+.lx-h:focus-visible{outline:2px solid var(--text);outline-offset:-2px;border-radius:12px}
+.lx-l{flex:1;min-width:0}
+.lx-v{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-weight:500;font-size:14px;min-width:0}
+.lx-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.lx-dot{width:18px;height:18px;border-radius:6px;display:inline-block;transition:background .25s}
+.lx-ico{font-size:18px;line-height:1;min-width:20px;text-align:center;color:var(--text);font-weight:800}
+.lx .sp-mini{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;flex:none;color:#0F1013;font-weight:800}
+.lx-chev{width:16px;height:16px;color:var(--muted);flex:none;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.lx.on .lx-chev{transform:rotate(180deg)}
+.lx-h .tg{pointer-events:none}
+.lx-b{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;
+  transition:grid-template-rows .36s cubic-bezier(.2,.8,.2,1),opacity .24s ease,visibility 0s .36s}
+.lx.on .lx-b{grid-template-rows:1fr;opacity:1;visibility:visible;transition:grid-template-rows .38s cubic-bezier(.2,.8,.2,1),opacity .3s ease .05s,visibility 0s}
+.lx-in{min-height:0;overflow:hidden}
+.lx-pad{padding:4px 16px 16px}
+.lx-pad .sw{padding:4px}
+.lx-pad .ico-grid{padding:3px}
+.lx-pad .le-note{margin:10px 0 0}
+
+/* space choices: a short vertical list with a tick, easier to scan than wrapped chips */
+.lx-list{display:flex;flex-direction:column;gap:2px;margin:0 -8px}
+.lx-opt{display:flex;align-items:center;gap:12px;width:100%;padding:9px 8px;border-radius:12px;text-align:left;font-size:15px;font-weight:500;color:var(--text);transition:background .15s}
+.lx-opt:hover{background:color-mix(in srgb,var(--text) 5%,transparent)}
+.lx-opt span:not(.sp-mini){flex:1}
+.lx-opt.on{font-weight:700}
+.lx-opt svg{width:18px;height:18px;color:var(--text)}
+.lx-opt:disabled{opacity:.35}
+
+/* archive / delete: two quiet buttons side by side */
+.le-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.le-acts[hidden]{display:none}
+.le-btn{height:46px;border-radius:14px;background:var(--surface2);color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;font-size:14.5px;font-weight:600;transition:background .15s,transform .15s}
+.le-btn:active{transform:scale(.98)}
+.le-btn svg,.le-bi svg{width:17px;height:17px}
+.le-bi{display:grid;place-items:center}
+.le-btn.warn{color:var(--today);background:color-mix(in srgb,var(--today) 11%,transparent)}
+.le-btn:hover{background:color-mix(in srgb,var(--text) 9%,var(--surface2))}
+.le-btn.warn:hover{background:color-mix(in srgb,var(--today) 17%,transparent)}
+.le-coll .le-note{margin:12px 4px 0;font-size:13px;color:var(--muted);line-height:1.4}
+
+/* space sheet */
+#spaceSheet .sp-form{margin:4px 0 16px}
+#spaceSheet .sp-prev{cursor:pointer;transition:background .25s,transform .2s cubic-bezier(.3,1.5,.5,1)}
+#spaceSheet .sp-prev:active{transform:scale(.95)}
+.sp-opts{margin-bottom:16px}
+#spaceSheet .sp-acts{margin-top:10px}
+@media (prefers-reduced-motion:reduce){.le-coll.anim,.le-coll.closing,.le-coll.anim .le-card{animation-duration:.01s}.lx-b,.lx.on .lx-b{transition:none}}
+.le-nm{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;column-gap:10px;padding:10px 16px 2px}
+.le-cap{grid-column:1/-1;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.le-card .le-name{height:40px}
+.le-nm svg{align-self:center}
+.lx .tg[aria-pressed="false"]{background:color-mix(in srgb,var(--text) 16%,transparent)}
+.sp-opts{margin-bottom:6px}
+.lx .le-tg{background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.lx .le-tg button:hover{background:var(--surface2)}

@@ -44,7 +44,7 @@ const PEN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const TAG_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>';
 const ARC_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9M10 13h4"/></svg>';
 const BIN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
-$('listsMore').innerHTML=DOTS3;$('lmEditI').innerHTML=PEN_S;$('lmSpaceI').innerHTML=GEAR_S;
+$('listsMore').innerHTML=DOTS3;document.querySelectorAll('.le-bi').forEach(x=>x.innerHTML=x.dataset.ic==='arc'?ARC_S:BIN_S);$('lmEditI').innerHTML=PEN_S;$('lmSpaceI').innerHTML=GEAR_S;
 const peekOn=()=>!!(S.cfg&&S.cfg.fullWidth&&!S.space);
 function peekSub(sp){
   const ls=S.lists.filter(l=>l.space===sp.id),n=id=>S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id)&&t.stage!=='done').length;

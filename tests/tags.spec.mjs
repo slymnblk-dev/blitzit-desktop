@@ -37,7 +37,7 @@ test('tags: add in a task, shown on the row, managed in list settings, survive a
   await expect(page.locator(`#list .row[data-id="${id}"] .ttag`)).toHaveText('#Design');
 
   // list settings: rename and remove
-  await page.evaluate(id => { const t = S.tasks.find(x => x.id === id); editing = true; leOpen = t.list; drawLists(); openSheet('listSheet'); }, id);
+  await page.evaluate(id => { const t = S.tasks.find(x => x.id === id); editing = true; leOpen = t.list; leSub = 't'; drawLists(); openSheet('listSheet'); }, id);
   const tag = page.locator('.le-tg input').first();
   await tag.fill('Design work');
   await tag.press('Enter');

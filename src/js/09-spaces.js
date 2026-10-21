@@ -24,7 +24,7 @@ const homeClick=e=>{
     const c=e.target.closest('[data-lpc]');if(c){const l=ls(c.dataset.lpl);if(l){l.c=c.dataset.lpc;haptic(5);save();render()}return}
     const mv=e.target.closest('[data-lpmv]');if(mv){const l=ls(mv.dataset.lpl),nx=spaceOf(mv.dataset.lpmv);if(!l||!nx)return;
       commit(()=>{l.space=nx.id;if(S.list===l.id)S.list='all'},`${l.name} moved to ${nx.name}`);return}
-    const ed=e.target.closest('[data-lped]');if(ed){closePops();const id=ed.dataset.lped,l=ls(id);if(!l)return;openSpaceSide(l.space);editing=true;nl=null;leOpen=id;drawLists();openSheet('listSheet');return}
+    const ed=e.target.closest('[data-lped]');if(ed){closePops();const id=ed.dataset.lped,l=ls(id);if(!l)return;openSpaceSide(l.space);editing=true;nl=null;leOpen=id;leSub=null;drawLists();openSheet('listSheet');return}
     const ar=e.target.closest('[data-lparc]');if(ar){closePops();const l=ls(ar.dataset.lparc);if(l)commit(()=>archiveList(l),`${l.name} archived`);return}
     const dl=e.target.closest('[data-lpdel]');if(dl){closePops();const l=ls(dl.dataset.lpdel);if(!l)return;const n=S.tasks.filter(t=>t.list===l.id).length;
       confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'} for good. To keep them safe, choose Archive list instead.`,word:l.name,yes:'Delete list',
@@ -61,26 +61,35 @@ function lpRename(id){
 }
 const cardKey=e=>{const c=e.target.closest('.sp-card');if(c&&e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openSpace(c.dataset.space)}};
 $('homeView').addEventListener('keydown',cardKey);$('dHome').addEventListener('keydown',cardKey);
-let spDraft=null;
+let spDraft=null,spSub=null;
 function openSpaceSheet(id){
   const sp=id?spaceOf(id):null;
   spDraft=sp?{...sp}:{id:null,name:'',c:PALETTE[S.spaces.length%PALETTE.length],e:''};
-  spDraft.touched=!!(sp&&sp.e);
+  spDraft.touched=!!(sp&&sp.e);spSub=null;
   $('spTitle').textContent=sp?'Edit space':'New space';$('spName').value=spDraft.name;
-  $('spDel').hidden=$('spArc').hidden=!sp||S.spaces.length<2;$('spPin').hidden=!sp;
+  $('spActs').hidden=!sp||S.spaces.length<2;
   drawSpaceSheet();openSheet('spaceSheet');setTimeout(()=>{if($('spaceSheet').classList.contains('on'))$('spName').focus()},300);
 }
 function drawSpaceSheet(){
-  $('spSw').innerHTML=PALETTE.map(c=>`<button data-c="${c}" class="${spDraft.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('');
-  $('spPinTg').setAttribute('aria-pressed',!!spDraft.pinned);
-  $('spSave').textContent=spDraft.id?'Save':'Create space';$('spSave').disabled=!spDraft.name.trim();
-  $('spSave').style.background=spDraft.c;
-  const pv=$('spPrev');pv.style.background=spDraft.c;pv.textContent=spDraft.e||((spDraft.name.trim()[0]||'?').toUpperCase());
-  $('spIcons').innerHTML=`<button data-ico="" class="ico-none ${!spDraft.e?'on':''}" aria-label="No icon">${esc((spDraft.name.trim()[0]||'A').toUpperCase())}</button>`+ICONS.map(i=>`<button data-ico="${i}" class="${spDraft.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('');
+  const d=spDraft,letter=(d.name.trim()[0]||'?').toUpperCase();
+  $('spSave').textContent=d.id?'Save':'Create space';$('spSave').disabled=!d.name.trim();
+  $('spSave').style.background=d.c;
+  const pv=$('spPrev');pv.style.background=d.c;pv.textContent=d.e||letter;
+  // name sits up top; icon and colour fold away until wanted, so the sheet stays calm
+  $('spOpts').innerHTML=
+    lxRow('i','Icon',`<span class="lx-ico">${esc(d.e||letter)}</span>`,`<div class="ico-grid" id="spIcons"><button data-ico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">${esc((d.name.trim()[0]||'A').toUpperCase())}</button>${ICONS.map(i=>`<button data-ico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,spSub==='i')+
+    lxRow('c','Colour',`<i class="lx-dot" style="background:${d.c}"></i>`,`<div class="sw" id="spSw">${PALETTE.map(c=>`<button data-c="${c}" class="${d.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>`,spSub==='c')+
+    (d.id?`<div class="lx"><button class="lx-h" id="spPin" type="button" aria-label="Pin to top"><span class="lx-l">Pin to top</span><span class="tg" id="spPinTg" aria-pressed="${!!d.pinned}"></span></button></div>`:'');
 }
-$('spSw').onclick=e=>{const b=e.target.closest('[data-c]');if(b){spDraft.c=b.dataset.c;haptic(5);drawSpaceSheet()}};
+$('spOpts').onclick=e=>{
+  const t=e.target.closest('[data-lxt]');if(t){lxToggle(t,v=>spSub=v);return}
+  const c=e.target.closest('#spSw [data-c]');if(c){spDraft.c=c.dataset.c;haptic(5);drawSpaceSheet();return}
+  const i=e.target.closest('#spIcons [data-ico]');if(i){spDraft.e=i.dataset.ico;spDraft.touched=true;haptic(5);drawSpaceSheet();return}
+  if(e.target.closest('#spPin')){spDraft.pinned=!spDraft.pinned;haptic(5);$('spPinTg').setAttribute('aria-pressed',!!spDraft.pinned)}
+};
+/* tapping the big preview tile unfolds the icon choices */
+$('spPrev').onclick=()=>{const t=$('spOpts').querySelector('[data-lxt="i"]');if(t&&spSub!=='i')lxToggle(t,v=>spSub=v)};
 $('spName').oninput=e=>{spDraft.name=e.target.value;if(!spDraft.touched)spDraft.e=autoIcon(spDraft.name);drawSpaceSheet()};
-$('spIcons').onclick=e=>{const b=e.target.closest('[data-ico]');if(!b)return;spDraft.e=b.dataset.ico;spDraft.touched=true;haptic(5);drawSpaceSheet()};
 $('spName').onkeydown=e=>{if(e.key==='Enter'&&spDraft.name.trim())$('spSave').click()};
 $('spSave').onclick=()=>{
   const d=spDraft;if(!d.name.trim())return;
@@ -89,7 +98,6 @@ $('spSave').onclick=()=>{
   S.lists.push({id:'l'+newId(),name:'General',c:d.c,space:sp.id});
   closeSheets();openSpace(sp.id);toast(`${sp.name} created`);
 };
-$('spPin').onclick=()=>{spDraft.pinned=!spDraft.pinned;haptic(5);drawSpaceSheet()};
 $('spArc').onclick=()=>{const id=spDraft.id;closeSheets();setTimeout(()=>askArchiveSpace(id),250)};
 $('spDel').onclick=()=>{const id=spDraft.id;closeSheets();setTimeout(()=>askDeleteSpace(id),250)};
 function askArchiveSpace(id){

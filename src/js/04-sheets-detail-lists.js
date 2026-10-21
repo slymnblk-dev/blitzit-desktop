@@ -242,14 +242,42 @@ $('dDrag').addEventListener('pointercancel',endSheetDrag);
 
 /* lists sheet */
 let editing=false,nl=null,leOpen=null;
-function lePanel(l,only){return `<div class="le-panel">
-        <input class="le-name" data-ren="${l.id}" value="${esc(l.name)}" maxlength="40" placeholder="List name" enterkeyhint="done" autocomplete="off">
-        <div class="lbl">Colour</div><div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
-        ${S.spaces.length>1?`<div class="lbl">Space</div><div class="opts row-scroll le-sp">${S.spaces.map(x=>`<button class="opt sp-opt ${l.space===x.id?'on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</button>`).join('')}</div>`:''}
-        <div class="lbl">Tags</div><div class="le-tags">${ltags(l).map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
-          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>
-        ${only?`<p class="le-note">This is the only list in ${esc((spaceOf(l.space)||{}).name||'this space')}, so it can’t be moved or deleted.</p>`:`<div class="le-acts"><button class="le-arc" data-larc="${l.id}">Archive list</button><button class="le-del" data-ldel="${l.id}">Delete list</button></div>`}
-      </div>`}
+let leSub=null; // which part of the open list editor is unfolded: 'c' colour, 's' space, 't' tags
+const LX_CHEV='<svg class="lx-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+/* one foldable row: label and current value on top, the choices slide open underneath */
+const lxRow=(key,label,value,body,open)=>`<div class="lx${open?' on':''}" data-lx="${key}"><button class="lx-h" type="button" data-lxt="${key}" aria-expanded="${!!open}"><span class="lx-l">${label}</span><span class="lx-v">${value}</span>${LX_CHEV}</button><div class="lx-b"><div class="lx-in"><div class="lx-pad">${body}</div></div></div></div>`;
+const spMini=x=>`<span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>`;
+function lePanel(l,only,anim){
+  const sp=spaceOf(l.space)||{name:'',c:'#888'},tg=ltags(l);
+  return `<div class="le-coll${anim?' anim':''}" data-lec="${l.id}"><div class="le-panel">
+    <div class="le-card">
+      <label class="le-nm"><span class="le-cap">Name</span><input class="le-name" data-ren="${l.id}" value="${esc(l.name)}" maxlength="40" placeholder="List name" enterkeyhint="done" autocomplete="off" aria-label="List name">${PEN_S}</label>
+      ${lxRow('c','Colour',`<i class="lx-dot" style="background:${l.c}"></i>`,`<div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>`,leSub==='c')}
+      ${S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name)}</span>`,
+        `<div class="lx-list">${S.spaces.map(x=>`<button class="lx-opt${l.space===x.id?' on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}>${spMini(x)}<span>${esc(x.name)}</span>${l.space===x.id?tick():''}</button>`).join('')}</div>${only?`<p class="le-note">It’s the only list in ${esc(sp.name)}, so it stays here.</p>`:''}`,leSub==='s'):''}
+      ${lxRow('t','Tags',tg.length?`${tg.length} ${tg.length===1?'tag':'tags'}`:'None',`<div class="le-tags">${tg.map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
+          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>`,leSub==='t')}
+    </div>
+    ${only?`<p class="le-note">The only list in ${esc(sp.name)} can’t be archived or deleted.</p>`:`<div class="le-acts"><button class="le-btn" data-larc="${l.id}">${ARC_S}Archive</button><button class="le-btn warn" data-ldel="${l.id}">${BIN_S}Delete</button></div>`}
+  </div></div>`}
+/* fold a section open or shut in place, without redrawing, so it glides */
+function lxToggle(btn,setSub){
+  const box=btn.closest('.lx'),was=box.classList.contains('on');
+  box.parentNode.querySelectorAll(':scope>.lx.on').forEach(x=>{x.classList.remove('on');x.querySelector('.lx-h').setAttribute('aria-expanded','false')});
+  if(!was){box.classList.add('on');btn.setAttribute('aria-expanded','true')}
+  haptic(4);setSub(was?null:box.dataset.lx);
+  if(!was&&box.dataset.lx==='t')setTimeout(()=>{const i=box.querySelector('#leTagIn');if(i&&!ltags(S.lists.find(x=>x.id===leOpen)||{}).length)i.focus()},280);
+}
+/* open or close a list's editor with a smooth slide; the old one folds away while the new one unfolds */
+function leToggle(id){
+  haptic(5);
+  const pk=$('picks'),old=pk.querySelector('.le-coll:not(.closing)');
+  if(old){old.classList.remove('anim');old.classList.add('closing');const r=old.previousElementSibling;if(r)r.classList.remove('open');setTimeout(()=>old.remove(),320)}
+  if(leOpen===id){leOpen=null;leSub=null;return}
+  leOpen=id;leSub=null;
+  const row=pk.querySelector(`.le-row[data-le="${id}"]`),l=S.lists.find(x=>x.id===id);if(!row||!l){drawLists();return}
+  row.classList.add('open');row.insertAdjacentHTML('afterend',lePanel(l,S.lists.filter(x=>x.space===l.space).length<2,true));
+}
 /* Settings → Lists shows the same list editor inside the settings page, grouped by space */
 let listsInSet=false;
 const picksHome={parent:null,next:null};
@@ -293,6 +321,7 @@ $('editLists').onclick=()=>{editing=false;nl=null;leOpen=null;drawLists()};
 $('listsMore').onclick=e=>{e.stopPropagation();const p=$('listsPop'),was=p.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);p.classList.add('on')}};
 $('lmEdit').onclick=()=>{editing=true;nl=null;leOpen=null;drawLists()};
 $('picks').addEventListener('click',e=>{
+  const lt=e.target.closest('[data-lxt]');if(lt){lxToggle(lt,v=>leSub=v);return}
   const nb=e.target.closest('#nlBtn,[data-nlsp]');if(nb){nl={name:'',c:PALETTE[S.lists.length%PALETTE.length],space:nb.dataset.nlsp||null};drawLists();try{$('nlIn').focus()}catch(_){}setTimeout(()=>$('nlIn')&&$('nlIn').focus(),50);return}
   const sw=e.target.closest('#nlSw button');if(sw){nl.c=sw.dataset.c;drawLists();return}
   if(e.target.closest('#nlSave'))return createList();
@@ -305,7 +334,7 @@ $('picks').addEventListener('click',e=>{
     if(!used.length){go();return}
     confirmAsk({title:`Remove #${name}?`,text:`It comes off ${used.length} ${used.length===1?'task':'tasks'}. The tasks stay.`,yes:'Yes, remove',no:'No',onYes:go});return}
   const la=e.target.closest('[data-larc]');if(la){const l=S.lists.find(x=>x.id===la.dataset.larc);if(!l)return;
-    commit(()=>archiveList(l),`${l.name} archived`);leOpen=null;drawLists();return}
+    commit(()=>archiveList(l),`${l.name} archived`);leOpen=null;leSub=null;drawLists();return}
   const ld=e.target.closest('[data-ldel]');if(ld){const l=S.lists.find(x=>x.id===ld.dataset.ldel);if(!l)return;
     const n=S.tasks.filter(t=>t.list===l.id).length;
     confirmDanger({title:`Delete ${l.name}?`,text:`This deletes the list and its ${n} ${n===1?'task':'tasks'} for good. To keep them safe, choose Archive list instead.`,word:l.name,yes:'Delete list',
@@ -313,7 +342,7 @@ $('picks').addEventListener('click',e=>{
   const p=e.target.closest('.pick');if(!p)return;const id=p.dataset.l;
   if(editing){
     const l=S.lists.find(x=>x.id===id);
-    if(e.target.closest('[data-le]')){leOpen=leOpen===id?null:id;haptic(5);drawLists();return}
+    if(e.target.closest('[data-le]')){leToggle(id);return}
     if(e.target.closest('[data-mv]')){const i=S.spaces.findIndex(x=>x.id===l.space),nx=S.spaces[(i+1)%S.spaces.length];
       if(S.lists.filter(x=>x.space===l.space).length<2)return toast('A space needs at least one list');
       l.space=nx.id;if(inSpaceMode()&&S.list===l.id)S.list='all';haptic(6);drawLists();render();return toast(`${l.name} moved to ${nx.name}`)}
@@ -337,7 +366,7 @@ $('picks').addEventListener('focusout',e=>{if(e.target.dataset&&e.target.dataset
 $('picks').addEventListener('keydown',e=>{
   if(e.target.dataset.tren!=null&&e.key==='Enter'){e.preventDefault();e.target.blur();return}
   if(e.target.id==='leTagIn'&&e.key==='Enter'){e.preventDefault();const l=S.lists.find(x=>x.id===leOpen);if(l&&addListTag(l,e.target.value)){haptic(6);save();drawLists();setTimeout(()=>$('leTagIn')&&$('leTagIn').focus(),0)}return}
-if(e.target.dataset.ren&&e.key==='Enter'){e.target.blur();leOpen=null;drawLists();render();return}if(e.target.id==='nlIn'&&e.key==='Enter')createList()});
+if(e.target.dataset.ren&&e.key==='Enter'){e.target.blur();leToggle(leOpen);render();return}if(e.target.id==='nlIn'&&e.key==='Enter')createList()});
 function createList(){
   if(!nl||!nl.name.trim())return;
   const l={id:'l'+newId(),name:nl.name.trim(),c:nl.c,space:nl.space||(inSpaceMode()?S.space:S.spaces[0].id)};S.lists.push(l);nl=null;haptic(8);
