@@ -72,10 +72,14 @@ const tagChips=(t,max)=>{const a=tagsOf(t);if(!a.length)return '';return a.slice
 function drawDetail(){
   const t=cur;if(!t)return;
   {const full=t.subs.length>=SUB_MAX;$('dSubIn').closest('.sub-add').classList.toggle('full',full);$('dSubIn').placeholder=full?`${SUB_MAX} steps, the most for one task`:'Add a step'}
-  $('detailSheet').style.setProperty('--accent',color(t.stage==='done'?'done':t.stage));
+  $('detailSheet').style.setProperty('--accent',t.inbox?'var(--done)':color(t.stage==='done'?'done':t.stage));$('detailSheet').classList.toggle('is-idea',!!t.inbox);
   const l=listOf(t.list),st=STAGES[idx(t.stage)],rp=REPEATS.find(r=>r.id===t.repeat);
   const P=(k,inner,muted)=>`<button class="pill ${pickOpen===k?'open':''} ${muted?'muted':''}" data-p="${k}">${inner}</button>`;
-  $('dPills').innerHTML=
+  $('dPills').innerHTML=t.inbox?
+    P('list',`${I_SEND}Send to a list`)+
+    P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
+    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))
+  :
     P('stage',`<i style="background:${color(t.stage)}"></i>${esc(st.name)}`)+
     P('list',`<i style="background:${l.c}"></i>${esc(l.name)}`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
@@ -88,7 +92,7 @@ function drawDetail(){
   if(pickOpen){
     pick.dataset.k=pickOpen;
     pick.innerHTML={stage:()=>STAGES.map(s=>pk(t.stage===s.id,s.id,s.name,color(s.id))).join(''),
-      list:()=>S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?`${(spaceOf(x.space)||{}).name} › ${x.name}`:x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
+      list:()=>t.inbox?ibListPicks():S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?`${(spaceOf(x.space)||{}).name} › ${x.name}`:x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
       est:()=>ESTS.map(m=>pk(t.est===m,m,fmt(m))).join(''),
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
       pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
@@ -109,9 +113,9 @@ function drawDetail(){
   $('dSubs').querySelectorAll('.s-t').forEach(grow);
   const done=t.stage==='done';
   requestAnimationFrame(subsFade);
-  $('dComplete').textContent=done?'Mark as not done':'Complete';
-  $('dComplete').classList.toggle('undo',done);
-  $('dFocus').hidden=done;
+  $('dComplete').textContent=t.inbox?'Send to a list':done?'Mark as not done':'Complete';
+  $('dComplete').classList.toggle('undo',done);$('dComplete').classList.toggle('send',!!t.inbox);
+  $('dFocus').hidden=done||!!t.inbox;
   save();
 }
 $('dPicker').addEventListener('keydown',e=>{if(e.target.id!=='dTagIn')return;
@@ -126,6 +130,7 @@ $('dPicker').onclick=e=>{
   if(k==='tags'){toggleTaskTag(t,v);haptic(5);save();render();return drawDetail()}
   pickOpen=null;haptic(6);
   if(k==='stage'){if(v!==t.stage&&!canPut(t.list,v,t)){drawDetail();return}if(v!==t.stage)commit(()=>setStage(t,v),v==='done'?doneMsg(t):`Moved to ${STAGES[idx(v)].name}`)}
+  else if(k==='list'&&t.inbox){ibSendTo(t,v);return}
   else if(k==='list'){if(v!==t.list&&!canPut(v,t.stage,t)){drawDetail();return}t.list=v;carryTags(t)}
   else if(k==='est')t.est=+v;
   else if(k==='repeat')t.repeat=v;
@@ -183,6 +188,7 @@ $('dDup').onclick=()=>{
   openDetail(c.id);
 };
 $('dComplete').onclick=()=>{
+  if(cur&&cur.inbox){pickOpen='list';haptic(5);drawDetail();return}
   const t=cur,toDone=t.stage!=='done';if(!toDone&&!canPut(t.list,'today',t))return;haptic(14);
   closeSheets();
   setTimeout(()=>commit(()=>setStage(t,toDone?'done':'today'),toDone?doneMsg(t):'Moved to Today'),200);

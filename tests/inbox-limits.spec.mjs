@@ -8,18 +8,21 @@ test('inbox: capture, steps, send to backlog; hidden everywhere else; can be tur
   await page.locator('#sInbox').click();
   await expect(page.locator('#inboxPg')).toHaveClass(/on/);
   await page.fill('#ibNew', 'Start a podcast'); await page.press('#ibNew', 'Enter');
-  await expect(page.locator('.ib-it')).toHaveCount(1);
+  await expect(page.locator('.ib-r')).toHaveCount(1);
   await expect(page.locator('#sInbox .n')).toHaveText('1');
   // inbox ideas don't show on boards or in counts
   expect(await page.evaluate(() => S.tasks.filter(shown).some(t => t.title === 'Start a podcast'))).toBe(false);
-  await page.locator('.ib-row').first().click();
-  for (let i = 0; i < 10; i++) { const s = page.locator('.ib-it.open [data-ibsnew]'); await s.fill('Step ' + i); await s.press('Enter'); }
-  await expect(page.locator('.ib-it.open [data-ibsnew]')).toHaveCount(0); // 10 steps: no more
+  // opens the same details sheet as a task: add 10 steps, no more
+  await page.locator('.ib-r .row-in .title').first().click();
+  await expect(page.locator('#detailSheet')).toHaveClass(/on/);
+  for (let i = 0; i < 11; i++) { await page.fill('#dSubIn', 'Step ' + i); await page.press('#dSubIn', 'Enter'); }
+  expect(await page.evaluate(() => S.tasks.find(t => t.title === 'Start a podcast').subs.length)).toBe(10);
+  // send to a list
+  await page.locator('#dComplete').click();
   const l = await page.evaluate(() => S.lists[0].id);
-  await page.locator(`.ib-it.open [data-ibl="${l}"]`).click();
-  await page.locator('.ib-it.open [data-ibsend]').click();
+  await page.locator(`#dPicker .pk[data-v="${l}"]`).click();
   await expect.poll(() => page.evaluate(() => { const t = S.tasks.find(x => x.title === 'Start a podcast'); return t && !t.inbox && t.stage === 'backlog' && t.list; })).toBe(l);
-  await expect(page.locator('.ib-it')).toHaveCount(0);
+  await expect(page.locator('.ib-r')).toHaveCount(0);
   // turn it off
   await page.evaluate(() => { setCfg('inbox', false); render(); });
   await expect(page.locator('#sInbox')).toHaveCount(0);

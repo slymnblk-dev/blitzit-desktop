@@ -2226,51 +2226,20 @@ body.no-amb .amb-btn{display:none!important}
 .ib-cap input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:16px;font-weight:500}
 .ib-cap input::placeholder{color:var(--muted)}
 .ib-cap-go{height:40px;padding:0 16px;border-radius:12px;background:var(--text);color:var(--bg);font-weight:700;font-size:14px}
-.ib-count{margin:26px 4px 8px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.ib-list{display:flex;flex-direction:column;gap:8px}
-.ib-it{background:var(--surface);border-radius:18px;box-shadow:0 0 0 1px var(--line);overflow:hidden;transition:opacity .28s,transform .28s,box-shadow .2s}
-.ib-it.new{animation:ibIn .4s cubic-bezier(.2,.8,.2,1)}
-@keyframes ibIn{from{opacity:0;transform:translateY(-6px)}}
-.ib-it.leaving{opacity:0;transform:translateX(16px)}
-.ib-it.open{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 18%,transparent)}
-.ib-row{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:0 16px;text-align:left}
-.ib-dot{width:9px;height:9px;border-radius:50%;background:var(--muted);opacity:.5;flex:none}
-.ib-tt{flex:1;min-width:0;font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ib-tt em{font-style:normal;color:var(--muted)}
-.ib-sc{font-size:12.5px;font-weight:600;color:var(--muted);background:var(--surface2);border-radius:999px;padding:3px 8px}
-.ib-row .lx-chev{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
-.ib-it.open .ib-row .lx-chev{transform:rotate(180deg)}
-.ib-p{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;transition:grid-template-rows .36s cubic-bezier(.2,.8,.2,1),opacity .24s,visibility 0s .36s}
-.ib-it.open .ib-p{grid-template-rows:1fr;opacity:1;visibility:visible;transition:grid-template-rows .38s cubic-bezier(.2,.8,.2,1),opacity .3s ease .05s,visibility 0s}
-.ib-pin{min-height:0;overflow:hidden;padding:0 16px}
-.ib-pin>.ib-sec:first-child{padding-top:4px}
-.ib-sec{padding:12px 0;border-top:1px solid var(--line)}
-.ib-sec:first-child{border-top:0}
-.ib-lbl{display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.ib-lbl span{letter-spacing:0}
-.ib-title{width:100%;height:44px;border-radius:12px;background:var(--surface2);border:0;padding:0 12px;color:var(--text);font:inherit;font-size:16px;font-weight:600;outline:none}
-.ib-title:focus{box-shadow:0 0 0 2px var(--text)}
-.ib-step{display:flex;align-items:center;gap:10px;min-height:40px}
-.ib-step input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:15px;padding:6px 0}
-.ib-step.done input{color:var(--muted);text-decoration:line-through}
-.ib-sck{width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);display:grid;place-items:center;flex:none;color:var(--bg)}
-.ib-step.done .ib-sck{background:var(--done);border-color:var(--done)}
-.ib-sck svg{width:12px;height:12px}
-.ib-sdel{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--muted);opacity:.6}
-.ib-sdel:hover{opacity:1;background:var(--surface2)}.ib-sdel svg{width:12px;height:12px}
-.ib-add i{width:20px;height:20px;border-radius:50%;border:2px dashed var(--line);flex:none}
-.ib-add input::placeholder{color:var(--muted)}
-.ib-note{margin:4px 0 0;font-size:13px;color:var(--muted)}
-.ib-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.ib-chip{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border-radius:999px;background:var(--surface2);font-size:13.5px;font-weight:600;color:var(--text);transition:background .15s,color .15s}
-.ib-chip .sp-mini{width:20px;height:20px;border-radius:6px;font-size:11px;display:grid;place-items:center;color:#0F1013;font-weight:800}
-.ib-chip i{width:9px;height:9px;border-radius:3px}
-.ib-chip small{font-size:11.5px;color:var(--muted);font-weight:600}
-.ib-chip.on{background:var(--text);color:var(--bg)}.ib-chip.on small{color:color-mix(in srgb,var(--bg) 65%,transparent)}
-.ib-acts{display:flex;gap:8px;padding:6px 0 16px}
-.ib-send{flex:1;margin:0!important;height:46px!important;border-radius:14px!important;font-size:15px!important}
-.ib-send:disabled{opacity:.45}
-.ib-del{width:46px;flex:none;padding:0}
+.ib-count{margin:26px 0 4px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.ib-list .row-in{background:var(--bg);cursor:pointer}
+.ib-list .row-in:hover .title span{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--text) 25%,transparent);text-underline-offset:3px}
+.ib-go{border-color:color-mix(in srgb,var(--text) 28%,transparent);transition:background .18s,border-color .18s,transform .18s}
+.ib-go svg{opacity:1;width:14px;height:14px;stroke:var(--muted);transition:stroke .18s,transform .18s}
+.ib-go:hover{border-color:var(--text);background:var(--text)}
+.ib-go:hover svg{stroke:var(--bg);transform:translateX(1px)}
+/* "Send to a list" picker in the details sheet */
+.pk-lbl{flex-basis:100%;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 2px 0}
+.pk-lbl:first-child{margin-top:0}
+.pk small{font-size:11.5px;color:var(--muted);font-weight:600}
+.pk.full{opacity:.45}
+.is-idea .pill[data-p="list"]{background:var(--text);color:var(--bg)}
+.is-idea .pill[data-p="list"] svg{width:14px;height:14px}
 .ib-empty{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:56px 0 20px;color:var(--muted)}
 .ib-empty svg{width:34px;height:34px;margin-bottom:6px;opacity:.7}
 .ib-empty b{color:var(--text);font-size:16px}
@@ -2334,6 +2303,7 @@ body.no-amb .amb-btn{display:none!important}
   .rv-stats b{font-size:21px;white-space:nowrap}
   .rv-t small{font-size:12.5px}
 }
+.is-idea .d-complete{background:var(--text);color:var(--bg)}
 </style>
 </head>
 <body>
@@ -2528,7 +2498,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=139; // bumped with every published update
+const APP_VERSION=140; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3293,10 +3263,14 @@ const tagChips=(t,max)=>{const a=tagsOf(t);if(!a.length)return '';return a.slice
 function drawDetail(){
   const t=cur;if(!t)return;
   {const full=t.subs.length>=SUB_MAX;$('dSubIn').closest('.sub-add').classList.toggle('full',full);$('dSubIn').placeholder=full?`${SUB_MAX} steps, the most for one task`:'Add a step'}
-  $('detailSheet').style.setProperty('--accent',color(t.stage==='done'?'done':t.stage));
+  $('detailSheet').style.setProperty('--accent',t.inbox?'var(--done)':color(t.stage==='done'?'done':t.stage));$('detailSheet').classList.toggle('is-idea',!!t.inbox);
   const l=listOf(t.list),st=STAGES[idx(t.stage)],rp=REPEATS.find(r=>r.id===t.repeat);
   const P=(k,inner,muted)=>`<button class="pill ${pickOpen===k?'open':''} ${muted?'muted':''}" data-p="${k}">${inner}</button>`;
-  $('dPills').innerHTML=
+  $('dPills').innerHTML=t.inbox?
+    P('list',`${I_SEND}Send to a list`)+
+    P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
+    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))
+  :
     P('stage',`<i style="background:${color(t.stage)}"></i>${esc(st.name)}`)+
     P('list',`<i style="background:${l.c}"></i>${esc(l.name)}`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
@@ -3309,7 +3283,7 @@ function drawDetail(){
   if(pickOpen){
     pick.dataset.k=pickOpen;
     pick.innerHTML={stage:()=>STAGES.map(s=>pk(t.stage===s.id,s.id,s.name,color(s.id))).join(''),
-      list:()=>S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?`${(spaceOf(x.space)||{}).name} › ${x.name}`:x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
+      list:()=>t.inbox?ibListPicks():S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?`${(spaceOf(x.space)||{}).name} › ${x.name}`:x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
       est:()=>ESTS.map(m=>pk(t.est===m,m,fmt(m))).join(''),
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
       pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
@@ -3330,9 +3304,9 @@ function drawDetail(){
   $('dSubs').querySelectorAll('.s-t').forEach(grow);
   const done=t.stage==='done';
   requestAnimationFrame(subsFade);
-  $('dComplete').textContent=done?'Mark as not done':'Complete';
-  $('dComplete').classList.toggle('undo',done);
-  $('dFocus').hidden=done;
+  $('dComplete').textContent=t.inbox?'Send to a list':done?'Mark as not done':'Complete';
+  $('dComplete').classList.toggle('undo',done);$('dComplete').classList.toggle('send',!!t.inbox);
+  $('dFocus').hidden=done||!!t.inbox;
   save();
 }
 $('dPicker').addEventListener('keydown',e=>{if(e.target.id!=='dTagIn')return;
@@ -3347,6 +3321,7 @@ $('dPicker').onclick=e=>{
   if(k==='tags'){toggleTaskTag(t,v);haptic(5);save();render();return drawDetail()}
   pickOpen=null;haptic(6);
   if(k==='stage'){if(v!==t.stage&&!canPut(t.list,v,t)){drawDetail();return}if(v!==t.stage)commit(()=>setStage(t,v),v==='done'?doneMsg(t):`Moved to ${STAGES[idx(v)].name}`)}
+  else if(k==='list'&&t.inbox){ibSendTo(t,v);return}
   else if(k==='list'){if(v!==t.list&&!canPut(v,t.stage,t)){drawDetail();return}t.list=v;carryTags(t)}
   else if(k==='est')t.est=+v;
   else if(k==='repeat')t.repeat=v;
@@ -3404,6 +3379,7 @@ $('dDup').onclick=()=>{
   openDetail(c.id);
 };
 $('dComplete').onclick=()=>{
+  if(cur&&cur.inbox){pickOpen='list';haptic(5);drawDetail();return}
   const t=cur,toDone=t.stage!=='done';if(!toDone&&!canPut(t.list,'today',t))return;haptic(14);
   closeSheets();
   setTimeout(()=>commit(()=>setStage(t,toDone?'done':'today'),toDone?doneMsg(t):'Moved to Today'),200);
@@ -4711,114 +4687,89 @@ function welcomeDaily(){
   playWelcome();
 }
 /* ---------- Inbox (optional, Settings → Tasks; on by default) ----------
-   A calm place to drop ideas without picking a space or list. Each idea can have steps (max 10).
-   When ready, send it to the Backlog of any list (lists hold max 10 per stage).
+   A calm place to drop ideas without picking a space or list.
+   Ideas look and open exactly like tasks in a list: tap one for the same details sheet
+   (title, steps up to 10, notes, time, priority). "Send to a list" moves it to that list's Backlog
+   (lists hold max 10 per stage).
    Ideas are ordinary tasks with inbox:true and no list, so sync, backup and undo just work;
    shown() leaves them out of every board, count and search. */
-var ibOn=false,ibOpenId=null,ibDest=null; // var: other files read ibOn, possibly before this file runs
+var ibOn=false; // var: other files read ibOn, possibly before this file runs
 function inboxOn(){return !!(S.cfg&&S.cfg.inbox!==false)}
 function inboxItems(){return S.tasks.filter(t=>t.inbox&&!t.archived).sort((a,b)=>(b.created||0)-(a.created||0))}
 var IB_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l2.5-7.5h11L20 13v5.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/><path d="M4 13h4.5l1.5 2.5h4l1.5-2.5H20"/></svg>';
+var I_SEND='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>';
 
 function openInbox(){
   if(!inboxOn())return;
-  closeSearch&&closeSearch();
-  ibOn=true;ibOpenId=null;drawInbox();$('inboxPg').classList.add('on');document.body.classList.add('ib-open');
+  if(typeof closeSearch==='function')closeSearch();
+  ibOn=true;drawInbox();$('inboxPg').classList.add('on');document.body.classList.add('ib-open');
   $('inboxPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
   setTimeout(()=>{if(ibOn&&matchMedia('(min-width:1100px)').matches)$('ibNew')&&$('ibNew').focus()},300);
 }
 function closeInbox(){
-  if(!ibOn)return;ibOn=false;ibOpenId=null;
+  if(!ibOn)return;ibOn=false;
   $('inboxPg').classList.remove('on');document.body.classList.remove('ib-open');
   const a=document.activeElement;if(a&&a.closest&&a.closest('#inboxPg'))a.blur();
   if(typeof renderDesk==='function')renderDesk();
 }
-/* where "Send" goes: the list you used last, else the first list */
-function ibTarget(){
-  const ok=id=>S.lists.some(l=>l.id===id);
-  if(!ibDest||!ok(ibDest))ibDest=ok(S.cfg.ibLast)?S.cfg.ibLast:(S.lists[0]||{}).id;
-  return ibDest;
-}
-const ibSpMini=x=>`<span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>`;
-function ibPanel(t){
-  const dest=ibTarget(),dl=listOf(dest),dsp=spaceOf(dl.space)||S.spaces[0],n=stageCount(dest,'backlog'),full=n>=STAGE_MAX;
-  const steps=t.subs.map((s,i)=>`<div class="ib-step${s.done?' done':''}"><button class="ib-sck" data-ibsck="${t.id}:${s.id}" aria-label="${s.done?'Mark not done':'Mark done'}">${s.done?tick():''}</button>
-      <input value="${esc(s.t)}" data-ibsren="${t.id}:${s.id}" maxlength="120" aria-label="Step" autocomplete="off"><button class="ib-sdel" data-ibsdel="${t.id}:${s.id}" aria-label="Remove step">${X}</button></div>`).join('');
-  return `<div class="ib-p"><div class="ib-pin">
-    <div class="ib-sec"><div class="ib-lbl">Idea</div><input class="ib-title" data-ibren="${t.id}" value="${esc(t.title)}" maxlength="120" placeholder="What’s the idea?" autocomplete="off" enterkeyhint="done"></div>
-    <div class="ib-sec"><div class="ib-lbl">Steps <span>${t.subs.length}/${SUB_MAX}</span></div>${steps}
-      ${t.subs.length<SUB_MAX?`<div class="ib-step ib-add"><i></i><input data-ibsnew="${t.id}" placeholder="Add a step" maxlength="120" enterkeyhint="done" autocomplete="off"></div>`:`<p class="ib-note">That’s the most for one idea. Keep it focused.</p>`}</div>
-    <div class="ib-sec"><div class="ib-lbl">Send to</div>
-      ${S.spaces.length>1?`<div class="ib-chips">${orderedSpaces().map(x=>`<button class="ib-chip${x.id===dsp.id?' on':''}" data-ibsp="${x.id}">${ibSpMini(x)}${esc(x.name)}</button>`).join('')}</div>`:''}
-      <div class="ib-chips">${S.lists.filter(l=>l.space===dsp.id).map(l=>`<button class="ib-chip${l.id===dest?' on':''}" data-ibl="${l.id}"><i style="background:${l.c}"></i>${esc(l.name)}<small>${stageCount(l.id,'backlog')}/${STAGE_MAX}</small></button>`).join('')}</div>
-    </div>
-    <div class="ib-acts"><button class="primary ib-send" data-ibsend="${t.id}" ${full?'disabled':''}>${full?`${esc(dl.name)} Backlog is full`:`Send to ${esc(dl.name)} · Backlog`}</button>
-      <button class="le-btn warn ib-del" data-ibdel="${t.id}" aria-label="Delete idea">${BIN_S}</button></div>
-  </div></div>`;
+/* one idea, drawn like a task row in a list */
+function ibRow(t){
+  const sd=t.subs.filter(s=>s.done).length,pr=priOf(t);
+  const meta=[pr?`<span class="mi pri ${pr.id}">${priIcon(pr.n)}${pr.name}</span>`:'',
+    t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
+    t.notes.trim()?`<span class="mi" aria-label="Has notes">${I_NOTE}</span>`:''].join('');
+  return `<li class="row ib-r${t.id===enterId?' enter':''}" data-ibid="${t.id}">
+    <div class="row-in">
+      <button class="check ib-go" data-ibgo="${t.id}" aria-label="Send ${esc(t.title)} to a list" title="Send to a list">${I_SEND}</button>
+      <div class="body"><div class="title"><span>${esc(t.title)||'Untitled'}</span></div>${meta?`<div class="meta">${meta}</div>`:''}</div>
+      <div class="est">${fmt(t.est)}</div>
+    </div></li>`;
 }
 function drawInbox(){
   const items=inboxItems();
-  const rows=items.map(t=>{const done=t.subs.filter(s=>s.done).length;
-    return `<div class="ib-it${ibOpenId===t.id?' open':''}" data-ib="${t.id}"><button class="ib-row" data-ibt="${t.id}" aria-expanded="${ibOpenId===t.id}">
-      <span class="ib-dot"></span><span class="ib-tt">${esc(t.title)||'<em>Untitled</em>'}</span>${t.subs.length?`<span class="ib-sc">${done}/${t.subs.length}</span>`:''}${LX_CHEV}</button>${ibPanel(t)}</div>`}).join('');
   $('ibIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="ibBack" aria-label="Back">${BACK_SVG}</button></div>
-    <h1 class="ib-h">Inbox</h1><p class="ib-lede">Drop ideas here, no sorting needed. Send each one to a list’s Backlog when you’re ready.</p>
+    <h1 class="ib-h">Inbox</h1><p class="ib-lede">Drop ideas here, no sorting needed. Tap one to add steps or notes, then send it to a list’s Backlog.</p>
     <div class="ib-cap"><span class="ib-cap-i">${PLUS_S}</span><input id="ibNew" placeholder="Add an idea" maxlength="120" enterkeyhint="done" autocomplete="off"><button class="ib-cap-go" id="ibAdd" aria-label="Add idea">Add</button></div>
-    ${items.length?`<div class="ib-count">${items.length} ${items.length===1?'idea':'ideas'}</div><div class="ib-list">${rows}</div>`
+    ${items.length?`<div class="ib-count">${items.length} ${items.length===1?'idea':'ideas'}</div><ul class="list ib-list">${items.map(ibRow).join('')}</ul>`
       :`<div class="ib-empty">${IB_ICON}<b>Your inbox is empty</b><span>Ideas you add show up here.</span></div>`}`;
+  enterId=null;
 }
 function ibAdd(){
   const i=$('ibNew'),v=(i.value||'').trim();if(!v)return;
   const t={id:newId(),title:v,stage:'backlog',list:null,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',inbox:true,created:Date.now()};
-  S.tasks.push(t);save();sfx('add');haptic(8);drawInbox();if(typeof renderDesk==='function')renderDesk();
-  const n=$('ibNew');n.focus();
-  const row=document.querySelector(`.ib-it[data-ib="${t.id}"]`);if(row)row.classList.add('new');
+  S.tasks.push(t);enterId=t.id;save();sfx('add');haptic(8);drawInbox();if(typeof renderDesk==='function')renderDesk();
+  $('ibNew').focus();
 }
-/* open or close an idea in place, so the panel glides instead of redrawing */
-function ibToggle(id){
-  const was=ibOpenId===id;
-  document.querySelectorAll('#ibIn .ib-it.open').forEach(x=>{x.classList.remove('open');x.querySelector('.ib-row').setAttribute('aria-expanded','false')});
-  ibOpenId=was?null:id;haptic(5);
-  if(!was){const it=document.querySelector(`.ib-it[data-ib="${id}"]`);if(it){it.classList.add('open');it.querySelector('.ib-row').setAttribute('aria-expanded','true')}}
+/* the "Send to a list" picker in the details sheet: lists grouped by space, with how full each Backlog is */
+function ibListPicks(){
+  return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);if(!ls.length)return '';
+    return `<span class="pk-lbl">${sp.e?esc(sp.e)+' ':''}${esc(sp.name)}</span>`+ls.map(l=>{const n=stageCount(l.id,'backlog'),full=n>=STAGE_MAX;
+      return `<button class="pk${full?' full':''}" data-v="${l.id}"><i style="background:${l.c}"></i>${esc(l.name)}<small>${n}/${STAGE_MAX}</small></button>`}).join('')}).join('');
 }
-const ibTask=id=>S.tasks.find(t=>t.inbox&&String(t.id)===String(id));
-const ibPair=v=>{const [a,b]=String(v).split(':');const t=ibTask(a);return [t,t?t.subs.find(s=>String(s.id)===b):null]};
-function ibRedraw(){const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y}
+function ibSendTo(t,list){
+  if(!t.title.trim()){toast('Give the idea a name first');drawDetail();return}
+  if(!canPut(list,'backlog')){drawDetail();return}
+  S.cfg.ibLast=list;
+  const name=listOf(list).name;cur=null;onSheetClose=null;closeSheets();
+  setTimeout(()=>{commit(()=>{t.inbox=false;delete t.created;t.list=list;t.stage='backlog';carryTags(t)},`Sent to ${name} · Backlog`);sfx('add')},220);
+}
+function ibOpen(id,pick){openDetail(id);if(pick){pickOpen='list';drawDetail()}}
 
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg" id="inboxPg" role="region" aria-label="Inbox"><div class="ib-in" id="ibIn"></div></div>');
 document.addEventListener('click',e=>{if(e.target.closest('#ibEntry'))openInbox()});
 $('inboxPg').addEventListener('click',e=>{
   if(e.target.closest('#ibBack'))return closeInbox();
   if(e.target.closest('#ibAdd'))return ibAdd();
-  const tg=e.target.closest('[data-ibt]');if(tg)return ibToggle(+tg.dataset.ibt);
-  const ck=e.target.closest('[data-ibsck]');if(ck){const [t,s]=ibPair(ck.dataset.ibsck);if(s){s.done=!s.done;haptic(6);save();ibRedraw()}return}
-  const sd=e.target.closest('[data-ibsdel]');if(sd){const [t,s]=ibPair(sd.dataset.ibsdel);if(s){t.subs=t.subs.filter(x=>x!==s);haptic(5);save();ibRedraw()}return}
-  const sp=e.target.closest('[data-ibsp]');if(sp){const l=S.lists.find(x=>x.space===sp.dataset.ibsp);if(l){ibDest=l.id;haptic(5);ibRedraw()}return}
-  const ll=e.target.closest('[data-ibl]');if(ll){ibDest=ll.dataset.ibl;haptic(5);ibRedraw();return}
-  const se=e.target.closest('[data-ibsend]');if(se){const t=ibTask(se.dataset.ibsend),dest=ibTarget();if(!t||!dest)return;
-    if(!t.title.trim()){toast('Give the idea a name first');return}
-    if(!canPut(dest,'backlog'))return;
-    const it=se.closest('.ib-it');it.classList.add('leaving');S.cfg.ibLast=dest;
-    setTimeout(()=>{ibOpenId=null;commit(()=>{t.inbox=false;delete t.created;t.list=dest;t.stage='backlog';if(typeof carryTags==='function')carryTags(t)},`Sent to ${listOf(dest).name} · ${STAGES[0].name}`);sfx('add')},280);return}
-  const dl=e.target.closest('[data-ibdel]');if(dl){const t=ibTask(dl.dataset.ibdel);if(!t)return;
-    const it=dl.closest('.ib-it');it.classList.add('leaving');haptic(10);sfx('remove');
-    setTimeout(()=>{ibOpenId=null;commit(()=>{S.tasks=S.tasks.filter(x=>x!==t)},'Idea deleted')},280);return}
+  const g=e.target.closest('[data-ibgo]');if(g){haptic(6);return ibOpen(+g.dataset.ibgo,true)}
+  const r=e.target.closest('[data-ibid] .row-in');if(r)return ibOpen(+r.closest('[data-ibid]').dataset.ibid);
 });
 $('inboxPg').addEventListener('keydown',e=>{
-  if(e.key==='Escape'){if(e.target.matches('input')&&e.target.value&&e.target.id==='ibNew'){e.target.value='';return}e.stopPropagation();closeInbox();return}
-  if(e.key!=='Enter')return;
-  if(e.target.id==='ibNew'){e.preventDefault();ibAdd();return}
-  const ns=e.target.dataset.ibsnew;if(ns){e.preventDefault();const t=ibTask(ns),v=e.target.value.trim();if(!t||!v)return;if(!canStep(t))return;
-    t.subs.push({id:newId(),t:v,done:false});haptic(6);save();ibRedraw();const n=document.querySelector(`[data-ibsnew="${ns}"]`);if(n)n.focus();return}
-  if(e.target.dataset.ibren||e.target.dataset.ibsren){e.preventDefault();e.target.blur()}
+  if(e.key==='Escape'){if(e.target.id==='ibNew'&&e.target.value){e.target.value='';return}e.stopPropagation();closeInbox();return}
+  if(e.key==='Enter'&&e.target.id==='ibNew'){e.preventDefault();ibAdd()}
 });
-$('inboxPg').addEventListener('input',e=>{
-  const r=e.target.dataset.ibren;if(r){const t=ibTask(r);if(t){t.title=e.target.value;const tt=document.querySelector(`.ib-it[data-ib="${r}"] .ib-tt`);if(tt)tt.textContent=t.title||'Untitled';save()}return}
-  const s=e.target.dataset.ibsren;if(s){const [t,x]=ibPair(s);if(x&&e.target.value.trim()){x.t=e.target.value;save()}}
-});
-/* keep the page in step with undo and sync, without stealing focus while typing */
+/* keep the page in step with edits, undo and sync, without stealing focus while typing */
 const _ibRender=render;
-render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#inboxPg')&&a.matches('input')))ibRedraw()}};
+render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;n.focus()}}};
 /* ---------- Weekly review (optional, Settings → Tasks; on by default, Sundays) ----------
    Once a week a small card on Home invites a calm review: what you finished, what's still in My week
    (keep it, send it back to Backlog, or archive it), and how many ideas wait in the Inbox.
