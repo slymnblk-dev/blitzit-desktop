@@ -257,7 +257,7 @@ function listsToSettings(slot){const pk=$('picks');if(!picksHome.parent){picksHo
 function listsBack(){const pk=$('picks');if(!listsInSet||!picksHome.parent)return;listsInSet=false;pk.classList.remove('editing','set-lists');picksHome.parent.insertBefore(pk,picksHome.next);editing=false;leOpen=null;nl=null}
 function drawLists(){
   $('listSheetIn').classList.toggle('editing',editing);
-  $('editLists').textContent=editing?'Done':'Edit';
+  $('editLists').textContent=editing?'Done':'Edit lists';
   const LH=listsHere(),sp=inSpaceMode()?spaceOf(S.space):null;
   $('listsTitle').innerHTML=editing?`Edit lists${sp?`<small>${esc((sp.e?sp.e+' ':'')+sp.name)}</small>`:''}`:esc(sp?(sp.e?sp.e+' ':'')+sp.name:'Lists');$('editSpace').hidden=!sp||editing;
   const open=id=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(id==='all'||t.list===id)&&t.stage!=='done').length;

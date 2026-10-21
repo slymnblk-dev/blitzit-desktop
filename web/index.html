@@ -2125,7 +2125,7 @@ body.no-amb .amb-btn{display:none!important}
 
 <div class="sheet" id="listSheet"><div class="sheet-in" id="listSheetIn">
   <div class="grab"></div>
-  <div class="sh-head"><h2 id="listsTitle">Lists</h2><div class="sh-acts"><button class="txt-btn" id="editSpace" hidden>Edit space</button><button class="txt-btn" id="editLists">Edit</button></div></div>
+  <div class="sh-head"><h2 id="listsTitle">Lists</h2><div class="sh-acts"><button class="txt-btn" id="editSpace" hidden>Edit space</button><button class="txt-btn" id="editLists">Edit lists</button></div></div>
   <div id="picks"></div>
 </div></div>
 
@@ -2227,7 +2227,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=127; // bumped with every published update
+const APP_VERSION=128; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3157,7 +3157,7 @@ function listsToSettings(slot){const pk=$('picks');if(!picksHome.parent){picksHo
 function listsBack(){const pk=$('picks');if(!listsInSet||!picksHome.parent)return;listsInSet=false;pk.classList.remove('editing','set-lists');picksHome.parent.insertBefore(pk,picksHome.next);editing=false;leOpen=null;nl=null}
 function drawLists(){
   $('listSheetIn').classList.toggle('editing',editing);
-  $('editLists').textContent=editing?'Done':'Edit';
+  $('editLists').textContent=editing?'Done':'Edit lists';
   const LH=listsHere(),sp=inSpaceMode()?spaceOf(S.space):null;
   $('listsTitle').innerHTML=editing?`Edit lists${sp?`<small>${esc((sp.e?sp.e+' ':'')+sp.name)}</small>`:''}`:esc(sp?(sp.e?sp.e+' ':'')+sp.name:'Lists');$('editSpace').hidden=!sp||editing;
   const open=id=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(id==='all'||t.list===id)&&t.stage!=='done').length;
