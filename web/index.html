@@ -2292,6 +2292,52 @@ body.no-amb .amb-btn{display:none!important}
 .col-n.over{color:var(--today);font-weight:800}
 .sub-add.full{opacity:.6}
 @media (prefers-reduced-motion:reduce){.inbox-pg,.ib-p,.ib-it{transition:none!important}.ib-it.new{animation:none}}
+
+/* ---------- Weekly review ---------- */
+.rv-card{display:flex;align-items:center;gap:14px;margin:0 0 16px;padding:14px 14px 14px 16px;border-radius:20px;background:var(--surface);box-shadow:0 0 0 1px var(--line);animation:cardIn .45s cubic-bezier(.2,.8,.2,1) both}
+.app .rv-card{margin:12px 0 0}
+.rv-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--done) 16%,transparent);color:var(--done)}
+.rv-ic svg{width:19px;height:19px}
+.rv-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.rv-t b{font-size:15.5px;font-weight:700}.rv-t small{font-size:13px;color:var(--muted);margin-top:1px}
+.rv-skip{height:38px;padding:0 12px;border-radius:12px;color:var(--muted);font-weight:600;font-size:14px}
+.rv-skip:hover{color:var(--text);background:var(--surface2)}
+.rv-go{height:38px;padding:0 16px;border-radius:12px;background:var(--text);color:var(--bg);font-weight:700;font-size:14px}
+.review-pg{z-index:22}
+@media (min-width:1100px){.review-pg .set-top{display:flex}.review-pg .ib-in{padding-top:28px}}
+.rv-eye{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--done);margin-top:10px}
+.rv-h{font-size:44px;font-weight:800;letter-spacing:-.045em;margin:6px 0 18px;line-height:1}
+.rv-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rv-stats>div{background:var(--surface);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.rv-stats b{font-size:26px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.rv-stats span{font-size:12.5px;color:var(--muted)}
+.rv-sec{margin-top:26px}
+.rv-sec h3{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.rv-p{margin:0 0 10px;color:var(--muted);font-size:14.5px;line-height:1.5}
+.rv-list{background:var(--surface);border-radius:18px;overflow:hidden}
+.rv-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line);transition:opacity .26s,transform .26s}
+.rv-row:first-child{border-top:0}
+.rv-row.leaving{opacity:0;transform:translateX(14px)}
+.rv-ck{width:20px;height:20px;border-radius:50%;background:var(--done);color:var(--bg);display:grid;place-items:center;flex:none}.rv-ck svg{width:12px;height:12px}
+.rv-tt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rv-tt b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv-row.done .rv-tt b{color:var(--muted)}
+.rv-tt small{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.rv-tt small i{width:7px;height:7px;border-radius:2px;margin-left:4px}
+.rv-acts{display:flex;gap:4px;flex:none;background:var(--surface2);border-radius:999px;padding:3px}
+.rv-acts button{height:28px;padding:0 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.rv-acts button:hover{color:var(--text)}
+.rv-acts button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.rv-more{padding:10px 14px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+.rv-ib{width:100%}
+.rv-done{margin-top:30px}
+@media (max-width:560px){
+  .rv-row:not(.done){flex-wrap:wrap;row-gap:10px}
+  .rv-row:not(.done) .rv-tt{flex:1 1 100%}
+  .rv-row .rv-acts{margin-left:0}
+  .rv-stats b{font-size:21px;white-space:nowrap}
+  .rv-t small{font-size:12.5px}
+}
 </style>
 </head>
 <body>
@@ -2486,7 +2532,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=136; // bumped with every published update
+const APP_VERSION=138; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2937,7 +2983,7 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${backupCard()}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="ib-entry" id="ibEntry"><span class="ib-entry-i">${IB_ICON}</span><span class="ib-entry-t"><b>Inbox</b><small>${n?`${n} ${n===1?'idea':'ideas'} waiting`:'Drop ideas here'}</small></span>${CHEV}</button>`})():''}<div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${reviewCard()}${backupCard()}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="ib-entry" id="ibEntry"><span class="ib-entry-i">${IB_ICON}</span><span class="ib-entry-t"><b>Inbox</b><small>${n?`${n} ${n===1?'idea':'ideas'} waiting`:'Drop ideas here'}</small></span>${CHEV}</button>`})():''}<div class="sp-grid">${spaceCards()}</div>`;
 }
 function render(dir){
   root.dataset.view=S.space?'space':'home';drawMe();
@@ -4202,7 +4248,7 @@ function renderDesk(){
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   const spp=!S.space&&spPage&&spPageOn()?spaceOf(spPage):null;if(!spp)spPage=null;
-  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
+  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${reviewCard()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
   const gk=S.space?S.space+'|'+S.list:'';
   if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
@@ -4257,7 +4303,7 @@ function todayFirst(){
   const side=orderedSpaces().map(sp=>{const st=spaceStats(sp);
     return `<button class="hf-sp" data-space="${sp.id}"><span class="hf-sph"><span class="hf-ic">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span class="hf-n">${st.today?st.today+' today':st.open?st.open+' open':'Clear'}</span></span>
       <span class="sp-bars">${st.total?VS().map(x=>st.by[x.id]?`<i style="flex:${st.by[x.id]};background:var(--${x.id})"></i>`:'').join(''):'<i class="sp-bars-0"></i>'}</span></button>`}).join('');
-  return `${backupCard()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
+  return `${reviewCard()}${backupCard()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
     ${rows||`<p class="hf-empty">Open a space and move a few tasks to Today. They’ll show up here, ready to tick off.</p>`}</section>
     <aside class="hf-side"><div class="hf-cap">Spaces</div>${side}<button class="hf-new" id="spNew">${PLUS_S}New space</button></aside></div>`;
 }
@@ -4781,6 +4827,66 @@ $('inboxPg').addEventListener('input',e=>{
 /* keep the page in step with undo and sync, without stealing focus while typing */
 const _ibRender=render;
 render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#inboxPg')&&a.matches('input')))ibRedraw()}};
+/* ---------- Weekly review (optional, Settings → Tasks; on by default, Sundays) ----------
+   Once a week a small card on Home invites a calm review: what you finished, what's still in My week
+   (keep it, send it back to Backlog, or archive it), and how many ideas wait in the Inbox.
+   Finishing or skipping marks the week as reviewed until the next review day. */
+var rvOn=false;
+const REVIEW_DAYS=[[5,'Fri'],[0,'Sun'],[1,'Mon']];
+function reviewOn(){return !!(S.cfg&&S.cfg.review!==false)}
+/* the start of the most recent review day (today counts) */
+function lastReviewDay(){const d=new Date();d.setHours(0,0,0,0);const want=+(S.cfg.reviewDay??0);while(d.getDay()!==want)d.setDate(d.getDate()-1);return d.getTime()}
+function reviewDue(){
+  if(!reviewOn()||!S.tasks.length||isDemo())return false;
+  if((S.firstUse||0)>lastReviewDay())return false; // not in your first days
+  return (S.cfg.reviewedAt||0)<lastReviewDay();
+}
+const RV_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg>';
+function reviewCard(){
+  if(!reviewDue())return '';
+  const done=weekDone().length;
+  return `<div class="rv-card"><span class="rv-ic">${RV_ICON}</span><span class="rv-t"><b>Your weekly review is ready</b><small>${done?`${done} done this week. `:''}Five calm minutes to reset.</small></span>
+    <button class="rv-skip" data-rvskip>Skip</button><button class="rv-go" data-rvgo>Start</button></div>`;
+}
+const weekDone=()=>S.tasks.filter(t=>t.stage==='done'&&t.doneAt&&t.doneAt>Date.now()-7*DAY&&!t.inbox);
+function weekFocus(){const lg=S.focusLog||{};let s=0;for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);s+=lg[dkey(d)]||0}return Math.round(s/60)}
+function openReview(){
+  if(typeof closeInbox==='function')closeInbox();
+  rvOn=true;drawReview();$('reviewPg').classList.add('on');document.body.classList.add('rv-open');$('reviewPg').scrollTop=0;haptic(6);
+}
+function closeReview(){if(!rvOn)return;rvOn=false;$('reviewPg').classList.remove('on');document.body.classList.remove('rv-open');render()}
+function finishReview(msg){S.cfg.reviewedAt=Date.now();save();closeReview();if(msg)toast(msg)}
+function drawReview(){
+  const done=weekDone(),fm=weekFocus(),wk=S.tasks.filter(t=>shown(t)&&t.stage==='week'),ib=typeof inboxItems==='function'&&inboxOn()?inboxItems().length:0;
+  const tag=t=>{const l=listOf(t.list),sp=spaceOf(l.space)||{};return `<small>${sp.e?esc(sp.e)+' ':''}${esc(sp.name||'')}<i style="background:${l.c}"></i>${esc(l.name)}</small>`};
+  $('rvIn').innerHTML=`<div class="set-top"><button class="icon-btn" id="rvBack" aria-label="Close review">${BACK_SVG}</button></div>
+    <div class="rv-eye">Weekly review</div><h1 class="rv-h">${done.length?'Nice week.':'A fresh week.'}</h1>
+    <div class="rv-stats"><div><b>${done.length}</b><span>tasks done</span></div><div><b>${fmt(fm)}</b><span>focused</span></div><div><b>${wk.length}</b><span>still in My week</span></div></div>
+    ${done.length?`<section class="rv-sec"><h3>1 · Finished</h3><div class="rv-list">${done.slice(0,6).map(t=>`<div class="rv-row done"><span class="rv-ck">${tick()}</span><span class="rv-tt"><b>${esc(t.title)}</b>${tag(t)}</span></div>`).join('')}${done.length>6?`<div class="rv-more">+${done.length-6} more</div>`:''}</div></section>`:''}
+    <section class="rv-sec"><h3>${done.length?'2':'1'} · Still in My week</h3>
+      ${wk.length?`<p class="rv-p">Keep what still matters. Send the rest back, or let it go.</p><div class="rv-list">${wk.map(t=>`<div class="rv-row" data-rvt="${t.id}"><span class="rv-tt"><b>${esc(t.title)}</b>${tag(t)}</span>
+        <span class="rv-acts"><button data-rvk="${t.id}" class="on">Keep</button><button data-rvb="${t.id}">Backlog</button><button data-rva="${t.id}">Archive</button></span></div>`).join('')}</div>`
+      :`<p class="rv-p">Nothing left over. Clean slate.</p>`}</section>
+    ${inboxOn()?`<section class="rv-sec"><h3>${done.length?'3':'2'} · Inbox</h3><p class="rv-p">${ib?`${ib} ${ib===1?'idea is':'ideas are'} waiting. Send the good ones to a Backlog, delete the rest.`:'Empty. Nothing waiting.'}</p>${ib?`<button class="le-btn rv-ib" id="rvInbox">Open Inbox</button>`:''}</section>`:''}
+    <button class="primary rv-done" id="rvDone">Done for this week</button>`;
+}
+document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg review-pg" id="reviewPg" role="region" aria-label="Weekly review"><div class="ib-in" id="rvIn"></div></div>');
+document.addEventListener('click',e=>{
+  if(e.target.closest("[data-rvgo]"))return openReview();
+  if(e.target.closest("[data-rvskip]")){S.cfg.reviewedAt=Date.now();save();render();toast('Skipped. See you next week.');return}
+  if(e.target.closest('#rvStart')){closeSettings&&closeSettings();setTimeout(openReview,200);return}
+});
+$('reviewPg').addEventListener('click',e=>{
+  if(e.target.closest('#rvBack'))return closeReview();
+  if(e.target.closest('#rvDone'))return finishReview('Week reviewed. Good luck this week.');
+  if(e.target.closest('#rvInbox')){finishReview();setTimeout(()=>openInbox(),200);return}
+  const k=e.target.closest('[data-rvk]');if(k){k.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===k));haptic(4);return}
+  const move=(id,fn,msg)=>{const t=S.tasks.find(x=>x.id===+id);if(!t)return;const row=$('reviewPg').querySelector(`[data-rvt="${id}"]`);if(row)row.classList.add('leaving');
+    setTimeout(()=>{commit(()=>fn(t),msg);drawReview()},260)};
+  const b=e.target.closest('[data-rvb]');if(b){const t=S.tasks.find(x=>x.id===+b.dataset.rvb);if(t&&!canPut(t.list,'backlog',t))return;move(b.dataset.rvb,t=>setStage(t,'backlog'),'Moved to Backlog');return}
+  const a=e.target.closest('[data-rva]');if(a){move(a.dataset.rva,t=>archiveTask(t),'Archived');return}
+});
+$('reviewPg').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();closeReview()}});
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -5235,7 +5341,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,review:true,reviewDay:0,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -5406,6 +5512,8 @@ function settingsPage(id){
     <button class="ghost-btn" id="stReset">Reset to default</button>`;
   if(id==='tasks')body=`<div class="set-sec"><h3>New tasks</h3>
     ${row('Inbox',tg('inbox'),'A calm place to drop ideas. Send them to a list’s Backlog when you’re ready.')}
+    ${row('Weekly review',tg('review'),'A short card on Home once a week: see what you finished and tidy My week.')}
+    ${c.review!==false?row('Review day',`<div class="segc">${REVIEW_DAYS.map(([v,n])=>sOpt('reviewDay',v,n)).join('')}</div>`)+`<button class="link-row" id="rvStart">Start a review now</button>`:''}
     ${row('Default estimate',`<div class="segc">${[15,30,60,120].map(m=>sOpt('defEst',m,fmt(m))).join('')}</div>`)}
     ${row('Add to',`<div class="segc">${sOpt('addTo','top','Top')}${sOpt('addTo','bottom','Bottom')}</div>`)}
     ${row('Default list',`<div class="chips">${[{id:'',name:'First list'},...S.lists].map(l=>`<button class="opt ${(c.defList||'')===l.id?'on':''}" data-deflist="${l.id}">${l.c?`<i style="background:${l.c}"></i>`:''}${esc(l.name)}</button>`).join('')}</div>`)}
