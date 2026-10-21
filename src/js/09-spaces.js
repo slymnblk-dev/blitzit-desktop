@@ -74,10 +74,10 @@ function drawSpaceSheet(){
   const d=spDraft,letter=(d.name.trim()[0]||'?').toUpperCase();
   $('spSave').textContent=d.id?'Save':'Create space';$('spSave').disabled=!d.name.trim();
   $('spSave').style.background=d.c;
-  const pv=$('spPrev');pv.style.background=d.c;pv.textContent=d.e||letter;
+  const blank=!d.name.trim()&&!d.e,pv=$('spPrev');pv.classList.toggle('blank',blank);pv.style.background=blank?'':d.c;pv.style.setProperty('--spc',d.c);pv.textContent=blank?'+':(d.e||letter);
   // name sits up top; icon and colour fold away until wanted, so the sheet stays calm
   $('spOpts').innerHTML=
-    lxRow('i','Icon',`<span class="lx-ico">${esc(d.e||letter)}</span>`,`<div class="ico-grid" id="spIcons"><button data-ico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">${esc((d.name.trim()[0]||'A').toUpperCase())}</button>${ICONS.map(i=>`<button data-ico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,spSub==='i')+
+    lxRow('i','Icon',blank?'Auto':`<span class="lx-ico">${esc(d.e||letter)}</span>`,`<div class="ico-grid" id="spIcons"><button data-ico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">${esc((d.name.trim()[0]||'A').toUpperCase())}</button>${ICONS.map(i=>`<button data-ico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,spSub==='i')+
     lxRow('c','Colour',`<i class="lx-dot" style="background:${d.c}"></i>`,`<div class="sw" id="spSw">${PALETTE.map(c=>`<button data-c="${c}" class="${d.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>`,spSub==='c')+
     (d.id?`<div class="lx"><button class="lx-h" id="spPin" type="button" aria-label="Pin to top"><span class="lx-l">Pin to top</span><span class="tg" id="spPinTg" aria-pressed="${!!d.pinned}"></span></button></div>`:'');
 }

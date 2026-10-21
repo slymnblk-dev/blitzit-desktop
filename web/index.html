@@ -2126,6 +2126,31 @@ body.no-amb .amb-btn{display:none!important}
 .sp-opts{margin-bottom:6px}
 .lx .le-tg{background:var(--surface);box-shadow:0 0 0 1px var(--line)}
 .lx .le-tg button:hover{background:var(--surface2)}
+
+/* ---------- Settings home: grouped cards with small coloured icons ---------- */
+.cat-cap{margin:26px 4px 8px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.settings .cats{margin-top:0;border-top:0;background:var(--surface);border-radius:20px;overflow:hidden}
+.settings .cat{padding:13px 16px;border-bottom:0;border-top:1px solid var(--line);gap:14px;justify-content:flex-start;transition:background .15s}
+.settings .cat:first-child{border-top:0}
+.settings .cat:hover{background:var(--surface2);padding:13px 16px}
+.settings .cat>svg{width:16px;height:16px;color:var(--muted);flex:none;margin-left:auto}
+.cat-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;color:#0F1013}
+.cat-ic svg{width:18px;height:18px}
+.settings .cat-t{flex:1;font-size:16px;font-weight:650;letter-spacing:-.01em}
+.settings .cat-t small{margin-top:2px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Data page: the full "Last backup" value, and a clear danger zone at the bottom */
+.r-side .set-c .bk-last{max-width:none;overflow:visible}
+.dz-note{margin:-2px 0 12px;font-size:13px;color:var(--muted);line-height:1.4}
+.dz-acts{margin-top:0}
+
+/* search: priority chips on one line */
+.sf-row.pri-row .sf-chips{flex-wrap:nowrap}
+.sf-row.pri-row .sf-chip{padding:0 10px;gap:5px}
+.sf-l{width:52px}
+
+/* new space before it has a name: a soft + tile in the chosen colour */
+#spaceSheet .sp-prev.blank{background:color-mix(in srgb,var(--spc) 22%,transparent);color:var(--spc);font-weight:500;font-size:32px}
 </style>
 </head>
 <body>
@@ -2320,7 +2345,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=130; // bumped with every published update
+const APP_VERSION=131; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -4300,6 +4325,8 @@ setTimeout(idleWake,0); // after every script has loaded (settings are ready the
 const SF={pri:new Set(),tags:new Set()};
 let srchQ='',srchOpen=false,srchSel=0;
 const srchOn=()=>S.cfg.search!==false;
+/* filters narrow a board, so they only show where there is one (a space or All tasks), not on Home */
+const srchBoard=()=>!!S.space&&!spPage;
 const srchFiltering=()=>SF.pri.size>0||SF.tags.size>0;
 /* does a task pass the filters? (used by the board too) */
 function srchPass(t){
@@ -4334,12 +4361,12 @@ function srchResults(){
 function srchFilterCard(){
   const pool=srchTagPool();
   return `<div class="sf-card"><div class="sf-head"><span>Filter the board</span>${srchFiltering()?`<button class="sf-clear" data-sfclear>Clear</button>`:''}</div>
-    <div class="sf-row"><span class="sf-l">Priority</span><div class="sf-chips">${PRIS.map(p=>`<button class="sf-chip pri ${p.id} ${SF.pri.has(p.id)?'on':''}" data-sfp="${p.id}">${priIcon(p.n)}${p.name}</button>`).join('')}</div></div>
+    <div class="sf-row pri-row"><span class="sf-l">Priority</span><div class="sf-chips">${PRIS.map(p=>`<button class="sf-chip pri ${p.id} ${SF.pri.has(p.id)?'on':''}" data-sfp="${p.id}">${priIcon(p.n)}${p.name}</button>`).join('')}</div></div>
     <div class="sf-row"><span class="sf-l">Tags</span><div class="sf-chips">${pool.length?pool.map(([k,n])=>`<button class="sf-chip ${SF.tags.has(k)?'on':''}" data-sft="${esc(k)}">#${esc(n)}</button>`).join(''):'<span class="sf-none">No tags yet. Add them in a task.</span>'}</div></div></div>`;
 }
 function srchDraw(){
   const p=$('srch');if(!p)return;
-  p.querySelector('.sr-body').innerHTML=srchResults()+srchFilterCard();
+  p.querySelector('.sr-body').innerHTML=srchResults()+(srchBoard()?srchFilterCard():'');
 }
 function srchChip(){
   const c=$('srchChip'),n=SF.pri.size+SF.tags.size;
@@ -4527,10 +4554,10 @@ function drawSpaceSheet(){
   const d=spDraft,letter=(d.name.trim()[0]||'?').toUpperCase();
   $('spSave').textContent=d.id?'Save':'Create space';$('spSave').disabled=!d.name.trim();
   $('spSave').style.background=d.c;
-  const pv=$('spPrev');pv.style.background=d.c;pv.textContent=d.e||letter;
+  const blank=!d.name.trim()&&!d.e,pv=$('spPrev');pv.classList.toggle('blank',blank);pv.style.background=blank?'':d.c;pv.style.setProperty('--spc',d.c);pv.textContent=blank?'+':(d.e||letter);
   // name sits up top; icon and colour fold away until wanted, so the sheet stays calm
   $('spOpts').innerHTML=
-    lxRow('i','Icon',`<span class="lx-ico">${esc(d.e||letter)}</span>`,`<div class="ico-grid" id="spIcons"><button data-ico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">${esc((d.name.trim()[0]||'A').toUpperCase())}</button>${ICONS.map(i=>`<button data-ico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,spSub==='i')+
+    lxRow('i','Icon',blank?'Auto':`<span class="lx-ico">${esc(d.e||letter)}</span>`,`<div class="ico-grid" id="spIcons"><button data-ico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">${esc((d.name.trim()[0]||'A').toUpperCase())}</button>${ICONS.map(i=>`<button data-ico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,spSub==='i')+
     lxRow('c','Colour',`<i class="lx-dot" style="background:${d.c}"></i>`,`<div class="sw" id="spSw">${PALETTE.map(c=>`<button data-c="${c}" class="${d.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>`,spSub==='c')+
     (d.id?`<div class="lx"><button class="lx-h" id="spPin" type="button" aria-label="Pin to top"><span class="lx-l">Pin to top</span><span class="tg" id="spPinTg" aria-pressed="${!!d.pinned}"></span></button></div>`:'');
 }
@@ -5008,6 +5035,14 @@ const PAGES=[
   {id:'data',name:'Data'}
 ];
 let lastView='main';
+/* Settings home: two calm groups, each row with a small coloured icon */
+const SET_GROUPS=[['App',['appearance','stages','tasks','focus']],['Organise',['lists','shortcuts','data']]];
+const SET_IC={appearance:['#9C95FF','pal'],stages:['#FFB547','bars'],tasks:['#34D399','chk'],focus:['#FF5B47','sun'],lists:['#5AB8F5','list'],shortcuts:['#A1A1AA','key'],data:['#3EC6C6','db']};
+const SET_P={pal:'<path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.6-1 1-2s0-2 1.5-2H17a4 4 0 0 0 4-4c0-5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="12" cy="7.5" r="1.1"/><circle cx="16.5" cy="11" r="1.1"/>',
+  bars:'<path d="M4 6h16M4 12h11M4 18h6"/>',chk:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',sun:'<path d="M4 18h16M8 18a4 4 0 0 1 8 0M12 6v3M6.5 9.5l2 2M17.5 9.5l-2 2"/>',
+  list:'<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>',key:'<rect x="3" y="6.5" width="18" height="11" rx="2.5"/><path d="M7 10.5h.01M11 10.5h.01M15 10.5h.01M8 14h8"/>',
+  db:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>'};
+const setIco=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${SET_P[k]}</svg>`;
 function drawSettings(){
   try{listsBack()}catch(e){}
   const el=$('setIn'),anim=lastView!==setView;
@@ -5036,7 +5071,8 @@ function settingsMain(){
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close settings">${BACK_SVG}</button></div>
   <h1>Settings</h1>
   <button class="you-card" id="youOpen">${avatarHTML()}<span><b>${esc(meName()||'Your profile')}</b><small>${esc(meSub())} · stats, account</small></span>${CHEV}</button>
-  <div class="cats">${PAGES.filter(p=>!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS())).map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>
+  ${SET_GROUPS.map(([g,ids])=>{const ps=ids.map(id=>PAGES.find(p=>p.id===id)).filter(p=>p&&!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS()));
+    return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-ic" style="background:${SET_IC[p.id][0]}">${setIco(SET_IC[p.id][1])}</span><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
   <div class="ver">Windaday, version ${VER}. ${user?'Your tasks sync to your account.':'Your data stays on this device.'}</div>`;
 }
 function settingsPage(id){
@@ -5135,21 +5171,20 @@ function settingsPage(id){
     <button class="link-row" id="bkOpen">Restore from backup<span class="hint">Paste</span></button>
     <div class="restore" id="bkBox"><textarea id="bkTxt" placeholder="Paste your backup here"></textarea><button class="primary" id="bkGo">Restore</button>
       <label class="bk-filein">Or choose a backup file<input type="file" id="bkFileIn" accept=".json,application/json"></label></div>
-    ${row('Last backup',`<span class="acc-val">${ago(S.lastBackup)}</span>`)}
+    ${row('Last backup',`<span class="acc-val bk-last">${(a=>a[0].toUpperCase()+a.slice(1))(ago(S.lastBackup))}</span>`)}
     ${row('Backup reminders',tg('backupRemind'),'Shown on Home when you’re not signed in')}
     </div><div class="set-sec"><h3>Archive</h3>
     <button class="link-row" data-page="archive">Archived<span class="hint">${(()=>{const n=arcTotal();return n?`${n} ${n===1?'item':'items'}`:'Empty'})()}</span></button></div>
-    <div class="set-sec"><h3>Tasks</h3>
-    ${hasData()?'':`<button class="link-row" id="demo">Load demo tasks<span class="hint">2 spaces · 18 tasks</span></button>`}
-    ${S.tasks.length?(dzOpen==='wipe'?dzBox('wipe'):`<button class="link-row warn" id="wipe">Delete all tasks</button>`):''}
-    ${dzOpen==='reset'?dzBox('reset'):`<button class="link-row warn" id="resetAll">Reset Windaday<span class="hint">Fresh start</span></button>`}</div>
+    ${hasData()?'':`<div class="set-sec"><h3>Tasks</h3><button class="link-row" id="demo">Load demo tasks<span class="hint">2 spaces · 18 tasks</span></button></div>`}
     ${DESK()&&TRAY.ok?`<div class="set-sec"><h3>Windows app</h3>
     ${row('Keep in tray when closed',tg('trayKeep'),'Closing the window keeps Windaday ready in the tray, so it opens instantly. Quit from the tray icon.')}
     ${row('Start with Windows',`<button class="tg" id="autoStart" aria-pressed="${TRAY.auto}" aria-label="Toggle"></button>`,'Starts quietly in the tray when you sign in to your computer')}</div>`:''}
     <div class="set-sec"><h3>Help</h3><button class="link-row" id="replayIntro">Replay intro</button></div>
     <div class="set-sec"><h3>About</h3>
-    ${row('Version',`<span class="acc-val">${VER}${BUILD?` <span class="build">(build ${BUILD})</span>`:''}</span>`)}
+    ${row('Version',`<span class="acc-val bk-last">${VER}${BUILD?` <span class="build">(build ${BUILD})</span>`:''}</span>`)}
     ${DESK()?`${row('Desktop app',`<span class="acc-val">${UPD.current||'…'}</span>`)}<button class="link-row" id="updCheck">${UPD.latest?`Update to ${UPD.latest}`:'Check for updates'}<span class="hint">${UPD.busy?'Updating…':UPD.latest?'Restarts Windaday':UPD.checked?'Up to date':''}</span></button>`:''}</div>`;
+  if(id==='data')body+=`<div class="set-sec dz-sec"><h3>Danger zone</h3><p class="dz-note">These can’t be undone. You’ll type a word to confirm.</p>
+    ${dzOpen?dzBox(dzOpen):`<div class="le-acts dz-acts">${S.tasks.length?`<button class="le-btn warn" id="wipe" type="button">Delete all tasks</button>`:''}<button class="le-btn warn" id="resetAll" type="button">Reset app</button></div>`}</div>`;
   return head+body;
 }
 

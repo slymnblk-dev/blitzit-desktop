@@ -4,6 +4,8 @@
 const SF={pri:new Set(),tags:new Set()};
 let srchQ='',srchOpen=false,srchSel=0;
 const srchOn=()=>S.cfg.search!==false;
+/* filters narrow a board, so they only show where there is one (a space or All tasks), not on Home */
+const srchBoard=()=>!!S.space&&!spPage;
 const srchFiltering=()=>SF.pri.size>0||SF.tags.size>0;
 /* does a task pass the filters? (used by the board too) */
 function srchPass(t){
@@ -38,12 +40,12 @@ function srchResults(){
 function srchFilterCard(){
   const pool=srchTagPool();
   return `<div class="sf-card"><div class="sf-head"><span>Filter the board</span>${srchFiltering()?`<button class="sf-clear" data-sfclear>Clear</button>`:''}</div>
-    <div class="sf-row"><span class="sf-l">Priority</span><div class="sf-chips">${PRIS.map(p=>`<button class="sf-chip pri ${p.id} ${SF.pri.has(p.id)?'on':''}" data-sfp="${p.id}">${priIcon(p.n)}${p.name}</button>`).join('')}</div></div>
+    <div class="sf-row pri-row"><span class="sf-l">Priority</span><div class="sf-chips">${PRIS.map(p=>`<button class="sf-chip pri ${p.id} ${SF.pri.has(p.id)?'on':''}" data-sfp="${p.id}">${priIcon(p.n)}${p.name}</button>`).join('')}</div></div>
     <div class="sf-row"><span class="sf-l">Tags</span><div class="sf-chips">${pool.length?pool.map(([k,n])=>`<button class="sf-chip ${SF.tags.has(k)?'on':''}" data-sft="${esc(k)}">#${esc(n)}</button>`).join(''):'<span class="sf-none">No tags yet. Add them in a task.</span>'}</div></div></div>`;
 }
 function srchDraw(){
   const p=$('srch');if(!p)return;
-  p.querySelector('.sr-body').innerHTML=srchResults()+srchFilterCard();
+  p.querySelector('.sr-body').innerHTML=srchResults()+(srchBoard()?srchFilterCard():'');
 }
 function srchChip(){
   const c=$('srchChip'),n=SF.pri.size+SF.tags.size;

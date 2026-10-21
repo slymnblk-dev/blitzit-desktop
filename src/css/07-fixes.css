@@ -795,3 +795,28 @@ body.no-amb .amb-btn{display:none!important}
 .sp-opts{margin-bottom:6px}
 .lx .le-tg{background:var(--surface);box-shadow:0 0 0 1px var(--line)}
 .lx .le-tg button:hover{background:var(--surface2)}
+
+/* ---------- Settings home: grouped cards with small coloured icons ---------- */
+.cat-cap{margin:26px 4px 8px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.settings .cats{margin-top:0;border-top:0;background:var(--surface);border-radius:20px;overflow:hidden}
+.settings .cat{padding:13px 16px;border-bottom:0;border-top:1px solid var(--line);gap:14px;justify-content:flex-start;transition:background .15s}
+.settings .cat:first-child{border-top:0}
+.settings .cat:hover{background:var(--surface2);padding:13px 16px}
+.settings .cat>svg{width:16px;height:16px;color:var(--muted);flex:none;margin-left:auto}
+.cat-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;color:#0F1013}
+.cat-ic svg{width:18px;height:18px}
+.settings .cat-t{flex:1;font-size:16px;font-weight:650;letter-spacing:-.01em}
+.settings .cat-t small{margin-top:2px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Data page: the full "Last backup" value, and a clear danger zone at the bottom */
+.r-side .set-c .bk-last{max-width:none;overflow:visible}
+.dz-note{margin:-2px 0 12px;font-size:13px;color:var(--muted);line-height:1.4}
+.dz-acts{margin-top:0}
+
+/* search: priority chips on one line */
+.sf-row.pri-row .sf-chips{flex-wrap:nowrap}
+.sf-row.pri-row .sf-chip{padding:0 10px;gap:5px}
+.sf-l{width:52px}
+
+/* new space before it has a name: a soft + tile in the chosen colour */
+#spaceSheet .sp-prev.blank{background:color-mix(in srgb,var(--spc) 22%,transparent);color:var(--spc);font-weight:500;font-size:32px}

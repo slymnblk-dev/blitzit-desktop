@@ -151,6 +151,14 @@ const PAGES=[
   {id:'data',name:'Data'}
 ];
 let lastView='main';
+/* Settings home: two calm groups, each row with a small coloured icon */
+const SET_GROUPS=[['App',['appearance','stages','tasks','focus']],['Organise',['lists','shortcuts','data']]];
+const SET_IC={appearance:['#9C95FF','pal'],stages:['#FFB547','bars'],tasks:['#34D399','chk'],focus:['#FF5B47','sun'],lists:['#5AB8F5','list'],shortcuts:['#A1A1AA','key'],data:['#3EC6C6','db']};
+const SET_P={pal:'<path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.6-1 1-2s0-2 1.5-2H17a4 4 0 0 0 4-4c0-5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="12" cy="7.5" r="1.1"/><circle cx="16.5" cy="11" r="1.1"/>',
+  bars:'<path d="M4 6h16M4 12h11M4 18h6"/>',chk:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',sun:'<path d="M4 18h16M8 18a4 4 0 0 1 8 0M12 6v3M6.5 9.5l2 2M17.5 9.5l-2 2"/>',
+  list:'<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>',key:'<rect x="3" y="6.5" width="18" height="11" rx="2.5"/><path d="M7 10.5h.01M11 10.5h.01M15 10.5h.01M8 14h8"/>',
+  db:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>'};
+const setIco=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${SET_P[k]}</svg>`;
 function drawSettings(){
   try{listsBack()}catch(e){}
   const el=$('setIn'),anim=lastView!==setView;
@@ -179,7 +187,8 @@ function settingsMain(){
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close settings">${BACK_SVG}</button></div>
   <h1>Settings</h1>
   <button class="you-card" id="youOpen">${avatarHTML()}<span><b>${esc(meName()||'Your profile')}</b><small>${esc(meSub())} · stats, account</small></span>${CHEV}</button>
-  <div class="cats">${PAGES.filter(p=>!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS())).map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>
+  ${SET_GROUPS.map(([g,ids])=>{const ps=ids.map(id=>PAGES.find(p=>p.id===id)).filter(p=>p&&!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS()));
+    return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-ic" style="background:${SET_IC[p.id][0]}">${setIco(SET_IC[p.id][1])}</span><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
   <div class="ver">Windaday, version ${VER}. ${user?'Your tasks sync to your account.':'Your data stays on this device.'}</div>`;
 }
 function settingsPage(id){
@@ -278,21 +287,20 @@ function settingsPage(id){
     <button class="link-row" id="bkOpen">Restore from backup<span class="hint">Paste</span></button>
     <div class="restore" id="bkBox"><textarea id="bkTxt" placeholder="Paste your backup here"></textarea><button class="primary" id="bkGo">Restore</button>
       <label class="bk-filein">Or choose a backup file<input type="file" id="bkFileIn" accept=".json,application/json"></label></div>
-    ${row('Last backup',`<span class="acc-val">${ago(S.lastBackup)}</span>`)}
+    ${row('Last backup',`<span class="acc-val bk-last">${(a=>a[0].toUpperCase()+a.slice(1))(ago(S.lastBackup))}</span>`)}
     ${row('Backup reminders',tg('backupRemind'),'Shown on Home when you’re not signed in')}
     </div><div class="set-sec"><h3>Archive</h3>
     <button class="link-row" data-page="archive">Archived<span class="hint">${(()=>{const n=arcTotal();return n?`${n} ${n===1?'item':'items'}`:'Empty'})()}</span></button></div>
-    <div class="set-sec"><h3>Tasks</h3>
-    ${hasData()?'':`<button class="link-row" id="demo">Load demo tasks<span class="hint">2 spaces · 18 tasks</span></button>`}
-    ${S.tasks.length?(dzOpen==='wipe'?dzBox('wipe'):`<button class="link-row warn" id="wipe">Delete all tasks</button>`):''}
-    ${dzOpen==='reset'?dzBox('reset'):`<button class="link-row warn" id="resetAll">Reset Windaday<span class="hint">Fresh start</span></button>`}</div>
+    ${hasData()?'':`<div class="set-sec"><h3>Tasks</h3><button class="link-row" id="demo">Load demo tasks<span class="hint">2 spaces · 18 tasks</span></button></div>`}
     ${DESK()&&TRAY.ok?`<div class="set-sec"><h3>Windows app</h3>
     ${row('Keep in tray when closed',tg('trayKeep'),'Closing the window keeps Windaday ready in the tray, so it opens instantly. Quit from the tray icon.')}
     ${row('Start with Windows',`<button class="tg" id="autoStart" aria-pressed="${TRAY.auto}" aria-label="Toggle"></button>`,'Starts quietly in the tray when you sign in to your computer')}</div>`:''}
     <div class="set-sec"><h3>Help</h3><button class="link-row" id="replayIntro">Replay intro</button></div>
     <div class="set-sec"><h3>About</h3>
-    ${row('Version',`<span class="acc-val">${VER}${BUILD?` <span class="build">(build ${BUILD})</span>`:''}</span>`)}
+    ${row('Version',`<span class="acc-val bk-last">${VER}${BUILD?` <span class="build">(build ${BUILD})</span>`:''}</span>`)}
     ${DESK()?`${row('Desktop app',`<span class="acc-val">${UPD.current||'…'}</span>`)}<button class="link-row" id="updCheck">${UPD.latest?`Update to ${UPD.latest}`:'Check for updates'}<span class="hint">${UPD.busy?'Updating…':UPD.latest?'Restarts Windaday':UPD.checked?'Up to date':''}</span></button>`:''}</div>`;
+  if(id==='data')body+=`<div class="set-sec dz-sec"><h3>Danger zone</h3><p class="dz-note">These can’t be undone. You’ll type a word to confirm.</p>
+    ${dzOpen?dzBox(dzOpen):`<div class="le-acts dz-acts">${S.tasks.length?`<button class="le-btn warn" id="wipe" type="button">Delete all tasks</button>`:''}<button class="le-btn warn" id="resetAll" type="button">Reset app</button></div>`}</div>`;
   return head+body;
 }
 
