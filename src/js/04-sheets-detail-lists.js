@@ -257,7 +257,7 @@ function listsToSettings(slot){const pk=$('picks');if(!picksHome.parent){picksHo
 function listsBack(){const pk=$('picks');if(!listsInSet||!picksHome.parent)return;listsInSet=false;pk.classList.remove('editing','set-lists');picksHome.parent.insertBefore(pk,picksHome.next);editing=false;leOpen=null;nl=null}
 function drawLists(){
   $('listSheetIn').classList.toggle('editing',editing);
-  $('editLists').textContent=editing?'Done':'Edit lists';
+  $('editLists').hidden=!editing||listsInSet;$('listsMore').parentNode.hidden=editing;$('listsPop').classList.remove('on');
   const LH=listsHere(),sp=inSpaceMode()?spaceOf(S.space):null;
   $('listsTitle').innerHTML=editing?`Edit lists${sp?`<small>${esc((sp.e?sp.e+' ':'')+sp.name)}</small>`:''}`:esc(sp?(sp.e?sp.e+' ':'')+sp.name:'Lists');$('editSpace').hidden=!sp||editing;
   const open=id=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(id==='all'||t.list===id)&&t.stage!=='done').length;
@@ -288,7 +288,10 @@ function listsGrouped(){
 }
 const tick=()=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`;
 $('listBtn').onclick=()=>{editing=false;nl=null;drawLists();openSheet('listSheet')};
-$('editLists').onclick=()=>{editing=!editing;nl=null;leOpen=null;drawLists()};
+$('editLists').onclick=()=>{editing=false;nl=null;leOpen=null;drawLists()};
+/* ⋯ in the Lists sheet header: Edit lists, and Edit space when inside a space */
+$('listsMore').onclick=e=>{e.stopPropagation();const p=$('listsPop'),was=p.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);p.classList.add('on')}};
+$('lmEdit').onclick=()=>{editing=true;nl=null;leOpen=null;drawLists()};
 $('picks').addEventListener('click',e=>{
   const nb=e.target.closest('#nlBtn,[data-nlsp]');if(nb){nl={name:'',c:PALETTE[S.lists.length%PALETTE.length],space:nb.dataset.nlsp||null};drawLists();try{$('nlIn').focus()}catch(_){}setTimeout(()=>$('nlIn')&&$('nlIn').focus(),50);return}
   const sw=e.target.closest('#nlSw button');if(sw){nl.c=sw.dataset.c;drawLists();return}

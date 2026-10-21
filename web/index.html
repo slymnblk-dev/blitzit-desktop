@@ -2030,6 +2030,21 @@ body.no-amb .amb-btn{display:none!important}
 /* Welcome animation: Play sits just left of the switch */
 .wl-set{display:flex;align-items:center;gap:10px}
 .wl-replay{order:-1;height:30px!important;padding:0 12px!important;border-radius:999px;background:var(--surface2);color:var(--text);font-size:13px!important;font-weight:600}
+
+/* Lists sheet header: one ⋯ menu instead of two text buttons */
+.lh-wrap{position:relative}
+.lh-wrap[hidden]{display:none}
+.lh-more{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted);transition:background .15s,color .15s}
+.lh-more svg{width:18px;height:18px}
+.lh-more:hover,.lh-wrap:has(.lh-pop.on) .lh-more{background:var(--surface2);color:var(--text)}
+.lh-pop{top:44px;right:0;min-width:190px;z-index:20}
+.lh-pop>button{display:flex;align-items:center;gap:10px}
+.lh-pop>button[hidden]{display:none}
+/* 10 colours: one tidy row that shrinks on narrow screens */
+.sw{display:grid;grid-template-columns:repeat(10,minmax(0,30px));gap:8px}
+.sw button{width:100%;height:auto;aspect-ratio:1}
+.lp-pop{min-width:292px}
+.lpm-sw{gap:6px}.lpm-sw button{width:21px;height:21px}
 </style>
 </head>
 <body>
@@ -2125,7 +2140,7 @@ body.no-amb .amb-btn{display:none!important}
 
 <div class="sheet" id="listSheet"><div class="sheet-in" id="listSheetIn">
   <div class="grab"></div>
-  <div class="sh-head"><h2 id="listsTitle">Lists</h2><div class="sh-acts"><button class="txt-btn" id="editSpace" hidden>Edit space</button><button class="txt-btn" id="editLists">Edit lists</button></div></div>
+  <div class="sh-head"><h2 id="listsTitle">Lists</h2><div class="sh-acts"><button class="txt-btn" id="editLists" hidden>Done</button><div class="lh-wrap"><button class="lh-more" id="listsMore" type="button" aria-label="More options" title="More options" aria-haspopup="menu"></button><div class="sp-pop lh-pop" id="listsPop" role="menu"><button id="lmEdit" type="button" role="menuitem"><span class="lpm-i" id="lmEditI"></span>Edit lists</button><button id="editSpace" type="button" role="menuitem" hidden><span class="lpm-i" id="lmSpaceI"></span>Edit space</button></div></div></div></div>
   <div id="picks"></div>
 </div></div>
 
@@ -2227,7 +2242,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=128; // bumped with every published update
+const APP_VERSION=129; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2237,7 +2252,7 @@ const STAGES=[
   {id:'today',name:'Today',short:'Today'},
   {id:'done',name:'Done',short:'Done'}
 ];
-const PALETTE=['#5AB8F5','#7C83F2','#F06A6A','#F5A35A','#4FD1A5','#E879C8','#A1A1AA'];
+const PALETTE=['#5AB8F5','#3EC6C6','#4FD1A5','#7C83F2','#B07CF2','#E879C8','#F06A6A','#F5A35A','#F2C14E','#A1A1AA'];
 const REPEATS=[{id:'none',name:'Never'},{id:'daily',name:'Daily'},{id:'weekdays',name:'Weekdays'},{id:'weekly',name:'Weekly'}];
 const DAY=864e5;
 const dkey=(d=new Date())=>{const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
@@ -3157,7 +3172,7 @@ function listsToSettings(slot){const pk=$('picks');if(!picksHome.parent){picksHo
 function listsBack(){const pk=$('picks');if(!listsInSet||!picksHome.parent)return;listsInSet=false;pk.classList.remove('editing','set-lists');picksHome.parent.insertBefore(pk,picksHome.next);editing=false;leOpen=null;nl=null}
 function drawLists(){
   $('listSheetIn').classList.toggle('editing',editing);
-  $('editLists').textContent=editing?'Done':'Edit lists';
+  $('editLists').hidden=!editing||listsInSet;$('listsMore').parentNode.hidden=editing;$('listsPop').classList.remove('on');
   const LH=listsHere(),sp=inSpaceMode()?spaceOf(S.space):null;
   $('listsTitle').innerHTML=editing?`Edit lists${sp?`<small>${esc((sp.e?sp.e+' ':'')+sp.name)}</small>`:''}`:esc(sp?(sp.e?sp.e+' ':'')+sp.name:'Lists');$('editSpace').hidden=!sp||editing;
   const open=id=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(id==='all'||t.list===id)&&t.stage!=='done').length;
@@ -3188,7 +3203,10 @@ function listsGrouped(){
 }
 const tick=()=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`;
 $('listBtn').onclick=()=>{editing=false;nl=null;drawLists();openSheet('listSheet')};
-$('editLists').onclick=()=>{editing=!editing;nl=null;leOpen=null;drawLists()};
+$('editLists').onclick=()=>{editing=false;nl=null;leOpen=null;drawLists()};
+/* ⋯ in the Lists sheet header: Edit lists, and Edit space when inside a space */
+$('listsMore').onclick=e=>{e.stopPropagation();const p=$('listsPop'),was=p.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);p.classList.add('on')}};
+$('lmEdit').onclick=()=>{editing=true;nl=null;leOpen=null;drawLists()};
 $('picks').addEventListener('click',e=>{
   const nb=e.target.closest('#nlBtn,[data-nlsp]');if(nb){nl={name:'',c:PALETTE[S.lists.length%PALETTE.length],space:nb.dataset.nlsp||null};drawLists();try{$('nlIn').focus()}catch(_){}setTimeout(()=>$('nlIn')&&$('nlIn').focus(),50);return}
   const sw=e.target.closest('#nlSw button');if(sw){nl.c=sw.dataset.c;drawLists();return}
@@ -3836,10 +3854,12 @@ function lpMenu(id,only){
     ${only?'':`<button data-lparc="${id}"><span class="lpm-i">${ARC_S}</span>Archive list</button><button class="warn" data-lpdel="${id}"><span class="lpm-i">${BIN_S}</span>Delete list</button>`}
   </div>`;
 }
+const GEAR_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></svg>';
 const PEN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
 const TAG_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>';
 const ARC_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9M10 13h4"/></svg>';
 const BIN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
+$('listsMore').innerHTML=DOTS3;$('lmEditI').innerHTML=PEN_S;$('lmSpaceI').innerHTML=GEAR_S;
 const peekOn=()=>!!(S.cfg&&S.cfg.fullWidth&&!S.space);
 function peekSub(sp){
   const ls=S.lists.filter(l=>l.space===sp.id),n=id=>S.tasks.filter(t=>shown(t)&&listOf(t.list).space===sp.id&&(id==='all'||t.list===id)&&t.stage!=='done').length;

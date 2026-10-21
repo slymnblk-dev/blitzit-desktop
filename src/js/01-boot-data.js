@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=128; // bumped with every published update
+const APP_VERSION=129; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -17,7 +17,7 @@ const STAGES=[
   {id:'today',name:'Today',short:'Today'},
   {id:'done',name:'Done',short:'Done'}
 ];
-const PALETTE=['#5AB8F5','#7C83F2','#F06A6A','#F5A35A','#4FD1A5','#E879C8','#A1A1AA'];
+const PALETTE=['#5AB8F5','#3EC6C6','#4FD1A5','#7C83F2','#B07CF2','#E879C8','#F06A6A','#F5A35A','#F2C14E','#A1A1AA'];
 const REPEATS=[{id:'none',name:'Never'},{id:'daily',name:'Daily'},{id:'weekdays',name:'Weekdays'},{id:'weekly',name:'Weekly'}];
 const DAY=864e5;
 const dkey=(d=new Date())=>{const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};

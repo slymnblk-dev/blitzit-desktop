@@ -699,3 +699,18 @@ body.no-amb .amb-btn{display:none!important}
 /* Welcome animation: Play sits just left of the switch */
 .wl-set{display:flex;align-items:center;gap:10px}
 .wl-replay{order:-1;height:30px!important;padding:0 12px!important;border-radius:999px;background:var(--surface2);color:var(--text);font-size:13px!important;font-weight:600}
+
+/* Lists sheet header: one ⋯ menu instead of two text buttons */
+.lh-wrap{position:relative}
+.lh-wrap[hidden]{display:none}
+.lh-more{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted);transition:background .15s,color .15s}
+.lh-more svg{width:18px;height:18px}
+.lh-more:hover,.lh-wrap:has(.lh-pop.on) .lh-more{background:var(--surface2);color:var(--text)}
+.lh-pop{top:44px;right:0;min-width:190px;z-index:20}
+.lh-pop>button{display:flex;align-items:center;gap:10px}
+.lh-pop>button[hidden]{display:none}
+/* 10 colours: one tidy row that shrinks on narrow screens */
+.sw{display:grid;grid-template-columns:repeat(10,minmax(0,30px));gap:8px}
+.sw button{width:100%;height:auto;aspect-ratio:1}
+.lp-pop{min-width:292px}
+.lpm-sw{gap:6px}.lpm-sw button{width:21px;height:21px}
