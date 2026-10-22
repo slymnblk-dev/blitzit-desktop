@@ -111,7 +111,7 @@ function askDeleteSpace(id){
   confirmDanger({title:`Delete ${sp.name}?`,
     text:`This deletes the space, its ${ls.length} ${ls.length===1?'list':'lists'} and ${nt} ${nt===1?'task':'tasks'} for good. To keep them safe, choose Archive instead.`,
     word:sp.name,yes:'Delete space',
-    onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.habits=(S.habits||[]).filter(h=>h.space!==id);S.hchains=(S.hchains||[]).filter(c=>c.space!==id);S.goals=(S.goals||[]).filter(g=>g.space!==id);S.projects=(S.projects||[]).filter(p=>p.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
+    onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.habits=(S.habits||[]).filter(h=>h.space!==id);S.hchains=(S.hchains||[]).filter(c=>c.space!==id);S.goals=(S.goals||[]).filter(g=>g.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
 }
 let dlgYes=null;
 function confirmDanger({title,text,word,yes,no,onYes}){

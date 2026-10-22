@@ -80,8 +80,8 @@ function renderDesk(){
   const sub=S.space?`<div class="s-sub"><button class="s-list ${S.list==='all'?'on':''}" data-l="all" title="All lists"><span class="stack">${listsHere().slice(0,3).map(x=>`<span style="background:${x.c};border-color:var(--bg)"></span>`).join('')}</span><span class="s-name">All lists</span><span class="n">${open('all')}</span></button>`+
     listsHere().map(l=>`<button class="s-list ${S.list===l.id?'on':''}" data-l="${l.id}" title="${esc(l.name)}"><i style="background:${l.c}"></i><span class="s-name">${esc(l.name)}</span><span class="n">${open(l.id)}</span></button>`).join('')+
     `<button class="s-list s-mini" id="sNew" title="New list">${PLUS_S}<span class="s-name">New list</span></button><button class="s-list s-mini" id="sEdit" title="Edit lists"><span class="s-name">Edit lists</span></button></div>`:'';
-  $('sLists').innerHTML=`<button class="s-list s-home ${!S.space&&!ibOn&&!rhOn?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
-    <button class="s-list s-home ${S.space==='all'&&!ibOn&&!rhOn?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="s-list s-home s-inbox ${ibOn?'on':''}" id="sInbox" title="Inbox">${IB_ICON}<span class="s-name">Inbox</span>${n?`<span class="n">${n}</span>`:''}</button>`})():''}${rhythmSide()}
+  $('sLists').innerHTML=`<button class="s-list s-home ${!S.space&&!ibOn&&!rhOn&&!glOn?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
+    <button class="s-list s-home ${S.space==='all'&&!ibOn&&!rhOn&&!glOn?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="s-list s-home s-inbox ${ibOn?'on':''}" id="sInbox" title="Inbox">${IB_ICON}<span class="s-name">Inbox</span>${n?`<span class="n">${n}</span>`:''}</button>`})():''}${rhythmSide()}
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
@@ -98,12 +98,13 @@ function renderDesk(){
 }
 
 $('sLists').onclick=e=>{
-  if(gdOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm'))closeGoal();
-  if(pjOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm'))closeProject();
-  if(e.target.closest('#sRhythm')){if(ibOn)closeInbox();return rhOn?closeRhythm():openRhythm()}
-  if(e.target.closest('#sInbox')){if(rhOn)closeRhythm();return ibOn?closeInbox():openInbox()}
+  if(gdOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals'))closeGoal();
+  if(e.target.closest('#sRhythm')){if(ibOn)closeInbox();if(glOn)closeGoals();return rhOn?closeRhythm():openRhythm()}
+  if(e.target.closest('#sGoals')){if(ibOn)closeInbox();if(rhOn)closeRhythm();return glOn?closeGoals():openGoals()}
+  if(e.target.closest('#sInbox')){if(rhOn)closeRhythm();if(glOn)closeGoals();return ibOn?closeInbox():openInbox()}
   if(ibOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeInbox();
   if(rhOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeRhythm();
+  if(glOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeGoals();
   if(e.target.closest('#sHome'))return goHome();
   if(e.target.closest('#sAll'))return S.space==='all'?toggleSub():openSpaceSide('all');
   if(e.target.closest('#sNewSp'))return openSpaceSheet(null);
@@ -157,7 +158,7 @@ $('dHome').addEventListener('click',e=>{
 $('dHome').addEventListener('keydown',e=>{const r=e.target.closest('[data-hft]');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDetail(+r.dataset.hft)}});
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],projects:S.projects||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;

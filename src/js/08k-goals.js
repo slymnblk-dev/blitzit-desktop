@@ -120,14 +120,27 @@ function goalsBlock(gs,sp,wide){
   if(!gs.length&&!sp)return `<div class="ib-empty rh-empty g-empty"><span class="g-emi">${gClimb({ms:[{done:1},{},{}],due:'',done:false},'mini')}</span><b>No goals yet</b><span>Pick one big outcome. Break it into milestones and climb, one step at a time.</span><button class="primary" data-gnew="">Set a goal</button></div>${gWonList(gWon())}`;
   if(wide)return `<div class="g-grid wide">${gs.map(g=>gCard(g,true)).join('')}${gAll().length<G_MAX?`<button class="g-addc" data-gnew="${sp||''}"><span>${PLUS_S}</span>New goal</button>`:''}</div>${gAll().length<G_MAX?'':add}${gWonList(gWon(sp||null))}`;
   return `<div class="g-grid">${gs.map(g=>gCard(g,false)).join('')}</div>${add}${gWonList(gWon(sp||null))}`}
-function goalsLens(sp,wide){const gs=gIn(sp);
-  return wide?`<div class="gl-wide"><div class="hbw-bar"><span class="eye">Goals · ${gs.length} in progress</span></div>${goalsBlock(gs,sp,true)}</div>`
-    :`<div class="hb-head"><span class="eye">Goals · ${esc((spaceOf(sp)||{}).name||'')}</span><h1 class="hb-h">Goals</h1><div class="hb-sub">${gSubLine(gs)}</div></div>${goalsBlock(gs,sp,false)}`}
 /* the small star on task rows; the ★ Goal pill and picker in a task's details */
 function goalStar(t){if(t.goal==null||!goalsOn())return '';const g=gById(t.goal);if(!g||g.done)return '';return `<span class="mi g-st" title="Moves: ${esc(g.name)}" aria-label="Linked to goal ${esc(g.name)}">${G_STAR}</span>`}
 function goalPill(t,P){if(!goalsOn())return '';const g=t.goal!=null?gById(t.goal):null;if(!g&&!gAll().length)return '';
   return P('goal',`<span class="g-pst">${G_STAR}</span>${g?esc(g.name):'Goal'}`,!g)}
 function goalPicks(t,pk){return pk(t.goal==null||!gById(t.goal),'','None')+gAll().map(g=>pk(String(t.goal)===String(g.id),g.id,`${g.e?g.e+' ':''}${g.name}`)).join('')}
+
+/* ---------- Goals page: all goals in one place, like Inbox ---------- */
+var glOn=false;
+document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg gl-pg" id="goalsPg" role="region" aria-label="Goals"><div class="ib-in" id="glIn"></div></div>');
+function openGoals(){
+  if(!goalsOn())return;
+  if(ibOn)closeInbox();if(rhOn)closeRhythm();if(typeof closeSearch==='function')closeSearch();
+  glOn=true;drawGoals();$('goalsPg').classList.add('on');$('goalsPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
+}
+function closeGoals(){if(!glOn)return;glOn=false;$('goalsPg').classList.remove('on');const a=document.activeElement;if(a&&a.closest&&a.closest('#goalsPg'))a.blur();if(typeof renderDesk==='function')renderDesk()}
+function drawGoals(){const y=$('goalsPg').scrollTop,gs=gAll();
+  $('glIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="glBack" aria-label="Back">${BACK_SVG}</button></div>
+    <div class="hb-head"><span class="eye">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</span><h1 class="hb-h">Goals</h1>${gs.length?`<div class="hb-sub">${gSubLine(gs)}</div>`:''}</div>
+    ${goalsBlock(gs,'',matchMedia('(min-width:1100px)').matches)}`;
+  $('goalsPg').scrollTop=y}
+$('goalsPg').addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('.sheet.on')&&!gdOn){e.stopPropagation();closeGoals()}});
 
 /* ---------- goal page ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg gd-pg" id="gdPg" role="region" aria-label="Goal"><div class="ib-in" id="gdIn"></div></div>');
@@ -388,16 +401,16 @@ function goalsSetPage(){
 }
 
 /* ---------- taps from anywhere (capture, so a goal inside a card never also opens the card) ---------- */
-$('lmEdit').insertAdjacentHTML('afterend',`<button id="lmGoal" type="button" role="menuitem" hidden><span class="lpm-i">${G_FLAG}</span>Add a goal</button>`);
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-gopen],[data-gnew],[data-gadd],[data-ge],#lmGoal');if(!el)return;
+  const el=e.target.closest('[data-gopen],[data-gnew],[data-gadd],[data-ge],#glEntry,#glBack');if(!el)return;
   if(el.closest('#gdPg')&&!el.matches('[data-gopen]'))return;
   e.stopPropagation();e.preventDefault();
   if(el.matches('[data-gopen]'))return openGoal(el.dataset.gopen);
   if(el.matches('[data-gnew]'))return openSetup(el.dataset.gnew||null);
   if(el.matches('[data-gadd]')){closePops();return openSetup(el.dataset.gadd)}
   if(el.matches('[data-ge]'))return openGoalSheet(el.dataset.ge);
-  if(el.matches('#lmGoal')){$('listsPop').classList.remove('on');const sp=S.space;closeSheets();setTimeout(()=>openSetup(sp),260);return}
+  if(el.matches('#glEntry'))return openGoals();
+  if(el.matches('#glBack'))return closeGoals();
 },true);
 
 /* finishing a task that came from a milestone ticks the milestone (and un-finishing it reopens it) */
@@ -411,5 +424,5 @@ render=function(d){_gRender(d);try{
   if(gsOn&&!goalsOn())closeSetup();
   if(gdOn&&(!goalsOn()||!gById(gdId)))closeGoal();
   if(gdOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#gdPg')&&a.matches('input,textarea')))drawGoal()}
-  const lg=$('lmGoal');if(lg)lg.hidden=!(goalsOn()&&inSpaceMode());
+  if(glOn&&!goalsOn())closeGoals();if(glOn)drawGoals();
 }catch(err){console.error(err)}};

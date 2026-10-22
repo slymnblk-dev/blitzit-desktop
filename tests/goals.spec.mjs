@@ -1,10 +1,10 @@
 // Modes → Goals: off by default and invisible; 30-second setup; North star on Home; goal page with
 // The climb and Why ladder views; milestones (tick, make a task, finishing the task ticks it); task star + goal pill;
-// Goals lens in spaces; mark achieved; turning it off hides everything but keeps data; sync/backup/undo carry goals.
+// Goals page; mark achieved; turning it off hides everything but keeps data; sync/backup/undo carry goals.
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
-test('goals: setup, north star, climb and ladder, milestones, lens, achieved, off', async ({ page }) => {
+test('goals: setup, north star, climb and ladder, milestones, Goals page, achieved, off', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   // off: nothing anywhere
@@ -89,30 +89,28 @@ test('goals: setup, north star, climb and ladder, milestones, lens, achieved, of
   expect(await page.evaluate(id => S.tasks.find(x => x.id === id).goal, td.id)).toBeUndefined();
   await page.evaluate(() => closeSheets());
 
-  // the space gets a Goals lens
-  await expect(page.locator('#mLens [data-lens="goals"]')).toBeVisible();
-  await page.locator('#mLens [data-lens="goals"]').click();
-  await expect(page.locator('#hbView .g-card')).toHaveCount(1);
-  await expect(page.locator('#hero')).toBeHidden();
+  // the Goals page (from Home) lists it
+  await page.evaluate(() => goHome());
+  await page.locator('#glEntry').click();
+  await expect(page.locator('#goalsPg')).toHaveClass(/on/);
+  await expect(page.locator('#goalsPg .g-card')).toHaveCount(1);
 
-  // mark achieved from the goal page menu: leaves Home, the lens and the active list
-  await page.locator('#hbView .g-card').click();
+  // mark achieved from the goal page menu: leaves Home and the active list
+  await page.locator('#goalsPg .g-card').click();
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gm="win"]').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].done)).toBe(true);
   expect(await page.evaluate(() => nsCard())).toBe('');
+  await page.locator('#moGo').click().catch(() => {});
   await page.locator('#gdBack').click();
-  await expect(page.locator('#mLens')).toBeHidden();
-  // regression: while a lens is open, ordinary buttons keep working (the page root carries data-lens)
-  await page.evaluate(() => { S.goals[0].done = false; S.lens = { [S.space]: 'goals' }; save(); render(); });
-  await expect(page.locator('#hbView .g-card')).toHaveCount(1);
-  await page.locator('#homeBtn').click();
-  await expect.poll(() => page.evaluate(() => S.space)).toBeNull();
+  await expect(page.locator('#goalsPg .g-card')).toHaveCount(0);
+  await expect(page.locator('#goalsPg .g-wrow')).toHaveCount(1);
+  await page.locator('#glBack').click();
 
   // turning Goals off hides every trace; data stays
   await page.evaluate(() => { S.goals[0].done = false; S.cfg.goals = false; save(); render(); });
   expect(await page.evaluate(() => nsCard())).toBe('');
-  await expect(page.locator('#mLens')).toBeHidden();
+  await expect(page.locator('#glEntry')).toHaveCount(0);
   await expect(page.locator('#list .g-st')).toHaveCount(0);
   expect(await page.evaluate(() => S.goals.length)).toBe(1);
   noErrors(errors);
@@ -143,9 +141,10 @@ test('goals: one north star, limit of 3, sync/backup/undo, desktop layout', asyn
   await expect.poll(() => page.evaluate(() => S.goals.length)).toBe(2);
   await page.locator('#undoBtn').click();
   await expect.poll(() => page.evaluate(() => S.goals.length)).toBe(3);
-  // desktop lens: cards with a small climb
-  await page.evaluate(() => { closeGoal(); openSpace(S.spaces[0].id); S.lens = { [S.spaces[0].id]: 'goals' }; render(); });
-  await expect(page.locator('#hbDesk .g-card')).toHaveCount(3);
-  await expect(page.locator('#hbDesk .g-cmini svg').first()).toBeVisible();
+  // desktop: sidebar Goals page, cards with a small climb
+  await page.evaluate(() => { closeGoal(); goHome(); });
+  await page.locator('#sGoals').click();
+  await expect(page.locator('#goalsPg .g-card')).toHaveCount(3);
+  await expect(page.locator('#goalsPg .g-cmini svg').first()).toBeVisible();
   noErrors(errors);
 });

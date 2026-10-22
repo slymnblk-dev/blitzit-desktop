@@ -1,10 +1,10 @@
 /* ---------- Everyday touches (work with any mode, and with none) ----------
-   A · One + for everything: the add sheet offers Task · Idea · Habit · Number. Each kind appears only when its
+   A · One + for everything: the add sheet offers Task · Idea · Habit when Habits is on. Each kind appears only when its
        feature is on, so with everything off it is just "Add task", exactly as before.
    B · Close the day: an optional evening card (Settings → Modes → Everyday). One short page: tick the last habits,
-       log today's numbers, pick the task tomorrow starts with.
+       pick the task tomorrow starts with.
    C · Starter picks: a mode that is turned on never leaves you on an empty page; Settings → Modes offers a few
-       ready-made habits, goals and projects to start from.
+       ready-made habits and goals to start from.
    D · Moments: a calm full-screen moment when a habit's sun has been up 7, 30, 100 or 365 days in a row,
        or a goal is achieved. Rare on purpose. */
 var moOn=false,cdOn=false,addKind='task';
@@ -13,13 +13,11 @@ var G_STARTERS=[['🏃','Run a half marathon'],['📚','Read 12 books'],['💰',
 
 /* ---------- A · one + for everything ---------- */
 /* the kinds row only appears when a mode adds something; with modes off it is just "Add task", as before */
-function addKinds(){const hb=habitsOn(),nm=projectsOn()&&addMetrics().length>0;if(!hb&&!nm)return [['task','Task']];
-  const k=[['task','Task']];if(typeof inboxOn==='function'&&inboxOn())k.push(['idea','Idea']);
-  if(hb)k.push(['habit','Habit']);if(nm)k.push(['number','Number']);return k}
-function addMetrics(){const r=[];pAll().filter(p=>p.kind==='numbers').forEach(p=>p.metrics.forEach(m=>r.push({p,m})));return r}
+function addKinds(){if(!habitsOn())return [['task','Task']];
+  const k=[['task','Task']];if(typeof inboxOn==='function'&&inboxOn())k.push(['idea','Idea']);k.push(['habit','Habit']);return k}
 const AK_IC={task:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>',
-  idea:IB_ICON,habit:RH_ICON,number:PJ_NUM};
-let addHb={days:[0,1,2,3,4,5,6]},addNum=null;
+  idea:IB_ICON,habit:RH_ICON};
+let addHb={days:[0,1,2,3,4,5,6]};
 document.querySelector('#addSheet .grab').insertAdjacentHTML('afterend','<div class="ak-row" id="addKinds" role="tablist" aria-label="What to add" hidden></div>');
 $('newTitle').insertAdjacentHTML('afterend','<div class="ak-extra" id="addExtra" hidden></div>');
 function drawKinds(){
@@ -27,24 +25,18 @@ function drawKinds(){
   row.hidden=ks.length<2;row.innerHTML=ks.map(([k,l])=>`<button role="tab" data-ak="${k}" class="${addKind===k?'on':''}" aria-selected="${addKind===k}">${AK_IC[k]}${l}</button>`).join('');
   $('addSheet').dataset.kind=addKind;
   const t=$('newTitle'),x=$('addExtra');
-  t.placeholder={task:'What needs doing?',idea:'Drop an idea',habit:'New habit, e.g. Read 10 pages',number:'How many?'}[addKind];
-  t.inputMode=addKind==='number'?'decimal':'text';
-  $('saveBtn').textContent={task:'Add task',idea:'Add idea',habit:'Add habit',number:'Log it'}[addKind];
+  t.placeholder={task:'What needs doing?',idea:'Drop an idea',habit:'New habit, e.g. Read 10 pages'}[addKind];
+  $('saveBtn').textContent={task:'Add task',idea:'Add idea',habit:'Add habit'}[addKind];
   if(addKind==='habit'){x.hidden=false;const pre=[['all','Every day',[0,1,2,3,4,5,6]],['wk','Weekdays',[1,2,3,4,5]],['we','Weekends',[0,6]]];
     x.innerHTML=`<div class="lbl">How often</div><div class="opts">${pre.map(([k,l,d])=>`<button class="opt${String(addHb.days)===String(d)?' on':''}" data-akd="${k}">${l}</button>`).join('')}</div>`}
-  else if(addKind==='number'){x.hidden=false;const ms=addMetrics();if(!addNum||!ms.some(o=>`${o.p.id}|${o.m.id}`===addNum))addNum=ms.length?`${ms[0].p.id}|${ms[0].m.id}`:null;
-    const one=new Set(ms.map(o=>o.p.id)).size===1;
-    x.innerHTML=`<div class="lbl">Number</div><div class="opts">${ms.map(o=>{const k=`${o.p.id}|${o.m.id}`,v=mSum(o.m,pPeriod(o.p));return `<button class="opt${addNum===k?' on':''}" data-akn="${k}">${one?'':`${o.p.e?esc(o.p.e)+' ':''}`}${esc(o.m.name)}<small>${fmtN(v)}/${fmtN(o.m.target)}</small></button>`}).join('')}</div>`}
   else {x.hidden=true;x.innerHTML=''}
   $('saveBtn').style.background=addKind==='task'?color(draft?draft.stage:'today'):addKind==='idea'?'var(--done)':addKind==='habit'?'var(--today)':'var(--text)';
-  $('saveBtn').style.color=addKind==='number'?'var(--bg)':'';
-  $('saveBtn').disabled=!t.value.trim()||(addKind==='number'&&!Number.isFinite(parseFloat(t.value.replace(',','.'))));
+  $('saveBtn').disabled=!t.value.trim();
 }
 $('addKinds').addEventListener('click',e=>{const b=e.target.closest('[data-ak]');if(!b)return;addKind=b.dataset.ak;haptic(5);
   if(addKind==='task')drawAdd();drawKinds();$('newTitle').focus()});
 $('addExtra').addEventListener('click',e=>{
-  const d=e.target.closest('[data-akd]');if(d){addHb.days={all:[0,1,2,3,4,5,6],wk:[1,2,3,4,5],we:[0,6]}[d.dataset.akd];haptic(4);return drawKinds()}
-  const n=e.target.closest('[data-akn]');if(n){addNum=n.dataset.akn;haptic(4);drawKinds();$('newTitle').focus()}});
+  const d=e.target.closest('[data-akd]');if(d){addHb.days={all:[0,1,2,3,4,5,6],wk:[1,2,3,4,5],we:[0,6]}[d.dataset.akd];haptic(4);return drawKinds()}});
 $('newTitle').addEventListener('input',()=>{if(addKind!=='task')drawKinds()});
 const _akOpen=$('addBtn').onclick;
 $('addBtn').onclick=e=>{addKind='task';addHb={days:[0,1,2,3,4,5,6]};_akOpen(e);drawKinds()};
@@ -57,8 +49,6 @@ $('saveBtn').onclick=()=>{
   if(addKind==='habit'){if(hbAll().length>=HB_MAX){toast(`Up to ${HB_MAX} habits. Fewer, kept daily, beat many.`);return}
     const sp=spaceOf(draft.space)?draft.space:(orderedSpaces()[0]||{}).id,days=[...addHb.days];
     closeSheets();commit(()=>{S.habits=S.habits||[];S.habits.push({id:'h'+newId(),name:v,e:hbIcon(v),space:sp,days,done:{},created:Date.now()})},`${v} added`);try{sfx('add')}catch(e){}return}
-  if(addKind==='number'){const n=parseFloat(v.replace(',','.'));if(!Number.isFinite(n)||!addNum)return;const [pid,mid]=addNum.split('|'),p=pById(pid),m=p&&p.metrics.find(x=>x.id===mid);if(!m)return;
-    closeSheets();setTimeout(()=>{pLog(p,m,n);const c=mPace(p,m);if(!c.hit)toast(`${m.name}: ${fmtN(c.v)} of ${fmtN(c.t)} ${pPerLabel(p,true)}`)},200)}
 };
 
 /* ---------- B · close the day ---------- */
@@ -76,11 +66,10 @@ function cdCands(){const sh=t=>shown(t)&&t.stage!=='done';return [...bySpaceOrde
 function openCloseDay(){cdOn=true;cdPick=(cdCands()[0]||{}).id||null;drawCloseDay();$('cdPg').classList.add('on');$('cdPg').scrollTop=0;haptic(6)}
 function closeCloseDay(){if(!cdOn)return;cdOn=false;$('cdPg').classList.remove('on')}
 function drawCloseDay(){
-  const hs=habitsOn()?hbAll().filter(h=>{const s=hbStats(h);return s.due||s.dt}):[],ms=projectsOn()?addMetrics().slice(0,4):[],cs=cdCands();
+  const hs=habitsOn()?hbAll().filter(h=>{const s=hbStats(h);return s.due||s.dt}):[],cs=cdCands();
   $('cdIn').innerHTML=`<div class="set-top"><button class="icon-btn" id="cdBack" aria-label="Close">${BACK_SVG}</button></div>
     <div class="rv-eye">${longDate()}</div><h1 class="rv-h">Close the day.</h1>
     ${hs.length?`<div class="gd-sec"><h2>Habits</h2><span>${hs.filter(h=>hbStats(h).dt).length} of ${hs.length} done</span></div><div class="cd-chips">${hs.map(h=>{const s=hbStats(h);return `<button class="cd-chip${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}">${h.e?esc(h.e)+' ':''}${esc(h.name)}<span class="cd-ck">${ICK}</span></button>`}).join('')}</div>`:''}
-    ${ms.length?`<div class="gd-sec"><h2>Numbers</h2><span>Today</span></div><div class="g-tasks">${ms.map(o=>`<div class="cd-num" data-pjgc="${o.p.id}|${o.m.id}"><span class="g-tx"><b>${esc(o.m.name)}</b><small>${o.p.e?esc(o.p.e)+' ':''}${esc(o.p.name)}</small></span><button data-cdn="${o.p.id}|${o.m.id}|-1" aria-label="Less">−</button><b class="cd-v">${fmtN(mToday(o.m))}</b><button data-cdn="${o.p.id}|${o.m.id}|1" aria-label="More">+</button></div>`).join('')}</div>`:''}
     <div class="gd-sec"><h2>Tomorrow starts with</h2></div>
     ${cs.length?`<div class="g-tasks">${cs.map(t=>`<button class="g-trow cd-pick${cdPick===t.id?' on':''}" data-cdp="${t.id}" aria-pressed="${cdPick===t.id}"><span class="cd-radio"></span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span></button>`).join('')}</div>`
       :`<p class="gd-hint">Nothing planned yet. Add a task for tomorrow and it will be waiting.</p>`}
@@ -97,17 +86,15 @@ $('cdPg').addEventListener('click',e=>{
   if(e.target.closest('#cdBack'))return closeCloseDay();
   if(e.target.closest('#cdGo'))return cdFinish();
   const p=e.target.closest('[data-cdp]');if(p){cdPick=+p.dataset.cdp;haptic(4);return drawCloseDay()}
-  const n=e.target.closest('[data-cdn]');if(n){const [pid,mid,d]=n.dataset.cdn.split('|'),pr=pById(pid),m=pr&&pr.metrics.find(x=>x.id===mid);if(m){pLog(pr,m,+d*mStep(m));drawCloseDay()}return}
 });
 $('cdPg').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();closeCloseDay()}});
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-cdopen],[data-cdlater],[data-hbstart],[data-gstart],[data-pstart]');if(!el)return;
+  const el=e.target.closest('[data-cdopen],[data-cdlater],[data-hbstart],[data-gstart]');if(!el)return;
   e.stopPropagation();e.preventDefault();
   if(el.matches('[data-cdopen]'))return openCloseDay();
   if(el.matches('[data-cdlater]')){S.cdSkip=today();save();render();toast('Okay. It’ll be back tomorrow evening.');return}
   if(el.matches('[data-hbstart]'))return hbStartAdd();
   if(el.matches('[data-gstart]')){const [e2,n]=G_STARTERS[+el.dataset.gstart];openSetup();if(gsD){gsD.name=n;gsD.e=e2;gsD.touched=true;drawSetup();$('gsNext').disabled=false}return}
-  if(el.matches('[data-pstart]')){openSetupP();const b=$('psPg').querySelector(`[data-pst="${el.dataset.pstart}"]`);if(b)b.click();return}
 },true);
 /* when the habit chips in Close the day are ticked, redraw the page */
 document.addEventListener('click',e=>{if(cdOn&&e.target.closest('#cdPg [data-hbt]'))setTimeout(()=>{if(cdOn)drawCloseDay()},40)});
@@ -123,7 +110,6 @@ function hbStartAdd(){if(!hbPicks.size)return;const sp=(orderedSpaces()[0]||{}).
 document.addEventListener('click',e=>{const b=e.target.closest('[data-hbpick]');if(!b)return;e.stopPropagation();const i=+b.dataset.hbpick;
   if(hbPicks.has(i))hbPicks.delete(i);else if(hbPicks.size<3)hbPicks.add(i);else{toast('Three is a great start');return}haptic(4);drawSettings()},true);
 function gStarters(){if(gAll().length||gWon().length)return '';return `<div class="st-pick"><b>Ideas to start</b><small>Tap one to set it up in 30 seconds.</small><div class="st-grid">${G_STARTERS.map(([e,n],i)=>`<button class="st-c" data-gstart="${i}"><em>${e}</em>${n}</button>`).join('')}</div></div>`}
-function pStarters(){if(pAll().length||pDone().length)return '';return `<div class="st-pick"><b>Start from</b><small>Ready-made projects you can change.</small><div class="st-grid">${PJ_TPL.map((t,i)=>`<button class="st-c" data-pstart="${i}"><em>${t.e}</em>${esc(t.name)}</button>`).join('')}</div></div>`}
 
 /* ---------- D · moments ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="mo-pg" id="moPg" role="dialog" aria-label="Milestone"></div>');
@@ -146,10 +132,10 @@ gSetWin=function(g,on){const was=!!g.done;_moWin(g,on);try{if(on&&!was&&g.done)s
 
 /* ---------- Settings → Modes: one card per mode; turning a mode on unfolds its own options inside its card ---------- */
 var mdJust=null;
-document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','projects','closeDay'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
+document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','closeDay'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
 const MD_GOAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
 modesPage=function(){
-  const c=C(),hOn=habitsOn(),gOn=goalsOn(),pOn=projectsOn(),any=hOn||gOn||pOn,n=hbAll().length,gn=gAll().length,pn=pAll().length;
+  const c=C(),hOn=habitsOn(),gOn=goalsOn(),n=hbAll().length,gn=gAll().length;
   const card=(k,ic,name,sub,on,body)=>`<div class="md-card${on?' on':''}" data-md="${k}"><div class="md-head"><span class="md-ic">${ic}</span><span class="md-t"><b>${name}</b><small>${sub}</small></span>${tg(k)}</div>
     ${on?`<div class="md-body${mdJust===k?' in':''}">${body}</div>`:''}</div>`;
   const link=(page,label,hint)=>`<button class="link-row md-link" data-page="${page}">${label}<span class="hint">${hint}${CHEV}</span></button>`;
@@ -165,14 +151,9 @@ modesPage=function(){
     `${gStarters()}${link('goals','Your goals',gn?`${gn} of ${G_MAX} active`:'None yet')}
      ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','ladder','Why ladder')}</div>`)}
      ${row('North star on Home',tg('wStar'),'Your starred goal under the Today card')}`)}
-  ${card('projects',PJ_NUM,'Projects','Count what matters each week, or build in phases',pOn,
-    `${pStarters()}${link('projects','Your projects',pn?`${pn} of ${P_MAX} active`:'None yet')}
-     ${row('Numbers open as',`<div class="segc">${sOpt('pView','gauges','Gauges')}${sOpt('pView','flow','Flow')}</div>`)}
-     ${row('Scoreboard',tg('pScore'),'Hits and misses for the last 8 weeks')}`)}
   </div>
-  ${any?`<div class="set-sec"><h3>Where modes live</h3><div class="md-card md-plain">${row(modePage()?'Rhythm page':'In spaces',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for all your modes.':'A switch (Board · Habits · Goals · Projects) appears in spaces that use them.')}</div></div>`:''}
   <div class="set-sec"><h3>Everyday</h3><div class="md-list">
-  ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits, today’s numbers, tomorrow’s first task',!!c.closeDay,'')}
+  ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits and tomorrow’s first task',!!c.closeDay,'')}
   ${ev?`<div class="md-card md-plain">${row('Evening starts at',`<div class="segc">${[17,19,21].map(x=>sOpt('hbCiAt',x,`${x-12} pm`)).join('')}</div>`,'When evening cards appear on Home')}</div>`:''}
   ${card('moments','<span class="md-emo">☀️</span>','Moments','A calm full-screen moment for a 7-day sun or a goal reached',false,'')}
   </div></div>`;

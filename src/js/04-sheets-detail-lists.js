@@ -85,7 +85,7 @@ function drawDetail(){
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
     P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
     P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+
-    (goalPill(t,P))+(projPill(t,P))+
+    (goalPill(t,P))+
     (secOn()&&t.stage!=='done'&&secsForTask(t).length?P('sec',`${I_SEC}${secOfTask(t)?esc(secOfTask(t).name):'Section'}`,!secOfTask(t)):'')+
     P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length);
   const pk=(on,v,label,dot)=>`<button class="pk ${on?'on':''}" data-v="${v}">${dot?`<i style="background:${dot}"></i>`:''}${esc(label)}</button>`;
@@ -98,7 +98,6 @@ function drawDetail(){
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
       pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
       goal:()=>goalPicks(t,pk),
-      proj:()=>projPicks(t,pk),
       sec:()=>pk(!secOfTask(t),'','No section')+secsForTask(t).map(s=>pk((secOfTask(t)||{}).id===s.id,s.id,s.name)).join(''),
       tags:()=>{const lt=ltags(l),on=n=>tagsOf(t).some(x=>tagKey(x)===tagKey(n));
         return lt.map(n=>`<button class="pk tg-pk ${on(n)?'on':''}" data-v="${esc(n)}">#${esc(n)}</button>`).join('')+
@@ -140,7 +139,6 @@ $('dPicker').onclick=e=>{
   else if(k==='pri'){if(v)t.pri=v;else delete t.pri}
   else if(k==='sec'){if(v)t.sec=v;else delete t.sec}
   else if(k==='goal'){if(v)t.goal=v;else delete t.goal}
-  else if(k==='proj'){const [pid,fid]=String(v).split('|');if(v&&fid){t.proj=pid;t.phase=fid}else{delete t.proj;delete t.phase}}
   if(k!=='stage'){save();render()}
   drawDetail();
 };

@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
-test('one + for everything: plain by default; habit, idea and number kinds when modes are on', async ({ page }) => {
+test('one + for everything: plain by default; habit and idea kinds when Habits is on', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.locator('#addBtn').click();
@@ -12,13 +12,12 @@ test('one + for everything: plain by default; habit, idea and number kinds when 
   await page.evaluate(() => closeSheets());
 
   await page.evaluate(() => {
-    S.cfg.habits = true; S.cfg.projects = true;
-    S.projects = [{ id: 'p1', name: 'Outreach', e: '📈', space: S.spaces[0].id, kind: 'numbers', period: 'week', created: Date.now(), metrics: [{ id: 'k1', name: 'Calls', target: 50, log: {} }], phases: [] }];
+    S.cfg.habits = true;
     save(); render();
   });
   await page.waitForTimeout(300);
   await page.locator('#addBtn').click();
-  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(4); // Task · Idea · Habit · Number
+  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(3); // Task · Idea · Habit
   // habit
   await page.locator('[data-ak="habit"]').click();
   await expect(page.locator('#saveBtn')).toHaveText('Add habit');
@@ -34,13 +33,6 @@ test('one + for everything: plain by default; habit, idea and number kinds when 
   await page.fill('#newTitle', 'Podcast idea');
   await page.locator('#saveBtn').click();
   await expect.poll(() => page.evaluate(() => S.tasks.some(t => t.inbox && t.title === 'Podcast idea'))).toBe(true);
-  // number
-  await page.waitForTimeout(400);
-  await page.locator('#addBtn').click();
-  await page.locator('[data-ak="number"]').click();
-  await page.fill('#newTitle', '7');
-  await page.locator('#saveBtn').click();
-  await expect.poll(() => page.evaluate(() => S.projects[0].metrics[0].log[today()])).toBe(7);
   noErrors(errors);
 });
 
