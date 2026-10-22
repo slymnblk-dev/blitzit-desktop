@@ -46,7 +46,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,review:true,reviewDay:0,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,review:true,reviewDay:0,habits:false,modePlace:'spaces',hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -144,6 +144,8 @@ const PAGES=[
   {id:'stages',name:'Stages'},
   {id:'tasks',name:'Tasks'},
   {id:'focus',name:'Focus'},
+  {id:'modes',name:'Modes'},
+  {id:'habits',name:'Your habits',hidden:true},
   {id:'lists',name:'Lists'},
   {id:'shortcuts',name:'Keyboard shortcuts'},
   {id:'archive',name:'Archived',hidden:true},
@@ -152,7 +154,7 @@ const PAGES=[
 ];
 let lastView='main';
 /* Settings home: two calm groups (no icons, by choice: quieter) */
-const SET_GROUPS=[['App',['appearance','stages','tasks','focus']],['Organise',['lists','shortcuts','data']]];
+const SET_GROUPS=[['App',['appearance','stages','tasks','focus','modes']],['Organise',['lists','shortcuts','data']]];
 function drawSettings(){
   try{listsBack()}catch(e){}
   const el=$('setIn'),anim=lastView!==setView;
@@ -173,6 +175,7 @@ function pageSummary(id){
     tasks:`${fmt(c.defEst)} default, new tasks on ${c.addTo}`,
     focus:`${c.focusMode==='pomo'?'Pomodoro':'Free timer'}, ${c.pomoWork} / ${c.pomoBreak} min`,
     lists:`${S.lists.length} ${S.lists.length===1?'list':'lists'}`,
+    modes:modesSummary(),
     shortcuts:'N, B, 1–4 and more',
     data:'Backup, restore and reset'
   }[id];
@@ -267,6 +270,8 @@ function settingsPage(id){
     ${row('Sound at end of round',tg('sound'))}
     ${row('Keep screen awake',tg('wake'))}</div>`;
   if(id==='archive')body=archivePage();
+  if(id==='modes')body=modesPage();
+  if(id==='habits')body=habitsSetPage();
   if(id==='lists')body=`<p class="sub-p">Lists sit inside your spaces. Tap a list to rename, recolour, move, tag or archive it.</p><div class="lists-slot" id="picksSlot"></div>`;
   if(id==='sounds'){const cur=sfxStyle().id,PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
     body=`<div class="set-sec">${row('Sounds',tg('uiSounds'),c.uiSounds===false?'Off. You can still try styles below.':'Soft sounds when you add, move or finish tasks')}

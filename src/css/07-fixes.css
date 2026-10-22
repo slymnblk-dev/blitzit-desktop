@@ -975,3 +975,194 @@ body.no-amb .amb-btn{display:none!important}
 .rv-done{margin-top:0!important;background:var(--text)!important;color:var(--bg)!important}
 
 .is-idea .d-complete{background:var(--text);color:var(--bg)}
+
+/* ================= Modes → Habits ================= */
+/* the sunrise streak: the logo's sun, lifted one notch per kept day */
+.hb-sun{width:44px;height:36px;flex:none;overflow:visible}
+.hb-sun .hz{stroke:var(--muted);stroke-width:2.6;stroke-linecap:round;opacity:.5}
+.hb-sun .disc{fill:color-mix(in srgb,var(--today) 16%,transparent);stroke:var(--today);stroke-width:2.4;transition:fill .3s}
+.hb-sun.on .disc{fill:var(--today)}
+.hb-sun .dg{transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.hb-sun .rays{transition:opacity .45s}
+.hb-sun .rays path{stroke:var(--today);stroke-width:2.6;stroke-linecap:round}
+
+/* lens switch: Board · Habits (only in spaces that have habits) */
+.lens-m[hidden],.lens-d[hidden],.hb-view[hidden],.hb-desk[hidden]{display:none!important}
+.lens-sw{display:inline-flex;gap:3px;background:var(--surface);border-radius:999px;padding:3px}
+.lens-sw button{height:32px;padding:0 15px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px;transition:background .2s,color .2s}
+.lens-sw button.on{background:var(--surface2);color:var(--text)}
+.lens-sw button:focus-visible{outline:2px solid var(--text);outline-offset:1px}
+.lens-sw i{font-style:normal;min-width:18px;height:18px;border-radius:9px;background:var(--today);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 5px}
+.lens-m{padding:6px 0 2px}
+:root[data-lens="habits"] #hero,:root[data-lens="habits"] #gauge,:root[data-lens="habits"] #pull,:root[data-lens="habits"] #quick,:root[data-lens="habits"] #list{display:none!important}
+:root[data-lens="habits"] .dock{display:none!important}
+.lens-d{display:flex;align-items:center}
+@media (min-width:1100px){
+  :root[data-lens="habits"] .board{display:none!important}
+  .hb-desk{flex:1;min-height:0;overflow-y:auto;padding:30px 40px 60px;scrollbar-width:none}
+}
+@media (max-width:1099px){.hb-desk{display:none!important}}
+
+/* habits view (phone lens + Rhythm page) */
+.hb-view{padding-bottom:40px}
+.hb-head{display:flex;flex-direction:column;gap:7px;margin:14px 0 18px}
+.hb-head .eye{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.hb-h{font-size:clamp(48px,14vw,72px);font-weight:800;letter-spacing:-.05em;line-height:.9;margin:0;color:var(--text)}
+.hb-sub{color:var(--muted);font-size:15px}.hb-sub b{color:var(--text);font-weight:700}
+.hb-acts{display:flex;align-items:center;gap:8px;margin-top:6px}
+.hb-ci{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px 0 12px;border-radius:999px;background:var(--today);color:#fff;font-weight:700;font-size:14px;transition:transform .15s,filter .15s}
+.hb-ci:active{transform:scale(.97)}.hb-ci:hover{filter:brightness(1.06)}
+.hb-ci svg{width:20px;height:20px}
+.hb-edit{margin-left:auto;color:var(--text)!important}
+.hb-card{background:var(--surface);border-radius:20px;overflow:hidden;margin-bottom:12px}
+.hb-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px 10px 12px;text-align:left;border-top:1px solid var(--line);transition:background .15s}
+.hb-row:first-child{border-top:0}
+.hb-row:hover{background:color-mix(in srgb,var(--text) 3%,transparent)}
+.hb-row:active{background:var(--surface2)}
+.hb-row:focus-visible,.hc-node:focus-visible,.hbwid-s:focus-visible{outline:2px solid var(--text);outline-offset:-2px;border-radius:14px}
+.hb-row.rest{opacity:.55}
+.hb-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.hb-tx b{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb-tx small{font-size:12.5px;color:var(--muted)}
+.hb-ok{width:20px;height:20px;color:var(--done);opacity:0;transform:scale(.5);transition:opacity .25s,transform .3s cubic-bezier(.3,1.6,.5,1);flex:none;display:grid;place-items:center}
+.hb-ok svg{width:20px;height:20px}
+.hb-row.on .hb-ok,.hb-editing .hb-ok{opacity:1;transform:none}
+.hb-editing .hb-ok{color:var(--muted)}.hb-editing .hb-ok svg{width:16px;height:16px}
+.hb-add{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;border-radius:18px;border:1.5px dashed var(--line);color:var(--muted);font-weight:600;font-size:14.5px;margin-top:2px;transition:color .15s,border-color .15s}
+.hb-add:hover{color:var(--text);border-color:var(--muted)}
+.hb-add svg{width:16px;height:16px}
+.hb-note{font-size:13px;color:var(--muted);text-align:center;margin:10px 0}
+.hb-grp{display:flex;align-items:center;gap:8px;margin:18px 4px 8px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.hb-grp:first-child{margin-top:0}
+.hb-grp .sp-mini{width:20px;height:20px;border-radius:6px;font-size:11px;display:grid;place-items:center;color:#0F1013;letter-spacing:0}
+
+/* habit chains */
+.hc-card{background:var(--surface);border-radius:20px;padding:4px 16px 8px;margin-bottom:12px}
+.hc-head{display:flex;align-items:center;gap:10px;width:100%;padding:12px 0 6px;text-align:left}
+.hc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.hc-tx b{font-size:16px;font-weight:700;letter-spacing:-.01em}.hc-tx small{font-size:12.5px;color:var(--muted)}
+.hc-run{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface2);border-radius:999px;padding:4px 9px;white-space:nowrap}
+.hc-head svg,.hc-node>svg{width:16px;height:16px;color:var(--muted);flex:none}
+.hc-nodes{display:flex;flex-direction:column}
+.hc-node{display:flex;align-items:center;gap:12px;width:100%;padding:8px 0;text-align:left;position:relative}
+.hc-dot{width:26px;height:26px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--text) 20%,transparent);background:var(--surface);display:grid;place-items:center;color:transparent;flex:none;position:relative;z-index:1;transition:background .25s,border-color .25s,color .25s}
+.hc-dot svg{width:13px;height:13px}
+.hc-node.on .hc-dot{background:var(--done);border-color:var(--done);color:#0F1013}
+.hc-node::after{content:"";position:absolute;left:12px;top:calc(50% + 13px);height:calc(100% - 26px);width:2.5px;border-radius:2px;background:color-mix(in srgb,var(--text) 14%,transparent);transition:background .3s}
+.hc-node:last-child::after{display:none}
+.hc-node.on::after{background:var(--done)}
+.hc-next{font-size:11.5px;font-weight:700;color:var(--today);flex:none}
+
+/* wide view (computers): today on the left, the year fabric and numbers on the right */
+.hbw{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:22px;align-items:start}
+.hbw-bar{display:flex;align-items:center;gap:10px;margin:0 2px 12px}
+.hbw-bar .eye{flex:1;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.hbw-bar .hb-acts{margin:0}
+.hbw-card{background:var(--surface);border-radius:22px;padding:18px 20px}
+.hbw-cap{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.fab-rows{display:flex;flex-direction:column;gap:9px}
+.fab-row{display:flex;align-items:center;gap:12px}
+.fab-row span{width:136px;flex:none;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fab-g{flex:1;min-width:0;display:grid;grid-template-columns:repeat(26,minmax(0,1fr));gap:3px}
+.fab-g i,.fab-leg i{display:block;aspect-ratio:1;border-radius:3px;background:var(--surface2)}
+.fab-g i.x{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.fab-g i.a,.fab-leg i.a{background:color-mix(in srgb,var(--done) 35%,var(--surface2))}
+.fab-g i.b,.fab-leg i.b{background:color-mix(in srgb,var(--done) 65%,var(--surface2))}
+.fab-g i.c,.fab-leg i.c{background:var(--done)}
+.fab-leg{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;font-size:12px;color:var(--muted)}
+.fab-leg span:last-child{display:flex;align-items:center;gap:4px;flex:none}
+.fab-leg i{width:10px;height:10px}
+.hbw-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.hbw-kpi{background:var(--surface);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.hbw-kpi small{font-size:12.5px;color:var(--muted)}
+.hbw-kpi b{font-size:21px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+@media (max-width:1099px){.hbw{display:block}.hbw-r{display:none}}
+
+/* Rhythm page */
+@media (min-width:1100px){#rhythmPg .ib-in{max-width:1080px}}
+.rh-empty{padding-top:30px}
+.rh-empty .hb-sun{width:84px;height:70px;margin-bottom:10px}
+.rh-empty span{max-width:300px;line-height:1.5}
+.rh-empty .primary{max-width:260px;margin-top:20px}
+
+/* Home: Inbox and Rhythm rows share one card */
+.hn{background:var(--surface);border-radius:20px;margin:0 0 12px;overflow:hidden}
+.hn .ib-entry{margin:0;border-radius:0;background:transparent}
+.hn .ib-entry+.ib-entry{border-top:1px solid var(--line)}
+.hn .ib-entry-i svg{width:19px;height:19px}
+
+/* Home: evening check-in card + habits widget */
+.ci-home{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 12px 12px 12px;border-radius:20px;background:var(--surface);box-shadow:0 0 0 1px var(--line);animation:cardIn .45s cubic-bezier(.2,.8,.2,1) both}
+.ci-hi{width:42px;height:42px;border-radius:13px;background:color-mix(in srgb,var(--today) 12%,transparent);display:grid;place-items:center;flex:none}
+.ci-hi .hb-sun{width:32px;height:27px}
+.ci-ht{flex:1;min-width:0;display:flex;flex-direction:column}
+.ci-ht b{font-size:15.5px;font-weight:700}.ci-ht small{font-size:13px;color:var(--muted);margin-top:1px}
+.hbwid{background:var(--surface);border-radius:20px;padding:6px 8px 8px;margin:0 0 12px}
+.hbwid-h{display:flex;align-items:center;gap:8px;width:100%;padding:8px 8px 2px;text-align:left}
+.hbwid-h .eye{flex:1;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.hbwid-n{font-size:13px;color:var(--muted);font-weight:600}
+.hbwid-h>svg{width:15px;height:15px;color:var(--muted)}
+.hbwid-suns{display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:2px}
+.hbwid-s{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px 4px;border-radius:14px;min-width:0;transition:background .15s}
+.hbwid-s:hover{background:var(--surface2)}
+.hbwid-s .hb-sun{width:40px;height:33px}
+.hbwid-s span{font-size:15px;line-height:1;font-weight:700;color:var(--muted)}
+@media (min-width:1100px){.ci-home,.hbwid{margin-bottom:16px}.hbwid{padding:8px 12px 10px}.hbwid-suns{grid-template-columns:repeat(auto-fill,64px)}}
+
+/* evening check-in page */
+.ci-pg .ib-in{max-width:460px}
+.ci-prog{display:flex;gap:4px;margin:14px 0 18px}
+.ci-prog i{flex:1;height:4px;border-radius:2px;background:var(--surface2);transition:background .3s}
+.ci-prog i.on{background:var(--today)}
+.ci-stack{position:relative;height:350px}
+.ci-card{position:absolute;inset:0 0 auto;height:318px;border-radius:28px;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:22px;text-align:center;
+  transform:translateY(calc(var(--k)*14px)) scale(calc(1 - var(--k)*.05));opacity:calc(1 - var(--k)*.32);transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s;box-shadow:0 14px 40px -26px rgba(0,0,0,.6)}
+.ci-card.out-yes{transform:translateX(115%) rotate(8deg);opacity:0}
+.ci-card.out-no{transform:translateX(-115%) rotate(-8deg);opacity:0}
+.ci-e{width:74px;height:74px;border-radius:24px;background:var(--surface2);display:grid;place-items:center;font-size:36px;margin-bottom:6px}
+.ci-e .hb-sun{width:46px;height:38px}
+.ci-q{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.ci-n{font-size:25px;font-weight:800;letter-spacing:-.025em;line-height:1.15;max-width:300px}
+.ci-card small{font-size:13px;color:var(--muted)}
+.ci-b{display:flex;gap:10px;width:100%;margin-top:16px}
+.ci-b button{flex:1;height:52px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:15px;transition:transform .15s}
+.ci-b button:active{transform:scale(.97)}
+.ci-b .yes{background:var(--today);color:#fff}
+.ci-end{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding-top:16px}
+.ci-end .hb-sun{width:130px;height:108px;margin-bottom:6px}
+.ci-end b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.ci-end span{color:var(--muted);font-size:14.5px;max-width:300px;line-height:1.45}
+.ci-end .primary{max-width:320px;margin-top:22px;background:var(--text)!important;color:var(--bg)!important}
+
+/* habit editor + chain sheet */
+.hb-prev{cursor:pointer;background:var(--surface2)!important;color:var(--text)!important}
+.hb-prev .hb-sun{width:36px;height:30px}
+.hb-days{display:flex;gap:6px}
+.hb-days button{flex:1;height:38px;border-radius:12px;background:var(--surface);font-weight:700;font-size:13px;color:var(--muted);text-align:center;transition:background .15s,color .15s}
+.hb-days button.on{background:var(--text);color:var(--bg)}
+.hb-pre{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.hb-pre button{height:30px;padding:0 12px;border-radius:999px;background:var(--surface);font-size:12.5px;font-weight:600}
+.lx-opt small{color:var(--muted);font-weight:500}
+.hb-newch{display:flex;gap:6px;margin-top:10px}
+.hb-newch input{flex:1;min-width:0;height:42px;border-radius:12px;background:var(--surface);border:0;padding:0 12px;color:var(--text);font:inherit;font-size:14px;outline:none}
+.hb-newch input:focus{box-shadow:0 0 0 2px var(--text)}
+.hb-newch button{height:42px;padding:0 16px;border-radius:12px;background:var(--text);color:var(--bg);font-weight:700;font-size:14px}
+.hb-del{grid-column:1/-1}
+.hc-in{margin-bottom:6px}
+.hc-ord{display:flex;flex-direction:column;background:var(--surface2);border-radius:16px;overflow:hidden}
+.hc-ord>div{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-top:1px solid var(--line)}
+.hc-ord>div:first-child{border-top:0}
+.hc-i{width:22px;height:22px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:11.5px;font-weight:800;color:var(--muted);flex:none}
+.hc-n{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc-ord button{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
+.hc-ord button:hover:not(:disabled){background:var(--surface);color:var(--text)}
+.hc-ord button:disabled{opacity:.25}
+.hc-ord button svg{width:16px;height:16px}
+/* settings */
+.md-soon{font-size:13px;color:var(--muted);margin:12px 2px 0}
+.hs-new{margin-top:22px}
+.hs-n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s-inbox svg{width:18px;height:18px}
+@media (prefers-reduced-motion:reduce){.hb-sun .dg,.hb-sun .rays,.ci-card,.ci-home{transition:none!important;animation:none!important}}
+.ci-ht b,.ci-ht small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-home .rv-skip{padding:0 8px}.ci-home .rv-go{padding:0 14px}

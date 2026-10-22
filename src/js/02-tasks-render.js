@@ -111,7 +111,7 @@ function spaceRows(){
       <span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>
       <span class="sp-rt"><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="sp-sub">${sub}</span></span>
       <button class="sp-more" data-more="${sp.id}" aria-label="Space options">${DOTS3}</button>
-      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
+      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button>${hbPopItem(sp.id)}<button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
     </div>`}).join('')+`<button class="sp-new sp-row-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
 }
 function spaceCards(){
@@ -120,7 +120,7 @@ function spaceCards(){
     return `<div class="sp-card" role="button" tabindex="0" data-space="${sp.id}" style="--sc:${sp.c}">
       <div class="sp-top"><span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span>
         <button class="sp-more" data-more="${sp.id}" aria-label="Space options"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></div>
-      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
+      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button>${hbPopItem(sp.id)}<button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
       <div class="sp-bar">${st.total?VS().map(x=>st.by[x.id]?`<span style="flex:${st.by[x.id]};background:var(--${x.id})"></span>`:'').join(''):''}</div>
       <div class="sp-meta"><span><b>${st.today}</b> today</span><span><b>${st.open}</b> open</span><span>${st.lists} ${st.lists===1?'list':'lists'}</span></div>
       ${(()=>{const nx=spNext(sp);return `<span class="sp-next">${nx?`<span class="sp-nk">Next</span><span class="sp-nt">${esc(nx.title)}</span>`:`<span class="sp-nk">All clear</span>`}</span>`})()}
@@ -150,7 +150,7 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${reviewCard()}${backupCard()}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="ib-entry" id="ibEntry"><span class="ib-entry-i">${IB_ICON}</span><span class="ib-entry-t"><b>Inbox</b><small>${n?`${n} ${n===1?'idea':'ideas'} waiting`:'Drop ideas here'}</small></span>${CHEV}</button>`})():''}<div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
 }
 function render(dir){
   root.dataset.view=S.space?'space':'home';drawMe();

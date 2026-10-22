@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=142; // bumped with every published update
+const APP_VERSION=144; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -87,6 +87,11 @@ function sanitize(){
   if(S.spaces)S.spaces.forEach(x=>{if('secs' in x)x.secs=Array.isArray(x.secs)?x.secs.filter(s=>obj(s)&&s.id&&typeof s.name==='string'&&s.name.trim()&&typeof s.stage==='string'):[]});
   S.arch=Array.isArray(S.arch)?S.arch.filter(b=>obj(b)&&b.id!=null&&(b.kind==='list'&&obj(b.list)||b.kind==='space'&&obj(b.space))):[];
   S.arch.forEach(b=>{if(!Array.isArray(b.tasks))b.tasks=[];if(b.kind==='space'&&!Array.isArray(b.lists))b.lists=[]});
+  // habits (Modes → Habits): {id,name,e,space,days:[0-6],done:{'YYYY-MM-DD':1},created,chain?}; chains: {id,name,when,space}
+  S.habits=Array.isArray(S.habits)?S.habits.filter(h=>obj(h)&&h.id!=null&&typeof h.name==='string'):[];
+  S.habits.forEach(h=>{if(!obj(h.done))h.done={};if(!Array.isArray(h.days)||!h.days.length)h.days=[0,1,2,3,4,5,6];if(typeof h.e!=='string')h.e=''});
+  S.hchains=Array.isArray(S.hchains)?S.hchains.filter(c=>obj(c)&&c.id!=null):[];
+  if(!obj(S.lens))S.lens={};
   if(!obj(S.cfg))delete S.cfg;
   if(!obj(S.tomb))S.tomb={};
 }
@@ -106,13 +111,13 @@ let trackMap=null;
 const bareJSON=x=>{const {u,...r}=x;return JSON.stringify(r)};
 function trackChanges(){
   const now=Date.now(),m={};S.tomb=S.tomb||{};
-  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
+  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
   if(trackMap)Object.keys(trackMap).forEach(key=>{if(key[1]===':'&&!(key in m))S.tomb[key]=now});
   m.__ord=S.tasks.map(t=>t.id).join(',');if(trackMap&&m.__ord!==trackMap.__ord)S.orderU=now;
   m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;
   trackMap=m;
 }
-let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
+let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
 const save=()=>{try{fSave()}catch(e){};if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
 let PIP=null; // the floating focus window (desktop Chrome)
 const $=id=>document.getElementById(id);

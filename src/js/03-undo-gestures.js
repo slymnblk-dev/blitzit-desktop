@@ -1,11 +1,11 @@
 /* ---------- change + undo ---------- */
-const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],space:S.space,list:S.list,nid:S.nid});
+const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],space:S.space,list:S.list,nid:S.nid});
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
   toast(msg,()=>{
     undoHash=null;const d=JSON.parse(snap);
-    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.nid=Math.max(S.nid||0,d.nid||0);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.nid=Math.max(S.nid||0,d.nid||0);
     repairData();save();render();afterUndo();haptic(8)});
   undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
 }
@@ -137,7 +137,7 @@ document.addEventListener('touchmove',e=>{if(drag&&drag.mode==='reorder')e.preve
 let pull=null;
 const anyOpen=()=>document.querySelector('.sheet.on,.focus.on,.settings.on');
 document.addEventListener('touchstart',e=>{
-  if(!S.space||window.scrollY>2||anyOpen()||e.target.closest('input,textarea,.quick'))return;
+  if(!S.space||window.scrollY>2||anyOpen()||root.dataset.lens||document.querySelector('.inbox-pg.on')||e.target.closest('input,textarea,.quick'))return;
   pull={y:e.touches[0].clientY,x:e.touches[0].clientX,h:0,on:false,armed:false};
 },{passive:true});
 document.addEventListener('touchmove',e=>{

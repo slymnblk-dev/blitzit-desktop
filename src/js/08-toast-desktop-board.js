@@ -80,13 +80,13 @@ function renderDesk(){
   const sub=S.space?`<div class="s-sub"><button class="s-list ${S.list==='all'?'on':''}" data-l="all" title="All lists"><span class="stack">${listsHere().slice(0,3).map(x=>`<span style="background:${x.c};border-color:var(--bg)"></span>`).join('')}</span><span class="s-name">All lists</span><span class="n">${open('all')}</span></button>`+
     listsHere().map(l=>`<button class="s-list ${S.list===l.id?'on':''}" data-l="${l.id}" title="${esc(l.name)}"><i style="background:${l.c}"></i><span class="s-name">${esc(l.name)}</span><span class="n">${open(l.id)}</span></button>`).join('')+
     `<button class="s-list s-mini" id="sNew" title="New list">${PLUS_S}<span class="s-name">New list</span></button><button class="s-list s-mini" id="sEdit" title="Edit lists"><span class="s-name">Edit lists</span></button></div>`:'';
-  $('sLists').innerHTML=`<button class="s-list s-home ${!S.space&&!ibOn?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
-    <button class="s-list s-home ${S.space==='all'&&!ibOn?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="s-list s-home s-inbox ${ibOn?'on':''}" id="sInbox" title="Inbox">${IB_ICON}<span class="s-name">Inbox</span>${n?`<span class="n">${n}</span>`:''}</button>`})():''}
+  $('sLists').innerHTML=`<button class="s-list s-home ${!S.space&&!ibOn&&!rhOn?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
+    <button class="s-list s-home ${S.space==='all'&&!ibOn&&!rhOn?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="s-list s-home s-inbox ${ibOn?'on':''}" id="sInbox" title="Inbox">${IB_ICON}<span class="s-name">Inbox</span>${n?`<span class="n">${n}</span>`:''}</button>`})():''}${rhythmSide()}
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   const spp=!S.space&&spPage&&spPageOn()?spaceOf(spPage):null;if(!spp)spPage=null;
-  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${reviewCard()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
+  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
   const gk=S.space?S.space+'|'+S.list:'';
   if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
@@ -98,8 +98,10 @@ function renderDesk(){
 }
 
 $('sLists').onclick=e=>{
-  if(e.target.closest('#sInbox'))return ibOn?closeInbox():openInbox();
+  if(e.target.closest('#sRhythm')){if(ibOn)closeInbox();return rhOn?closeRhythm():openRhythm()}
+  if(e.target.closest('#sInbox')){if(rhOn)closeRhythm();return ibOn?closeInbox():openInbox()}
   if(ibOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeInbox();
+  if(rhOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeRhythm();
   if(e.target.closest('#sHome'))return goHome();
   if(e.target.closest('#sAll'))return S.space==='all'?toggleSub():openSpaceSide('all');
   if(e.target.closest('#sNewSp'))return openSpaceSheet(null);
@@ -141,7 +143,7 @@ function todayFirst(){
   const side=orderedSpaces().map(sp=>{const st=spaceStats(sp);
     return `<button class="hf-sp" data-space="${sp.id}"><span class="hf-sph"><span class="hf-ic">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span class="hf-n">${st.today?st.today+' today':st.open?st.open+' open':'Clear'}</span></span>
       <span class="sp-bars">${st.total?VS().map(x=>st.by[x.id]?`<i style="flex:${st.by[x.id]};background:var(--${x.id})"></i>`:'').join(''):'<i class="sp-bars-0"></i>'}</span></button>`}).join('');
-  return `${reviewCard()}${backupCard()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
+  return `${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
     ${rows||`<p class="hf-empty">Open a space and move a few tasks to Today. They’ll show up here, ready to tick off.</p>`}</section>
     <aside class="hf-side"><div class="hf-cap">Spaces</div>${side}<button class="hf-new" id="spNew">${PLUS_S}New space</button></aside></div>`;
 }
@@ -153,7 +155,7 @@ $('dHome').addEventListener('click',e=>{
 $('dHome').addEventListener('keydown',e=>{const r=e.target.closest('[data-hft]');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDetail(+r.dataset.hft)}});
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;

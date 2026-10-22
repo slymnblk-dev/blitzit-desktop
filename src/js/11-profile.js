@@ -199,12 +199,13 @@ $('setIn').addEventListener('click',e=>{
   const sn=e.target.closest('[data-snd]');if(sn){S.cfg.sfxStyle=sn.dataset.snd;S.cfgU=Date.now();sfxTry('done',sn.dataset.snd);haptic(5);save();return drawSettings()}
   const ce=e.target.closest('[data-celeb]');if(ce){S.cfg.celebStyle=ce.dataset.celeb;S.cfgU=Date.now();haptic(5);save();drawSettings();const r=ce.getBoundingClientRect();celebrate(doneToday()||3,r.left+30,r.top+r.height/2,ce.dataset.celeb);return}
   const sy=e.target.closest('[data-sndtry]');if(sy){sfxTry(sy.dataset.sndtry,sfxStyle().id);haptic(4);return}
+  if(e.target.closest('#subBack')&&setView==='habits'){setView='modes';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#subBack')&&setView==='archive'){setView=arcFrom==='archive'?'data':arcFrom;haptic(5);drawSettings();return}
   if(e.target.closest('#subBack')){setView='main';openSw=null;haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#anBack')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   const rg=e.target.closest('#anRange [data-r]');if(rg){anRange=+rg.dataset.r;haptic(5);return drawSettings()}
   const b=e.target.closest('[data-k]');
-  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt','celebEvery'].includes(b.dataset.k))v=+v;haptic(5);setCfg(b.dataset.k,v);if(b.dataset.k==='sfxVol')sfxTry('done',sfxStyle().id);return}
+  if(b){let v=b.dataset.v;if(['defEst','pomoWork','pomoBreak','weekStart','cleanupAfter','collapseAt','celebEvery','hbCiAt'].includes(b.dataset.k))v=+v;haptic(5);setCfg(b.dataset.k,v);if(b.dataset.k==='sfxVol')sfxTry('done',sfxStyle().id);return}
   const t=e.target.closest('[data-tg]');
   if(t){const k=t.dataset.tg;t.setAttribute('aria-pressed',!c[k]);haptic(6);if(k==='uiSounds'&&!c[k])setTimeout(()=>sfx('done'),200);else sfx('toggle');setTimeout(()=>setCfg(k,!c[k]),180);return}
   const dl=e.target.closest('[data-deflist]');if(dl)return setCfg('defList',dl.dataset.deflist||null);
@@ -225,11 +226,11 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
     try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
       const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
       const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
@@ -281,7 +282,7 @@ function loadDemo(){
 }
 function resetAll(){
   const keep={lastBackup:S.lastBackup,syncedUser:S.syncedUser,syncV:S.syncV,tomb:S.tomb,nid:S.nid};
-  S.tasks=[];S.arch=[];
+  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.lens={};
   const sp={id:'s'+newId(),name:'Personal',c:'#9C95FF',e:'🌱',autoSet:true};
   S.spaces=[sp];S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:sp.id}];
   S.cfg=JSON.parse(JSON.stringify(DEF_CFG));S.focusLog={};S.resetAt=Date.now();

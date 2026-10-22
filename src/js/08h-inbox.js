@@ -14,6 +14,7 @@ var I_SEND='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 function openInbox(){
   if(!inboxOn())return;
   if(typeof closeSearch==='function')closeSearch();
+  if(typeof rhOn!=='undefined'&&rhOn)closeRhythm();
   ibOn=true;drawInbox();$('inboxPg').classList.add('on');document.body.classList.add('ib-open');
   $('inboxPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
   setTimeout(()=>{if(ibOn&&matchMedia('(min-width:1100px)').matches)$('ibNew')&&$('ibNew').focus()},300);
