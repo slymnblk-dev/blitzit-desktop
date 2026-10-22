@@ -62,3 +62,27 @@
 
 /* QA: bigger tap target for Undo without changing the toast's look */
 .toast button{padding:11px 8px;margin:-8px -6px -8px 0}
+
+/* Settings → Modes: one card per mode, its options unfold inside */
+.md-list{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.set-sec .md-list{margin-top:8px}
+.md-card{background:var(--surface);border-radius:20px;padding:0 16px;box-shadow:0 0 0 1px var(--line);transition:box-shadow .25s}
+.md-card.on{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--text) 22%,transparent)}
+.md-head{display:flex;align-items:center;gap:13px;padding:14px 0;min-height:68px}
+.md-ic{width:40px;height:40px;border-radius:13px;background:var(--surface2);display:grid;place-items:center;flex:none;color:var(--muted);transition:background .25s,color .25s}
+.md-ic svg{width:21px;height:21px}
+.md-emo{font-size:19px;line-height:1}
+.md-card.on .md-ic{background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today)}
+.md-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.md-t b{font-size:16px;font-weight:700}
+.md-t small{font-size:13px;color:var(--muted);line-height:1.35}
+.md-head .tg{flex:none}
+.md-body{border-top:1px solid var(--line);padding:6px 0 4px}
+.md-body.in{animation:mdIn .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes mdIn{from{opacity:0;transform:translateY(-6px)}}
+.md-body .set-row:first-child,.md-body .md-link:first-child{border-top:0}
+.md-body .st-pick{margin:10px 0 6px}
+.md-link{border-top:0}
+.md-plain{padding:0 16px}
+.md-plain .set-row{border-top:0}
+@media (prefers-reduced-motion:reduce){.md-body.in{animation:none}}

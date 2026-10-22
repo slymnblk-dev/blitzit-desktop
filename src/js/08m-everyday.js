@@ -144,14 +144,36 @@ hbToggle=function(id,force){const h=hbById(id),was=h&&!!(h.done||{})[today()];_m
 const _moWin=gSetWin;
 gSetWin=function(g,on){const was=!!g.done;_moWin(g,on);try{if(on&&!was&&g.done)setTimeout(()=>showMoment({eye:gName(g),big:'Achieved.',sub:g.why?esc(g.why):'Every step got you here.',btn:'Done'}),900)}catch(err){}};
 
-/* ---------- Settings → Modes: Everyday section and starter picks ---------- */
-const _edModes=modesPage;
-modesPage=function(){let h=_edModes();
-  const c=C(),ev=c.closeDay||(habitsOn()&&c.hbCi!==false);
-  const ins=(after,html)=>{const i=h.indexOf(after);if(i<0||!html)return;const j=i+after.length;h=h.slice(0,j)+html+h.slice(j)};
-  if(habitsOn())ins('<h3>Habits</h3>',hbStarters());
-  if(goalsOn())ins('<h3>Goals</h3>',gStarters());
-  if(projectsOn())ins('<h3>Projects</h3>',pStarters());
-  return h+`<div class="set-sec"><h3>Everyday</h3>${row('Close the day',tg('closeDay'),'An evening card: last habits, today’s numbers, tomorrow’s first task')}
-    ${ev?row('Evening starts at',`<div class="segc">${[17,19,21].map(x=>sOpt('hbCiAt',x,`${x-12} pm`)).join('')}</div>`):''}
-    ${row('Moments',tg('moments'),'A calm full-screen moment for a 7-day sun or a goal reached')}</div>`};
+/* ---------- Settings → Modes: one card per mode; turning a mode on unfolds its own options inside its card ---------- */
+var mdJust=null;
+document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','projects','closeDay'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
+const MD_GOAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
+modesPage=function(){
+  const c=C(),hOn=habitsOn(),gOn=goalsOn(),pOn=projectsOn(),any=hOn||gOn||pOn,n=hbAll().length,gn=gAll().length,pn=pAll().length;
+  const card=(k,ic,name,sub,on,body)=>`<div class="md-card${on?' on':''}" data-md="${k}"><div class="md-head"><span class="md-ic">${ic}</span><span class="md-t"><b>${name}</b><small>${sub}</small></span>${tg(k)}</div>
+    ${on?`<div class="md-body${mdJust===k?' in':''}">${body}</div>`:''}</div>`;
+  const link=(page,label,hint)=>`<button class="link-row md-link" data-page="${page}">${label}<span class="hint">${hint}${CHEV}</span></button>`;
+  const ev=c.closeDay||(hOn&&c.hbCi!==false);
+  const html=`<p class="sub-p">Extra ways to use Windaday. Turn a mode off and it disappears everywhere. Your data stays safe and comes back when you turn it on again.</p>
+  <div class="md-list">
+  ${card('habits',RH_ICON,'Habits','Small daily wins with gentle sunrise streaks',hOn,
+    `${hbStarters()}${link('habits','Your habits',n?`${n} of ${HB_MAX}`:'None yet')}
+     ${row('Habit chains',tg('hbChains'),'One habit leads to the next, like coffee → read → plan')}
+     ${row('Evening check-in',tg('hbCi'),c.closeDay?'Close the day covers this while it’s on':'A short card on Home when habits are left')}
+     ${row('On Home',tg('wHabits'),'Your suns on Home. Tap one to tick it.')}`)}
+  ${card('goals',MD_GOAL,'Goals','Big outcomes, broken into milestones you can climb',gOn,
+    `${gStarters()}${link('goals','Your goals',gn?`${gn} of ${G_MAX} active`:'None yet')}
+     ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','ladder','Why ladder')}</div>`)}
+     ${row('North star on Home',tg('wStar'),'Your starred goal under the Today card')}`)}
+  ${card('projects',PJ_NUM,'Projects','Count what matters each week, or build in phases',pOn,
+    `${pStarters()}${link('projects','Your projects',pn?`${pn} of ${P_MAX} active`:'None yet')}
+     ${row('Numbers open as',`<div class="segc">${sOpt('pView','gauges','Gauges')}${sOpt('pView','flow','Flow')}</div>`)}
+     ${row('Scoreboard',tg('pScore'),'Hits and misses for the last 8 weeks')}`)}
+  </div>
+  ${any?`<div class="set-sec"><h3>Where modes live</h3><div class="md-card md-plain">${row(modePage()?'Rhythm page':'In spaces',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for all your modes.':'A switch (Board · Habits · Goals · Projects) appears in spaces that use them.')}</div></div>`:''}
+  <div class="set-sec"><h3>Everyday</h3><div class="md-list">
+  ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits, today’s numbers, tomorrow’s first task',!!c.closeDay,'')}
+  ${ev?`<div class="md-card md-plain">${row('Evening starts at',`<div class="segc">${[17,19,21].map(x=>sOpt('hbCiAt',x,`${x-12} pm`)).join('')}</div>`,'When evening cards appear on Home')}</div>`:''}
+  ${card('moments','<span class="md-emo">☀️</span>','Moments','A calm full-screen moment for a 7-day sun or a goal reached',false,'')}
+  </div></div>`;
+  mdJust=null;return html};
