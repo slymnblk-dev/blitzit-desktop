@@ -77,9 +77,9 @@ test('habits: Habits page, evening check-in, Home widget', async ({ page }) => {
   await page.locator('#ciPg [data-ciclose]').click();
   // Home: widget with suns; the check-in card is gone for today once you checked in
   await page.locator('#rhBack').click();
-  await expect(page.locator('.app .hbwid-s')).toHaveCount(2);
+  await expect(page.locator('.app .hw-one .hw-done')).toHaveCount(1); // phone default: one at a time
   await expect(page.locator('.app .ci-home')).toHaveCount(0);
-  await page.locator('.app .hbwid-s').nth(1).click();
+  await page.locator('.app .hw-done').click();
   expect(await page.evaluate(() => S.habits.filter(h => h.done[today()]).length)).toBe(2);
   noErrors(errors);
 });
@@ -90,6 +90,11 @@ test('habits on a computer: sidebar Habits page, week grid, week navigation', as
   await page.evaluate(() => { S.cfg.habits = true; const sp = S.spaces[0].id; S.habits = [{ id: 'h1', name: 'Walk', e: '🚶', space: sp, days: [0,1,2,3,4,5,6], done: {}, created: Date.now() - 30 * DAY }]; save(); applySettings(); goHome(); });
   await page.locator('#sRhythm').click();
   await expect(page.locator('#rhythmPg .hg-row')).toHaveCount(1);
+  await page.evaluate(() => { setCfg('wHabits', true); closeRhythm(); goHome(); });
+  await expect(page.locator('#dHome .hw-tiles .hw-tile')).toHaveCount(1); // computer default: big tiles
+  await page.locator('#dHome .hw-tile').click();
+  await expect(page.locator('#dHome .hw-tile')).toHaveClass(/on/);
+  await page.locator('#sRhythm').click();
   // last week is one tap away; next week can't be opened from this week
   await page.locator('[data-hpw="-1"]').click();
   await expect(page.locator('#rhythmPg .hp-h')).toHaveText('Last week');

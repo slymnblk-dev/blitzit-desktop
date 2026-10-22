@@ -178,3 +178,20 @@ $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
   const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m)return;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);setTimeout(()=>gMsToggle(g,m),200);return}
 });
+
+/* ================= Home habits widget: One at a time · Big tiles · Tap pills ================= */
+/* Default: One at a time on phones, Big tiles on computers. Settings → Modes → Habits → Widget style. */
+function hwStyle(){const v=C().hwStyle;if(v==='one'||v==='tiles'||v==='pills')return v;return matchMedia('(min-width:1100px)').matches?'tiles':'one'}
+hbWidget=function(){
+  if(!habitsOn()||!C().wHabits)return '';const hs=hbAll();if(!hs.length)return '';
+  const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt}),dn=due.filter(h=>hbStats(h).dt),open=due.filter(h=>!hbStats(h).dt),st=hwStyle();
+  const head=`<button class="hw-head" data-hbopen><b>Habits</b><span>${due.length?`<em>${dn.length}</em> of ${due.length} today`:'Rest day'}</span>${CHEV}</button>`;
+  if(st==='one'){const nx=open[0],C2=2*Math.PI*31,p=due.length?dn.length/due.length:1;
+    return `<div class="hw hw-one"><button class="hw-ring" data-hbopen aria-label="Open habits"><svg viewBox="0 0 76 76" aria-hidden="true"><circle class="hw-r0" cx="38" cy="38" r="31"/><circle class="hw-r1" cx="38" cy="38" r="31" style="stroke-dasharray:${(C2*p).toFixed(1)} ${C2.toFixed(1)}"/></svg><b>${dn.length}/${due.length}</b></button>
+      <button class="hw-tx" data-hbopen>${nx?`<small>Next habit</small><b>${nx.e?esc(nx.e)+' ':''}${esc(nx.name)}</b><span>${open.length>1?`+${open.length-1} more today`:'Last one today'}</span>`:`<small>Habits</small><b>${due.length?'All done today':'Rest day'}</b><span>${due.length?'Nice. See you tomorrow.':'Nothing due today'}</span>`}</button>
+      ${nx?`<button class="hw-done" data-hbt="${nx.id}" aria-pressed="false">Done</button>`:''}</div>`}
+  const ck='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const list=[...open,...dn];
+  if(st==='pills')return `<div class="hw hw-pills">${head}<div class="hw-pl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-pill${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span>${h.e?esc(h.e)+' ':''}${esc(h.name)}</button>`}).join('')}</div></div>`;
+  return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></span></button>`}).join('')}</div></div>`;
+};

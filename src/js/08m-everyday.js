@@ -146,7 +146,8 @@ modesPage=function(){
     `${hbStarters()}${link('habits','Your habits',n?`${n} of ${HB_MAX}`:'None yet')}
      ${row('Page view',`<div class="segc">${sOpt('hbView','grid','Week grid')}${sOpt('hbView','sun','Sunrise')}</div>`)}
      ${row('Evening check-in',tg('hbCi'),c.closeDay?'Close the day covers this while it’s on':'A short card on Home when habits are left')}
-     ${row('On Home',tg('wHabits'),'Your suns on Home. Tap one to tick it.')}`)}
+     ${row('On Home',tg('wHabits'),'A habits card on Home. Tap to tick.')}
+     ${c.wHabits?row('Widget style',`<div class="segc">${sOpt('hwStyle','auto','Default')}${sOpt('hwStyle','one','One at a time')}${sOpt('hwStyle','tiles','Big tiles')}${sOpt('hwStyle','pills','Pills')}</div>`,'Default: one at a time on phones, big tiles on computers'):''}`)}
   ${card('goals',MD_GOAL,'Goals','Big outcomes, broken into milestones you can climb',gOn,
     `${gStarters()}${link('goals','Your goals',gn?`${gn} of ${G_MAX} active`:'None yet')}
      ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','path','Path')}${sOpt('gView','poster','Poster')}</div>`)}
