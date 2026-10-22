@@ -21,8 +21,8 @@
 .cd-chip{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 12px 0 15px;border-radius:999px;background:var(--surface);font-weight:600;font-size:14.5px;transition:background .2s,color .2s}
 .cd-ck{width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 22%,transparent);display:grid;place-items:center;color:transparent;transition:all .2s}
 .cd-ck svg{width:12px;height:12px}
-.cd-chip.on{background:color-mix(in srgb,var(--done) 14%,var(--surface))}
-.cd-chip.on .cd-ck{background:var(--done);box-shadow:none;color:#0F1013}
+.cd-chip.on{background:color-mix(in srgb,var(--today) 12%,var(--surface))}
+.cd-chip.on .cd-ck{background:var(--today);box-shadow:none;color:#fff}
 .cd-num{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-top:1px solid var(--line)}
 .cd-num:first-child{border-top:0}
 .cd-num>button{width:40px;height:40px;border-radius:12px;background:var(--surface2);font-size:20px;display:grid;place-items:center;flex:none}

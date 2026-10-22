@@ -1015,7 +1015,7 @@ body.no-amb .amb-btn{display:none!important}
 .hb-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .hb-tx b{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hb-tx small{font-size:12.5px;color:var(--muted)}
-.hb-ok{width:20px;height:20px;color:var(--done);opacity:0;transform:scale(.5);transition:opacity .25s,transform .3s cubic-bezier(.3,1.6,.5,1);flex:none;display:grid;place-items:center}
+.hb-ok{width:20px;height:20px;color:var(--today);opacity:0;transform:scale(.5);transition:opacity .25s,transform .3s cubic-bezier(.3,1.6,.5,1);flex:none;display:grid;place-items:center}
 .hb-ok svg{width:20px;height:20px}
 .hb-row.on .hb-ok,.hb-editing .hb-ok{opacity:1;transform:none}
 .hb-editing .hb-ok{color:var(--muted)}.hb-editing .hb-ok svg{width:16px;height:16px}
@@ -1038,10 +1038,10 @@ body.no-amb .amb-btn{display:none!important}
 .hc-node{display:flex;align-items:center;gap:12px;width:100%;padding:8px 0;text-align:left;position:relative}
 .hc-dot{width:26px;height:26px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--text) 20%,transparent);background:var(--surface);display:grid;place-items:center;color:transparent;flex:none;position:relative;z-index:1;transition:background .25s,border-color .25s,color .25s}
 .hc-dot svg{width:13px;height:13px}
-.hc-node.on .hc-dot{background:var(--done);border-color:var(--done);color:#0F1013}
+.hc-node.on .hc-dot{background:var(--today);border-color:var(--today);color:#fff}
 .hc-node::after{content:"";position:absolute;left:12px;top:calc(50% + 13px);height:calc(100% - 26px);width:2.5px;border-radius:2px;background:color-mix(in srgb,var(--text) 14%,transparent);transition:background .3s}
 .hc-node:last-child::after{display:none}
-.hc-node.on::after{background:var(--done)}
+.hc-node.on::after{background:var(--today)}
 .hc-next{font-size:11.5px;font-weight:700;color:var(--today);flex:none}
 
 /* wide view (computers): today on the left, the year fabric and numbers on the right */
@@ -1057,9 +1057,9 @@ body.no-amb .amb-btn{display:none!important}
 .fab-g{flex:1;min-width:0;display:grid;grid-template-columns:repeat(26,minmax(0,1fr));gap:3px}
 .fab-g i,.fab-leg i{display:block;aspect-ratio:1;border-radius:3px;background:var(--surface2)}
 .fab-g i.x{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
-.fab-g i.a,.fab-leg i.a{background:color-mix(in srgb,var(--done) 35%,var(--surface2))}
-.fab-g i.b,.fab-leg i.b{background:color-mix(in srgb,var(--done) 65%,var(--surface2))}
-.fab-g i.c,.fab-leg i.c{background:var(--done)}
+.fab-g i.a,.fab-leg i.a{background:color-mix(in srgb,var(--today) 35%,var(--surface2))}
+.fab-g i.b,.fab-leg i.b{background:color-mix(in srgb,var(--today) 65%,var(--surface2))}
+.fab-g i.c,.fab-leg i.c{background:var(--today)}
 .fab-leg{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;font-size:12px;color:var(--muted)}
 .fab-leg span:last-child{display:flex;align-items:center;gap:4px;flex:none}
 .fab-leg i{width:10px;height:10px}

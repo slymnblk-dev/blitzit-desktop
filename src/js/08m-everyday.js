@@ -144,12 +144,12 @@ modesPage=function(){
   <div class="md-list">
   ${card('habits',RH_ICON,'Habits','Small daily wins with gentle sunrise streaks',hOn,
     `${hbStarters()}${link('habits','Your habits',n?`${n} of ${HB_MAX}`:'None yet')}
-     ${row('Habit chains',tg('hbChains'),'One habit leads to the next, like coffee → read → plan')}
+     ${row('Page view',`<div class="segc">${sOpt('hbView','grid','Week grid')}${sOpt('hbView','sun','Sunrise')}</div>`)}
      ${row('Evening check-in',tg('hbCi'),c.closeDay?'Close the day covers this while it’s on':'A short card on Home when habits are left')}
      ${row('On Home',tg('wHabits'),'Your suns on Home. Tap one to tick it.')}`)}
   ${card('goals',MD_GOAL,'Goals','Big outcomes, broken into milestones you can climb',gOn,
     `${gStarters()}${link('goals','Your goals',gn?`${gn} of ${G_MAX} active`:'None yet')}
-     ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','ladder','Why ladder')}</div>`)}
+     ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','path','Path')}${sOpt('gView','poster','Poster')}</div>`)}
      ${row('North star on Home',tg('wStar'),'Your starred goal under the Today card')}`)}
   </div>
   <div class="set-sec"><h3>Everyday</h3><div class="md-list">

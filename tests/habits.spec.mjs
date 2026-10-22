@@ -1,10 +1,10 @@
 // Modes → Habits: off by default and invisible; when on, habits live on their own page (like Inbox);
-// sunrise rows tick in one tap; chains, evening check-in, Home widget; turning it off hides everything but keeps data.
+// week grid (default) or Sunrise view; days tick in one tap; evening check-in, Home widget; turning it off hides everything but keeps data.
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
 const addHabit = async (page, name) => {
-  await page.locator('[data-hbnew]').first().click();
+  await page.evaluate(() => openHabit(null));
   await expect(page.locator('#hbSheet')).toHaveClass(/on/);
   await page.fill('#hbName', name);
   await page.locator('#hbSave').click();
@@ -34,10 +34,17 @@ test('habits: off by default, turn on in Modes, add, Habits page, tick, turn off
   await page.evaluate(() => goHome());
   await page.locator('#rhEntry').click();
   await expect(page.locator('#rhythmPg')).toHaveClass(/on/);
-  await expect(page.locator('#rhythmPg .hb-row')).toHaveCount(1);
-  await page.locator('#rhythmPg .hb-row').click();
+  await expect(page.locator('#rhythmPg .hg-row')).toHaveCount(1);
+  await page.locator('#rhythmPg .hg-c.now').click();
   expect(await page.evaluate(() => !!S.habits[0].done[today()])).toBe(true);
-  await expect(page.locator('#rhythmPg .hb-row')).toHaveClass(/on/);
+  await expect(page.locator('#rhythmPg .hg-c.now')).toHaveClass(/on/);
+  // Sunrise view from ⋯ → View
+  await page.locator('#hpMore').click();
+  await page.locator('#hpPop [data-hpv="sun"]').click();
+  await expect(page.locator('#rhythmPg .hs-chip')).toHaveCount(1);
+  await page.locator('#rhythmPg .hs-chip').click();
+  expect(await page.evaluate(() => !!S.habits[0].done[today()])).toBe(false);
+  await page.evaluate(() => setCfg('hbView', 'grid'));
   // spaces stay plain: no switch inside them
   await page.evaluate(() => { closeRhythm(); openSpace(S.habits[0].space); });
   await expect(page.locator('#hero')).toBeVisible();
@@ -49,26 +56,17 @@ test('habits: off by default, turn on in Modes, add, Habits page, tick, turn off
   noErrors(errors);
 });
 
-test('habits: Habits page, chains, evening check-in, Home widget', async ({ page }) => {
+test('habits: Habits page, evening check-in, Home widget', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
-  await page.evaluate(() => { S.cfg.habits = true; S.cfg.hbChains = true; S.cfg.wHabits = true; S.cfg.hbCiAt = 0; save(); applySettings(); goHome(); });
+  await page.evaluate(() => { S.cfg.habits = true; S.cfg.wHabits = true; S.cfg.hbCiAt = 0; save(); applySettings(); goHome(); });
   await page.locator('#rhEntry').click();
   await expect(page.locator('#rhythmPg')).toHaveClass(/on/);
   await addHabit(page, 'Read 20 pages');
   await addHabit(page, 'Meditate');
-  await expect(page.locator('#rhythmPg .hb-row')).toHaveCount(2);
-  // put both in a new chain from the editor
-  for (const n of [0, 1]) {
-    await page.evaluate(i => openHabit(S.habits[i].id), n);
-    await page.locator('#hbOpts [data-lxt="c"]').click();
-    if (n === 0) { await page.fill('#hbChName', 'Morning'); await page.locator('#hbChAdd').click(); }
-    else await page.locator('#hbOpts [data-hbch]').nth(1).click();
-    await page.locator('#hbSave').click();
-  }
-  await expect(page.locator('#rhythmPg .hc-card')).toHaveCount(1);
-  await expect(page.locator('#rhythmPg .hc-node')).toHaveCount(2);
+  await expect(page.locator('#rhythmPg .hg-row')).toHaveCount(2);
   // check-in: Done on the first, Not today on the second
+  await page.locator('#hpMore').click();
   await page.locator('#rhythmPg [data-ciopen]').click();
   await expect(page.locator('#ciPg')).toHaveClass(/on/);
   await page.locator('#ciPg [data-ciyes]').click();
@@ -86,13 +84,17 @@ test('habits: Habits page, chains, evening check-in, Home widget', async ({ page
   noErrors(errors);
 });
 
-test('habits on a computer: sidebar Habits page with the year fabric', async ({ page }) => {
+test('habits on a computer: sidebar Habits page, week grid, week navigation', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 860 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.habits = true; const sp = S.spaces[0].id; S.habits = [{ id: 'h1', name: 'Walk', e: '🚶', space: sp, days: [0,1,2,3,4,5,6], done: {}, created: Date.now() - 30 * DAY }]; save(); applySettings(); goHome(); });
   await page.locator('#sRhythm').click();
-  await expect(page.locator('#rhythmPg .hb-row')).toHaveCount(1);
-  await expect(page.locator('#rhythmPg .fab-row')).toHaveCount(1);
+  await expect(page.locator('#rhythmPg .hg-row')).toHaveCount(1);
+  // last week is one tap away; next week can't be opened from this week
+  await page.locator('[data-hpw="-1"]').click();
+  await expect(page.locator('#rhythmPg .hp-h')).toHaveText('Last week');
+  await page.locator('[data-hpw="1"]').click();
+  await expect(page.locator('#rhythmPg [data-hpw="1"]')).toBeDisabled();
   noErrors(errors);
 });
 

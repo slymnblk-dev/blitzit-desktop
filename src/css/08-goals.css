@@ -2,7 +2,7 @@
 .g-pst{display:inline-flex;color:var(--week)}.g-pst svg{width:13px;height:13px;opacity:1!important}
 .pill .g-pst svg{width:13px;height:13px}
 .mi.g-st{color:var(--week)}.mi.g-st svg{width:12px;height:12px}
-.pc-ahead,.pc-ok,.pc-won{color:var(--done)!important}.pc-behind{color:var(--week)!important}.pc-none{color:var(--muted)!important}
+.pc-ahead,.pc-ok,.pc-won{color:var(--text)!important}.pc-behind{color:var(--week)!important}.pc-none{color:var(--muted)!important}
 
 /* North star card (Home, under Today) */
 .ns-card{display:flex;align-items:center;gap:13px;width:100%;margin:0 0 12px;padding:13px 16px 13px 13px;border-radius:20px;background:var(--surface);text-align:left;
@@ -130,7 +130,7 @@
 .g-ms:first-child{border-top:0}
 .g-msc{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;flex:none}
 .g-msc:hover .hc-dot{border-color:color-mix(in srgb,var(--text) 45%,transparent)}
-.g-ms.on .hc-dot,.g-trow.on .hc-dot{background:var(--done);border-color:var(--done);color:#0F1013}
+.g-ms.on .hc-dot,.g-trow.on .hc-dot{background:var(--today);border-color:var(--today);color:#fff}
 .g-ms .hc-dot{transition:background .2s,border-color .2s,color .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
 .g-ms.on .hc-dot{transform:scale(1.04)}
 .g-mst{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:4px 0}

@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
-test('goals: setup, north star, climb and ladder, milestones, Goals page, achieved, off', async ({ page }) => {
+test('goals: setup, north star, climb, path and poster, milestones, Goals page, achieved, off', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   // off: nothing anywhere
@@ -47,34 +47,33 @@ test('goals: setup, north star, climb and ladder, milestones, Goals page, achiev
   await expect(page.locator('#homeView .ns-card, .ns-card:visible').first()).toBeVisible();
   await page.locator('.ns-card:visible').first().click();
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
-  await expect(page.locator('#gdPg .g-climb')).toBeVisible();
+  await expect(page.locator('#gdPg .gb-svg')).toBeVisible();
   // tick the first milestone
-  await page.locator('#gdPg [data-gms]').first().click();
+  await page.locator('#gdPg [data-gtk]').first().click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
   // the next one becomes a task in My week, linked to the goal
-  await page.locator('#gdPg .gd-next [data-gmk]').click();
+  await page.locator('#gdPg .gs-step.now [data-gmk]').click();
   const t = await page.evaluate(() => { const g = S.goals[0]; return S.tasks.find(x => x.id === g.ms[1].task); });
   expect(t.stage).toBe('week');
   expect(t.goal).toBe(g.id);
   // finishing that task ticks the milestone
   await page.evaluate(id => { const x = S.tasks.find(y => y.id === id); commit(() => setStage(x, 'done'), 'Done'); }, t.id);
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[1].done)).toBe(true);
-  await expect(page.locator('#gdPg .gd-next.sum')).toBeVisible(); // summit reached → offer to mark achieved
+  await expect(page.locator('#gdPg [data-gwin]')).toBeVisible(); // summit reached → offer to mark achieved
 
-  // Why ladder: this week's step saves; a task for today is created, linked
-  await page.locator('#gdPg [data-gview="ladder"]').click();
-  await expect(page.locator('#gdPg .g-ladder')).toBeVisible();
-  expect(await page.evaluate(() => S.goals[0].view)).toBe('ladder');
-  await page.fill('#gdPg [data-gl="lw"]', 'Two long runs');
+  // other views under ⋯ → View: Path and Poster; add a milestone from the Path
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gview="path"]').click();
+  await expect(page.locator('#gdPg .gpth-list')).toBeVisible();
+  expect(await page.evaluate(() => S.goals[0].view)).toBe('path');
+  await page.fill('#gMsIn', 'Race day');
   await page.keyboard.press('Enter');
-  await expect.poll(() => page.evaluate(() => S.goals[0].lw)).toBe('Two long runs');
-  await page.locator('#gdPg [data-gtoday]').click();
-  await page.fill('#gTodayIn', 'Buy race shoes');
-  await page.keyboard.press('Enter');
-  const td = await page.evaluate(() => S.tasks.find(x => x.title === 'Buy race shoes'));
-  expect(td.stage).toBe('today');
-  expect(td.goal).toBe(g.id);
-  await expect(page.locator('#gdPg .g-rtask')).toHaveText('Buy race shoes');
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms.length)).toBe(3);
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gview="poster"]').click();
+  await expect(page.locator('#gdPg .gpo-num')).toBeVisible();
+  await expect(page.locator('#gdPg .gpo-next')).toContainText('Race day');
+  const td = await page.evaluate(gid => { const l = S.lists.find(x => x.space === S.goals[0].space); const x = { id: newId(), title: 'Buy race shoes', stage: 'today', list: l.id, est: 30, subs: [], notes: '', repeat: 'none', goal: gid }; S.tasks.unshift(x); save(); return x; }, g.id);
   await page.locator('#gdBack').click();
   await expect(page.locator('#gdPg')).not.toHaveClass(/on/);
 
@@ -129,7 +128,7 @@ test('goals: one north star, limit of 3, sync/backup/undo, desktop layout', asyn
   await expect(page.locator('#gsPg')).not.toHaveClass(/on/);
   // starring another moves the star
   await page.evaluate(() => openGoal('g2'));
-  await expect(page.locator('#gdPg .gd-cols')).toHaveCSS('display', 'grid');
+  await expect(page.locator('#gdPg .gs-row')).toBeVisible();
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gm="star"]').click();
   expect(await page.evaluate(() => S.goals.filter(g => g.star).map(g => g.id))).toEqual(['g2']);
