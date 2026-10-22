@@ -112,12 +112,12 @@ function hbKpis(hs){
 
 /* ---------- lens: Board · Habits inside a space ---------- */
 /* modes that are on and used in a space each add a tab; with none, there is no switch at all */
-function lensTabs(sp){if(!sp||sp==='all'||modePage())return [];const t=[];if(habitsOn()&&hbIn(sp).length)t.push('habits');if(goalsOn()&&gIn(sp).length)t.push('goals');return t}
+function lensTabs(sp){if(!sp||sp==='all'||modePage())return [];const t=[];if(habitsOn()&&hbIn(sp).length)t.push('habits');if(goalsOn()&&gIn(sp).length)t.push('goals');if(projectsOn()&&pIn(sp).length)t.push('projects');return t}
 const lensAvail=sp=>lensTabs(sp).length>0;
 const lensOf=sp=>{const t=lensTabs(sp),v=S.lens&&S.lens[sp];return t.includes(v)?v:'board'};
 function lensSwitch(sp){const cur=lensOf(sp),tab=(k,label,badge)=>`<button role="tab" data-lens="${k}" class="${cur===k?'on':''}" aria-selected="${cur===k}">${label}${badge?`<i>${badge}</i>`:''}</button>`;
-  return `<div class="lens-sw" role="tablist" aria-label="View">${tab('board','Board')}${lensTabs(sp).map(k=>k==='habits'?tab('habits','Habits',hbOpenToday(hbIn(sp)).length):tab('goals','Goals')).join('')}</div>`}
-function modesAny(){return habitsOn()||goalsOn()}
+  return `<div class="lens-sw" role="tablist" aria-label="View">${tab('board','Board')}${lensTabs(sp).map(k=>k==='habits'?tab('habits','Habits',hbOpenToday(hbIn(sp)).length):k==='goals'?tab('goals','Goals'):tab('projects','Projects')).join('')}</div>`}
+function modesAny(){return habitsOn()||goalsOn()||projectsOn()}
 function rhythmAvail(){return modesAny()&&modePage()}
 const weekday=()=>new Date().toLocaleDateString(undefined,{weekday:'long'});
 const longDate=()=>new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
@@ -129,9 +129,9 @@ function modesRender(){
   const m=$('mLens');m.hidden=!avail;m.innerHTML=avail?lensSwitch(sp):'';
   const d=$('dLens');d.hidden=!avail;d.innerHTML=avail?lensSwitch(sp):'';
   const hv=$('hbView'),hd=$('hbDesk');hv.hidden=hd.hidden=cur==='board';
-  hv.innerHTML=cur==='habits'?hbHeadBig(hs,`Habits · ${weekday()}`,'Today')+hbList(hs,false,sp):cur==='goals'?goalsLens(sp,false):'';
-  hd.innerHTML=cur==='habits'?`<div class="hbw"><div class="hbw-l"><div class="hbw-bar"><span class="eye">Today · ${weekday()}</span>${hbActs(hs)}</div>${hbList(hs,false,sp)}</div><div class="hbw-r">${hbFabric(hs)}${hbKpis(hs)}</div></div>`:cur==='goals'?goalsLens(sp,true):'';
-  if(cur==='habits')$('mSub').innerHTML=hbSubLine(hs);if(cur==='goals')$('mSub').innerHTML=gSubLine(gIn(sp));
+  hv.innerHTML=cur==='habits'?hbHeadBig(hs,`Habits · ${weekday()}`,'Today')+hbList(hs,false,sp):cur==='goals'?goalsLens(sp,false):cur==='projects'?projectsLens(sp,false):'';
+  hd.innerHTML=cur==='habits'?`<div class="hbw"><div class="hbw-l"><div class="hbw-bar"><span class="eye">Today · ${weekday()}</span>${hbActs(hs)}</div>${hbList(hs,false,sp)}</div><div class="hbw-r">${hbFabric(hs)}${hbKpis(hs)}</div></div>`:cur==='goals'?goalsLens(sp,true):cur==='projects'?projectsLens(sp,true):'';
+  if(cur==='habits')$('mSub').innerHTML=hbSubLine(hs);if(cur==='goals')$('mSub').innerHTML=gSubLine(gIn(sp));if(cur==='projects')$('mSub').innerHTML=pSubLine(pIn(sp));
   if(rhOn)drawRhythm();
   const lh=$('lmHabit');if(lh)lh.hidden=!(habitsOn()&&inSpaceMode());const lg=$('lmGoal');if(lg)lg.hidden=!(goalsOn()&&inSpaceMode());
 }
@@ -155,13 +155,13 @@ function hbWidget(){
     <div class="hbwid-suns">${hs.map(h=>{const s=hbStats(h);return `<button class="hbwid-s${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}" title="${esc(h.name)}" aria-label="${esc(h.name)}">${hbSun(s.lvl,s.dt)}<span>${h.e?esc(h.e):esc((h.name[0]||'•').toUpperCase())}</span></button>`}).join('')}</div></div>`}
 function homeNav(){const rows=[];
   if(inboxOn()){const n=inboxItems().length;rows.push(`<button class="ib-entry" id="ibEntry"><span class="ib-entry-i">${IB_ICON}</span><span class="ib-entry-t"><b>Inbox</b><small>${n?`${n} ${n===1?'idea':'ideas'} waiting`:'Drop ideas here'}</small></span>${CHEV}</button>`)}
-  if(rhythmAvail()){const n=habitsOn()?hbOpenToday().length:0,has=habitsOn()&&hbAll().length,gs=goalsOn()?gAll().length:0;
-    const sub=has?(n?`${n} ${n===1?'habit':'habits'} left today`:'All habits done today'):gs?`${gs} ${gs===1?'goal':'goals'} in progress`:habitsOn()?'Your habits live here':'Your goals live here';
+  if(rhythmAvail()){const n=habitsOn()?hbOpenToday().length:0,has=habitsOn()&&hbAll().length,gs=goalsOn()?gAll().length:0,ps=projectsOn()?pAll().length:0;
+    const sub=has?(n?`${n} ${n===1?'habit':'habits'} left today`:'All habits done today'):gs?`${gs} ${gs===1?'goal':'goals'} in progress`:ps?`${ps} ${ps===1?'project':'projects'} active`:'Habits, goals and projects live here';
     rows.push(`<button class="ib-entry" id="rhEntry"><span class="ib-entry-i">${RH_ICON}</span><span class="ib-entry-t"><b>Rhythm</b><small>${sub}</small></span>${CHEV}</button>`)}
   return rows.length?`<div class="hn">${rows.join('')}</div>`:''}
 function rhythmSide(){if(!rhythmAvail())return '';const n=habitsOn()?hbOpenToday().length:0;
   return `<button class="s-list s-home s-inbox ${rhOn?'on':''}" id="sRhythm" title="Rhythm">${RH_ICON}<span class="s-name">Rhythm</span>${n?`<span class="n">${n}</span>`:''}</button>`}
-function hbPopItem(sp){return (habitsOn()?`<button data-hbadd="${sp}">Add a habit</button>`:'')+(goalsOn()?`<button data-gadd="${sp}">Add a goal</button>`:'')}
+function hbPopItem(sp){return (habitsOn()?`<button data-hbadd="${sp}">Add a habit</button>`:'')+(goalsOn()?`<button data-gadd="${sp}">Add a goal</button>`:'')+(projectsOn()?`<button data-padd="${sp}">Add a project</button>`:'')}
 /* open "your habits": the Rhythm page, or the space with the most habits left today */
 function hbOpenHabits(){
   if(modePage())return openRhythm();
@@ -188,9 +188,10 @@ function drawRhythm(){
   const y=$('rhythmPg').scrollTop,hOn=habitsOn(),hs=hOn?hbAll():[];
   const habits=!hOn?'':hs.length?`<div class="hbw"><div class="hbw-l">${hbList(hs,true,'')}</div><div class="hbw-r">${hbFabric(hs)}${hbKpis(hs)}</div></div>`
       :`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`;
-  const head=hOn?hbHeadBig(hs,longDate(),'Rhythm'):`<div class="hb-head"><span class="eye">${longDate()}</span><h1 class="hb-h">Rhythm</h1>${goalsOn()?`<div class="hb-sub">${gSubLine(gAll())}</div>`:''}</div>`;
+  const wide=matchMedia('(min-width:1100px)').matches,gOn=goalsOn(),pOn=projectsOn(),many=[hOn,gOn,pOn].filter(Boolean).length>1;
+  const head=hOn?hbHeadBig(hs,longDate(),'Rhythm'):`<div class="hb-head"><span class="eye">${longDate()}</span><h1 class="hb-h">Rhythm</h1><div class="hb-sub">${gOn?gSubLine(gAll()):pSubLine(pAll())}</div></div>`;
   $('rhIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>${head}
-    ${hOn&&goalsOn()?`<h2 class="rh-sec">Habits</h2>`:''}${habits}${goalsOn()?`${hOn?'<h2 class="rh-sec">Goals</h2>':''}${goalsBlock(gAll(),'',matchMedia('(min-width:1100px)').matches)}`:''}`;
+    ${hOn&&many?`<h2 class="rh-sec">Habits</h2>`:''}${habits}${gOn?`${many?'<h2 class="rh-sec">Goals</h2>':''}${goalsBlock(gAll(),'',wide)}`:''}${pOn?`${many?'<h2 class="rh-sec">Projects</h2>':''}${projectsBlock(pAll(),'',wide)}`:''}`;
   $('rhythmPg').scrollTop=y;
 }
 $('rhythmPg').addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('.sheet.on')){e.stopPropagation();closeRhythm()}});
@@ -331,14 +332,17 @@ $('hcDel').onclick=()=>{const d=hcDraft;if(!d)return;closeSheets();commit(()=>{S
 $('hcSheet').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.hc-in')){e.preventDefault();$('hcSave').click()}});
 
 /* ---------- Settings → Modes ---------- */
-function modesSummary(){const on=[habitsOn()&&'Habits',goalsOn()&&'Goals'].filter(Boolean);return on.length?`${on.join(' and ')} on · ${modePage()?'Rhythm page':'in spaces'}`:'All off'}
+function modesSummary(){const on=[habitsOn()&&'Habits',goalsOn()&&'Goals',projectsOn()&&'Projects'].filter(Boolean);return on.length?`${on.length>2?on.slice(0,-1).join(', ')+' and '+on[on.length-1]:on.join(' and ')} on · ${modePage()?'Rhythm page':'in spaces'}`:'All off'}
 function modesPage(){
-  const c=C(),on=habitsOn(),n=hbAll().length,g=goalsOn(),gn=gAll().length;
+  const c=C(),on=habitsOn(),n=hbAll().length,g=goalsOn(),gn=gAll().length,pj=projectsOn(),pn=pAll().length,any=on||g||pj;
   return `<p class="sub-p">Extra ways to use Windaday. Turn a mode off and it disappears everywhere. Your data stays safe and comes back when you turn it on again.</p>
-  <div class="set-sec"><h3>Modes</h3>${row('Habits',tg('habits'),'Small daily wins with gentle sunrise streaks')}${row('Goals',tg('goals'),'Big outcomes, broken into milestones you can climb')}<p class="md-soon">Projects is coming next.</p></div>
-  ${on||g?`<div class="set-sec"><h3>Where modes live</h3>${row('Show modes',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for your habits and goals.':'A switch (Board · Habits · Goals) appears in spaces that use them.')}</div>`:''}
+  <div class="set-sec"><h3>Modes</h3>${row('Habits',tg('habits'),'Small daily wins with gentle sunrise streaks')}${row('Goals',tg('goals'),'Big outcomes, broken into milestones you can climb')}${row('Projects',tg('projects'),'Count what matters each week, or build in phases')}</div>
+  ${any?`<div class="set-sec"><h3>Where modes live</h3>${row('Show modes',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for your habits and goals.':'A switch (Board · Habits · Goals · Projects) appears in spaces that use them.')}</div>`:''}
   ${g?`<div class="set-sec"><h3>Goals</h3><button class="link-row" data-page="goals">Your goals<span class="hint">${gn?`${gn} of ${G_MAX} active`:'None yet'}${CHEV}</span></button>
     ${row('Goal view',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','ladder','Why ladder')}</div>`,'How a goal opens. You can switch inside each goal too.')}</div>`:''}
+  ${pj?`<div class="set-sec"><h3>Projects</h3><button class="link-row" data-page="projects">Your projects<span class="hint">${pn?`${pn} of ${P_MAX} active`:'None yet'}${CHEV}</span></button>
+    ${row('Numbers view',`<div class="segc">${sOpt('pView','gauges','Gauges')}${sOpt('pView','flow','Flow')}</div>`,'How number projects open. You can switch inside each one.')}
+    ${row('Scoreboard',tg('pScore'),'Hits and misses for the last 8 weeks on each project')}</div>`:''}
   ${on?`<div class="set-sec"><h3>Habits</h3><button class="link-row" data-page="habits">Your habits<span class="hint">${n?`${n} of ${HB_MAX}`:'None yet'}${CHEV}</span></button>
     ${row('Habit chains',tg('hbChains'),'Link habits so one leads to the next, like coffee → read → plan')}
     ${row('Evening check-in',tg('hbCi'),'A short card on Home in the evening when habits are left')}
@@ -370,7 +374,7 @@ document.addEventListener('click',e=>{
   if(el.matches('[data-hbedit]')){hbEditing=!hbEditing;haptic(5);return render()}
   if(el.matches('[data-ciopen]'))return openCheckin();
   if(el.matches('[data-cilater]')){S.ciSkip=today();save();render();toast('Okay. It’ll be back tomorrow evening.');return}
-  if(el.matches("button[data-lens]")){if(!inSpaceMode())return;S.lens={[S.space]:['habits','goals'].includes(el.dataset.lens)?el.dataset.lens:'board'};hbEditing=false;haptic(5);render();window.scrollTo(0,0);return}
+  if(el.matches("button[data-lens]")){if(!inSpaceMode())return;S.lens={[S.space]:['habits','goals','projects'].includes(el.dataset.lens)?el.dataset.lens:'board'};hbEditing=false;haptic(5);render();window.scrollTo(0,0);return}
   if(el.matches('[data-hbadd]')){closePops();return openHabit(null,el.dataset.hbadd)}
   if(el.matches('[data-hbopen]'))return hbOpenHabits();
   if(el.matches('#rhEntry'))return openRhythm();
@@ -384,4 +388,4 @@ document.addEventListener('click',e=>{
 /* every space change starts on the Board; the lens and overlays follow every redraw */
 const _hbOpenSpace=openSpace;openSpace=function(id){S.lens={};hbEditing=false;return _hbOpenSpace(id)};
 const _hbRender=render;render=function(d){_hbRender(d);try{modesRender()}catch(err){console.error(err)}};
-const _hbDesk=renderDesk;renderDesk=function(){_hbDesk();try{if(!inSpaceMode())return;if(root.dataset.lens==='habits')$('mSub').innerHTML=hbSubLine(hbIn(S.space));if(root.dataset.lens==='goals')$('mSub').innerHTML=gSubLine(gIn(S.space))}catch(err){}};
+const _hbDesk=renderDesk;renderDesk=function(){_hbDesk();try{if(!inSpaceMode())return;if(root.dataset.lens==='habits')$('mSub').innerHTML=hbSubLine(hbIn(S.space));if(root.dataset.lens==='goals')$('mSub').innerHTML=gSubLine(gIn(S.space));if(root.dataset.lens==='projects')$('mSub').innerHTML=pSubLine(pIn(S.space))}catch(err){}};

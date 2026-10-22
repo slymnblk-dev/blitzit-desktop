@@ -98,11 +98,12 @@ function renderDesk(){
 }
 
 $('sLists').onclick=e=>{
+  if(gdOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm'))closeGoal();
+  if(pjOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm'))closeProject();
   if(e.target.closest('#sRhythm')){if(ibOn)closeInbox();return rhOn?closeRhythm():openRhythm()}
   if(e.target.closest('#sInbox')){if(rhOn)closeRhythm();return ibOn?closeInbox():openInbox()}
   if(ibOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeInbox();
   if(rhOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeRhythm();
-  if(gdOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm'))closeGoal();
   if(e.target.closest('#sHome'))return goHome();
   if(e.target.closest('#sAll'))return S.space==='all'?toggleSub():openSpaceSide('all');
   if(e.target.closest('#sNewSp'))return openSpaceSheet(null);
@@ -156,7 +157,7 @@ $('dHome').addEventListener('click',e=>{
 $('dHome').addEventListener('keydown',e=>{const r=e.target.closest('[data-hft]');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDetail(+r.dataset.hft)}});
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],projects:S.projects||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;
