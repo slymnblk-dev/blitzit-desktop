@@ -2325,11 +2325,11 @@ body.no-amb .amb-btn{display:none!important}
 .lens-sw button:focus-visible{outline:2px solid var(--text);outline-offset:1px}
 .lens-sw i{font-style:normal;min-width:18px;height:18px;border-radius:9px;background:var(--today);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 5px}
 .lens-m{padding:6px 0 2px}
-:root[data-lens="habits"] #hero,:root[data-lens="habits"] #gauge,:root[data-lens="habits"] #pull,:root[data-lens="habits"] #quick,:root[data-lens="habits"] #list{display:none!important}
-:root[data-lens="habits"] .dock{display:none!important}
+:root[data-lens] #hero,:root[data-lens] #gauge,:root[data-lens] #pull,:root[data-lens] #quick,:root[data-lens] #list{display:none!important}
+:root[data-lens] .dock{display:none!important}
 .lens-d{display:flex;align-items:center}
 @media (min-width:1100px){
-  :root[data-lens="habits"] .board{display:none!important}
+  :root[data-lens] .board{display:none!important}
   .hb-desk{flex:1;min-height:0;overflow-y:auto;padding:30px 40px 60px;scrollbar-width:none}
 }
 @media (max-width:1099px){.hb-desk{display:none!important}}
@@ -2497,6 +2497,261 @@ body.no-amb .amb-btn{display:none!important}
 @media (prefers-reduced-motion:reduce){.hb-sun .dg,.hb-sun .rays,.ci-card,.ci-home{transition:none!important;animation:none!important}}
 .ci-ht b,.ci-ht small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ci-home .rv-skip{padding:0 8px}.ci-home .rv-go{padding:0 14px}
+/* ---------- Modes → Goals ---------- */
+.g-pst{display:inline-flex;color:var(--week)}.g-pst svg{width:13px;height:13px;opacity:1!important}
+.pill .g-pst svg{width:13px;height:13px}
+.mi.g-st{color:var(--week)}.mi.g-st svg{width:12px;height:12px}
+.pc-ahead,.pc-ok,.pc-won{color:var(--done)!important}.pc-behind{color:var(--week)!important}.pc-none{color:var(--muted)!important}
+
+/* North star card (Home, under Today) */
+.ns-card{display:flex;align-items:center;gap:13px;width:100%;margin:0 0 12px;padding:13px 16px 13px 13px;border-radius:20px;background:var(--surface);text-align:left;
+  animation:cardIn .45s cubic-bezier(.2,.8,.2,1) both;transition:background .15s}
+.ns-card:hover{background:color-mix(in srgb,var(--text) 3%,var(--surface))}
+.ns-card:active{transform:scale(.99)}
+.ns-i{width:40px;height:40px;border-radius:13px;background:color-mix(in srgb,var(--week) 16%,transparent);color:var(--week);display:grid;place-items:center;flex:none}
+.ns-i svg{width:18px;height:18px}
+.ns-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.ns-top{display:flex;align-items:baseline;gap:10px}
+.ns-top b{flex:1;min-width:0;font-size:15.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ns-top small{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+.ns-bar{display:block;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.ns-bar i{display:block;height:100%;border-radius:3px;background:var(--week);min-width:6px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.ns-sub{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:1100px){.ns-card{margin-bottom:16px;padding:15px 22px 15px 15px}
+  .ns-t{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,36%);grid-template-areas:"top bar" "sub bar";column-gap:28px;row-gap:3px;align-items:center}
+  .ns-top{grid-area:top}.ns-sub{grid-area:sub}.ns-bar{grid-area:bar;height:8px;border-radius:4px}.ns-bar i{border-radius:4px}}
+
+/* goal cards (Goals lens, Rhythm page) */
+.g-grid{display:grid;gap:12px;margin-bottom:12px}
+.g-grid.wide{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:16px}
+.g-card{display:flex;flex-direction:column;gap:11px;width:100%;padding:15px 16px 14px;border-radius:20px;background:var(--surface);text-align:left;transition:background .15s,transform .15s}
+.g-card:hover{background:color-mix(in srgb,var(--text) 3%,var(--surface))}
+.g-card:active{transform:scale(.99)}
+.g-card.is-star{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--week) 40%,transparent)}
+.g-ctop{display:flex;align-items:center;gap:12px;min-width:0}
+.g-ce{width:42px;height:42px;border-radius:14px;background:var(--surface2);display:grid;place-items:center;font-size:21px;flex:none;color:var(--muted)}
+.g-ce svg{width:18px;height:18px}
+.g-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.g-tx b{font-size:15.5px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-tx small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-cstar{color:var(--week);display:grid;place-items:center;flex:none}.g-cstar svg{width:16px;height:16px}
+.g-cmeta{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--muted)}
+.g-cmeta .pc{font-weight:700}
+.g-cmini{display:block;margin:-6px -6px 2px;border-radius:14px;overflow:hidden;background:var(--bg)}
+.g-cmini .g-climb{--g-m1:color-mix(in srgb,var(--text) 8%,var(--bg));--g-m2:var(--bg)}
+.g-cmini .g-climb{max-height:150px;margin:0 auto}
+.g-addc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px;border-radius:20px;border:1.5px dashed var(--line);color:var(--muted);font-weight:600;font-size:15px;transition:color .15s,border-color .15s}
+.g-addc span{width:44px;height:44px;border-radius:50%;background:var(--surface);display:grid;place-items:center;color:var(--text)}
+.g-addc svg{width:18px;height:18px}
+.g-addc:hover{color:var(--text);border-color:var(--muted)}
+.g-won{margin-top:24px}
+.g-won .eye{display:block;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 2px 6px}
+.g-wrow{display:flex;align-items:center;gap:12px;width:100%;padding:9px 6px;border-radius:14px;text-align:left}
+.g-wrow:hover{background:var(--surface)}
+.g-wi{width:34px;height:34px;border-radius:11px;background:var(--surface);display:grid;place-items:center;font-size:17px;flex:none}
+.g-wrow>svg{width:15px;height:15px;color:var(--muted);flex:none}
+.g-empty .g-emi{display:block;width:170px;margin:0 auto 8px;border-radius:18px;overflow:hidden;background:var(--surface)}
+.rh-sec{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:34px 2px 12px}
+.gl-wide{max-width:1080px}
+
+/* the climb */
+.g-climb{width:100%;height:auto;display:block;overflow:visible;--g-m1:color-mix(in srgb,var(--text) 9%,var(--surface));--g-m2:var(--surface)}
+.g-rt0{fill:none;stroke:color-mix(in srgb,var(--text) 22%,transparent);stroke-width:2.2;stroke-dasharray:3 5;stroke-linecap:round}
+.g-rt1{fill:none;stroke:var(--today);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.g-ms{fill:var(--bg);stroke:color-mix(in srgb,var(--text) 40%,transparent);stroke-width:2}
+.g-ms.on{fill:var(--today);stroke:var(--today)}
+.g-me{fill:var(--today)}
+.g-meh{fill:var(--today);opacity:.18;transform-box:fill-box;transform-origin:center}
+.g-climb:not(.mini) .g-meh{animation:gPulse 2.8s ease-in-out infinite}
+.g-climb.top .g-me,.g-climb.top .g-meh{opacity:0}
+.g-disc{fill:color-mix(in srgb,var(--week) 88%,transparent)}
+.g-rays{fill:none;stroke:var(--week);stroke-width:2.6;stroke-linecap:round;opacity:0;transition:opacity .5s}
+.g-climb.top .g-rays{opacity:1}
+.g-sun{transform:translateY(var(--sy));transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.g-flag{stroke:var(--text);stroke-width:2;stroke-linecap:round}.g-flagf{fill:var(--text)}
+.g-climb.anim .g-rt1{stroke-dasharray:1;stroke-dashoffset:1;animation:gDraw 1.1s .15s cubic-bezier(.45,0,.2,1) forwards}
+.g-climb.anim .g-sun{animation:gSun 1.5s .2s cubic-bezier(.2,.8,.2,1) both}
+.g-climb.rise .g-sun{animation:gSun 1.8s cubic-bezier(.2,.8,.2,1) both}
+.g-climb.rise .g-rays{animation:gRay .7s 1.4s both}
+@keyframes gDraw{to{stroke-dashoffset:0}}
+@keyframes gSun{from{transform:translateY(50px)}to{transform:translateY(var(--sy))}}
+@keyframes gRay{from{opacity:0}to{opacity:1}}
+@keyframes gPulse{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(1.35);opacity:.08}}
+
+/* goal page */
+.gd-pg{z-index:20}
+.gd-top{justify-content:space-between}
+@media (min-width:1100px){.gd-pg .ib-in{max-width:1080px;padding-top:24px}.gd-top{display:flex}}
+.gd-mw .lh-pop{top:44px;right:0}
+.gd-head{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:6px 0 18px}
+.gd-head .eye{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.gd-ns{display:inline-flex;align-items:center;gap:5px;color:var(--week)}.gd-ns svg{width:12px;height:12px}
+.gd-h{font-size:clamp(34px,9.5vw,54px);font-weight:800;letter-spacing:-.045em;line-height:1.02;margin:0;color:var(--text);overflow-wrap:anywhere}
+.gd-e{margin-right:.22em}
+.gd-sp{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.gd-sp .sp-mini{width:20px;height:20px;border-radius:6px;font-size:11px;display:grid;place-items:center;color:#0F1013}
+.gd-why{display:flex;flex-direction:column;gap:4px;width:100%;padding:14px 16px;border-radius:18px;background:var(--surface);text-align:left;margin-bottom:16px;transition:background .15s}
+.gd-why:hover{background:color-mix(in srgb,var(--text) 3%,var(--surface))}
+.gd-why small{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.gd-why span{font-size:15.5px;line-height:1.45;color:var(--text)}
+.gd-why.add{flex-direction:row;align-items:center;gap:8px;background:transparent;border:1.5px dashed var(--line);color:var(--muted);font-weight:600;font-size:14.5px;padding:13px 16px}
+.gd-why.add:hover{color:var(--text);border-color:var(--muted)}
+.gd-why.add svg{width:15px;height:15px}
+.gd-sw{margin:0 0 12px}
+.gd-climb{background:var(--surface);border-radius:22px;padding:14px 12px 0;overflow:hidden}
+.gd-next{display:flex;align-items:center;gap:12px;margin-top:10px;padding:12px 12px 12px 14px;border-radius:18px;background:var(--surface)}
+.gd-pin{font-size:20px;width:26px;text-align:center;flex:none}
+.gd-next .g-tx b{white-space:normal}
+.gd-next .g-tx small{white-space:normal}
+.gd-of{font-size:13px;font-weight:700;color:var(--muted);flex:none;padding-right:4px}
+.gd-mk{height:34px;padding:0 14px;border-radius:999px;background:var(--surface2);font-size:13px;font-weight:700;white-space:nowrap;flex:none;transition:background .15s,transform .15s}
+.gd-mk:hover{background:color-mix(in srgb,var(--text) 12%,var(--surface2))}
+.gd-mk:active{transform:scale(.97)}
+.gd-mk.dark{background:var(--text);color:var(--bg)}
+.gd-next.sum{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--week) 45%,transparent)}
+.gd-kpis{margin-top:10px}
+.gd-kpis .hbw-kpi b{font-size:19px}
+.gd-sec{display:flex;align-items:center;gap:10px;margin:26px 2px 10px}
+.gd-sec h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.gd-sec span{flex:1;font-size:13px;color:var(--muted)}
+.gd-ed{color:var(--text)!important;padding:4px 2px}
+.gd-r>.gd-sec:first-child{margin-top:0}
+.gd-cols{display:block}
+@media (min-width:1100px){
+  .gd-cols{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:28px;align-items:start}
+  .gd-r .gd-why{margin-bottom:22px}
+}
+@media (max-width:1099px){.gd-r>.gd-sec:first-child{margin-top:26px}}
+
+/* milestones */
+.g-mslist{background:var(--surface);border-radius:20px;overflow:hidden}
+.g-ms{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-top:1px solid var(--line)}
+.g-ms:first-child{border-top:0}
+.g-msc{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;flex:none}
+.g-msc:hover .hc-dot{border-color:color-mix(in srgb,var(--text) 45%,transparent)}
+.g-ms.on .hc-dot,.g-trow.on .hc-dot{background:var(--done);border-color:var(--done);color:#0F1013}
+.g-ms .hc-dot{transition:background .2s,border-color .2s,color .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
+.g-ms.on .hc-dot{transform:scale(1.04)}
+.g-mst{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:4px 0}
+.g-mst>span{font-size:15px;font-weight:500;line-height:1.35;overflow-wrap:anywhere}
+.g-ms.on .g-mst>span{color:var(--muted)}
+.g-mstk{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--muted);padding:1px 0}
+.g-mstk svg{width:11px;height:11px;color:var(--week)}
+.g-mstk:hover{color:var(--text)}
+.g-mk{height:30px;padding:0 12px;border-radius:999px;background:var(--surface2);font-size:12.5px;font-weight:700;white-space:nowrap;flex:none}
+.g-mk:hover{background:color-mix(in srgb,var(--text) 12%,var(--surface2))}
+.g-ms.ed{padding:7px 8px 7px 12px;gap:4px}
+.g-msin{flex:1;min-width:0;height:40px;border-radius:12px;background:var(--surface2);border:0;padding:0 12px;color:var(--text);font:inherit;font-size:15px;outline:none;margin-right:4px}
+.g-msin:focus{box-shadow:0 0 0 2px var(--text)}
+.g-ms.ed button{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--muted);flex:none}
+.g-ms.ed button:hover:not(:disabled){background:var(--surface2);color:var(--text)}
+.g-ms.ed button:disabled{opacity:.25}
+.g-ms.ed button svg{width:16px;height:16px}
+.g-ms.ed .g-msx:hover{color:var(--today)!important}
+.g-msadd{display:flex;align-items:center;gap:12px;padding:4px 14px 4px 19px;border-top:1px solid var(--line)}
+.g-mslist>.g-msadd:first-child{border-top:0}
+.g-msp{color:var(--muted);display:grid;place-items:center;width:18px;flex:none}.g-msp svg{width:17px;height:17px}
+.g-msadd input{flex:1;min-width:0;height:46px;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:15px}
+.g-msadd input::placeholder{color:var(--muted)}
+.g-msadd:focus-within .g-msp{color:var(--text)}
+
+/* linked tasks */
+.g-tasks{background:var(--surface);border-radius:20px;overflow:hidden}
+.g-trow{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px 10px 15px;border-top:1px solid var(--line);text-align:left;transition:background .15s}
+.g-trow:first-child{border-top:0}
+.g-trow:hover{background:color-mix(in srgb,var(--text) 3%,transparent)}
+.g-trow .hc-dot{width:22px;height:22px;border-width:2px}.g-trow .hc-dot svg{width:11px;height:11px}
+.g-trow.on .g-tx b{color:var(--muted)}
+.g-trow>svg{width:15px;height:15px;color:var(--muted);flex:none}
+.gd-hint{font-size:13px;color:var(--muted);margin:10px 2px 0;line-height:1.5}
+.gd-hint b{color:var(--text);font-weight:600}
+.gd-hint .g-pst{vertical-align:-1px;margin-right:3px}
+
+/* why ladder */
+.g-ladder{display:flex;flex-direction:column}
+.g-rung{display:flex;gap:12px;position:relative;padding-bottom:12px}
+.g-rung:last-child{padding-bottom:0}
+.g-ln{width:14px;display:flex;flex-direction:column;align-items:center;flex:none;padding-top:16px}
+.g-ln i{width:10px;height:10px;border-radius:50%;background:color-mix(in srgb,var(--text) 22%,transparent);flex:none}
+.g-ln b{width:2px;flex:1;background:color-mix(in srgb,var(--text) 12%,transparent);margin:4px 0 -28px;border-radius:1px}
+.g-rung:last-child .g-ln b{display:none}
+.g-bx{flex:1;min-width:0;background:var(--surface);border-radius:18px;padding:12px 16px 13px}
+.g-bx small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.g-rt{display:block;font-size:16.5px;font-weight:650;letter-spacing:-.01em;text-align:left;line-height:1.3;color:var(--text)}
+.g-rtask:hover{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--text) 25%,transparent);text-underline-offset:3px}
+.g-rs{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+.g-lin{width:100%;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:16px;font-weight:600;padding:2px 0;letter-spacing:-.01em}
+.g-lin::placeholder{color:var(--muted);font-weight:500}
+.g-bx:focus-within{box-shadow:inset 0 0 0 2px var(--text)}
+.g-rung.now .g-bx{background:color-mix(in srgb,var(--today) 9%,var(--surface));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--today) 40%,transparent)}
+.g-rung.now .g-bx:focus-within{box-shadow:inset 0 0 0 2px var(--today)}
+.g-rung.now .g-ln i{background:var(--today);box-shadow:0 0 0 4px color-mix(in srgb,var(--today) 22%,transparent)}
+.g-rtoday{display:inline-flex;align-items:center;gap:6px;color:var(--today);font-size:14.5px;font-weight:700;padding:2px 0}
+.g-rtoday svg{width:15px;height:15px}
+
+/* 30-second setup */
+.gs-pg .ib-in{max-width:520px}
+.gs-top{justify-content:space-between}
+.gs-n{font-size:13px;font-weight:700;color:var(--muted)}
+.gs-steps{display:flex;gap:5px;margin:6px 0 20px}
+.gs-steps i{flex:1;height:4px;border-radius:2px;background:var(--surface2);transition:background .35s}
+.gs-steps i.on{background:var(--text)}
+.gs-body{animation:gsIn .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes gsIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.gs-eye{margin-top:4px!important;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:none!important;letter-spacing:0!important;font-size:14px!important;font-weight:600!important}
+.gs-q{font-size:clamp(30px,8.5vw,40px);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin:6px 0 22px}
+.gs-name{display:flex;align-items:center;gap:12px;padding:0 0 12px;border-bottom:1.5px solid var(--line);transition:border-color .2s}
+.gs-name:focus-within{border-color:var(--text)}
+.gs-e{width:54px;height:54px;border-radius:17px;background:var(--surface);display:grid;place-items:center;font-size:27px;flex:none;cursor:pointer;color:var(--muted);user-select:none}
+.gs-e svg{width:22px;height:22px}
+.gs-name input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:22px;font-weight:600;letter-spacing:-.02em}
+.gs-name input::placeholder{color:color-mix(in srgb,var(--muted) 70%,transparent)}
+.gs-lbl{font-size:13px;font-weight:600;color:var(--muted);margin:24px 2px 10px}
+.gs-lbl span{font-weight:500;opacity:.75;margin-left:4px}
+.gs-chips{display:flex;flex-wrap:wrap;gap:8px}
+.gs-chip{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 15px 0 9px;border-radius:999px;background:var(--surface);font-size:14px;font-weight:600;transition:background .15s,color .15s}
+.gs-chip .sp-mini{width:22px;height:22px;border-radius:7px;font-size:12px;display:grid;place-items:center;color:#0F1013}
+.gs-chip.on{background:var(--text);color:var(--bg)}
+#gsWhy{width:100%;background:var(--surface);border:0;border-radius:16px;padding:13px 15px;color:var(--text);font:inherit;font-size:15px;line-height:1.45;resize:none;outline:none}
+#gsWhy:focus{box-shadow:0 0 0 2px var(--text)}
+.gs-opts{display:flex;flex-direction:column;gap:8px}
+.gs-opts>button,.gs-date{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:0 16px;height:54px;border-radius:16px;background:var(--surface);font-size:15.5px;font-weight:600;text-align:left;cursor:pointer;transition:background .15s,color .15s}
+.gs-opts small{font-size:13px;font-weight:500;color:var(--muted)}
+.gs-opts .on{background:var(--text);color:var(--bg)}
+.gs-opts .on small{color:color-mix(in srgb,var(--bg) 62%,transparent)}
+.gs-date input{background:none;border:0;outline:none;color:var(--muted);font:inherit;font-size:14px;font-weight:600;color-scheme:light dark;text-align:right;cursor:pointer;max-width:60%}
+.gs-date.on input{color:var(--bg)}
+.gs-hint{font-size:14px;color:var(--muted);margin:14px 2px 0;line-height:1.5}
+.gs-hint b{color:var(--text)}
+.gs-ms{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.gs-mi{display:flex;align-items:center;gap:12px;padding:10px 8px 10px 12px;border-radius:16px;background:var(--surface);animation:gsIn .3s cubic-bezier(.2,.8,.2,1) both}
+.gs-mn{width:26px;height:26px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--muted);flex:none}
+.gs-mt{flex:1;min-width:0;font-size:15px;font-weight:500;overflow-wrap:anywhere}
+.gs-mi button{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--muted);flex:none}
+.gs-mi button:hover{background:var(--surface2);color:var(--text)}
+.gs-mi button svg{width:14px;height:14px}
+.gs-madd{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 15px;border-radius:16px;background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.gs-madd:focus-within{box-shadow:0 0 0 2px var(--text)}
+.gs-madd input{flex:1;min-width:0;height:42px;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:15px}
+.gs-madd button{height:40px;padding:0 16px;border-radius:12px;background:var(--text);color:var(--bg);font-weight:700;font-size:14px}
+.gs-star{display:flex;align-items:center;gap:12px;width:100%;margin-top:22px;padding:13px 14px 13px 13px;border-radius:18px;background:var(--surface);text-align:left}
+.gs-star .tg{pointer-events:none}
+.gs-star .tg[aria-pressed="true"]{background:var(--week)}
+.gs-next{margin-top:30px!important;background:var(--text)!important;color:var(--bg)!important;transition:opacity .2s,transform .15s}
+.gs-next:disabled{opacity:.3}
+.gs-next:active:not(:disabled){transform:scale(.99)}
+
+/* edit sheet */
+.g-prev svg{width:24px;height:24px;color:var(--muted)}
+.g-whyin{font-size:16px!important;resize:none;line-height:1.45}
+.g-pre{margin:0 0 10px!important}
+.g-date{width:100%;height:46px;border-radius:12px;background:var(--surface);border:0;padding:0 12px;color:var(--text);font:inherit;font-size:15px;color-scheme:light dark;outline:none}
+.g-date:focus{box-shadow:0 0 0 2px var(--text)}
+
+@media (prefers-reduced-motion:reduce){
+  .g-climb *,.ns-card,.gs-body,.gs-mi{animation:none!important;transition:none!important}
+  .g-climb.anim .g-rt1{stroke-dasharray:none}
+}
 </style>
 </head>
 <body>
@@ -2691,7 +2946,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=144; // bumped with every published update
+const APP_VERSION=145; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -2775,6 +3030,9 @@ function sanitize(){
   S.habits=Array.isArray(S.habits)?S.habits.filter(h=>obj(h)&&h.id!=null&&typeof h.name==='string'):[];
   S.habits.forEach(h=>{if(!obj(h.done))h.done={};if(!Array.isArray(h.days)||!h.days.length)h.days=[0,1,2,3,4,5,6];if(typeof h.e!=='string')h.e=''});
   S.hchains=Array.isArray(S.hchains)?S.hchains.filter(c=>obj(c)&&c.id!=null):[];
+  // goals (Modes → Goals): {id,name,e,space,why,due:'YYYY-MM-DD',created,star,view,lq,lw,done,doneAt,ms:[{id,t,done,task?}]}
+  S.goals=Array.isArray(S.goals)?S.goals.filter(g=>obj(g)&&g.id!=null&&typeof g.name==='string'):[];
+  S.goals.forEach(g=>{if(!Array.isArray(g.ms))g.ms=[];g.ms=g.ms.filter(m=>obj(m)&&m.id!=null)});
   if(!obj(S.lens))S.lens={};
   if(!obj(S.cfg))delete S.cfg;
   if(!obj(S.tomb))S.tomb={};
@@ -2795,13 +3053,13 @@ let trackMap=null;
 const bareJSON=x=>{const {u,...r}=x;return JSON.stringify(r)};
 function trackChanges(){
   const now=Date.now(),m={};S.tomb=S.tomb||{};
-  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
+  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]],['g',S.goals||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
   if(trackMap)Object.keys(trackMap).forEach(key=>{if(key[1]===':'&&!(key in m))S.tomb[key]=now});
   m.__ord=S.tasks.map(t=>t.id).join(',');if(trackMap&&m.__ord!==trackMap.__ord)S.orderU=now;
   m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;
   trackMap=m;
 }
-let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
+let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains,S.goals],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
 const save=()=>{try{fSave()}catch(e){};if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
 let PIP=null; // the floating focus window (desktop Chrome)
 const $=id=>document.getElementById(id);
@@ -3062,6 +3320,7 @@ function rowHTML(t){
   const pr=t.stage!=='done'?priOf(t):null,ps=S.cfg.priStyle||'bars';
   const extra=[
     pr&&ps==='bars'?`<span class="mi pri ${pr.id}" title="${pr.name} priority">${priIcon(pr.n)}${pr.name}</span>`:'',
+    goalStar(t),
     tagChips(t,3),
     t.repeat!=='none'?`<span class="mi">${I_REP}${REPEATS.find(r=>r.id===t.repeat).name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
@@ -3143,7 +3402,7 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${nsCard()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
 }
 function render(dir){
   root.dataset.view=S.space?'space':'home';drawMe();
@@ -3208,13 +3467,13 @@ function render(dir){
 function go(stage){if(stage===S.stage)return;const d=idx(stage)-idx(S.stage);S.stage=stage;haptic(5);render(d)}
 
 /* ---------- change + undo ---------- */
-const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],space:S.space,list:S.list,nid:S.nid});
+const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],space:S.space,list:S.list,nid:S.nid});
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
   toast(msg,()=>{
     undoHash=null;const d=JSON.parse(snap);
-    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.nid=Math.max(S.nid||0,d.nid||0);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.nid=Math.max(S.nid||0,d.nid||0);
     repairData();save();render();afterUndo();haptic(8)});
   undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
 }
@@ -3474,6 +3733,7 @@ function drawDetail(){
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
     P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
     P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+
+    (goalPill(t,P))+
     (secOn()&&t.stage!=='done'&&secsForTask(t).length?P('sec',`${I_SEC}${secOfTask(t)?esc(secOfTask(t).name):'Section'}`,!secOfTask(t)):'')+
     P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length);
   const pk=(on,v,label,dot)=>`<button class="pk ${on?'on':''}" data-v="${v}">${dot?`<i style="background:${dot}"></i>`:''}${esc(label)}</button>`;
@@ -3485,6 +3745,7 @@ function drawDetail(){
       est:()=>ESTS.map(m=>pk(t.est===m,m,fmt(m))).join(''),
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
       pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
+      goal:()=>goalPicks(t,pk),
       sec:()=>pk(!secOfTask(t),'','No section')+secsForTask(t).map(s=>pk((secOfTask(t)||{}).id===s.id,s.id,s.name)).join(''),
       tags:()=>{const lt=ltags(l),on=n=>tagsOf(t).some(x=>tagKey(x)===tagKey(n));
         return lt.map(n=>`<button class="pk tg-pk ${on(n)?'on':''}" data-v="${esc(n)}">#${esc(n)}</button>`).join('')+
@@ -3525,6 +3786,7 @@ $('dPicker').onclick=e=>{
   else if(k==='repeat')t.repeat=v;
   else if(k==='pri'){if(v)t.pri=v;else delete t.pri}
   else if(k==='sec'){if(v)t.sec=v;else delete t.sec}
+  else if(k==='goal'){if(v)t.goal=v;else delete t.goal}
   if(k!=='stage'){save();render()}
   drawDetail();
 };
@@ -4414,7 +4676,7 @@ function renderDesk(){
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   const spp=!S.space&&spPage&&spPageOn()?spaceOf(spPage):null;if(!spp)spPage=null;
-  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
+  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${nsCard()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
   const gk=S.space?S.space+'|'+S.list:'';
   if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
@@ -4430,6 +4692,7 @@ $('sLists').onclick=e=>{
   if(e.target.closest('#sInbox')){if(rhOn)closeRhythm();return ibOn?closeInbox():openInbox()}
   if(ibOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeInbox();
   if(rhOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l]'))closeRhythm();
+  if(gdOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm'))closeGoal();
   if(e.target.closest('#sHome'))return goHome();
   if(e.target.closest('#sAll'))return S.space==='all'?toggleSub():openSpaceSide('all');
   if(e.target.closest('#sNewSp'))return openSpaceSheet(null);
@@ -4471,7 +4734,7 @@ function todayFirst(){
   const side=orderedSpaces().map(sp=>{const st=spaceStats(sp);
     return `<button class="hf-sp" data-space="${sp.id}"><span class="hf-sph"><span class="hf-ic">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span class="hf-n">${st.today?st.today+' today':st.open?st.open+' open':'Clear'}</span></span>
       <span class="sp-bars">${st.total?VS().map(x=>st.by[x.id]?`<i style="flex:${st.by[x.id]};background:var(--${x.id})"></i>`:'').join(''):'<i class="sp-bars-0"></i>'}</span></button>`}).join('');
-  return `${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
+  return `${nsCard()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
     ${rows||`<p class="hf-empty">Open a space and move a few tasks to Today. They’ll show up here, ready to tick off.</p>`}</section>
     <aside class="hf-side"><div class="hf-cap">Spaces</div>${side}<button class="hf-new" id="spNew">${PLUS_S}New space</button></aside></div>`;
 }
@@ -4483,7 +4746,7 @@ $('dHome').addEventListener('click',e=>{
 $('dHome').addEventListener('keydown',e=>{const r=e.target.closest('[data-hft]');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDetail(+r.dataset.hft)}});
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;
@@ -5148,25 +5411,29 @@ function hbKpis(hs){
   return `<div class="hbw-kpis">${k('This week',`${dn} / ${due}`)}${k('Best run',`${hbBest(hs)} days`)}${k('Suns fully up',`${up} of ${hs.length}`)}${k('Most steady',steady?hbName(steady):'—')}</div>`}
 
 /* ---------- lens: Board · Habits inside a space ---------- */
-const lensAvail=sp=>habitsOn()&&!modePage()&&!!sp&&sp!=='all'&&hbIn(sp).length>0;
-const lensOf=sp=>lensAvail(sp)&&S.lens&&S.lens[sp]==='habits'?'habits':'board';
-function lensSwitch(sp){const left=hbOpenToday(hbIn(sp)).length,cur=lensOf(sp);
-  return `<div class="lens-sw" role="tablist" aria-label="View"><button role="tab" data-lens="board" class="${cur==='board'?'on':''}" aria-selected="${cur==='board'}">Board</button><button role="tab" data-lens="habits" class="${cur==='habits'?'on':''}" aria-selected="${cur==='habits'}">Habits${left?`<i>${left}</i>`:''}</button></div>`}
+/* modes that are on and used in a space each add a tab; with none, there is no switch at all */
+function lensTabs(sp){if(!sp||sp==='all'||modePage())return [];const t=[];if(habitsOn()&&hbIn(sp).length)t.push('habits');if(goalsOn()&&gIn(sp).length)t.push('goals');return t}
+const lensAvail=sp=>lensTabs(sp).length>0;
+const lensOf=sp=>{const t=lensTabs(sp),v=S.lens&&S.lens[sp];return t.includes(v)?v:'board'};
+function lensSwitch(sp){const cur=lensOf(sp),tab=(k,label,badge)=>`<button role="tab" data-lens="${k}" class="${cur===k?'on':''}" aria-selected="${cur===k}">${label}${badge?`<i>${badge}</i>`:''}</button>`;
+  return `<div class="lens-sw" role="tablist" aria-label="View">${tab('board','Board')}${lensTabs(sp).map(k=>k==='habits'?tab('habits','Habits',hbOpenToday(hbIn(sp)).length):tab('goals','Goals')).join('')}</div>`}
+function modesAny(){return habitsOn()||goalsOn()}
+function rhythmAvail(){return modesAny()&&modePage()}
 const weekday=()=>new Date().toLocaleDateString(undefined,{weekday:'long'});
 const longDate=()=>new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
 function modesRender(){
-  if(rhOn&&(!habitsOn()||!modePage()))closeRhythm();
+  if(rhOn&&!rhythmAvail())closeRhythm();
   if(ciOn&&!habitsOn())closeCheckin(true);
-  const sp=inSpaceMode()?S.space:null,avail=lensAvail(sp),cur=avail?lensOf(sp):'board',hs=avail?hbIn(sp):[];
-  if(cur==='habits')root.dataset.lens='habits';else delete root.dataset.lens;
+  const sp=inSpaceMode()?S.space:null,avail=lensAvail(sp),cur=avail?lensOf(sp):'board',hs=cur==='habits'?hbIn(sp):[];
+  if(cur!=='board')root.dataset.lens=cur;else delete root.dataset.lens;
   const m=$('mLens');m.hidden=!avail;m.innerHTML=avail?lensSwitch(sp):'';
-  const hv=$('hbView');hv.hidden=cur!=='habits';hv.innerHTML=cur==='habits'?hbHeadBig(hs,`Habits · ${weekday()}`,'Today')+hbList(hs,false,sp):'';
   const d=$('dLens');d.hidden=!avail;d.innerHTML=avail?lensSwitch(sp):'';
-  const hd=$('hbDesk');hd.hidden=cur!=='habits';
-  hd.innerHTML=cur==='habits'?`<div class="hbw"><div class="hbw-l"><div class="hbw-bar"><span class="eye">Today · ${weekday()}</span>${hbActs(hs)}</div>${hbList(hs,false,sp)}</div><div class="hbw-r">${hbFabric(hs)}${hbKpis(hs)}</div></div>`:'';
-  if(cur==='habits')$('mSub').innerHTML=hbSubLine(hs);
+  const hv=$('hbView'),hd=$('hbDesk');hv.hidden=hd.hidden=cur==='board';
+  hv.innerHTML=cur==='habits'?hbHeadBig(hs,`Habits · ${weekday()}`,'Today')+hbList(hs,false,sp):cur==='goals'?goalsLens(sp,false):'';
+  hd.innerHTML=cur==='habits'?`<div class="hbw"><div class="hbw-l"><div class="hbw-bar"><span class="eye">Today · ${weekday()}</span>${hbActs(hs)}</div>${hbList(hs,false,sp)}</div><div class="hbw-r">${hbFabric(hs)}${hbKpis(hs)}</div></div>`:cur==='goals'?goalsLens(sp,true):'';
+  if(cur==='habits')$('mSub').innerHTML=hbSubLine(hs);if(cur==='goals')$('mSub').innerHTML=gSubLine(gIn(sp));
   if(rhOn)drawRhythm();
-  const lh=$('lmHabit');if(lh)lh.hidden=!(habitsOn()&&inSpaceMode());
+  const lh=$('lmHabit');if(lh)lh.hidden=!(habitsOn()&&inSpaceMode());const lg=$('lmGoal');if(lg)lg.hidden=!(goalsOn()&&inSpaceMode());
 }
 document.querySelector('#spaceView').insertAdjacentHTML('afterbegin','<div class="lens-m" id="mLens" hidden></div>');
 document.querySelector('#spaceView').insertAdjacentHTML('beforeend','<div class="hb-view" id="hbView" hidden></div>');
@@ -5188,12 +5455,13 @@ function hbWidget(){
     <div class="hbwid-suns">${hs.map(h=>{const s=hbStats(h);return `<button class="hbwid-s${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}" title="${esc(h.name)}" aria-label="${esc(h.name)}">${hbSun(s.lvl,s.dt)}<span>${h.e?esc(h.e):esc((h.name[0]||'•').toUpperCase())}</span></button>`}).join('')}</div></div>`}
 function homeNav(){const rows=[];
   if(inboxOn()){const n=inboxItems().length;rows.push(`<button class="ib-entry" id="ibEntry"><span class="ib-entry-i">${IB_ICON}</span><span class="ib-entry-t"><b>Inbox</b><small>${n?`${n} ${n===1?'idea':'ideas'} waiting`:'Drop ideas here'}</small></span>${CHEV}</button>`)}
-  if(habitsOn()&&modePage()){const n=hbOpenToday().length,has=hbAll().length;
-    rows.push(`<button class="ib-entry" id="rhEntry"><span class="ib-entry-i">${RH_ICON}</span><span class="ib-entry-t"><b>Rhythm</b><small>${!has?'Your habits live here':n?`${n} ${n===1?'habit':'habits'} left today`:'All habits done today'}</small></span>${CHEV}</button>`)}
+  if(rhythmAvail()){const n=habitsOn()?hbOpenToday().length:0,has=habitsOn()&&hbAll().length,gs=goalsOn()?gAll().length:0;
+    const sub=has?(n?`${n} ${n===1?'habit':'habits'} left today`:'All habits done today'):gs?`${gs} ${gs===1?'goal':'goals'} in progress`:habitsOn()?'Your habits live here':'Your goals live here';
+    rows.push(`<button class="ib-entry" id="rhEntry"><span class="ib-entry-i">${RH_ICON}</span><span class="ib-entry-t"><b>Rhythm</b><small>${sub}</small></span>${CHEV}</button>`)}
   return rows.length?`<div class="hn">${rows.join('')}</div>`:''}
-function rhythmSide(){if(!habitsOn()||!modePage())return '';const n=hbOpenToday().length;
+function rhythmSide(){if(!rhythmAvail())return '';const n=habitsOn()?hbOpenToday().length:0;
   return `<button class="s-list s-home s-inbox ${rhOn?'on':''}" id="sRhythm" title="Rhythm">${RH_ICON}<span class="s-name">Rhythm</span>${n?`<span class="n">${n}</span>`:''}</button>`}
-function hbPopItem(sp){return habitsOn()?`<button data-hbadd="${sp}">Add a habit</button>`:''}
+function hbPopItem(sp){return (habitsOn()?`<button data-hbadd="${sp}">Add a habit</button>`:'')+(goalsOn()?`<button data-gadd="${sp}">Add a goal</button>`:'')}
 /* open "your habits": the Rhythm page, or the space with the most habits left today */
 function hbOpenHabits(){
   if(modePage())return openRhythm();
@@ -5206,7 +5474,7 @@ function hbShowSpace(sp){if(ibOn)closeInbox();if(rhOn)closeRhythm();if(S.space!=
 /* ---------- Rhythm page ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg" id="rhythmPg" role="region" aria-label="Rhythm"><div class="ib-in" id="rhIn"></div></div>');
 function openRhythm(){
-  if(!habitsOn()||!modePage())return;
+  if(!rhythmAvail())return;
   if(ibOn)closeInbox();if(typeof closeSearch==='function')closeSearch();
   rhOn=true;hbEditing=false;drawRhythm();$('rhythmPg').classList.add('on');document.body.classList.add('ib-open');
   $('rhythmPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
@@ -5217,10 +5485,12 @@ function closeRhythm(){
   if(typeof renderDesk==='function')renderDesk();
 }
 function drawRhythm(){
-  const hs=hbAll(),y=$('rhythmPg').scrollTop;
-  $('rhIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>${hbHeadBig(hs,longDate(),'Rhythm')}
-    ${hs.length?`<div class="hbw"><div class="hbw-l">${hbList(hs,true,'')}</div><div class="hbw-r">${hbFabric(hs)}${hbKpis(hs)}</div></div>`
-      :`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`}`;
+  const y=$('rhythmPg').scrollTop,hOn=habitsOn(),hs=hOn?hbAll():[];
+  const habits=!hOn?'':hs.length?`<div class="hbw"><div class="hbw-l">${hbList(hs,true,'')}</div><div class="hbw-r">${hbFabric(hs)}${hbKpis(hs)}</div></div>`
+      :`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`;
+  const head=hOn?hbHeadBig(hs,longDate(),'Rhythm'):`<div class="hb-head"><span class="eye">${longDate()}</span><h1 class="hb-h">Rhythm</h1>${goalsOn()?`<div class="hb-sub">${gSubLine(gAll())}</div>`:''}</div>`;
+  $('rhIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>${head}
+    ${hOn&&goalsOn()?`<h2 class="rh-sec">Habits</h2>`:''}${habits}${goalsOn()?`${hOn?'<h2 class="rh-sec">Goals</h2>':''}${goalsBlock(gAll(),'',matchMedia('(min-width:1100px)').matches)}`:''}`;
   $('rhythmPg').scrollTop=y;
 }
 $('rhythmPg').addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('.sheet.on')){e.stopPropagation();closeRhythm()}});
@@ -5361,17 +5631,20 @@ $('hcDel').onclick=()=>{const d=hcDraft;if(!d)return;closeSheets();commit(()=>{S
 $('hcSheet').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.hc-in')){e.preventDefault();$('hcSave').click()}});
 
 /* ---------- Settings → Modes ---------- */
-function modesSummary(){return habitsOn()?`Habits on · ${modePage()?'Rhythm page':'in spaces'}`:'All off'}
+function modesSummary(){const on=[habitsOn()&&'Habits',goalsOn()&&'Goals'].filter(Boolean);return on.length?`${on.join(' and ')} on · ${modePage()?'Rhythm page':'in spaces'}`:'All off'}
 function modesPage(){
-  const c=C(),on=habitsOn(),n=hbAll().length;
+  const c=C(),on=habitsOn(),n=hbAll().length,g=goalsOn(),gn=gAll().length;
   return `<p class="sub-p">Extra ways to use Windaday. Turn a mode off and it disappears everywhere. Your data stays safe and comes back when you turn it on again.</p>
-  <div class="set-sec"><h3>Modes</h3>${row('Habits',tg('habits'),'Small daily wins with gentle sunrise streaks')}<p class="md-soon">Goals and Projects are coming next.</p></div>
-  ${on?`<div class="set-sec"><h3>Where modes live</h3>${row('Show habits',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for all your habits.':'A Board · Habits switch appears in spaces that have habits.')}</div>
-  <div class="set-sec"><h3>Habits</h3><button class="link-row" data-page="habits">Your habits<span class="hint">${n?`${n} of ${HB_MAX}`:'None yet'}${CHEV}</span></button>
+  <div class="set-sec"><h3>Modes</h3>${row('Habits',tg('habits'),'Small daily wins with gentle sunrise streaks')}${row('Goals',tg('goals'),'Big outcomes, broken into milestones you can climb')}<p class="md-soon">Projects is coming next.</p></div>
+  ${on||g?`<div class="set-sec"><h3>Where modes live</h3>${row('Show modes',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for your habits and goals.':'A switch (Board · Habits · Goals) appears in spaces that use them.')}</div>`:''}
+  ${g?`<div class="set-sec"><h3>Goals</h3><button class="link-row" data-page="goals">Your goals<span class="hint">${gn?`${gn} of ${G_MAX} active`:'None yet'}${CHEV}</span></button>
+    ${row('Goal view',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','ladder','Why ladder')}</div>`,'How a goal opens. You can switch inside each goal too.')}</div>`:''}
+  ${on?`<div class="set-sec"><h3>Habits</h3><button class="link-row" data-page="habits">Your habits<span class="hint">${n?`${n} of ${HB_MAX}`:'None yet'}${CHEV}</span></button>
     ${row('Habit chains',tg('hbChains'),'Link habits so one leads to the next, like coffee → read → plan')}
     ${row('Evening check-in',tg('hbCi'),'A short card on Home in the evening when habits are left')}
     ${c.hbCi!==false?row('Check-in from',`<div class="segc">${[17,19,21].map(h=>sOpt('hbCiAt',h,`${h-12} pm`)).join('')}</div>`):''}</div>
-  <div class="set-sec"><h3>Home widgets</h3>${row('Habits today',tg('wHabits'),'Your suns on Home. Tap one to tick it.')}</div>`:''}`;
+`:''}
+  ${on||g?`<div class="set-sec"><h3>Home widgets</h3>${g?row('North star',tg('wStar'),'Your starred goal under the Today card'):''}${on?row('Habits today',tg('wHabits'),'Your suns on Home. Tap one to tick it.'):''}</div>`:''}`;
 }
 function habitsSetPage(){
   const hs=hbAll();
@@ -5385,8 +5658,8 @@ function habitsSetPage(){
 
 /* ---------- taps (capture, so a habit inside a space card or settings row never also opens something else) ---------- */
 document.addEventListener('click',e=>{
-  if(e.target.closest('#listsMore')){const lh=$('lmHabit');if(lh)lh.hidden=!(habitsOn()&&inSpaceMode());return}
-  const el=e.target.closest('[data-hbt],[data-hbe],[data-hce],[data-hbnew],[data-hbedit],[data-ciopen],[data-cilater],[data-lens],[data-hbadd],[data-hbopen],#rhEntry,#rhBack,#lmHabit,#ciBack,[data-ciyes],[data-cino],[data-ciclose]');
+  if(e.target.closest('#listsMore')){const lh=$('lmHabit');if(lh)lh.hidden=!(habitsOn()&&inSpaceMode());const lg=$('lmGoal');if(lg)lg.hidden=!(goalsOn()&&inSpaceMode());return}
+  const el=e.target.closest('[data-hbt],[data-hbe],[data-hce],[data-hbnew],[data-hbedit],[data-ciopen],[data-cilater],button[data-lens],[data-hbadd],[data-hbopen],#rhEntry,#rhBack,#lmHabit,#ciBack,[data-ciyes],[data-cino],[data-ciclose]');
   if(!el)return;
   if(el.closest('.sheet')&&!el.closest('#hbSheet,#hcSheet')&&!el.matches('#lmHabit'))return;
   e.stopPropagation();e.preventDefault();
@@ -5397,7 +5670,7 @@ document.addEventListener('click',e=>{
   if(el.matches('[data-hbedit]')){hbEditing=!hbEditing;haptic(5);return render()}
   if(el.matches('[data-ciopen]'))return openCheckin();
   if(el.matches('[data-cilater]')){S.ciSkip=today();save();render();toast('Okay. It’ll be back tomorrow evening.');return}
-  if(el.matches('[data-lens]')){if(!inSpaceMode())return;S.lens={[S.space]:el.dataset.lens==='habits'?'habits':'board'};hbEditing=false;haptic(5);render();window.scrollTo(0,0);return}
+  if(el.matches("button[data-lens]")){if(!inSpaceMode())return;S.lens={[S.space]:['habits','goals'].includes(el.dataset.lens)?el.dataset.lens:'board'};hbEditing=false;haptic(5);render();window.scrollTo(0,0);return}
   if(el.matches('[data-hbadd]')){closePops();return openHabit(null,el.dataset.hbadd)}
   if(el.matches('[data-hbopen]'))return hbOpenHabits();
   if(el.matches('#rhEntry'))return openRhythm();
@@ -5411,7 +5684,422 @@ document.addEventListener('click',e=>{
 /* every space change starts on the Board; the lens and overlays follow every redraw */
 const _hbOpenSpace=openSpace;openSpace=function(id){S.lens={};hbEditing=false;return _hbOpenSpace(id)};
 const _hbRender=render;render=function(d){_hbRender(d);try{modesRender()}catch(err){console.error(err)}};
-const _hbDesk=renderDesk;renderDesk=function(){_hbDesk();try{if(root.dataset.lens==='habits'&&inSpaceMode())$('mSub').innerHTML=hbSubLine(hbIn(S.space))}catch(err){}};
+const _hbDesk=renderDesk;renderDesk=function(){_hbDesk();try{if(!inSpaceMode())return;if(root.dataset.lens==='habits')$('mSub').innerHTML=hbSubLine(hbIn(S.space));if(root.dataset.lens==='goals')$('mSub').innerHTML=gSubLine(gIn(S.space))}catch(err){}};
+/* ---------- Modes → Goals (optional; Settings → Modes, off by default) ----------
+   Off means every goal screen, card, pill, star and menu item disappears. Goals are kept, so turning
+   the mode back on brings everything back.
+   • North star: one starred goal sits on Home under the Today card. Any task can be linked to a goal
+     (★ Goal in its details) and wears a small star; finishing it shows up as "moved it this week".
+   • Goal page: two views, switchable per goal (default in Settings → Modes → Goal view):
+       The climb  — milestones as a trail up a hill; the sun rises behind the summit as you climb.
+       Why ladder — the goal, broken down: by the due date → this quarter → this week → today's task.
+   • 30-second setup: what, by when, first milestones.
+   Data: S.goals [{id,name,e,space,why,due:'YYYY-MM-DD',created,star,view,lq,lqAt,lw,lwAt,done,doneAt,
+     ms:[{id,t,done,doneAt,task}]}]. A milestone can be turned into a task (ms.task); finishing that task
+   ticks the milestone. Goals sync, back up and undo like tasks.
+   Constants are var (not const) because other files may draw before this one runs. */
+var gdOn=false,gsOn=false,gdId=null,gdEdit=false,gdAnim=false,gdWin=false,gTodayIn=false;
+var G_MAX=3,MS_MAX=12;
+var G_STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"/></svg>';
+var G_FLAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
+var G_ICONS=['🎯','🏃','💪','📚','💼','💰','🚀','🧠','✍️','🎸','🏠','✈️','🌱','❤️','🎓','🏆','📈','🧘','🍎','🛠️','🎨','📷','🌍','⭐'];
+var G_WORDS=[[/marathon|run|race|\bkm\b|5k|10k|triathlon/,'🏃'],[/weight|fit|gym|strong|muscle|lose|\bkg\b|lbs|push.?up/,'💪'],[/read|books?\b/,'📚'],
+  [/client|customer|sales|deal|job|promot|career|business|hire/,'💼'],[/save|money|debt|invest|income|revenue|earn|salary|€|\$|£/,'💰'],
+  [/launch|ship|app|startup|product|release|website/,'🚀'],[/learn|language|course|study|exam|degree|spanish|english|german|french/,'🧠'],
+  [/write|novel|blog|article|thesis/,'✍️'],[/guitar|piano|music|song|album|\bdj\b/,'🎸'],[/house|home|move|apartment|flat|renovat/,'🏠'],
+  [/travel|trip|visit|country|countries/,'✈️'],[/meditat|calm|stress|sleep|mindful/,'🧘'],[/eat|diet|vegan|cook|sugar/,'🍎']];
+function gIcon(n){const s=String(n||'').toLowerCase();const m=G_WORDS.find(([r])=>r.test(s));return m?m[1]:(autoIcon(n)||'')}
+
+function goalsOn(){return !!(S.cfg&&S.cfg.goals)}
+function gList(){if(!Array.isArray(S.goals))S.goals=[];return S.goals}
+function gById(id){return gList().find(g=>g&&String(g.id)===String(id))}
+/* active goals whose space still exists (an archived or deleted space hides its goals) */
+function gAll(){return gList().filter(g=>g&&!g.done&&spaceOf(g.space))}
+function gIn(sp){return gAll().filter(g=>g.space===sp)}
+function gWon(sp){return gList().filter(g=>g&&g.done&&spaceOf(g.space)&&(!sp||g.space===sp)).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0))}
+function gStarred(){return gAll().find(g=>g.star)||null}
+function gNoon(d){const x=new Date(d);x.setHours(12,0,0,0);return x}
+function gDate(k){const p=String(k||'').split('-').map(Number);return p[0]?new Date(p[0],p[1]-1,p[2],12):null}
+function gPlus(months){const d=gNoon(new Date());d.setMonth(d.getMonth()+months);return dkey(d)}
+function gMon(){const d=gNoon(new Date());d.setDate(d.getDate()-((d.getDay()+6)%7));d.setHours(0,0,0,0);return d.getTime()}
+function gQStart(){const d=new Date();return new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3,1).getTime()}
+function gQEnd(){const d=new Date();return new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3+3,0,12)}
+function gShort(k){const d=typeof k==='string'?gDate(k):new Date(k);if(!d||isNaN(d))return '';const y=d.getFullYear()!==new Date().getFullYear();
+  return d.toLocaleDateString(undefined,y?{month:'short',day:'numeric',year:'numeric'}:{month:'short',day:'numeric'})}
+function gLong(k){const d=gDate(k);if(!d)return '';const y=d.getFullYear()!==new Date().getFullYear();return d.toLocaleDateString(undefined,y?{month:'long',day:'numeric',year:'numeric'}:{month:'long',day:'numeric'})}
+function gDaysLeft(g){const d=gDate(g.due);return d?Math.round((d-gNoon(new Date()))/864e5):null}
+function gLeft(g,short){const n=gDaysLeft(g);if(n===null)return '';if(n<0)return short?'Past due':`${-n} ${n===-1?'day':'days'} past due`;if(n===0)return 'Due today';return `${n} ${n===1?'day':'days'}${short?'':' left'}`}
+function gProg(g){const of=g.ms.length,n=g.ms.filter(m=>m.done).length;return {n,of,p:g.done?1:of?n/of:0}}
+/* pace: progress against the time that has passed since the goal was set */
+function gPace(g){
+  if(g.done)return {k:'won',t:'Achieved'};
+  const {n,of,p}=gProg(g);if(!of)return {k:'none',t:'Add milestones'};
+  if(n>=of)return {k:'ahead',t:'Summit reached'};
+  const left=gDaysLeft(g);if(left!==null&&left<0)return {k:'behind',t:'Past due'};
+  const s=gNoon(g.created||Date.now()),e=gDate(g.due);if(!e||e<=s)return {k:'ok',t:'On track'};
+  const el=Math.min(1,Math.max(0,(gNoon(new Date())-s)/(e-s)));
+  if(p>=el+.15&&p>0)return {k:'ahead',t:'Ahead'};
+  if(p>=el-.15||el<.12)return {k:'ok',t:'On track'};
+  return {k:'behind',t:'A bit behind'};
+}
+const gName=g=>`${g.e?esc(g.e)+' ':''}${esc(g.name)}`;
+function gTasks(g){return S.tasks.filter(t=>t.goal!=null&&String(t.goal)===String(g.id)&&!t.inbox&&!t.archived)}
+function gMoved(g){const m=gMon();return gTasks(g).filter(t=>t.stage==='done'&&(t.doneAt||0)>=m)}
+function gToday(g){return gTasks(g).filter(t=>t.stage==='today'&&shown(t))}
+function gNext(g){return g.ms.find(m=>!m.done)||null}
+const gTaskOf=m=>m&&m.task!=null?S.tasks.find(t=>t.id===m.task&&!t.archived):null;
+function gSubLine(gs){
+  if(!gs.length)return 'No goals yet';
+  const near=gs.map(gDaysLeft).filter(n=>n!==null&&n>=0).sort((a,b)=>a-b)[0];
+  return `<b>${gs.length}</b> in progress${near!==undefined?` · next one due in <b>${near}</b> ${near===1?'day':'days'}`:''}`}
+
+/* ---------- the climb: milestones as a trail up a hill, the sun rising behind the summit ---------- */
+let gUid=0;
+function gClimb(g,cls){
+  const N=Math.max(1,g.ms.length),pr=gProg(g),top=g.done||(g.ms.length>0&&pr.n>=g.ms.length),id='gcl'+(++gUid);
+  const P=[];for(let i=0;i<=N+1;i++){const f=i/(N+1);P.push([22+204*f,166-126*f])}
+  const amp=Math.min(9,126/(N+1)*.3),pts=[];
+  P.forEach((p,i)=>{pts.push(p);if(i<=N){const q=P[i+1],L=(a,o)=>[p[0]+(q[0]-p[0])*a,p[1]+(q[1]-p[1])*a+o];pts.push(L(.42,-amp*.4),L(.64,amp))}});
+  const seg=k=>pts.slice(0,k*3+1).map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join('');
+  const cur=top?N+1:pr.n,d=seg(N+1),dn=seg(cur),me=P[cur];
+  const sun=80-50*(top?1:pr.p);
+  return `<svg class="g-climb${cls?' '+cls:''}${top?' top':''}" viewBox="0 -12 280 198" aria-hidden="true">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--g-m1,var(--surface2))"/><stop offset="1" style="stop-color:var(--g-m2,var(--surface))"/></linearGradient></defs>
+    <g class="g-sun" style="--sy:${(sun-30).toFixed(1)}px"><circle class="g-disc" cx="246" cy="30" r="19"/><path class="g-rays" d="M246 2v-7M222 11l-5-5M270 11l5-5"/></g>
+    <path class="g-mtn" fill="url(#${id})" d="${d}L446 187L-400 187L-400 166Z"/>
+    <path class="g-rt0" d="${d}"/>${cur?`<path class="g-rt1" pathLength="1" d="${dn}"/>`:''}
+    ${g.ms.map((m,i)=>`<circle class="g-ms${m.done?' on':''}" cx="${P[i+1][0].toFixed(1)}" cy="${P[i+1][1].toFixed(1)}" r="4.5"><title>${esc(m.t)}</title></circle>`).join('')}
+    <circle class="g-meh" cx="${me[0].toFixed(1)}" cy="${me[1].toFixed(1)}" r="13"/><circle class="g-me" cx="${me[0].toFixed(1)}" cy="${me[1].toFixed(1)}" r="7"/>
+    <path class="g-flag" d="M226 40V21"/><path class="g-flagf" d="M226 21l12 4.5-12 4.5z"/></svg>`;
+}
+
+/* ---------- the why ladder: big → quarter → week → today ---------- */
+function gLadder(g){
+  const pr=gProg(g),td=gToday(g)[0],qe=gQEnd();
+  const lq=(g.lqAt||0)>=gQStart()?g.lq||'':'',lw=(g.lwAt||0)>=gMon()?g.lw||'':'';
+  const old=(v,cur)=>v&&!cur?`Last time: ${v}`:'';
+  const rung=(lbl,body,sub,now)=>`<div class="g-rung${now?' now':''}"><span class="g-ln"><i></i><b></b></span><div class="g-bx"><small>${lbl}</small>${body}${sub?`<span class="g-rs">${sub}</span>`:''}</div></div>`;
+  return `<div class="g-ladder">
+    ${rung(g.due?`By ${gLong(g.due)}`:'The goal',`<span class="g-rt">${gName(g)}</span>`,pr.of?`${pr.n} of ${pr.of} milestones`:'')}
+    ${rung('This quarter',`<input class="g-lin" data-gl="lq" value="${esc(lq)}" maxlength="80" placeholder="What has to be true by ${esc(qe.toLocaleDateString(undefined,{month:'long',day:'numeric'}))}?" enterkeyhint="done" autocomplete="off" aria-label="This quarter">`,old(g.lq,lq))}
+    ${rung('This week',`<input class="g-lin" data-gl="lw" value="${esc(lw)}" maxlength="80" placeholder="One step you can take this week" enterkeyhint="done" autocomplete="off" aria-label="This week">`,old(g.lw,lw))}
+    ${rung('Today',td?`<button class="g-rt g-rtask" data-gtask="${td.id}">${esc(td.title)}</button>`
+      :gTodayIn?`<input class="g-lin" id="gTodayIn" maxlength="120" placeholder="What will you do today?" enterkeyhint="done" autocomplete="off" aria-label="Today’s task">`
+      :`<button class="g-rtoday" data-gtoday>${PLUS_S}Add a task for today</button>`,td?`${esc(listOf(td.list).name)} · Today`:'',true)}
+  </div>`;
+}
+
+/* ---------- pieces shared by Home, the Goals lens and the Rhythm page ---------- */
+function nsCard(){
+  if(!goalsOn()||C().wStar===false)return '';const g=gStarred();if(!g)return '';
+  const pr=gProg(g),mv=gMoved(g).length;
+  return `<button class="ns-card" data-gopen="${g.id}" aria-label="North star: ${esc(g.name)}"><span class="ns-i">${G_STAR}</span><span class="ns-t">
+    <span class="ns-top"><b>${gName(g)}</b><small>${gLeft(g,true)}</small></span><span class="ns-bar"><i style="width:${Math.round(pr.p*100)}%"></i></span>
+    <small class="ns-sub">${pr.of?`${pr.n} of ${pr.of} milestones`:'Add milestones to start climbing'}${mv?` · ${mv} ${mv===1?'task':'tasks'} moved it this week`:''}</small></span></button>`}
+function gCard(g,wide){const pr=gProg(g),pc=gPace(g);
+  return `<button class="g-card${g.star?' is-star':''}" data-gopen="${g.id}">${wide?`<span class="g-cmini">${gClimb(g,'mini')}</span>`:''}
+    <span class="g-ctop"><span class="g-ce">${g.e?esc(g.e):G_FLAG}</span><span class="g-tx"><b>${esc(g.name)}</b><small>By ${gShort(g.due)} · ${gLeft(g)}</small></span>${g.star?`<span class="g-cstar" title="North star">${G_STAR}</span>`:''}</span>
+    <span class="ns-bar"><i style="width:${Math.round(pr.p*100)}%"></i></span>
+    <span class="g-cmeta"><span>${pr.of?`${pr.n} of ${pr.of} milestones`:'No milestones yet'}</span><span class="pc pc-${pc.k}">${pc.t}</span></span></button>`}
+function gWonList(ws){return ws.length?`<div class="g-won"><span class="eye">Achieved</span>${ws.slice(0,6).map(g=>`<button class="g-wrow" data-gopen="${g.id}"><span class="g-wi">🏆</span><span class="g-tx"><b>${gName(g)}</b><small>${gShort(g.doneAt)}</small></span>${CHEV}</button>`).join('')}</div>`:''}
+function goalsBlock(gs,sp,wide){
+  const add=gAll().length<G_MAX?`<button class="hb-add" data-gnew="${sp||''}">${PLUS_S}New goal</button>`:`<p class="hb-note">${G_MAX} goals at once is the most. Finish one to start another.</p>`;
+  if(!gs.length&&!sp)return `<div class="ib-empty rh-empty g-empty"><span class="g-emi">${gClimb({ms:[{done:1},{},{}],due:'',done:false},'mini')}</span><b>No goals yet</b><span>Pick one big outcome. Break it into milestones and climb, one step at a time.</span><button class="primary" data-gnew="">Set a goal</button></div>${gWonList(gWon())}`;
+  if(wide)return `<div class="g-grid wide">${gs.map(g=>gCard(g,true)).join('')}${gAll().length<G_MAX?`<button class="g-addc" data-gnew="${sp||''}"><span>${PLUS_S}</span>New goal</button>`:''}</div>${gAll().length<G_MAX?'':add}${gWonList(gWon(sp||null))}`;
+  return `<div class="g-grid">${gs.map(g=>gCard(g,false)).join('')}</div>${add}${gWonList(gWon(sp||null))}`}
+function goalsLens(sp,wide){const gs=gIn(sp);
+  return wide?`<div class="gl-wide"><div class="hbw-bar"><span class="eye">Goals · ${gs.length} in progress</span></div>${goalsBlock(gs,sp,true)}</div>`
+    :`<div class="hb-head"><span class="eye">Goals · ${esc((spaceOf(sp)||{}).name||'')}</span><h1 class="hb-h">Goals</h1><div class="hb-sub">${gSubLine(gs)}</div></div>${goalsBlock(gs,sp,false)}`}
+/* the small star on task rows; the ★ Goal pill and picker in a task's details */
+function goalStar(t){if(t.goal==null||!goalsOn())return '';const g=gById(t.goal);if(!g||g.done)return '';return `<span class="mi g-st" title="Moves: ${esc(g.name)}" aria-label="Linked to goal ${esc(g.name)}">${G_STAR}</span>`}
+function goalPill(t,P){if(!goalsOn())return '';const g=t.goal!=null?gById(t.goal):null;if(!g&&!gAll().length)return '';
+  return P('goal',`<span class="g-pst">${G_STAR}</span>${g?esc(g.name):'Goal'}`,!g)}
+function goalPicks(t,pk){return pk(t.goal==null||!gById(t.goal),'','None')+gAll().map(g=>pk(String(t.goal)===String(g.id),g.id,`${g.e?g.e+' ':''}${g.name}`)).join('')}
+
+/* ---------- goal page ---------- */
+document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg gd-pg" id="gdPg" role="region" aria-label="Goal"><div class="ib-in" id="gdIn"></div></div>');
+function openGoal(id){
+  if(!goalsOn()||!gById(id))return;
+  if(typeof closeSearch==='function')closeSearch();
+  gdId=id;gdEdit=false;gTodayIn=false;gdOn=true;gdAnim=true;drawGoal();gdAnim=false;
+  $('gdPg').classList.add('on');$('gdPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
+}
+function closeGoal(){
+  if(!gdOn)return;gdOn=false;gdEdit=false;gTodayIn=false;$('gdPg').classList.remove('on');
+  const a=document.activeElement;if(a&&a.closest&&a.closest('#gdPg'))a.blur();
+  if(typeof renderDesk==='function')renderDesk();
+}
+function gMsRows(g,view){
+  const nx=gNext(g);
+  return g.ms.map((m,i)=>{const tk=gTaskOf(m);
+    if(gdEdit)return `<div class="g-ms ed"><input class="g-msin" data-msren="${m.id}" value="${esc(m.t)}" maxlength="80" aria-label="Milestone name" autocomplete="off" enterkeyhint="done">
+      <button data-msup="${i}" ${i?'':'disabled'} aria-label="Move up">${UP_S}</button><button data-msdn="${i}" ${i<g.ms.length-1?'':'disabled'} aria-label="Move down">${DN_S}</button><button class="g-msx" data-msdel="${m.id}" aria-label="Delete milestone">${X}</button></div>`;
+    return `<div class="g-ms${m.done?' on':''}"><button class="g-msc" data-gms="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}"><span class="hc-dot">${ICK}</span></button>
+      <span class="g-mst"><span>${esc(m.t)}</span>${tk?`<button class="g-mstk" data-gtask="${tk.id}">${G_STAR}${tk.stage==='done'?'Task done':`Task in ${esc(STAGES[idx(tk.stage)].name)}`}</button>`:''}</span>
+      ${m===nx&&!tk&&!g.done&&view==='ladder'?`<button class="g-mk" data-gmk="${m.id}">Make it a task</button>`:''}</div>`}).join('');
+}
+function drawGoal(){
+  const g=gById(gdId);if(!g){closeGoal();return}
+  const pr=gProg(g),pc=gPace(g),view=g.view||C().gView||'climb',sp=spaceOf(g.space)||{name:'',c:'#888'};
+  const wide=matchMedia('(min-width:1100px)').matches,y=$('gdPg').scrollTop,nx=gNext(g),ntk=gTaskOf(nx);
+  const moved=gMoved(g),open=gTasks(g).filter(t=>t.stage!=='done'&&shown(t));
+  const top=pr.of>0&&pr.n>=pr.of&&!g.done;
+  const menu=`<div class="lh-wrap gd-mw"><button class="lh-more" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS3}</button>
+    <div class="sp-pop lh-pop" id="gdPop" role="menu">
+      <button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
+      ${g.done?'':`<button data-gm="star" role="menuitem"><span class="lpm-i">${G_STAR}</span>${g.star?'Remove north star':'Make it my north star'}</button>`}
+      <button data-gm="win" role="menuitem"><span class="lpm-i">${G_FLAG}</span>${g.done?'Back in progress':'Mark as achieved'}</button>
+      <button data-gm="del" class="warn" role="menuitem"><span class="lpm-i">${BIN_S}</span>Delete goal</button></div></div>`;
+  const head=`<div class="gd-head"><span class="eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:g.due?`Goal · by ${gLong(g.due)}`:'Goal'}${g.star&&!g.done?`<span class="gd-ns">${G_STAR}North star</span>`:''}</span>
+    <h1 class="gd-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1><span class="gd-sp">${spMini(sp)}${esc(sp.name)}</span></div>`;
+  const why=g.why?`<button class="gd-why" data-gwhy><small>Why it matters</small><span>${esc(g.why)}</span></button>`:`<button class="gd-why add" data-gwhy>${PLUS_S}Add why it matters</button>`;
+  const sw=`<div class="lens-sw gd-sw" role="tablist" aria-label="Goal view">${[['climb','The climb'],['ladder','Why ladder']].map(([k,l])=>`<button role="tab" data-gview="${k}" class="${view===k?'on':''}" aria-selected="${view===k}">${l}</button>`).join('')}</div>`;
+  const k=(l,v,c)=>`<div class="hbw-kpi"><small>${l}</small><b${c?` class="${c}"`:''}>${v}</b></div>`;
+  const nextCard=g.done?`<div class="gd-next won"><span class="gd-pin">🏆</span><span class="g-tx"><b>You made it.</b><small>Achieved on ${gShort(g.doneAt)}${pr.of?` · ${pr.of} milestones`:''}</small></span></div>`
+    :top?`<div class="gd-next sum"><span class="gd-pin">⛰️</span><span class="g-tx"><b>Summit reached</b><small>Every milestone is done.</small></span><button class="gd-mk dark" data-gwin>Mark achieved</button></div>`
+    :nx?`<div class="gd-next"><span class="gd-pin">📍</span><span class="g-tx"><b>Next: ${esc(nx.t)}</b><small>${ntk?`Linked to “${esc(ntk.title)}”`:'Not a task yet'}</small></span>${ntk?`<span class="gd-of">${pr.n}/${pr.of}</span>`:`<button class="gd-mk" data-gmk="${nx.id}">Make it a task</button>`}</div>`
+    :`<div class="gd-next"><span class="gd-pin">📍</span><span class="g-tx"><b>Add your first milestone</b><small>Big goals are climbed one checkpoint at a time.</small></span></div>`;
+  const panel=view==='ladder'?gLadder(g)
+    :`<div class="gd-climb">${gClimb(g,`${gdAnim?'anim':''}${gdWin?' rise':''}`)}</div>${nextCard}
+      <div class="hbw-kpis gd-kpis">${k('Pace',pc.t,'pc pc-'+pc.k)}${k(g.done?'Finished':'Days left',g.done?gShort(g.doneAt):gDaysLeft(g)===null?'—':Math.max(0,gDaysLeft(g)))}${wide?k('Milestones',`${pr.n} / ${pr.of}`)+k('This week',`${moved.length} ${moved.length===1?'task':'tasks'}`):''}</div>`;
+  const ms=`<div class="gd-sec"><h2>Milestones</h2><span>${pr.of?`${pr.n} of ${pr.of}`:''}</span>${g.ms.length?`<button class="txt-btn gd-ed" data-gedit>${gdEdit?'Done':'Edit'}</button>`:''}</div>
+    <div class="g-mslist${gdEdit?' editing':''}">${gMsRows(g,view)}${!gdEdit&&g.ms.length<MS_MAX&&!g.done?`<div class="g-msadd"><span class="g-msp">${PLUS_S}</span><input id="gMsIn" placeholder="${g.ms.length?'Add a milestone':'Add your first milestone'}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone"></div>`:''}</div>`;
+  const trow=t=>`<button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>`;
+  const tasks=`<div class="gd-sec"><h2>Tasks</h2><span>${moved.length?`${moved.length} moved it this week`:''}</span></div>
+    ${open.length||moved.length?`<div class="g-tasks">${open.slice(0,8).map(trow).join('')}${moved.slice(0,5).map(trow).join('')}</div>`:''}
+    <p class="gd-hint">${open.length||moved.length?'':'No tasks linked yet. '}Link any task from its details: tap <span class="g-pst">${G_STAR}</span><b>Goal</b>.</p>`;
+  $('gdIn').innerHTML=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${menu}</div>${head}
+    <div class="gd-cols"><div class="gd-l">${wide?'':why}${sw}<div class="gd-view">${panel}</div></div><div class="gd-r">${wide?why:''}${ms}${tasks}</div></div>`;
+  $('gdPg').scrollTop=y;gdWin=false;
+}
+
+/* ---------- actions ---------- */
+function gSpaceList(g,stage){const ls=S.lists.filter(l=>l.space===g.space);return ls.find(l=>stageRoom(l.id,stage))||ls[0]||null}
+function gMakeTask(g,m){
+  const l=gSpaceList(g,'week');if(!l){toast('Add a list to this space first');return}
+  if(!canPut(l.id,'week'))return;
+  commit(()=>{const t={id:newId(),title:m.t,stage:'week',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id};addTask(t);m.task=t.id},`Added to ${l.name} · My week`);
+}
+function gAddToday(g,title){
+  const l=gSpaceList(g,'today');if(!l){toast('Add a list to this space first');return}
+  if(!canPut(l.id,'today'))return;
+  gTodayIn=false;commit(()=>addTask({id:newId(),title,stage:'today',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id}),`Added to ${l.name} · Today`);
+  const a=document.activeElement;if(a&&a.blur)a.blur();if(gdOn)drawGoal();
+}
+function gMsToggle(g,m){
+  const on=!m.done,pr=gProg(g),all=on&&pr.n+1>=pr.of;
+  commit(()=>{m.done=on;if(on){m.doneAt=Date.now();const t=gTaskOf(m);if(t&&t.stage!=='done')setStage(t,'done')}else delete m.doneAt},
+    on?(all?'Summit reached. Every milestone is done.':`Milestone done · ${pr.n+1} of ${pr.of}`):'Milestone reopened');
+  if(on)haptic([8,30,12]);
+}
+function gMsAdd(g){
+  const i=$('gMsIn'),v=(i&&i.value||'').trim();if(!v)return;
+  if(g.ms.length>=MS_MAX){toast(`Up to ${MS_MAX} milestones. Keep them big.`);return}
+  g.ms.push({id:'m'+newId(),t:v,done:false});save();try{sfx('add')}catch(e){}haptic(8);render();drawGoal();
+  const n=$('gMsIn');if(n)n.focus();
+}
+function gSetWin(g,on){
+  if(!on&&gAll().length>=G_MAX){toast(`${G_MAX} goals are already in progress. Finish one first.`);return}
+  if(on)gdWin=true;
+  commit(()=>{if(on){g.done=true;g.doneAt=Date.now();g.star=false}else{g.done=false;delete g.doneAt}},on?`🏆 ${g.name}: achieved`:'Back in progress');
+  if(on){haptic([10,40,10,40,20]);try{sfx('done')}catch(e){}}
+}
+function gToggleStar(g){const on=!g.star;commit(()=>{gList().forEach(x=>{if(x.star)x.star=false});g.star=on},on?'Now your north star. It sits on Home.':'North star removed')}
+function gDelete(g){
+  confirmAsk({title:`Delete ${g.name}?`,text:'Its milestones go too. Linked tasks stay, without the star.',yes:'Yes, delete',no:'No',
+    onYes:()=>{const inSet=settingsOpen();closeSheets();if(gdId===g.id)closeGoal();
+      commit(()=>{S.goals=gList().filter(x=>x!==g);S.tasks.forEach(t=>{if(t.goal!=null&&String(t.goal)===String(g.id))delete t.goal})},`${g.name} deleted`);if(inSet)drawSettings()}});
+}
+$('gdPg').addEventListener('click',e=>{
+  const g=gById(gdId);if(!g)return;
+  const pop=$('gdPop');if(pop&&!e.target.closest('#gdPop,#gdMore'))pop.classList.remove('on');
+  if(e.target.closest('#gdBack'))return closeGoal();
+  if(e.target.closest('#gdMore')){e.stopPropagation();const was=pop.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);pop.classList.add('on')}return}
+  const m=e.target.closest('[data-gm]');if(m){pop.classList.remove('on');const a=m.dataset.gm;
+    if(a==='edit')return openGoalSheet(g.id);if(a==='star')return gToggleStar(g);if(a==='win')return gSetWin(g,!g.done);if(a==='del')return gDelete(g);return}
+  const v=e.target.closest('[data-gview]');if(v){if((g.view||C().gView)!==v.dataset.gview){g.view=v.dataset.gview;gTodayIn=false;haptic(5);save();gdAnim=true;drawGoal();gdAnim=false}return}
+  if(e.target.closest('[data-gwhy]')){openGoalSheet(g.id,true);return}
+  const tk=e.target.closest('[data-gtask]');if(tk){haptic(5);return openDetail(+tk.dataset.gtask)}
+  const mk=e.target.closest('[data-gmk]');if(mk){const ms=g.ms.find(x=>x.id===mk.dataset.gmk);if(ms)gMakeTask(g,ms);return}
+  if(e.target.closest('[data-gtoday]')){gTodayIn=true;drawGoal();setTimeout(()=>$('gTodayIn')&&$('gTodayIn').focus(),30);return}
+  if(e.target.closest('[data-gwin]'))return gSetWin(g,true);
+  if(e.target.closest('[data-gedit]')){gdEdit=!gdEdit;haptic(5);return drawGoal()}
+  const c=e.target.closest('[data-gms]');if(c){const ms=g.ms.find(x=>x.id===c.dataset.gms);if(!ms)return;c.closest('.g-ms').classList.toggle('on',!ms.done);setTimeout(()=>gMsToggle(g,ms),170);return}
+  const up=e.target.closest('[data-msup]'),dn=e.target.closest('[data-msdn]');
+  if(up||dn){const i=+(up?up.dataset.msup:dn.dataset.msdn),j=up?i-1:i+1;if(j<0||j>=g.ms.length)return;[g.ms[i],g.ms[j]]=[g.ms[j],g.ms[i]];haptic(4);save();drawGoal();return}
+  const dl=e.target.closest('[data-msdel]');if(dl){const ms=g.ms.find(x=>x.id===dl.dataset.msdel);if(!ms)return;commit(()=>{g.ms=g.ms.filter(x=>x!==ms)},'Milestone removed');if(!g.ms.length)gdEdit=false;return}
+});
+$('gdPg').addEventListener('change',e=>{
+  const g=gById(gdId);if(!g)return;
+  const k=e.target.dataset.gl;if(k){g[k]=e.target.value.trim();g[k+'At']=Date.now();save();return}
+  const r=e.target.dataset.msren;if(r){const ms=g.ms.find(x=>x.id===r),v=e.target.value.trim();if(ms&&v){ms.t=v;save();render()}else if(ms)e.target.value=ms.t}
+});
+$('gdPg').addEventListener('keydown',e=>{
+  const g=gById(gdId);
+  if(e.key==='Enter'&&g){
+    if(e.target.id==='gMsIn'){e.preventDefault();return gMsAdd(g)}
+    if(e.target.id==='gTodayIn'){e.preventDefault();const v=e.target.value.trim();if(v)gAddToday(g,v);return}
+    if(e.target.matches('.g-lin,.g-msin')){e.preventDefault();e.target.blur();haptic(5);return}
+  }
+  if(e.key==='Escape'){
+    if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on'))return;
+    const pop=$('gdPop');if(pop&&pop.classList.contains('on')){pop.classList.remove('on');e.stopPropagation();return}
+    if(e.target.id==='gTodayIn'){gTodayIn=false;drawGoal();e.stopPropagation();return}
+    if(e.target.matches('input')&&e.target.value&&e.target.id==='gMsIn'){e.target.value='';return}
+    e.stopPropagation();closeGoal();
+  }
+});
+
+/* ---------- 30-second setup: what → by when → first milestones ---------- */
+document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg review-pg gs-pg" id="gsPg" role="dialog" aria-label="New goal"><div class="ib-in" id="gsIn"></div></div>');
+let gsD=null;
+function openSetup(sp){
+  if(!goalsOn())return;
+  if(gAll().length>=G_MAX){toast(`Up to ${G_MAX} goals at once. Finish one to start another.`);return}
+  const sps=orderedSpaces();
+  gsD={step:1,name:'',e:'',touched:false,space:sp&&spaceOf(sp)?sp:inSpaceMode()&&spaceOf(S.space)?S.space:(sps[0]||{}).id,why:'',pick:3,due:gPlus(3),ms:[],star:!gStarred()};
+  gsOn=true;drawSetup();$('gsPg').classList.add('on');$('gsPg').scrollTop=0;haptic(6);
+  setTimeout(()=>{if(gsOn&&$('gsName'))$('gsName').focus()},330);
+}
+function closeSetup(){if(!gsOn)return;gsOn=false;$('gsPg').classList.remove('on');const a=document.activeElement;if(a&&a.closest&&a.closest('#gsPg'))a.blur()}
+function gsDays(){const d=gDate(gsD.due);return d?Math.max(1,Math.round((d-gNoon(new Date()))/864e5)):0}
+function drawSetup(){
+  const d=gsD,st=d.step,days=gsDays(),wk=Math.max(1,Math.round(days/7));
+  let body='';
+  if(st===1)body=`<span class="rv-eye gs-eye">New goal</span><h1 class="gs-q">What do you want to achieve?</h1>
+    <div class="gs-name"><span class="gs-e" id="gsE">${d.e?esc(d.e):G_FLAG}</span><input id="gsName" value="${esc(d.name)}" placeholder="Run a half marathon" maxlength="60" autocomplete="off" enterkeyhint="next" aria-label="Goal"></div>
+    ${S.spaces.length>1?`<div class="gs-lbl">Space</div><div class="gs-chips">${orderedSpaces().map(x=>`<button class="gs-chip${d.space===x.id?' on':''}" data-gssp="${x.id}">${spMini(x)}${esc(x.name)}</button>`).join('')}</div>`:''}
+    <div class="gs-lbl">Why does it matter? <span>Optional</span></div><textarea id="gsWhy" rows="2" maxlength="160" placeholder="So I feel strong and proud of myself" aria-label="Why it matters">${esc(d.why)}</textarea>`;
+  if(st===2){const tm=new Date();tm.setDate(tm.getDate()+1);
+    body=`<span class="rv-eye gs-eye">${d.e?esc(d.e)+' ':''}${esc(d.name)}</span><h1 class="gs-q">By when?</h1>
+    <div class="gs-opts">${[1,3,6,12].map(m=>`<button class="${d.pick===m?'on':''}" data-gsm="${m}">${m===12?'In 1 year':`In ${m} ${m===1?'month':'months'}`}<small>${gShort(gPlus(m))}</small></button>`).join('')}
+      <label class="gs-date${d.pick==='date'?' on':''}"><span>Pick a date</span><input type="date" id="gsDate" min="${dkey(tm)}" value="${d.pick==='date'?d.due:''}" aria-label="Pick a date"></label></div>
+    <p class="gs-hint">${days?`About <b>${wk} ${wk===1?'week':'weeks'}</b> from today. Enough room for a few milestones.`:''}</p>`}
+  if(st===3)body=`<span class="rv-eye gs-eye">${d.e?esc(d.e)+' ':''}${esc(d.name)} · by ${gShort(d.due)}</span><h1 class="gs-q">First milestones</h1>
+    <p class="gs-hint">${d.ms.length?`That’s about one every <b>${Math.max(1,Math.round(days/d.ms.length))} days</b>.`:'Break it into a few checkpoints. You can add more later.'}</p>
+    <div class="gs-ms">${d.ms.map((t,i)=>`<div class="gs-mi"><span class="gs-mn">${i+1}</span><span class="gs-mt">${esc(t)}</span><button data-gsx="${i}" aria-label="Remove ${esc(t)}">${X}</button></div>`).join('')}
+      ${d.ms.length<MS_MAX?`<div class="gs-madd"><input id="gsMs" placeholder="${d.ms.length?'Add another':'e.g. Run 5 km without stopping'}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone"><button id="gsMsAdd" type="button">Add</button></div>`:''}</div>
+    <button class="gs-star" id="gsStar" aria-pressed="${d.star}"><span class="ns-i">${G_STAR}</span><span class="g-tx"><b>Make it my north star</b><small>It sits on Home, under Today</small></span><span class="tg" aria-pressed="${d.star}"></span></button>`;
+  $('gsIn').innerHTML=`<div class="set-top gs-top"><button class="icon-btn" id="gsBack" aria-label="${st>1?'Back':'Close'}">${st>1?BACK_SVG:X}</button><span class="gs-n">${st} of 3</span></div>
+    <div class="gs-steps">${[1,2,3].map(i=>`<i class="${i<=st?'on':''}"></i>`).join('')}</div><div class="gs-body" data-st="${st}">${body}</div>
+    ${st<3?`<button class="primary gs-next" id="gsNext" ${st===1&&!d.name.trim()?'disabled':''}>${st===1?'Next: by when':'Next: first milestones'}</button>`:`<button class="primary gs-next" id="gsGo">Create goal</button>`}`;
+}
+function gsStep(n){
+  const d=gsD;if(n===2&&!d.name.trim()){$('gsName').focus();return}
+  if(n===3&&(gDaysLeft({due:d.due})||0)<1){toast('Pick a date after today');return}
+  d.step=n;haptic(5);drawSetup();$('gsPg').scrollTop=0;
+  setTimeout(()=>{const i=n===1?$('gsName'):n===3?$('gsMs'):null;if(gsOn&&i&&matchMedia('(min-width:700px)').matches)i.focus()},60);
+}
+function gsAddMs(){const i=$('gsMs'),v=(i&&i.value||'').trim();if(!v||gsD.ms.length>=MS_MAX)return;gsD.ms.push(v);haptic(6);drawSetup();const n=$('gsMs');if(n)n.focus()}
+function gsCreate(){
+  const d=gsD;if(!d||!d.name.trim()||!spaceOf(d.space))return;
+  const pend=($('gsMs')&&$('gsMs').value||'').trim();if(pend&&d.ms.length<MS_MAX)d.ms.push(pend);
+  if(gAll().length>=G_MAX){toast(`Up to ${G_MAX} goals at once.`);return}
+  const id='g'+newId(),name=d.name.trim(),inSet=settingsOpen();
+  commit(()=>{if(d.star)gList().forEach(x=>{if(x.star)x.star=false});
+    gList().push({id,name,e:d.e,space:d.space,why:d.why.trim(),due:d.due,created:Date.now(),star:!!d.star,ms:d.ms.map(t=>({id:'m'+newId(),t,done:false}))})},`Goal set: ${name}`);
+  try{sfx('add')}catch(e){}haptic([8,30,12]);closeSetup();
+  if(inSet)drawSettings();else setTimeout(()=>openGoal(id),140);
+}
+$('gsPg').addEventListener('click',e=>{
+  const d=gsD;if(!d)return;
+  if(e.target.closest('#gsBack')){if(d.step>1)gsStep(d.step-1);else closeSetup();return}
+  if(e.target.closest('#gsNext'))return gsStep(d.step+1);
+  if(e.target.closest('#gsGo'))return gsCreate();
+  const sp=e.target.closest('[data-gssp]');if(sp){d.space=sp.dataset.gssp;haptic(5);$('gsPg').querySelectorAll('[data-gssp]').forEach(b=>b.classList.toggle('on',b===sp));return}
+  const m=e.target.closest('[data-gsm]');if(m){d.pick=+m.dataset.gsm;d.due=gPlus(d.pick);haptic(5);return drawSetup()}
+  if(e.target.closest('#gsStar')){d.star=!d.star;haptic(5);return drawSetup()}
+  const x=e.target.closest('[data-gsx]');if(x){d.ms.splice(+x.dataset.gsx,1);haptic(5);return drawSetup()}
+  if(e.target.closest('#gsMsAdd'))return gsAddMs();
+  if(e.target.closest('#gsE')&&d.step===1){const i=G_ICONS.indexOf(d.e);d.e=G_ICONS[(i+1)%G_ICONS.length];d.touched=true;$('gsE').textContent=d.e;haptic(4)}
+});
+$('gsPg').addEventListener('input',e=>{const d=gsD;if(!d)return;
+  if(e.target.id==='gsName'){d.name=e.target.value;if(!d.touched){d.e=gIcon(d.name);$('gsE').innerHTML=d.e?esc(d.e):G_FLAG}$('gsNext').disabled=!d.name.trim()}
+  if(e.target.id==='gsWhy')d.why=e.target.value;
+});
+$('gsPg').addEventListener('change',e=>{if(e.target.id==='gsDate'&&e.target.value){gsD.pick='date';gsD.due=e.target.value;drawSetup()}});
+$('gsPg').addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.stopPropagation();closeSetup();return}
+  if(e.key!=='Enter')return;
+  if(e.target.id==='gsName'){e.preventDefault();gsStep(2)}
+  else if(e.target.id==='gsMs'){e.preventDefault();if(e.target.value.trim())gsAddMs();else if(gsD.ms.length)gsCreate()}
+});
+
+/* ---------- edit sheet ---------- */
+document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="gSheet"><div class="sheet-in">
+  <div class="grab"></div><h2>Edit goal</h2>
+  <div class="sp-form"><span class="sp-prev hb-prev g-prev" id="gPrev" role="button" aria-label="Choose an icon"></span><input class="field sp-name-in" id="gName" placeholder="Goal" maxlength="60" autocomplete="off" enterkeyhint="done"></div>
+  <div class="lbl">Why it matters</div><textarea class="field g-whyin" id="gWhy" rows="2" maxlength="160" placeholder="Optional"></textarea>
+  <div class="le-card sp-opts" id="gOpts"></div>
+  <button class="primary" id="gSave">Save</button>
+  <div class="le-acts"><button class="le-btn" id="gWinB" type="button">Mark achieved</button><button class="le-btn warn" id="gDelB" type="button">Delete goal</button></div>
+</div></div>`);
+let gDraft=null,gSub=null;
+function openGoalSheet(id,why){const g=gById(id);if(!g)return;
+  gDraft={id:g.id,name:g.name,e:g.e||'',space:g.space,due:g.due||gPlus(3),why:g.why||''};gSub=null;
+  $('gName').value=g.name;$('gWhy').value=g.why||'';$('gWinB').textContent=g.done?'Back in progress':'Mark achieved';
+  drawGoalSheet();openSheet('gSheet');if(why)setTimeout(()=>{if($('gSheet').classList.contains('on'))$('gWhy').focus()},300)}
+function drawGoalSheet(){
+  const d=gDraft,sp=spaceOf(d.space)||{},tm=new Date();tm.setDate(tm.getDate()+1);
+  $('gSave').disabled=!d.name.trim();$('gPrev').innerHTML=d.e?esc(d.e):G_FLAG;
+  $('gOpts').innerHTML=
+    lxRow('i','Icon',`<span class="lx-ico">${d.e?esc(d.e):'None'}</span>`,`<div class="ico-grid"><button data-gico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">–</button>${G_ICONS.map(i=>`<button data-gico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,gSub==='i')+
+    lxRow('d','By when',`<span class="lx-t">${gShort(d.due)}</span>`,`<div class="hb-pre g-pre">${[1,3,6,12].map(m=>`<button data-gdm="${m}">${m===12?'1 year':`${m} ${m===1?'month':'months'}`}</button>`).join('')}</div><input type="date" class="g-date" id="gDue" value="${d.due}" min="${dkey(tm)}" aria-label="Due date">`,gSub==='d')+
+    (S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name||'')}</span>`,`<div class="lx-list">${orderedSpaces().map(x=>`<button class="lx-opt${d.space===x.id?' on':''}" data-gsp="${x.id}">${spMini(x)}<span>${esc(x.name)}</span>${d.space===x.id?tick():''}</button>`).join('')}</div>`,gSub==='s'):'');
+}
+$('gOpts').addEventListener('click',e=>{
+  const t=e.target.closest('[data-lxt]');if(t){lxToggle(t,v=>gSub=v);return}
+  const d=gDraft;if(!d)return;
+  const ic=e.target.closest('[data-gico]');if(ic){d.e=ic.dataset.gico;haptic(5);return drawGoalSheet()}
+  const dm=e.target.closest('[data-gdm]');if(dm){d.due=gPlus(+dm.dataset.gdm);haptic(5);return drawGoalSheet()}
+  const sp=e.target.closest('[data-gsp]');if(sp){d.space=sp.dataset.gsp;haptic(5);return drawGoalSheet()}
+});
+$('gOpts').addEventListener('change',e=>{if(e.target.id==='gDue'&&e.target.value){gDraft.due=e.target.value;drawGoalSheet()}});
+$('gPrev').onclick=()=>{const t=$('gOpts').querySelector('[data-lxt="i"]');if(t&&gSub!=='i')lxToggle(t,v=>gSub=v)};
+$('gName').oninput=e=>{gDraft.name=e.target.value;$('gSave').disabled=!gDraft.name.trim()};
+$('gName').onkeydown=e=>{if(e.key==='Enter'&&gDraft.name.trim())$('gSave').click()};
+$('gWhy').oninput=e=>{gDraft.why=e.target.value};
+$('gSave').onclick=()=>{const d=gDraft,g=d&&gById(d.id);if(!g||!d.name.trim())return;const inSet=settingsOpen();closeSheets();
+  commit(()=>Object.assign(g,{name:d.name.trim(),e:d.e,space:spaceOf(d.space)?d.space:g.space,due:d.due,why:d.why.trim()}),'Goal saved');if(inSet)drawSettings()};
+$('gWinB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(!g)return;const inSet=settingsOpen();closeSheets();setTimeout(()=>{gSetWin(g,!g.done);if(inSet)drawSettings()},200)};
+$('gDelB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(g)gDelete(g)};
+
+/* ---------- Settings → Modes → Your goals ---------- */
+function goalsSetPage(){
+  const gs=gAll(),won=gWon();
+  const r=g=>`<button class="link-row" data-ge="${g.id}"><span class="hs-n">${gName(g)}</span><span class="hint">${g.done?`Achieved ${gShort(g.doneAt)}`:`By ${gShort(g.due)}`}${g.star&&!g.done?' · North star':''}${CHEV}</span></button>`;
+  return `<p class="sub-p">Up to ${G_MAX} goals at once, so each one gets real attention. Tap one to change it.</p>
+    ${gs.length?`<div class="set-sec"><h3>In progress</h3>${gs.map(r).join('')}</div>`:'<p class="sub-p hs-none">No goals yet.</p>'}
+    ${won.length?`<div class="set-sec"><h3>Achieved</h3>${won.map(r).join('')}</div>`:''}
+    ${gs.length<G_MAX?`<button class="primary hs-new" data-gnew="">New goal</button>`:''}`;
+}
+
+/* ---------- taps from anywhere (capture, so a goal inside a card never also opens the card) ---------- */
+$('lmEdit').insertAdjacentHTML('afterend',`<button id="lmGoal" type="button" role="menuitem" hidden><span class="lpm-i">${G_FLAG}</span>Add a goal</button>`);
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-gopen],[data-gnew],[data-gadd],[data-ge],#lmGoal');if(!el)return;
+  if(el.closest('#gdPg')&&!el.matches('[data-gopen]'))return;
+  e.stopPropagation();e.preventDefault();
+  if(el.matches('[data-gopen]'))return openGoal(el.dataset.gopen);
+  if(el.matches('[data-gnew]'))return openSetup(el.dataset.gnew||null);
+  if(el.matches('[data-gadd]')){closePops();return openSetup(el.dataset.gadd)}
+  if(el.matches('[data-ge]'))return openGoalSheet(el.dataset.ge);
+  if(el.matches('#lmGoal')){$('listsPop').classList.remove('on');const sp=S.space;closeSheets();setTimeout(()=>openSetup(sp),260);return}
+},true);
+
+/* finishing a task that came from a milestone ticks the milestone (and un-finishing it reopens it) */
+const _gSetStage=setStage;
+setStage=function(t,stage){const was=t.stage;_gSetStage(t,stage);
+  try{if(was!==stage)gList().forEach(g=>g.ms.forEach(m=>{if(m.task!==t.id)return;
+    if(stage==='done'&&!m.done){m.done=true;m.doneAt=Date.now()}else if(was==='done'&&stage!=='done'&&m.done){m.done=false;delete m.doneAt}}))}catch(err){}};
+/* keep the goal page in step with edits, undo and sync, without stealing focus while typing */
+const _gRender=render;
+render=function(d){_gRender(d);try{
+  if(gsOn&&!goalsOn())closeSetup();
+  if(gdOn&&(!goalsOn()||!gById(gdId)))closeGoal();
+  if(gdOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#gdPg')&&a.matches('input,textarea')))drawGoal()}
+  const lg=$('lmGoal');if(lg)lg.hidden=!(goalsOn()&&inSpaceMode());
+}catch(err){console.error(err)}};
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -5525,7 +6213,7 @@ function askDeleteSpace(id){
   confirmDanger({title:`Delete ${sp.name}?`,
     text:`This deletes the space, its ${ls.length} ${ls.length===1?'list':'lists'} and ${nt} ${nt===1?'task':'tasks'} for good. To keep them safe, choose Archive instead.`,
     word:sp.name,yes:'Delete space',
-    onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.habits=(S.habits||[]).filter(h=>h.space!==id);S.hchains=(S.hchains||[]).filter(c=>c.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
+    onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.habits=(S.habits||[]).filter(h=>h.space!==id);S.hchains=(S.hchains||[]).filter(c=>c.space!==id);S.goals=(S.goals||[]).filter(g=>g.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
 }
 let dlgYes=null;
 function confirmDanger({title,text,word,yes,no,onYes}){
@@ -5866,7 +6554,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,review:true,reviewDay:0,habits:false,modePlace:'spaces',hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,review:true,reviewDay:0,habits:false,goals:false,gView:'climb',wStar:true,modePlace:'spaces',hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -5966,6 +6654,7 @@ const PAGES=[
   {id:'focus',name:'Focus'},
   {id:'modes',name:'Modes'},
   {id:'habits',name:'Your habits',hidden:true},
+  {id:'goals',name:'Your goals',hidden:true},
   {id:'lists',name:'Lists'},
   {id:'shortcuts',name:'Keyboard shortcuts'},
   {id:'archive',name:'Archived',hidden:true},
@@ -6092,6 +6781,7 @@ function settingsPage(id){
   if(id==='archive')body=archivePage();
   if(id==='modes')body=modesPage();
   if(id==='habits')body=habitsSetPage();
+  if(id==='goals')body=goalsSetPage();
   if(id==='lists')body=`<p class="sub-p">Lists sit inside your spaces. Tap a list to rename, recolour, move, tag or archive it.</p><div class="lists-slot" id="picksSlot"></div>`;
   if(id==='sounds'){const cur=sfxStyle().id,PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
     body=`<div class="set-sec">${row('Sounds',tg('uiSounds'),c.uiSounds===false?'Off. You can still try styles below.':'Soft sounds when you add, move or finish tasks')}
@@ -6337,7 +7027,7 @@ $('setIn').addEventListener('click',e=>{
   const sn=e.target.closest('[data-snd]');if(sn){S.cfg.sfxStyle=sn.dataset.snd;S.cfgU=Date.now();sfxTry('done',sn.dataset.snd);haptic(5);save();return drawSettings()}
   const ce=e.target.closest('[data-celeb]');if(ce){S.cfg.celebStyle=ce.dataset.celeb;S.cfgU=Date.now();haptic(5);save();drawSettings();const r=ce.getBoundingClientRect();celebrate(doneToday()||3,r.left+30,r.top+r.height/2,ce.dataset.celeb);return}
   const sy=e.target.closest('[data-sndtry]');if(sy){sfxTry(sy.dataset.sndtry,sfxStyle().id);haptic(4);return}
-  if(e.target.closest('#subBack')&&setView==='habits'){setView='modes';haptic(5);drawSettings();$('settings').scrollTop=0;return}
+  if(e.target.closest('#subBack')&&(setView==='habits'||setView==='goals')){setView='modes';haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#subBack')&&setView==='archive'){setView=arcFrom==='archive'?'data':arcFrom;haptic(5);drawSettings();return}
   if(e.target.closest('#subBack')){setView='main';openSw=null;haptic(5);drawSettings();$('settings').scrollTop=0;return}
   if(e.target.closest('#anBack')){setView='main';haptic(5);drawSettings();$('settings').scrollTop=0;return}
@@ -6364,11 +7054,11 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
     try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
       const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
       const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
@@ -6420,7 +7110,7 @@ function loadDemo(){
 }
 function resetAll(){
   const keep={lastBackup:S.lastBackup,syncedUser:S.syncedUser,syncV:S.syncV,tomb:S.tomb,nid:S.nid};
-  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.lens={};
+  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.lens={};
   const sp={id:'s'+newId(),name:'Personal',c:'#9C95FF',e:'🌱',autoSet:true};
   S.spaces=[sp];S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:sp.id}];
   S.cfg=JSON.parse(JSON.stringify(DEF_CFG));S.focusLog={};S.resetAt=Date.now();
@@ -6448,7 +7138,7 @@ const CID=Math.random().toString(36).slice(2);
 let sb=null,user=null,syncState='off',syncTimer=null,pendingRemote=null,channel=null,applying=false,lastHash='';
 let authStep='email',authEmail='',authBusy=false,authMsg='',resendAt=0;
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[]]);
+const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[],S.goals||[]]);
 const busyUI=()=>document.querySelector('.sheet.on,.focus.on,.tide.on');
 const SYNC_LABEL={off:'Off',syncing:'Syncing…',synced:'Up to date',offline:'Offline, will sync later',error:'Couldn’t sync, will retry'};
 function setSync(s){syncState=s;const el=document.getElementById('syncStatus');if(el)el.textContent=SYNC_LABEL[s];try{drawMe()}catch(e){}
@@ -6458,8 +7148,8 @@ function cloudDirty(){
   S.dirty=true;S.editAt=Date.now();saveLocal();clearTimeout(syncTimer);syncTimer=setTimeout(push,1500);
 }
 /* ---- merge: combine two copies item by item, newest change wins, deletions respected ---- */
-const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
-const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog,d.habits||[],d.hchains||[]]);
+const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
+const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog,d.habits||[],d.hchains||[],d.goals||[]]);
 function mergeDocs(L,Rm){
   const tomb={...(Rm.tomb||{})};Object.entries(L.tomb||{}).forEach(([k,v])=>{if(!tomb[k]||tomb[k]<v)tomb[k]=v});
   const cut=Date.now()-60*DAY;Object.keys(tomb).forEach(k=>{if(tomb[k]<cut)delete tomb[k]});
@@ -6475,12 +7165,12 @@ function mergeDocs(L,Rm){
   const lr=L.resetAt||0,rr=Rm.resetAt||0;
   const fl=lr!==rr?{...((lr>rr?L:Rm).focusLog||{})}:{...(Rm.focusLog||{})};if(lr===rr)Object.entries(L.focusLog||{}).forEach(([k,v])=>{fl[k]=Math.max(fl[k]||0,v)});
   const lc=(L.cfgU||0)>=(Rm.cfgU||0);
-  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),habits:mergeArr('h',L.habits,Rm.habits,true),hchains:mergeArr('c',L.hchains,Rm.hchains,true),
+  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),habits:mergeArr('h',L.habits,Rm.habits,true),hchains:mergeArr('c',L.hchains,Rm.hchains,true),goals:mergeArr('g',L.goals,Rm.goals,true),
     cfg:lc?L.cfg:(Rm.cfg||L.cfg),cfgU:Math.max(L.cfgU||0,Rm.cfgU||0),orderU:Math.max(L.orderU||0,Rm.orderU||0),tomb,nid:Math.max(L.nid||0,Rm.nid||0),focusLog:fl,resetAt:Math.max(lr,rr)};
 }
 function applyDoc(d){
   applying=true;
-  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(Array.isArray(d.habits))S.habits=d.habits;if(Array.isArray(d.hchains))S.hchains=d.hchains;if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
+  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(Array.isArray(d.habits))S.habits=d.habits;if(Array.isArray(d.hchains))S.hchains=d.hchains;if(Array.isArray(d.goals))S.goals=d.goals;if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
   S.cfgU=d.cfgU||0;S.orderU=d.orderU||0;S.tomb=d.tomb||{};S.nid=Math.max(S.nid||0,d.nid||0);S.focusLog=d.focusLog||{};if(d.resetAt)S.resetAt=d.resetAt;
   if(d.cfg)S.cfg=Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors)});
   migrateSpaces();

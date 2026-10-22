@@ -69,6 +69,7 @@ function rowHTML(t){
   const pr=t.stage!=='done'?priOf(t):null,ps=S.cfg.priStyle||'bars';
   const extra=[
     pr&&ps==='bars'?`<span class="mi pri ${pr.id}" title="${pr.name} priority">${priIcon(pr.n)}${pr.name}</span>`:'',
+    goalStar(t),
     tagChips(t,3),
     t.repeat!=='none'?`<span class="mi">${I_REP}${REPEATS.find(r=>r.id===t.repeat).name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
@@ -150,7 +151,7 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${nsCard()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
 }
 function render(dir){
   root.dataset.view=S.space?'space':'home';drawMe();

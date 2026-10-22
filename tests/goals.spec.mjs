@@ -1,0 +1,151 @@
+// Modes → Goals: off by default and invisible; 30-second setup; North star on Home; goal page with
+// The climb and Why ladder views; milestones (tick, make a task, finishing the task ticks it); task star + goal pill;
+// Goals lens in spaces; mark achieved; turning it off hides everything but keeps data; sync/backup/undo carry goals.
+import { test, expect } from '@playwright/test';
+import { openApp, noErrors } from './helpers.mjs';
+
+test('goals: setup, north star, climb and ladder, milestones, lens, achieved, off', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  // off: nothing anywhere
+  expect(await page.evaluate(() => goalsOn())).toBe(false);
+  expect(await page.evaluate(() => nsCard())).toBe('');
+  await page.evaluate(() => openDetail(S.tasks.find(t => t.stage === 'today').id));
+  await expect(page.locator('#dPills [data-p="goal"]')).toHaveCount(0);
+  await page.evaluate(() => closeSheets());
+
+  // turn on in Settings → Modes, then New goal from "Your goals"
+  await page.evaluate(() => { openSettings(); setView = 'modes'; drawSettings(); });
+  await page.locator('#setIn [data-tg="goals"]').click();
+  await expect.poll(() => page.evaluate(() => goalsOn())).toBe(true);
+  await page.locator('#setIn [data-page="goals"]').click();
+  await page.locator('#setIn [data-gnew]').click();
+  await expect(page.locator('#gsPg')).toHaveClass(/on/);
+  await expect(page.locator('#gsNext')).toBeDisabled();
+  await page.fill('#gsName', 'Run a half marathon');
+  await expect(page.locator('#gsE')).toHaveText('🏃'); // auto icon from the name
+  await page.locator('#gsNext').click();
+  await page.locator('[data-gsm="6"]').click();
+  await page.locator('#gsNext').click();
+  await page.fill('#gsMs', 'Run 10 km');
+  await page.keyboard.press('Enter');
+  await page.fill('#gsMs', 'Run 15 km');
+  await page.locator('#gsMsAdd').click();
+  await expect(page.locator('.gs-mi')).toHaveCount(2);
+  await expect(page.locator('#gsStar')).toHaveAttribute('aria-pressed', 'true'); // first goal becomes the north star
+  await page.locator('#gsGo').click();
+  await expect(page.locator('#gsPg')).not.toHaveClass(/on/);
+  const g = await page.evaluate(() => S.goals[0]);
+  expect(g.name).toBe('Run a half marathon');
+  expect(g.star).toBe(true);
+  expect(g.ms.map(m => m.t)).toEqual(['Run 10 km', 'Run 15 km']);
+  await expect(page.locator('#setIn [data-ge]')).toHaveCount(1);
+  await page.evaluate(() => closeSettings());
+
+  // North star on Home → goal page (The climb by default)
+  await page.evaluate(() => goHome());
+  await expect(page.locator('#homeView .ns-card, .ns-card:visible').first()).toBeVisible();
+  await page.locator('.ns-card:visible').first().click();
+  await expect(page.locator('#gdPg')).toHaveClass(/on/);
+  await expect(page.locator('#gdPg .g-climb')).toBeVisible();
+  // tick the first milestone
+  await page.locator('#gdPg [data-gms]').first().click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
+  // the next one becomes a task in My week, linked to the goal
+  await page.locator('#gdPg .gd-next [data-gmk]').click();
+  const t = await page.evaluate(() => { const g = S.goals[0]; return S.tasks.find(x => x.id === g.ms[1].task); });
+  expect(t.stage).toBe('week');
+  expect(t.goal).toBe(g.id);
+  // finishing that task ticks the milestone
+  await page.evaluate(id => { const x = S.tasks.find(y => y.id === id); commit(() => setStage(x, 'done'), 'Done'); }, t.id);
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms[1].done)).toBe(true);
+  await expect(page.locator('#gdPg .gd-next.sum')).toBeVisible(); // summit reached → offer to mark achieved
+
+  // Why ladder: this week's step saves; a task for today is created, linked
+  await page.locator('#gdPg [data-gview="ladder"]').click();
+  await expect(page.locator('#gdPg .g-ladder')).toBeVisible();
+  expect(await page.evaluate(() => S.goals[0].view)).toBe('ladder');
+  await page.fill('#gdPg [data-gl="lw"]', 'Two long runs');
+  await page.keyboard.press('Enter');
+  await expect.poll(() => page.evaluate(() => S.goals[0].lw)).toBe('Two long runs');
+  await page.locator('#gdPg [data-gtoday]').click();
+  await page.fill('#gTodayIn', 'Buy race shoes');
+  await page.keyboard.press('Enter');
+  const td = await page.evaluate(() => S.tasks.find(x => x.title === 'Buy race shoes'));
+  expect(td.stage).toBe('today');
+  expect(td.goal).toBe(g.id);
+  await expect(page.locator('#gdPg .g-rtask')).toHaveText('Buy race shoes');
+  await page.locator('#gdBack').click();
+  await expect(page.locator('#gdPg')).not.toHaveClass(/on/);
+
+  // the task wears a star; its details show the ★ goal pill and picker
+  await page.evaluate(sp => openSpace(sp), g.space);
+  await expect(page.locator('#list .g-st').first()).toBeVisible();
+  await page.evaluate(id => openDetail(id), td.id);
+  await expect(page.locator('#dPills [data-p="goal"]')).toContainText('Run a half marathon');
+  await page.locator('#dPills [data-p="goal"]').click();
+  await expect(page.locator('#dPicker .pk')).toHaveCount(2); // None + the goal
+  await page.locator('#dPicker .pk').first().click();
+  expect(await page.evaluate(id => S.tasks.find(x => x.id === id).goal, td.id)).toBeUndefined();
+  await page.evaluate(() => closeSheets());
+
+  // the space gets a Goals lens
+  await expect(page.locator('#mLens [data-lens="goals"]')).toBeVisible();
+  await page.locator('#mLens [data-lens="goals"]').click();
+  await expect(page.locator('#hbView .g-card')).toHaveCount(1);
+  await expect(page.locator('#hero')).toBeHidden();
+
+  // mark achieved from the goal page menu: leaves Home, the lens and the active list
+  await page.locator('#hbView .g-card').click();
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gm="win"]').click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].done)).toBe(true);
+  expect(await page.evaluate(() => nsCard())).toBe('');
+  await page.locator('#gdBack').click();
+  await expect(page.locator('#mLens')).toBeHidden();
+  // regression: while a lens is open, ordinary buttons keep working (the page root carries data-lens)
+  await page.evaluate(() => { S.goals[0].done = false; S.lens = { [S.space]: 'goals' }; save(); render(); });
+  await expect(page.locator('#hbView .g-card')).toHaveCount(1);
+  await page.locator('#homeBtn').click();
+  await expect.poll(() => page.evaluate(() => S.space)).toBeNull();
+
+  // turning Goals off hides every trace; data stays
+  await page.evaluate(() => { S.goals[0].done = false; S.cfg.goals = false; save(); render(); });
+  expect(await page.evaluate(() => nsCard())).toBe('');
+  await expect(page.locator('#mLens')).toBeHidden();
+  await expect(page.locator('#list .g-st')).toHaveCount(0);
+  expect(await page.evaluate(() => S.goals.length)).toBe(1);
+  noErrors(errors);
+});
+
+test('goals: one north star, limit of 3, sync/backup/undo, desktop layout', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => {
+    S.cfg.goals = true; const sp = S.spaces[0].id, d = dkey(new Date(Date.now() + 90 * 864e5));
+    S.goals = [1, 2, 3].map(i => ({ id: 'g' + i, name: 'Goal ' + i, e: '', space: sp, why: '', due: d, created: Date.now(), star: i === 1, ms: [{ id: 'm' + i, t: 'Step', done: false }] }));
+    save(); render();
+  });
+  // a 4th goal is refused
+  await page.evaluate(() => openSetup());
+  await expect(page.locator('#gsPg')).not.toHaveClass(/on/);
+  // starring another moves the star
+  await page.evaluate(() => openGoal('g2'));
+  await expect(page.locator('#gdPg .gd-cols')).toHaveCSS('display', 'grid');
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gm="star"]').click();
+  expect(await page.evaluate(() => S.goals.filter(g => g.star).map(g => g.id))).toEqual(['g2']);
+  // sync, backup and undo carry goals
+  expect(await page.evaluate(() => localDoc().goals.length)).toBe(3);
+  expect(await page.evaluate(() => JSON.parse(backupData()).goals.length)).toBe(3);
+  await page.evaluate(() => gDelete(gById('g3')));
+  await page.locator('#dlgYes').click();
+  await expect.poll(() => page.evaluate(() => S.goals.length)).toBe(2);
+  await page.locator('#undoBtn').click();
+  await expect.poll(() => page.evaluate(() => S.goals.length)).toBe(3);
+  // desktop lens: cards with a small climb
+  await page.evaluate(() => { closeGoal(); openSpace(S.spaces[0].id); S.lens = { [S.spaces[0].id]: 'goals' }; render(); });
+  await expect(page.locator('#hbDesk .g-card')).toHaveCount(3);
+  await expect(page.locator('#hbDesk .g-cmini svg').first()).toBeVisible();
+  noErrors(errors);
+});
