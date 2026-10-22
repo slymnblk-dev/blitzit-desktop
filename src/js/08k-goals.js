@@ -46,7 +46,7 @@ function gProg(g){const of=g.ms.length,n=g.ms.filter(m=>m.done).length;return {n
 /* pace: progress against the time that has passed since the goal was set */
 function gPace(g){
   if(g.done)return {k:'won',t:'Achieved'};
-  const {n,of,p}=gProg(g);if(!of)return {k:'none',t:'Add milestones'};
+  const {n,of,p}=gProg(g);if(!of)return {k:'none',t:'Not started'};
   if(n>=of)return {k:'ahead',t:'Summit reached'};
   const left=gDaysLeft(g);if(left!==null&&left<0)return {k:'behind',t:'Past due'};
   const s=gNoon(g.created||Date.now()),e=gDate(g.due);if(!e||e<=s)return {k:'ok',t:'On track'};

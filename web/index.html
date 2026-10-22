@@ -2522,7 +2522,7 @@ body.no-amb .amb-btn{display:none!important}
   .ns-top{grid-area:top}.ns-sub{grid-area:sub}.ns-bar{grid-area:bar;height:8px;border-radius:4px}.ns-bar i{border-radius:4px}}
 
 /* goal cards (Goals lens, Rhythm page) */
-.g-grid{display:grid;gap:12px;margin-bottom:12px}
+.g-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-bottom:12px}
 .g-grid.wide{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:16px}
 .g-card{display:flex;flex-direction:column;gap:11px;width:100%;padding:15px 16px 14px;border-radius:20px;background:var(--surface);text-align:left;transition:background .15s,transform .15s}
 .g-card:hover{background:color-mix(in srgb,var(--text) 3%,var(--surface))}
@@ -2614,7 +2614,7 @@ body.no-amb .amb-btn{display:none!important}
 .gd-sec{display:flex;align-items:center;gap:10px;margin:26px 2px 10px}
 .gd-sec h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .gd-sec span{flex:1;font-size:13px;color:var(--muted)}
-.gd-ed{color:var(--text)!important;padding:4px 2px}
+.gd-ed{color:var(--text)!important;padding:9px 4px;margin:-6px -4px}
 .gd-r>.gd-sec:first-child{margin-top:0}
 .gd-cols{display:block}
 @media (min-width:1100px){
@@ -2686,7 +2686,7 @@ body.no-amb .amb-btn{display:none!important}
 .g-rung.now .g-bx{background:color-mix(in srgb,var(--today) 9%,var(--surface));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--today) 40%,transparent)}
 .g-rung.now .g-bx:focus-within{box-shadow:inset 0 0 0 2px var(--today)}
 .g-rung.now .g-ln i{background:var(--today);box-shadow:0 0 0 4px color-mix(in srgb,var(--today) 22%,transparent)}
-.g-rtoday{display:inline-flex;align-items:center;gap:6px;color:var(--today);font-size:14.5px;font-weight:700;padding:2px 0}
+.g-rtoday{display:inline-flex;align-items:center;gap:6px;color:var(--today);font-size:14.5px;font-weight:700;padding:8px 0;margin:-6px 0}
 .g-rtoday svg{width:15px;height:15px}
 
 /* 30-second setup */
@@ -2978,6 +2978,9 @@ body.no-amb .amb-btn{display:none!important}
 .mo-pg.on .mo-big,.mo-pg.on .mo-sub,.mo-pg.on .mo-eye{animation:gsIn .5s .5s cubic-bezier(.2,.8,.2,1) both}
 .mo-go{margin-top:26px!important;max-width:260px;background:var(--text)!important;color:var(--bg)!important}
 @media (prefers-reduced-motion:reduce){.mo-pg,.mo-pg *{animation:none!important;transition:none!important}}
+
+/* QA: bigger tap target for Undo without changing the toast's look */
+.toast button{padding:11px 8px;margin:-8px -6px -8px 0}
 </style>
 </head>
 <body>
@@ -3172,7 +3175,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=147; // bumped with every published update
+const APP_VERSION=148; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5873,7 +5876,7 @@ function modesPage(){
   ${any?`<div class="set-sec"><h3>Where modes live</h3>${row('Show modes',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for your habits and goals.':'A switch (Board · Habits · Goals · Projects) appears in spaces that use them.')}</div>`:''}
   ${on?`<div class="set-sec"><h3>Habits</h3><button class="link-row" data-page="habits">Your habits<span class="hint">${n?`${n} of ${HB_MAX}`:'None yet'}${CHEV}</span></button>
     ${row('Habit chains',tg('hbChains'),'Link habits so one leads to the next, like coffee → read → plan')}
-    ${row('Evening check-in',tg('hbCi'),'A short card on Home in the evening when habits are left')}
+    ${row('Evening check-in',tg('hbCi'),c.closeDay?'Close the day covers this while it’s on':'A short card on Home in the evening when habits are left')}
 </div>
 `:''}
   ${g?`<div class="set-sec"><h3>Goals</h3><button class="link-row" data-page="goals">Your goals<span class="hint">${gn?`${gn} of ${G_MAX} active`:'None yet'}${CHEV}</span></button>
@@ -5970,7 +5973,7 @@ function gProg(g){const of=g.ms.length,n=g.ms.filter(m=>m.done).length;return {n
 /* pace: progress against the time that has passed since the goal was set */
 function gPace(g){
   if(g.done)return {k:'won',t:'Achieved'};
-  const {n,of,p}=gProg(g);if(!of)return {k:'none',t:'Add milestones'};
+  const {n,of,p}=gProg(g);if(!of)return {k:'none',t:'Not started'};
   if(n>=of)return {k:'ahead',t:'Summit reached'};
   const left=gDaysLeft(g);if(left!==null&&left<0)return {k:'behind',t:'Past due'};
   const s=gNoon(g.created||Date.now()),e=gDate(g.due);if(!e||e<=s)return {k:'ok',t:'On track'};
@@ -6620,8 +6623,8 @@ function drawSetupP(){
     <div class="gs-lbl">Finish by <span>Optional</span></div><label class="gs-date ps-date${d.due?' on':''}"><span>${d.due?gShort(d.due):'No date'}</span><input type="date" id="psDue" min="${dkey(tm)}" value="${d.due}" aria-label="Finish by"></label>`;
   const gls=typeof goalsOn==='function'&&goalsOn()?gAll():[];
   const feeds=gls.length?`<div class="gs-lbl">Feeds a goal <span>Optional</span></div><div class="gs-chips"><button class="gs-chip${!d.goal?' on':''}" data-psg="">None</button>${gls.map(g=>`<button class="gs-chip${d.goal===g.id?' on':''}" data-psg="${g.id}">${g.e?esc(g.e)+' ':''}${esc(g.name)}</button>`).join('')}</div>`:'';
-  $('psIn').innerHTML=`<div class="set-top gs-top"><button class="icon-btn" id="psBack" aria-label="Close">${X}</button><span class="gs-n">${edit?'Edit project':'New project'}</span></div>
-    <div class="gs-body"><h1 class="gs-q">${edit?esc(d.name)||'Project':'What are you working on?'}</h1>${tpl}
+  $('psIn').innerHTML=`<div class="set-top gs-top"><button class="icon-btn" id="psBack" aria-label="Close">${X}</button><span class="gs-n">${edit?'':'New project'}</span></div>
+    <div class="gs-body"><h1 class="gs-q">${edit?'Edit project':'What are you working on?'}</h1>${tpl}
     <div class="gs-name"><span class="gs-e" id="psE">${d.e?esc(d.e):d.kind==='phases'?PJ_PH:PJ_NUM}</span><input id="psName" value="${esc(d.name)}" placeholder="${d.kind==='phases'?'App launch':'Outreach'}" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Project name"></div>
     ${kinds}${S.spaces.length>1?`<div class="gs-lbl">Space</div><div class="gs-chips">${orderedSpaces().map(x=>`<button class="gs-chip${d.space===x.id?' on':''}" data-pssp="${x.id}">${spMini(x)}${esc(x.name)}</button>`).join('')}</div>`:''}
     ${d.kind==='phases'?phs:nums}${feeds}</div>

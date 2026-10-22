@@ -340,7 +340,7 @@ function modesPage(){
   ${any?`<div class="set-sec"><h3>Where modes live</h3>${row('Show modes',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for your habits and goals.':'A switch (Board · Habits · Goals · Projects) appears in spaces that use them.')}</div>`:''}
   ${on?`<div class="set-sec"><h3>Habits</h3><button class="link-row" data-page="habits">Your habits<span class="hint">${n?`${n} of ${HB_MAX}`:'None yet'}${CHEV}</span></button>
     ${row('Habit chains',tg('hbChains'),'Link habits so one leads to the next, like coffee → read → plan')}
-    ${row('Evening check-in',tg('hbCi'),'A short card on Home in the evening when habits are left')}
+    ${row('Evening check-in',tg('hbCi'),c.closeDay?'Close the day covers this while it’s on':'A short card on Home in the evening when habits are left')}
 </div>
 `:''}
   ${g?`<div class="set-sec"><h3>Goals</h3><button class="link-row" data-page="goals">Your goals<span class="hint">${gn?`${gn} of ${G_MAX} active`:'None yet'}${CHEV}</span></button>

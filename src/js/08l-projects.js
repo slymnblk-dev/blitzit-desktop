@@ -281,8 +281,8 @@ function drawSetupP(){
     <div class="gs-lbl">Finish by <span>Optional</span></div><label class="gs-date ps-date${d.due?' on':''}"><span>${d.due?gShort(d.due):'No date'}</span><input type="date" id="psDue" min="${dkey(tm)}" value="${d.due}" aria-label="Finish by"></label>`;
   const gls=typeof goalsOn==='function'&&goalsOn()?gAll():[];
   const feeds=gls.length?`<div class="gs-lbl">Feeds a goal <span>Optional</span></div><div class="gs-chips"><button class="gs-chip${!d.goal?' on':''}" data-psg="">None</button>${gls.map(g=>`<button class="gs-chip${d.goal===g.id?' on':''}" data-psg="${g.id}">${g.e?esc(g.e)+' ':''}${esc(g.name)}</button>`).join('')}</div>`:'';
-  $('psIn').innerHTML=`<div class="set-top gs-top"><button class="icon-btn" id="psBack" aria-label="Close">${X}</button><span class="gs-n">${edit?'Edit project':'New project'}</span></div>
-    <div class="gs-body"><h1 class="gs-q">${edit?esc(d.name)||'Project':'What are you working on?'}</h1>${tpl}
+  $('psIn').innerHTML=`<div class="set-top gs-top"><button class="icon-btn" id="psBack" aria-label="Close">${X}</button><span class="gs-n">${edit?'':'New project'}</span></div>
+    <div class="gs-body"><h1 class="gs-q">${edit?'Edit project':'What are you working on?'}</h1>${tpl}
     <div class="gs-name"><span class="gs-e" id="psE">${d.e?esc(d.e):d.kind==='phases'?PJ_PH:PJ_NUM}</span><input id="psName" value="${esc(d.name)}" placeholder="${d.kind==='phases'?'App launch':'Outreach'}" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Project name"></div>
     ${kinds}${S.spaces.length>1?`<div class="gs-lbl">Space</div><div class="gs-chips">${orderedSpaces().map(x=>`<button class="gs-chip${d.space===x.id?' on':''}" data-pssp="${x.id}">${spMini(x)}${esc(x.name)}</button>`).join('')}</div>`:''}
     ${d.kind==='phases'?phs:nums}${feeds}</div>

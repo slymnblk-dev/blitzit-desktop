@@ -59,3 +59,6 @@
 .mo-pg.on .mo-big,.mo-pg.on .mo-sub,.mo-pg.on .mo-eye{animation:gsIn .5s .5s cubic-bezier(.2,.8,.2,1) both}
 .mo-go{margin-top:26px!important;max-width:260px;background:var(--text)!important;color:var(--bg)!important}
 @media (prefers-reduced-motion:reduce){.mo-pg,.mo-pg *{animation:none!important;transition:none!important}}
+
+/* QA: bigger tap target for Undo without changing the toast's look */
+.toast button{padding:11px 8px;margin:-8px -6px -8px 0}
