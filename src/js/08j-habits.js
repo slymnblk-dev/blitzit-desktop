@@ -338,16 +338,16 @@ function modesPage(){
   return `<p class="sub-p">Extra ways to use Windaday. Turn a mode off and it disappears everywhere. Your data stays safe and comes back when you turn it on again.</p>
   <div class="set-sec"><h3>Modes</h3>${row('Habits',tg('habits'),'Small daily wins with gentle sunrise streaks')}${row('Goals',tg('goals'),'Big outcomes, broken into milestones you can climb')}${row('Projects',tg('projects'),'Count what matters each week, or build in phases')}</div>
   ${any?`<div class="set-sec"><h3>Where modes live</h3>${row('Show modes',`<div class="segc">${sOpt('modePlace','spaces','In spaces')}${sOpt('modePlace','page','Rhythm page')}</div>`,modePage()?'One calm page under Inbox for your habits and goals.':'A switch (Board · Habits · Goals · Projects) appears in spaces that use them.')}</div>`:''}
+  ${on?`<div class="set-sec"><h3>Habits</h3><button class="link-row" data-page="habits">Your habits<span class="hint">${n?`${n} of ${HB_MAX}`:'None yet'}${CHEV}</span></button>
+    ${row('Habit chains',tg('hbChains'),'Link habits so one leads to the next, like coffee → read → plan')}
+    ${row('Evening check-in',tg('hbCi'),'A short card on Home in the evening when habits are left')}
+</div>
+`:''}
   ${g?`<div class="set-sec"><h3>Goals</h3><button class="link-row" data-page="goals">Your goals<span class="hint">${gn?`${gn} of ${G_MAX} active`:'None yet'}${CHEV}</span></button>
     ${row('Goal view',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','ladder','Why ladder')}</div>`,'How a goal opens. You can switch inside each goal too.')}</div>`:''}
   ${pj?`<div class="set-sec"><h3>Projects</h3><button class="link-row" data-page="projects">Your projects<span class="hint">${pn?`${pn} of ${P_MAX} active`:'None yet'}${CHEV}</span></button>
     ${row('Numbers view',`<div class="segc">${sOpt('pView','gauges','Gauges')}${sOpt('pView','flow','Flow')}</div>`,'How number projects open. You can switch inside each one.')}
     ${row('Scoreboard',tg('pScore'),'Hits and misses for the last 8 weeks on each project')}</div>`:''}
-  ${on?`<div class="set-sec"><h3>Habits</h3><button class="link-row" data-page="habits">Your habits<span class="hint">${n?`${n} of ${HB_MAX}`:'None yet'}${CHEV}</span></button>
-    ${row('Habit chains',tg('hbChains'),'Link habits so one leads to the next, like coffee → read → plan')}
-    ${row('Evening check-in',tg('hbCi'),'A short card on Home in the evening when habits are left')}
-    ${c.hbCi!==false?row('Check-in from',`<div class="segc">${[17,19,21].map(h=>sOpt('hbCiAt',h,`${h-12} pm`)).join('')}</div>`):''}</div>
-`:''}
   ${on||g?`<div class="set-sec"><h3>Home widgets</h3>${g?row('North star',tg('wStar'),'Your starred goal under the Today card'):''}${on?row('Habits today',tg('wHabits'),'Your suns on Home. Tap one to tick it.'):''}</div>`:''}`;
 }
 function habitsSetPage(){

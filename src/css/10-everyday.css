@@ -1,0 +1,61 @@
+/* ---------- Everyday touches ---------- */
+/* one + for everything */
+.ak-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;margin:4px 0 14px}
+.ak-row[hidden],.ak-extra[hidden]{display:none}
+.ak-row button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 0 9px;border-radius:16px;background:var(--surface2);font-size:12.5px;font-weight:700;color:var(--muted);transition:background .2s,color .2s}
+.ak-row button svg{width:19px;height:19px}
+.ak-row button.on{background:var(--text);color:var(--bg)}
+#addSheet[data-kind="idea"] #addListWrap,#addSheet[data-kind="idea"] #addSpaceWrap,
+#addSheet[data-kind="habit"] #addListWrap,
+#addSheet[data-kind="number"] #addListWrap,#addSheet[data-kind="number"] #addSpaceWrap,
+#addSheet:not([data-kind="task"])[data-kind] #optStage,#addSheet:not([data-kind="task"])[data-kind] #optEst,
+#addSheet:not([data-kind="task"])[data-kind] #optStage+.lbl{display:none!important}
+#addSheet:not([data-kind="task"])[data-kind] .sheet-in>.lbl{display:none}
+.ak-extra .lbl{display:block!important}
+.ak-extra .opt small{font-size:12px;opacity:.6;margin-left:2px;font-weight:600}
+
+/* close the day */
+.cd-home .cd-hi{color:var(--today)}.cd-home .cd-hi svg{width:24px;height:24px}
+.cd-pg .ib-in{max-width:520px}
+.cd-chips{display:flex;flex-wrap:wrap;gap:8px}
+.cd-chip{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 12px 0 15px;border-radius:999px;background:var(--surface);font-weight:600;font-size:14.5px;transition:background .2s,color .2s}
+.cd-ck{width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 22%,transparent);display:grid;place-items:center;color:transparent;transition:all .2s}
+.cd-ck svg{width:12px;height:12px}
+.cd-chip.on{background:color-mix(in srgb,var(--done) 14%,var(--surface))}
+.cd-chip.on .cd-ck{background:var(--done);box-shadow:none;color:#0F1013}
+.cd-num{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-top:1px solid var(--line)}
+.cd-num:first-child{border-top:0}
+.cd-num>button{width:40px;height:40px;border-radius:12px;background:var(--surface2);font-size:20px;display:grid;place-items:center;flex:none}
+.cd-num>button:last-child{background:var(--text);color:var(--bg)}
+.cd-v{min-width:44px;text-align:center;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+.cd-pick{align-items:center}
+.cd-radio{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 25%,transparent);flex:none;transition:box-shadow .2s}
+.cd-pick.on .cd-radio{box-shadow:inset 0 0 0 7px var(--today)}
+.cd-pick.on .g-tx b{color:var(--text)}
+
+/* starter picks */
+.st-pick{display:flex;flex-direction:column;gap:3px;background:var(--surface2);border-radius:18px;padding:14px;margin:4px 0 10px}
+.st-pick>b{font-size:15px;font-weight:700}.st-pick>small{font-size:13px;color:var(--muted)}
+.st-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.st-c{display:flex;align-items:center;gap:9px;min-height:46px;padding:8px 12px;border-radius:14px;background:var(--surface);font-size:13.5px;font-weight:600;text-align:left;line-height:1.25;transition:box-shadow .15s,background .15s}
+.st-c em{font-style:normal;font-size:18px;flex:none}
+.st-c.on{box-shadow:inset 0 0 0 2px var(--text)}
+.st-c:hover{background:color-mix(in srgb,var(--text) 4%,var(--surface))}
+.st-go{height:46px!important;margin-top:10px!important;font-size:15px!important;background:var(--text)!important;color:var(--bg)!important}
+.st-go:disabled{opacity:.35}
+
+/* moments */
+.mo-pg{position:fixed;inset:0;z-index:40;background:var(--bg);display:grid;place-items:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s .45s}
+.mo-pg.on{opacity:1;visibility:visible;transition:opacity .45s ease,visibility 0s}
+.mo-in{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;max-width:340px}
+.mo-sun{width:170px;height:142px;margin-bottom:6px}
+.mo-pg.on .mo-sun .dg{animation:moRise 1.6s .15s cubic-bezier(.2,.8,.2,1) both}
+.mo-pg.on .mo-sun .rays{animation:moRay .7s 1.3s both}
+@keyframes moRise{from{transform:translateY(4px)}}
+@keyframes moRay{from{opacity:0}to{opacity:1}}
+.mo-eye{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.mo-big{font-size:clamp(64px,20vw,96px);font-weight:800;letter-spacing:-.055em;line-height:.95}
+.mo-sub{font-size:15.5px;color:var(--muted);line-height:1.45;max-width:280px}
+.mo-pg.on .mo-big,.mo-pg.on .mo-sub,.mo-pg.on .mo-eye{animation:gsIn .5s .5s cubic-bezier(.2,.8,.2,1) both}
+.mo-go{margin-top:26px!important;max-width:260px;background:var(--text)!important;color:var(--bg)!important}
+@media (prefers-reduced-motion:reduce){.mo-pg,.mo-pg *{animation:none!important;transition:none!important}}
