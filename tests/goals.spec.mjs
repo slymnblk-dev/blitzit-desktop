@@ -448,6 +448,16 @@ test('goal page: one calm facts line; why as a quote that can be hidden from the
   await expect(page.locator('#gdPg .gb-line')).toContainText('1/2 milestones');
   await expect(page.locator('#gdPg .gb-line')).toContainText('41 days to');
   await expect(page.locator('#gdPg .gv-why.note')).toContainText('Feel strong');
+  await expect(page.locator('#gdPg .gv-why.note .gw-i')).toHaveCount(0); // no icon by default
+  // north star: the twinkling star in the sky, which can be hidden and shown again
+  await expect(page.locator('#gdPg .gb-ns')).toHaveCount(1);
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gm="nsky"]').click();
+  await expect(page.locator('#gdPg .gb-ns')).toHaveCount(0);
+  expect(await page.evaluate(() => [S.goals[0].star, S.goals[0].hideNs])).toEqual([true, true]);
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gm="nsky"]').click();
+  await expect(page.locator('#gdPg .gb-ns')).toHaveCount(1);
   // hide it from the ⋯ menu; it stays in the goal
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gm="why"]').click();
@@ -464,9 +474,9 @@ test('goal page: one calm facts line; why as a quote that can be hidden from the
   await expect(page.locator('#gdPg .gv-why.note .gw-i')).toHaveText('🌱');
   // or no icon at all
   await page.evaluate(() => openGoalSheet('g1'));
-  await page.locator('#gWhyIco [data-gwe="n"]').click();
+  await page.locator('#gWhyIco [data-gwe="n"]').click(); // None
   await page.locator('#gSave').click();
   await expect(page.locator('#gdPg .gv-why.note .gw-i')).toHaveCount(0);
-  expect(await page.evaluate(() => S.goals[0].whyE)).toBe('');
+  expect(await page.evaluate(() => S.goals[0].whyE)).toBeUndefined();
   noErrors(errors);
 });

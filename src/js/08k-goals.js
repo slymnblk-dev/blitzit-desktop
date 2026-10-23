@@ -201,6 +201,7 @@ $('gdPg').addEventListener('click',e=>{
   if(e.target.closest('#gdMore')){e.stopPropagation();const was=pop.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);pop.classList.add('on')}return}
   const m=e.target.closest('[data-gm]');if(m){pop.classList.remove('on');const a=m.dataset.gm;
     if(a==='edit')return openGoalSheet(g.id);
+    if(a==='nsky'){g.hideNs=!g.hideNs;if(!g.hideNs)delete g.hideNs;save();render();toast(g.hideNs?'Star hidden · it is still your north star':'The star is back in the sky');return}
     if(a==='why'){g.hideWhy=!g.hideWhy;if(!g.hideWhy)delete g.hideWhy;save();render();toast(g.hideWhy?'Why hidden from the page · it stays in Edit goal':'Why shows on the page again');return}if(a==='star')return gToggleStar(g);if(a==='win')return gSetWin(g,!g.done);if(a==='del')return gDelete(g);return}
   const v=e.target.closest('[data-gview]');if(v){if((g.view||C().gView)!==v.dataset.gview){g.view=v.dataset.gview;haptic(5);save();gdAnim=true;drawGoal();gdAnim=false}return}
   if(e.target.closest('[data-gwhy]')){openGoalSheet(g.id,true);return}
@@ -311,11 +312,11 @@ document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="gSheet"><di
   <div class="le-acts"><button class="le-btn" id="gWinB" type="button">Mark achieved</button><button class="le-btn warn" id="gDelB" type="button">Delete goal</button></div>
 </div></div>`);
 let gDraft=null,gSub=null;
-/* the why's icon: the heart (default), an emoji, or none */
+/* the why's icon: none (default), the heart ('h') or an emoji */
 var G_WHY_E=['✨','🔥','🌱','💪','🙏','🎯','☀️','⭐','🏆','🧡'];
-function gWiPaint(){const d=gDraft,cur=d.whyE===undefined?'h':d.whyE===''?'n':d.whyE;
-  $('gWhyIco').innerHTML=`<span>Note icon</span><button type="button" data-gwe="h" class="${cur==='h'?'on':''}" aria-label="Heart" aria-pressed="${cur==='h'}">${G_HEART}</button>${G_WHY_E.map(e=>`<button type="button" data-gwe="${e}" class="${cur===e?'on':''}" aria-label="Icon ${e}" aria-pressed="${cur===e}">${e}</button>`).join('')}<button type="button" data-gwe="n" class="none${cur==='n'?' on':''}" aria-pressed="${cur==='n'}">No icon</button>`}
-$('gWhyIco').addEventListener('click',e=>{const b=e.target.closest('[data-gwe]');if(!b||!gDraft)return;const v=b.dataset.gwe;gDraft.whyE=v==='h'?undefined:v==='n'?'':v;haptic(4);gWiPaint()});
+function gWiPaint(){const d=gDraft,cur=d.whyE||'n';
+  $('gWhyIco').innerHTML=`<span>Note icon</span><button type="button" data-gwe="n" class="none${cur==='n'?' on':''}" aria-pressed="${cur==='n'}">None</button><button type="button" data-gwe="h" class="${cur==='h'?'on':''}" aria-label="Heart" aria-pressed="${cur==='h'}">${G_HEART}</button>${G_WHY_E.map(e=>`<button type="button" data-gwe="${e}" class="${cur===e?'on':''}" aria-label="Icon ${e}" aria-pressed="${cur===e}">${e}</button>`).join('')}`}
+$('gWhyIco').addEventListener('click',e=>{const b=e.target.closest('[data-gwe]');if(!b||!gDraft)return;const v=b.dataset.gwe;gDraft.whyE=v==='n'?undefined:v;haptic(4);gWiPaint()});
 function gWvPaint(){$('gWhyVis').querySelectorAll('[data-gwv]').forEach(b=>{const on=(b.dataset.gwv==='0')===!!gDraft.hideWhy;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
 $('gWhyVis').addEventListener('click',e=>{const b=e.target.closest('[data-gwv]');if(!b||!gDraft)return;gDraft.hideWhy=b.dataset.gwv==='0';haptic(4);gWvPaint()});
 function openGoalSheet(id,why){const g=gById(id);if(!g)return;

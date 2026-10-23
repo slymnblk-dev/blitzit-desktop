@@ -229,6 +229,7 @@ function gMenuHTML(g){const v=gView(g);
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"','Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
     <span class="pm-sep"></span><button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
+    ${g.star&&!g.done&&gView(g)==='climb'?`<button data-gm="nsky" role="menuitem"><span class="lpm-i">${G_SPARK}</span>${g.hideNs?'Show the star in the sky':'Hide the star in the sky'}</button>`:''}
     ${g.why?`<button data-gm="why" role="menuitem"><span class="lpm-i">${g.hideWhy?CK:X}</span>${g.hideWhy?'Show why on the page':'Hide why on the page'}</button>`:''}
     ${g.done&&!g.ms.length?'':`<button data-gedit role="menuitem"><span class="lpm-i">${PEN_S}</span>${g.ms.length?'Edit milestones':'Add milestones'}</button>`}
     ${g.done?'':`<button data-gm="star" role="menuitem"><span class="lpm-i">${G_STAR}</span>${g.star?'Remove north star':'Make it my north star'}</button>`}
@@ -348,18 +349,21 @@ $('gdPg').addEventListener('focusout',e=>{if(e.target.matches('[data-gren]')&&gR
 
 /* the milestone card and Other tasks: side by side on computers */
 function gCols(c,o){return c||o?`<div class="gm-cols${c&&o?' two':''}">${c}${o?`<div class="gm-other">${o}</div>`:''}</div>`:''}
-/* the goal's "why": a soft note under the name, with a small heart, an emoji of your choice, or no icon (Edit goal).
+/* the goal's "why": a soft note under the name; plain by default, or with a heart or an emoji you pick (Edit goal).
    Optional: hide it from the page (⋯ or Edit goal); it stays in the goal */
 var G_HEART='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z"/></svg>';
-function gWhyIcon(g){return g.whyE===''?'':g.whyE?`<i class="gw-i e" aria-hidden="true">${esc(g.whyE)}</i>`:`<i class="gw-i" aria-hidden="true">${G_HEART}</i>`}
-function gWhy(g){if(g.hideWhy)return '';return g.why?`<button class="gv-why note${g.whyE===''?' plain':''}" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${gWhyIcon(g)}<span>${esc(g.why)}</span></button>`
+function gWhyIcon(g){return !g.whyE?'':g.whyE==='h'?`<i class="gw-i" aria-hidden="true">${G_HEART}</i>`:`<i class="gw-i e" aria-hidden="true">${esc(g.whyE)}</i>`}
+function gWhy(g){if(g.hideWhy)return '';return g.why?`<button class="gv-why note${g.whyE?'':' plain'}" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${gWhyIcon(g)}<span>${esc(g.why)}</span></button>`
   :`<button class="gv-why add" data-gwhy>${PLUS_S}Why it matters</button>`}
 /* one calm line of facts: 1/5 milestones · 41 days to Dec 3 · On track */
 function gFacts(g){const pr=gProg(g),dd=gDays(g),dl=gDaysLeft(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,due=g.due?gShort(g.due):'';
   const days=g.done?`<span>Achieved ${gShort(g.doneAt)}</span>`:`<span><b>${dd.n}</b> ${dl!==null&&dl>=0&&due?`${dd.n===1?'day':'days'} to ${due}`:dd.t}</span>`;
   return `<div class="gb-facts"><div class="gb-line"><span><b>${pr.n}/${pr.of}</b> milestones</span>${days}${top||g.done?'':`<span class="gb-pace">${gPaceTxt(g)}</span>`}</div>${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
+var G_SPARK='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.5c.5 5.6 4.9 10 10.5 10.5-5.6.5-10 4.9-10.5 10.5C11.5 16.9 7.1 12.5 1.5 12 7.1 11.5 11.5 7.1 12 1.5z"/></svg>';
+/* your north star: a small gold star twinkling in the sky above the summit; hide it from the goal's ⋯ menu */
+const gNsSky=g=>g.star&&!g.done&&!g.hideNs?`<span class="gb-ns" role="img" aria-label="North star">${G_SPARK}<small>North star</small></span>`:'';
 function gClimbView(g,anim){
-  return `<div class="gb-stage">${gbScene(g,anim)}<div class="gb-head">
+  return `<div class="gb-stage">${gNsSky(g)}${gbScene(g,anim)}<div class="gb-head">
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${gWhy(g)}</div></div>
     ${gFacts(g)}
     ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,gSel(g)),gTasksSec(g))}`}
