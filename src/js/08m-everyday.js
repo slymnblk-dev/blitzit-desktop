@@ -7,7 +7,7 @@
        ready-made habits and goals to start from.
    D · Moments: a calm full-screen moment when a habit's sun has been up 7, 30, 100 or 365 days in a row,
        or a goal is achieved. Rare on purpose. */
-var moOn=false,cdOn=false,addKind='task';
+var moOn=false,cdOn=false,addKind='task',addKindNext=null;
 var HB_STARTERS=[['💧','Drink water'],['🏃','Move 30 minutes'],['📖','Read 20 pages'],['🧘','Meditate'],['📵','Phone away at night'],['🛏️','Bed by 11']];
 var G_STARTERS=[['🏃','Run a half marathon'],['📚','Read 12 books'],['💰','Save an emergency fund'],['🧠','Learn Spanish basics']];
 
@@ -71,7 +71,7 @@ $('addExtra').addEventListener('input',e=>{if(e.target.id==='akNote')$('saveBtn'
 $('addExtra').addEventListener('keydown',e=>{if(e.target.id==='akNote'&&e.key==='Enter'&&(e.metaKey||e.ctrlKey)&&e.target.value.trim()){e.preventDefault();$('saveBtn').click()}});
 $('newTitle').addEventListener('input',()=>{if(addKind==='task')akApply();else drawKinds()});
 const _akOpen=$('addBtn').onclick;
-$('addBtn').onclick=e=>{addKind='task';akBase=null;const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null; // inside a space, a new habit or goal starts there
+$('addBtn').onclick=e=>{addKind=addKindNext||'task';addKindNext=null;akBase=null;const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null; // inside a space, a new habit or goal starts there
   addHb={days:[0,1,2,3,4,5,6],space:sp};addG={m:3,space:sp};addNote={pin:false};const a=$('akNote');if(a)a.value='';_akOpen(e);drawKinds()};
 /* picking a space, list or time by hand makes it the new starting point for what's typed */
 ['optSpace','optList','optEst'].forEach(id=>$(id).addEventListener('click',()=>{if(draft)akBase={space:draft.space,list:draft.list,est:draft.est}}));

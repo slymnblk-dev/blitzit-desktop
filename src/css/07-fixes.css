@@ -927,14 +927,6 @@ body.no-amb .amb-btn{display:none!important}
 .ib-empty{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:56px 0 20px;color:var(--muted)}
 .ib-empty svg{width:34px;height:34px;margin-bottom:6px;opacity:.7}
 .ib-empty b{color:var(--text);font-size:16px}
-/* phone Home: the way into the Inbox */
-.ib-entry{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 12px;padding:14px 16px;border-radius:20px;background:var(--surface);text-align:left}
-.ib-entry-i{width:38px;height:38px;border-radius:12px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex:none}
-.ib-entry-i svg{width:19px;height:19px}
-.ib-entry-t{flex:1;display:flex;flex-direction:column}
-.ib-entry-t b{font-size:16px;font-weight:650}
-.ib-entry-t small{font-size:13px;color:var(--muted);margin-top:1px}
-.ib-entry>svg{width:16px;height:16px;color:var(--muted)}
 .s-inbox svg{width:18px;height:18px}
 /* limits */
 .col-n.full{color:var(--today)}
@@ -1028,11 +1020,6 @@ body.no-amb .amb-btn{display:none!important}
 .rh-empty span{max-width:300px;line-height:1.5}
 .rh-empty .primary{max-width:260px;margin-top:20px}
 
-/* Home: Inbox and Rhythm rows share one card */
-.hn{background:var(--surface);border-radius:20px;margin:0 0 12px;overflow:hidden}
-.hn .ib-entry{margin:0;border-radius:0;background:transparent}
-.hn .ib-entry+.ib-entry{border-top:1px solid var(--line)}
-.hn .ib-entry-i svg{width:19px;height:19px}
 
 /* Home: evening check-in card + habits widget */
 .ci-home{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 12px 12px 12px;border-radius:20px;background:var(--surface);box-shadow:0 0 0 1px var(--line);animation:cardIn .45s cubic-bezier(.2,.8,.2,1) both}

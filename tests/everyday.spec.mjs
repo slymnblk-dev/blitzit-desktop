@@ -5,14 +5,14 @@ import { openApp, noErrors } from './helpers.mjs';
 test('one + for everything: Task · Note by default; habit and goal kinds when their modes are on', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
-  await page.locator('#addBtn').click();
+  await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
   await expect(page.locator('#addSheet')).toHaveClass(/on/);
   await expect(page.locator('#addKinds [data-ak]')).toHaveCount(2); // Task · Note (the Inbox is on by default)
   await expect(page.locator('#saveBtn')).toHaveText('Add task');
   await page.evaluate(() => closeSheets());
   await page.evaluate(() => { S.cfg.inbox = false; save(); render(); });
   await page.waitForTimeout(300);
-  await page.locator('#addBtn').click();
+  await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
   await expect(page.locator('#addKinds')).toBeHidden(); // everything off: just "Add task"
   await page.evaluate(() => { closeSheets(); S.cfg.inbox = true; save(); render(); });
 
@@ -21,7 +21,7 @@ test('one + for everything: Task · Note by default; habit and goal kinds when t
     save(); render();
   });
   await page.waitForTimeout(300);
-  await page.locator('#addBtn').click();
+  await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
   await expect(page.locator('#addKinds [data-ak]')).toHaveCount(3); // Task · Note · Habit
   // habit
   await page.locator('[data-ak="habit"]').click();
@@ -32,7 +32,7 @@ test('one + for everything: Task · Note by default; habit and goal kinds when t
   await expect.poll(() => page.evaluate(() => (S.habits || []).map(h => [h.name, h.days.join('')]))).toEqual([['Stretch', '12345']]);
   // note: several lines, pinned, saved to the Inbox
   await page.waitForTimeout(400);
-  await page.locator('#addBtn').click();
+  await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
   await expect(page.locator('#addKinds [data-ak="task"]')).toHaveClass(/on/); // every open starts on Task
   await page.locator('[data-ak="note"]').click();
   await expect(page.locator('#newTitle')).toBeHidden();

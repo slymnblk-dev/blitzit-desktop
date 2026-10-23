@@ -2290,14 +2290,6 @@ body.no-amb .amb-btn{display:none!important}
 .ib-empty{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:56px 0 20px;color:var(--muted)}
 .ib-empty svg{width:34px;height:34px;margin-bottom:6px;opacity:.7}
 .ib-empty b{color:var(--text);font-size:16px}
-/* phone Home: the way into the Inbox */
-.ib-entry{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 12px;padding:14px 16px;border-radius:20px;background:var(--surface);text-align:left}
-.ib-entry-i{width:38px;height:38px;border-radius:12px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex:none}
-.ib-entry-i svg{width:19px;height:19px}
-.ib-entry-t{flex:1;display:flex;flex-direction:column}
-.ib-entry-t b{font-size:16px;font-weight:650}
-.ib-entry-t small{font-size:13px;color:var(--muted);margin-top:1px}
-.ib-entry>svg{width:16px;height:16px;color:var(--muted)}
 .s-inbox svg{width:18px;height:18px}
 /* limits */
 .col-n.full{color:var(--today)}
@@ -2391,11 +2383,6 @@ body.no-amb .amb-btn{display:none!important}
 .rh-empty span{max-width:300px;line-height:1.5}
 .rh-empty .primary{max-width:260px;margin-top:20px}
 
-/* Home: Inbox and Rhythm rows share one card */
-.hn{background:var(--surface);border-radius:20px;margin:0 0 12px;overflow:hidden}
-.hn .ib-entry{margin:0;border-radius:0;background:transparent}
-.hn .ib-entry+.ib-entry{border-top:1px solid var(--line)}
-.hn .ib-entry-i svg{width:19px;height:19px}
 
 /* Home: evening check-in card + habits widget */
 .ci-home{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 12px 12px 12px;border-radius:20px;background:var(--surface);box-shadow:0 0 0 1px var(--line);animation:cardIn .45s cubic-bezier(.2,.8,.2,1) both}
@@ -2997,9 +2984,9 @@ button.hg-c:active{transform:scale(.88)}
 .hw-tx b{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hw-tx span{font-size:13px;color:var(--muted)}
 .hw-st{font-style:normal;color:var(--today);font-weight:700}
-.hw-done{height:44px;padding:0 20px;border-radius:999px;background:var(--today);color:#fff;font-weight:700;font-size:15px;flex:none;transition:transform .15s,opacity .3s}
+.hw-done{height:44px;padding:0 20px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;font-size:15px;flex:none;transition:transform .15s,opacity .3s}
 .hw-done:active{transform:scale(.94)}
-.hw-done.on{opacity:.5;pointer-events:none}
+.hw-done.on{background:var(--today);color:#0F1013;pointer-events:none}
 /* big tiles */
 .hw-tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 @media (min-width:1100px){.hw-tl{grid-template-columns:repeat(6,minmax(0,1fr))}.hw{margin-bottom:16px;padding:18px}}
@@ -3329,6 +3316,58 @@ button.hg-c:active{transform:scale(.88)}
 .ib-nw>.gm-more{position:absolute;top:8px;right:8px}
 .ib-nw.enter{animation:pgIn .45s var(--ease) both}
 @media (hover:hover){.ib-nw>.gm-more,.ib-list .row-in .gm-more{opacity:0}.ib-nw:hover>.gm-more,.ib-nw:focus-within>.gm-more,.ib-list .row:hover .gm-more,.ib-list .row:focus-within .gm-more,.gm-more[aria-expanded="true"]{opacity:1}}
+/* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
+.sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
+.also .sec-h{margin-top:20px}
+.also-in{background:var(--surface);border-radius:22px;overflow:hidden;animation:cardIn .45s var(--ease) both}
+.also-in>*{margin:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;animation:none!important;min-height:72px}
+.also-in>*+*{border-top:1px solid var(--line)}
+/* the north star: the whole name on its own line, then progress and what's left */
+.also .ns-card{padding:14px 16px 14px 14px}
+.also .ns-card:hover{background:color-mix(in srgb,var(--text) 3%,transparent)!important}
+.also .ns-t{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:7px 12px}
+.also .ns-top{display:contents}
+.also .ns-top b{grid-column:1/-1;white-space:normal;line-height:1.25}
+.also .ns-bar{grid-row:2;grid-column:1}
+.also .ns-top small{grid-row:2;grid-column:2}
+/* the next habit, one at a time, as a row: small ring, name, streak, Done */
+.also .hw-one{gap:12px;padding:12px 12px 12px 14px}
+.also .hw-ring{width:44px;height:44px}
+.also .hw-ring b{font-size:12.5px}
+.also .hw-tx small{display:none}
+.also .hw-tx b{font-size:16px;line-height:1.25}
+.also .hw-tx span{font-size:13px;line-height:1.35}
+/* tonight's / this week's nudge */
+.also .ci-home,.also .rv-card{gap:12px;padding:12px 12px 12px 14px}
+.also .ci-ht b,.also .ci-ht small,.also .rv-t b,.also .rv-t small{white-space:normal}
+
+/* ===== Phones: bottom tab bar ===== */
+.tabbar{display:none}
+@media (max-width:1099px){
+  body.tabs-on .tabbar{display:block}
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:6px 14px calc(6px + env(safe-area-inset-bottom,0px));
+    background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+    border-top:1px solid var(--line)}
+  .tabbar::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none}
+  .scrim.on~.tabbar{pointer-events:none}
+  .scrim.on~.tabbar::after{opacity:1}
+  .tb-in{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:2px}
+  .tb{flex:1;min-width:0;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:14px;
+    color:var(--muted);font-size:11.5px;font-weight:600;position:relative;transition:color .2s,transform .15s}
+  .tb svg{width:23px;height:23px;flex:none}
+  .tb.on{color:var(--text);font-weight:700}
+  .tb:active{transform:scale(.94)}
+  .tb-n{position:absolute;top:5px;left:calc(50% + 7px);min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;
+    background:var(--text);color:var(--bg);font-size:11px;font-weight:700;font-style:normal;line-height:18px;text-align:center}
+  .tb-add{flex:none;width:52px;height:52px;margin-left:8px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;
+    box-shadow:0 10px 22px -12px rgba(0,0,0,.5);transition:transform .15s}
+  .tb-add:active{transform:scale(.92)}
+  .tb-add svg{width:22px;height:22px}
+  /* room for the bar; on Home it takes the place of the big Add task button */
+  body.tabs-on .app{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+  body.tabs-on .inbox-pg:not(.review-pg) .ib-in{padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))}
+  :root[data-view="home"] body.tabs-on .dock{display:none}
+}
 </style>
 </head>
 <body>
@@ -3524,7 +3563,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=174; // bumped with every published update
+const APP_VERSION=175; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3980,7 +4019,14 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${nsCard()}${hbWidget()}${homeNudge()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${homeAlso()}<h2 class="sec-h">Spaces</h2><div class="sp-grid">${spaceCards()}</div>`;
+}
+/* phones: what else today holds, as rows in one card (north star, the next habit, tonight's or this week's nudge).
+   Tiles or pills (a habits style you can pick) and the backup reminder keep their own card. */
+function homeAlso(){
+  const hw=hbWidget(),one=!!hw&&hwStyle()==='one',nd=ciCard()||reviewCard(),bk=nd?'':backupCard();
+  const rows=[nsCard(),one?hw:'',nd].filter(Boolean);
+  return (rows.length?`<section class="also" aria-label="Also today"><h2 class="sec-h">Also today</h2><div class="also-in">${rows.join('')}</div></section>`:'')+(one?'':hw)+bk;
 }
 function render(dir){
   root.dataset.view=S.space?'space':'home';drawMe();
@@ -5927,7 +5973,6 @@ function ibSendTo(t,list){
 function ibOpen(id,pick){openDetail(id);if(pick){pickOpen='list';drawDetail()}}
 
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg" id="inboxPg" role="region" aria-label="Inbox"><div class="ib-in" id="ibIn"></div></div>');
-document.addEventListener('click',e=>{if(e.target.closest('#ibEntry'))openInbox()});
 $('inboxPg').addEventListener('click',e=>{
   if(e.target.closest('#ibBack'))return closeInbox();
   if(e.target.closest('#ibAdd'))return ibAdd();
@@ -6070,18 +6115,13 @@ function modesRender(){
   if(rhOn)drawRhythm();
 }
 
-/* ---------- Home: evening check-in card, Inbox/Habits/Goals rows, sidebar ---------- */
+/* ---------- Home: evening check-in card, sidebar ---------- */
 function ciCard(){
   if(!habitsOn()||C().hbCi===false||S.ciSkip===today())return '';
   const at=+C().hbCiAt;if(new Date().getHours()<(Number.isFinite(at)?at:19))return '';
   const n=hbOpenToday().length;if(!n)return '';
   return `<div class="ci-home"><span class="ci-hi">${hbSun(3,false)}</span><span class="ci-ht"><b>Evening check-in</b><small>${n} ${n===1?'habit':'habits'} left today</small></span>
     <button class="rv-skip" data-cilater>Later</button><button class="rv-go" data-ciopen>Start</button></div>`}
-function homeNav(){const rows=[],r=(id,ic,t,sub)=>`<button class="ib-entry" id="${id}"><span class="ib-entry-i">${ic}</span><span class="ib-entry-t"><b>${t}</b><small>${sub}</small></span>${CHEV}</button>`;
-  if(inboxOn()){const n=inboxItems().length,m=inboxNotes().length;rows.push(r('ibEntry',IB_ICON,'Inbox',n||m?[n&&`${n} ${n===1?'task':'tasks'} waiting`,m&&`${m} ${m===1?'note':'notes'}`].filter(Boolean).join(' · '):'Drop tasks and notes here'))}
-  if(habitsOn()&&!hbWidget()){const n=hbOpenToday().length,has=hbAll().length;rows.push(r('rhEntry',RH_ICON,'Habits',!has?'Small daily wins':n?`${n} left today`:'All done today'))}
-  if(goalsOn()&&!(nsCard()&&gAll().length<2)){const n=gAll().length;rows.push(r('glEntry',G_FLAG,'Goals',n?`${n} in progress`:'Big outcomes, step by step'))}
-  return rows.length?`<div class="hn">${rows.join('')}</div>`:''}
 function rhythmSide(){let h='';
   if(habitsOn()){const n=hbOpenToday().length;h+=`<button class="s-list s-home s-inbox ${rhOn?'on':''}" id="sRhythm" title="Habits">${RH_ICON}<span class="s-name">Habits</span>${n?`<span class="n">${n}</span>`:''}</button>`}
   if(goalsOn()){const n=gAll().length;h+=`<button class="s-list s-home s-inbox ${typeof glOn!=='undefined'&&glOn?'on':''}" id="sGoals" title="Goals">${G_FLAG}<span class="s-name">Goals</span>${n?`<span class="n">${n}</span>`:''}</button>`}
@@ -6213,7 +6253,7 @@ function habitsSetPage(){
 
 /* ---------- taps (capture, so a habit inside a space card or settings row never also opens something else) ---------- */
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-hbt],[data-hbe],[data-hbnew],[data-ciopen],[data-cilater],[data-hbopen],#rhEntry,#rhBack,#ciBack,[data-ciyes],[data-cino],[data-ciclose]');
+  const el=e.target.closest('[data-hbt],[data-hbe],[data-hbnew],[data-ciopen],[data-cilater],[data-hbopen],#rhBack,#ciBack,[data-ciyes],[data-cino],[data-ciclose]');
   if(!el)return;
   if(el.closest('.sheet')&&!el.closest('#hbSheet'))return;
   e.stopPropagation();e.preventDefault();
@@ -6223,7 +6263,6 @@ document.addEventListener('click',e=>{
   if(el.matches('[data-ciopen]'))return openCheckin();
   if(el.matches('[data-cilater]')){S.ciSkip=today();save();render();toast('Okay. It’ll be back tomorrow evening.');return}
   if(el.matches('[data-hbopen]'))return hbOpenHabits();
-  if(el.matches('#rhEntry'))return openRhythm();
   if(el.matches('#rhBack'))return closeRhythm();
   if(el.matches('#ciBack')||el.matches('[data-ciclose]'))return closeCheckin();
   if(el.matches('[data-ciyes]'))return ciAnswer(true);
@@ -6594,14 +6633,13 @@ function goalsSetPage(){
 
 /* ---------- taps from anywhere (capture, so a goal inside a card never also opens the card) ---------- */
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-gopen],[data-gnew],[data-gadd],[data-ge],#glEntry,#glBack');if(!el)return;
+  const el=e.target.closest('[data-gopen],[data-gnew],[data-gadd],[data-ge],#glBack');if(!el)return;
   if(el.closest('#gdPg')&&!el.matches('[data-gopen]'))return;
   e.stopPropagation();e.preventDefault();
   if(el.matches('[data-gopen]'))return openGoal(el.dataset.gopen);
   if(el.matches('[data-gnew]'))return openSetup(el.dataset.gnew||null);
   if(el.matches('[data-gadd]')){closePops();return openSetup(el.dataset.gadd)}
   if(el.matches('[data-ge]'))return openGoalSheet(el.dataset.ge);
-  if(el.matches('#glEntry'))return openGoals();
   if(el.matches('#glBack'))return closeGoals();
 },true);
 
@@ -6626,7 +6664,7 @@ render=function(d){_gRender(d);try{
        ready-made habits and goals to start from.
    D · Moments: a calm full-screen moment when a habit's sun has been up 7, 30, 100 or 365 days in a row,
        or a goal is achieved. Rare on purpose. */
-var moOn=false,cdOn=false,addKind='task';
+var moOn=false,cdOn=false,addKind='task',addKindNext=null;
 var HB_STARTERS=[['💧','Drink water'],['🏃','Move 30 minutes'],['📖','Read 20 pages'],['🧘','Meditate'],['📵','Phone away at night'],['🛏️','Bed by 11']];
 var G_STARTERS=[['🏃','Run a half marathon'],['📚','Read 12 books'],['💰','Save an emergency fund'],['🧠','Learn Spanish basics']];
 
@@ -6690,7 +6728,7 @@ $('addExtra').addEventListener('input',e=>{if(e.target.id==='akNote')$('saveBtn'
 $('addExtra').addEventListener('keydown',e=>{if(e.target.id==='akNote'&&e.key==='Enter'&&(e.metaKey||e.ctrlKey)&&e.target.value.trim()){e.preventDefault();$('saveBtn').click()}});
 $('newTitle').addEventListener('input',()=>{if(addKind==='task')akApply();else drawKinds()});
 const _akOpen=$('addBtn').onclick;
-$('addBtn').onclick=e=>{addKind='task';akBase=null;const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null; // inside a space, a new habit or goal starts there
+$('addBtn').onclick=e=>{addKind=addKindNext||'task';addKindNext=null;akBase=null;const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null; // inside a space, a new habit or goal starts there
   addHb={days:[0,1,2,3,4,5,6],space:sp};addG={m:3,space:sp};addNote={pin:false};const a=$('akNote');if(a)a.value='';_akOpen(e);drawKinds()};
 /* picking a space, list or time by hand makes it the new starting point for what's typed */
 ['optSpace','optList','optEst'].forEach(id=>$(id).addEventListener('click',()=>{if(draft)akBase={space:draft.space,list:draft.list,est:draft.est}}));
@@ -7295,6 +7333,46 @@ document.addEventListener('keydown',e=>{
   if(!top||!ESC_PAGES[top.id]||top.contains(e.target))return;
   e.preventDefault();e.stopImmediatePropagation();ESC_PAGES[top.id]();
 },true);
+/* ---------- Phones: bottom tab bar (Home · Inbox · Habits · Goals, and +) ----------
+   Shows on phones and tablets once Inbox, Habits or Goals is on, on Home and on those pages. It replaces Home's rows
+   for them and the big Add task button. Inside a space the space's own bar (Win the day, +) stays.
+   Computers have the sidebar instead. The + opens the add sheet on what fits the page: a habit on Habits, a goal on Goals. */
+const TB_HOME='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg>';
+const TB_PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+document.body.insertAdjacentHTML('beforeend','<nav class="tabbar" id="tabBar" aria-label="Main"><div class="tb-in" id="tbIn"></div></nav>');
+function tabsList(){const t=[['home','Home',TB_HOME]];
+  if(inboxOn())t.push(['inbox','Inbox',IB_ICON]);if(habitsOn())t.push(['habits','Habits',RH_ICON]);if(goalsOn())t.push(['goals','Goals',G_FLAG]);
+  return t.length>1?t:[]}
+const tabNow=()=>gdOn||glOn?'goals':rhOn?'habits':ibOn?'inbox':'home';
+let tbSig='';
+function drawTabs(){
+  const ts=tabsList(),on=ts.length>0&&(!S.space||ibOn||rhOn||glOn||gdOn);
+  document.body.classList.toggle('tabs-on',on);
+  if(!on){tbSig='';return}
+  const cur=tabNow(),n=inboxItems().length,sig=ts.map(x=>x[0]).join()+'|'+cur+'|'+n;if(sig===tbSig)return;tbSig=sig;
+  $('tbIn').innerHTML=ts.map(([k,l,ic])=>`<button class="tb${k===cur?' on':''}" data-tab="${k}" id="tb${l}"${k===cur?' aria-current="page"':''}>${ic}<span>${l}</span>${k==='inbox'&&n?`<i class="tb-n">${n>99?'99+':n}</i>`:''}</button>`).join('')
+    +`<button class="tb-add" id="tbAdd" aria-label="Add">${TB_PLUS}</button>`;
+}
+/* one tab at a time: the others close; tapping the open tab goes back to its top (or from a goal to all goals) */
+function tbGo(k){
+  const cur=tabNow();
+  if(k===cur){
+    if(k==='goals'&&gdOn){closeGoal();if(!glOn)openGoals();return drawTabs()}
+    const pg={home:null,inbox:'inboxPg',habits:'rhythmPg',goals:'goalsPg'}[k];
+    if(pg)$(pg).scrollTo({top:0,behavior:'smooth'});else window.scrollTo({top:0,behavior:'smooth'});return}
+  if(gdOn&&k!=='goals')closeGoal();if(glOn&&k!=='goals')closeGoals();if(rhOn&&k!=='habits')closeRhythm();if(ibOn&&k!=='inbox')closeInbox();
+  if(k==='home'){if(S.space)goHome()}
+  else if(k==='inbox')openInbox();
+  else if(k==='habits')openRhythm();
+  else if(k==='goals'){if(gdOn)closeGoal();openGoals()}
+  drawTabs();
+}
+$('tabBar').addEventListener('click',e=>{
+  const b=e.target.closest('[data-tab]');if(b){haptic(5);return tbGo(b.dataset.tab)}
+  if(e.target.closest('#tbAdd')){addKindNext=rhOn?'habit':glOn&&!gdOn?'goal':null;$('addBtn').click()}
+});
+const _tbRender=render;render=function(d){_tbRender(d);try{drawTabs()}catch(err){console.error(err)}};
+const _tbDesk=renderDesk;renderDesk=function(){_tbDesk.apply(this,arguments);try{drawTabs()}catch(err){console.error(err)}};
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}

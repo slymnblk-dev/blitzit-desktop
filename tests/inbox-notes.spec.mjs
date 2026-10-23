@@ -67,10 +67,10 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   await page.locator('#cxPop button', { hasText: 'Delete note' }).click();
   await page.locator('#dlgYes').click();
   expect(await page.evaluate(id => S.tasks.some(x => x.id === id), tid)).toBe(false);
-  // the Home row counts both
+  // the tab bar shows how many tasks wait (notes don't need sorting)
   await page.evaluate(() => { S.tasks.push({ id: 778, title: 'N', stage: 'backlog', list: null, est: 0, subs: [], notes: 'N', repeat: 'none', inbox: true, note: true, created: Date.now() }); save(); closeInbox(); });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => goHome());
-  await expect(page.locator('#ibEntry small')).toHaveText('1 task waiting · 1 note');
+  await expect(page.locator('#tbInbox .tb-n')).toHaveText('1');
   noErrors(errors);
 });

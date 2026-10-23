@@ -151,7 +151,14 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${nsCard()}${hbWidget()}${homeNudge()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${homeAlso()}<h2 class="sec-h">Spaces</h2><div class="sp-grid">${spaceCards()}</div>`;
+}
+/* phones: what else today holds, as rows in one card (north star, the next habit, tonight's or this week's nudge).
+   Tiles or pills (a habits style you can pick) and the backup reminder keep their own card. */
+function homeAlso(){
+  const hw=hbWidget(),one=!!hw&&hwStyle()==='one',nd=ciCard()||reviewCard(),bk=nd?'':backupCard();
+  const rows=[nsCard(),one?hw:'',nd].filter(Boolean);
+  return (rows.length?`<section class="also" aria-label="Also today"><h2 class="sec-h">Also today</h2><div class="also-in">${rows.join('')}</div></section>`:'')+(one?'':hw)+bk;
 }
 function render(dir){
   root.dataset.view=S.space?'space':'home';drawMe();

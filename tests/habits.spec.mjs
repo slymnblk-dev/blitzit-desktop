@@ -18,7 +18,7 @@ test('habits: off by default, turn on in Modes, add, Habits page, tick, turn off
   expect(await page.evaluate(() => habitsOn())).toBe(false);
   await page.evaluate(() => openSpace(S.spaces[0].id));
   await page.evaluate(() => goHome());
-  await expect(page.locator('#rhEntry')).toHaveCount(0);
+  await expect(page.locator('#tbHabits')).toHaveCount(0);
 
   // turn on in Settings → Modes
   await page.evaluate(() => { openSettings(); setView = 'modes'; drawSettings(); });
@@ -30,9 +30,9 @@ test('habits: off by default, turn on in Modes, add, Habits page, tick, turn off
   expect(await page.evaluate(() => S.habits[0].e)).toBe('💧'); // auto icon from the name
   await page.evaluate(() => closeSettings());
 
-  // Home gets a Habits row; the Habits page lists it; one tap ticks it
+  // the tab bar gets Habits; the Habits page lists it; one tap ticks it
   await page.evaluate(() => goHome());
-  await page.locator('#rhEntry').click();
+  await page.locator('#tbHabits').click();
   await expect(page.locator('#rhythmPg')).toHaveClass(/on/);
   await expect(page.locator('#rhythmPg .hg-row')).toHaveCount(1);
   await page.locator('#rhythmPg .hg-c.now').click();
@@ -51,7 +51,7 @@ test('habits: off by default, turn on in Modes, add, Habits page, tick, turn off
 
   // off again: gone everywhere, data kept
   await page.evaluate(() => { setCfg('habits', false); goHome(); });
-  await expect(page.locator('#rhEntry')).toHaveCount(0);
+  await expect(page.locator('#tbHabits')).toHaveCount(0);
   expect(await page.evaluate(() => S.habits.length)).toBe(1);
   noErrors(errors);
 });
@@ -60,7 +60,7 @@ test('habits: Habits page, evening check-in, Home widget', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.habits = true; S.cfg.wHabits = true; S.cfg.hbCiAt = 0; save(); applySettings(); goHome(); });
-  await page.locator('#rhEntry').click();
+  await page.locator('#tbHabits').click();
   await expect(page.locator('#rhythmPg')).toHaveClass(/on/);
   await addHabit(page, 'Read 20 pages');
   await addHabit(page, 'Meditate');
@@ -134,9 +134,10 @@ test('habits on Home: one spot, widget shows up to 6, one nudge at a time', asyn
     S.habits = Array.from({ length: 8 }, (_, i) => ({ id: 'h' + i, name: 'Habit ' + i, e: '', space: sp, days: [0,1,2,3,4,5,6], done: i < 2 ? { [today()]: 1 } : {}, created: Date.now() - 5 * DAY }));
     save(); applySettings(); goHome();
   });
-  // the widget opens Habits, so Home has no Habits row
+  // tiles keep their own card; Habits is always one tap away in the tab bar
   await expect(page.locator('.app .hw-tiles')).toHaveCount(1);
-  await expect(page.locator('#rhEntry')).toHaveCount(0);
+  await expect(page.locator('.app .also .hw-tiles')).toHaveCount(0);
+  await expect(page.locator('#tbHabits')).toBeVisible();
   // 6 tiles in your order; done ones stay visible (coral) and the rest fold into "+2 more"
   await expect(page.locator('.app .hw-tile')).toHaveCount(6);
   await expect(page.locator('.app .hw-tile.on')).toHaveCount(2);
@@ -147,9 +148,9 @@ test('habits on Home: one spot, widget shows up to 6, one nudge at a time', asyn
   await page.evaluate(() => { S.habits.forEach(h => h.done[today()] = 1); save(); render(); });
   await expect(page.locator('.app .hw-pill.on')).toHaveCount(6);
   await page.evaluate(() => { S.habits.forEach(h => delete h.done[today()]); save(); render(); });
-  // one at a time keeps its own look
+  // one at a time is a row in the "Also today" card
   await page.evaluate(() => { setCfg('hwStyle', 'one'); goHome(); });
-  await expect(page.locator('.app .hw-one')).toHaveCount(1);
+  await expect(page.locator('.app .also .hw-one')).toHaveCount(1);
   await expect(page.locator('.app .hw-more')).toHaveCount(0);
   // never more than one nudge card: the check-in wins over the weekly review
   await page.evaluate(() => { reviewCard = () => '<div class="rv-card">Weekly review</div>'; backupCard = () => '<div class="bk-card">Backup</div>'; render(); });
@@ -160,9 +161,11 @@ test('habits on Home: one spot, widget shows up to 6, one nudge at a time', asyn
   await expect(page.locator('.app .ci-home')).toHaveCount(0);
   await expect(page.locator('.app .rv-card')).toHaveCount(1);
   await expect(page.locator('.app .bk-card')).toHaveCount(0);
-  // without the widget, the Habits row comes back
+  // without the widget, Home has no habits card; the tab still opens them
   await page.evaluate(() => { setCfg('wHabits', false); goHome(); });
-  await expect(page.locator('#rhEntry')).toHaveCount(1);
+  await expect(page.locator('.app .hw')).toHaveCount(0);
+  await page.locator('#tbHabits').click();
+  await expect(page.locator('#rhythmPg')).toHaveClass(/on/);
   noErrors(errors);
 });
 

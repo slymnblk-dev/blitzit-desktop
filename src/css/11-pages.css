@@ -275,9 +275,9 @@ button.hg-c:active{transform:scale(.88)}
 .hw-tx b{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hw-tx span{font-size:13px;color:var(--muted)}
 .hw-st{font-style:normal;color:var(--today);font-weight:700}
-.hw-done{height:44px;padding:0 20px;border-radius:999px;background:var(--today);color:#fff;font-weight:700;font-size:15px;flex:none;transition:transform .15s,opacity .3s}
+.hw-done{height:44px;padding:0 20px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;font-size:15px;flex:none;transition:transform .15s,opacity .3s}
 .hw-done:active{transform:scale(.94)}
-.hw-done.on{opacity:.5;pointer-events:none}
+.hw-done.on{background:var(--today);color:#0F1013;pointer-events:none}
 /* big tiles */
 .hw-tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 @media (min-width:1100px){.hw-tl{grid-template-columns:repeat(6,minmax(0,1fr))}.hw{margin-bottom:16px;padding:18px}}

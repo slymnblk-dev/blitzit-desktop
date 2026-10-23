@@ -93,14 +93,12 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   expect(await page.evaluate(id => S.tasks.find(x => x.id === id).goal, td.id)).toBeUndefined();
   await page.evaluate(() => closeSheets());
 
-  // Home: the North star card is the one spot for a single goal, so no extra Goals row
+  // Home: the North star row sits in "Also today"; every goal is one tap away in the tab bar
   await page.evaluate(() => goHome());
-  await expect(page.locator('.ns-card:visible').first()).toContainText('2 of 3');
+  await expect(page.locator('.app .also .ns-card')).toContainText('2 of 3');
   await expect(page.locator('.ns-sub')).toHaveCount(0);
-  await expect(page.locator('#glEntry')).toHaveCount(0);
-  // a second goal brings the Goals row back, so every goal stays one tap away
   await page.evaluate(() => { S.goals.push({ id: 'g2', name: 'Read 12 books', e: '', space: S.goals[0].space, why: '', due: '', created: Date.now(), star: false, ms: [] }); save(); render(); });
-  await page.locator('#glEntry').click();
+  await page.locator('#tbGoals').click();
   await expect(page.locator('#goalsPg')).toHaveClass(/on/);
   await expect(page.locator('#goalsPg .g-card')).toHaveCount(2);
   await page.evaluate(() => { S.goals = S.goals.filter(x => x.id !== 'g2'); save(); render(); });
@@ -121,7 +119,7 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   // turning Goals off hides every trace; data stays
   await page.evaluate(() => { S.goals[0].done = false; S.cfg.goals = false; save(); render(); });
   expect(await page.evaluate(() => nsCard())).toBe('');
-  await expect(page.locator('#glEntry')).toHaveCount(0);
+  await expect(page.locator('#tbGoals')).toHaveCount(0);
   await expect(page.locator('#list .g-st')).toHaveCount(0);
   expect(await page.evaluate(() => S.goals.length)).toBe(1);
   noErrors(errors);

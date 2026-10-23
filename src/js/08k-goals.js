@@ -360,14 +360,13 @@ function goalsSetPage(){
 
 /* ---------- taps from anywhere (capture, so a goal inside a card never also opens the card) ---------- */
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-gopen],[data-gnew],[data-gadd],[data-ge],#glEntry,#glBack');if(!el)return;
+  const el=e.target.closest('[data-gopen],[data-gnew],[data-gadd],[data-ge],#glBack');if(!el)return;
   if(el.closest('#gdPg')&&!el.matches('[data-gopen]'))return;
   e.stopPropagation();e.preventDefault();
   if(el.matches('[data-gopen]'))return openGoal(el.dataset.gopen);
   if(el.matches('[data-gnew]'))return openSetup(el.dataset.gnew||null);
   if(el.matches('[data-gadd]')){closePops();return openSetup(el.dataset.gadd)}
   if(el.matches('[data-ge]'))return openGoalSheet(el.dataset.ge);
-  if(el.matches('#glEntry'))return openGoals();
   if(el.matches('#glBack'))return closeGoals();
 },true);
 

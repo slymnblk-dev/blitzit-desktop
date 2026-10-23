@@ -95,7 +95,7 @@ test('add sheet: "#space 45m" sets space and time; a goal goes straight to its m
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   const sp = await page.evaluate(() => { S.cfg.habits = true; S.cfg.goals = true; S.goals = []; goHome(); save(); render(); return S.spaces[1]; });
-  await page.locator('#addBtn').click();
+  await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
   await expect(page.locator('#addKinds [data-ak]')).toHaveCount(4);
   await expect(page.locator('.ak-tip')).toContainText('#space');
   await page.fill('#newTitle', `Write report #${sp.name.toLowerCase()} 45m`);
@@ -106,7 +106,7 @@ test('add sheet: "#space 45m" sets space and time; a goal goes straight to its m
   expect([t.est, await page.evaluate(id => listOf(id).space, t.list)]).toEqual([45, sp.id]);
   // a habit needs no space
   await page.waitForTimeout(400);
-  await page.locator('#addBtn').click();
+  await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
   await page.locator('[data-ak="habit"]').click();
   await expect(page.locator('#addSpaceWrap')).toBeHidden();
   await expect(page.locator('[data-akhs=""]')).toHaveClass(/on/);
@@ -115,7 +115,7 @@ test('add sheet: "#space 45m" sets space and time; a goal goes straight to its m
   expect(await page.evaluate(() => S.habits.find(h => h.name === 'Read').space)).toBe(null);
   // a goal: name and "by when" here, then the setup opens on First milestones
   await page.waitForTimeout(400);
-  await page.locator('#addBtn').click();
+  await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
   await page.locator('[data-ak="goal"]').click();
   await expect(page.locator('#saveBtn')).toHaveText('Next: milestones');
   await page.fill('#newTitle', 'Learn Spanish');

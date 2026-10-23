@@ -126,7 +126,6 @@ function ibSendTo(t,list){
 function ibOpen(id,pick){openDetail(id);if(pick){pickOpen='list';drawDetail()}}
 
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg" id="inboxPg" role="region" aria-label="Inbox"><div class="ib-in" id="ibIn"></div></div>');
-document.addEventListener('click',e=>{if(e.target.closest('#ibEntry'))openInbox()});
 $('inboxPg').addEventListener('click',e=>{
   if(e.target.closest('#ibBack'))return closeInbox();
   if(e.target.closest('#ibAdd'))return ibAdd();

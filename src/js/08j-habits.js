@@ -58,18 +58,13 @@ function modesRender(){
   if(rhOn)drawRhythm();
 }
 
-/* ---------- Home: evening check-in card, Inbox/Habits/Goals rows, sidebar ---------- */
+/* ---------- Home: evening check-in card, sidebar ---------- */
 function ciCard(){
   if(!habitsOn()||C().hbCi===false||S.ciSkip===today())return '';
   const at=+C().hbCiAt;if(new Date().getHours()<(Number.isFinite(at)?at:19))return '';
   const n=hbOpenToday().length;if(!n)return '';
   return `<div class="ci-home"><span class="ci-hi">${hbSun(3,false)}</span><span class="ci-ht"><b>Evening check-in</b><small>${n} ${n===1?'habit':'habits'} left today</small></span>
     <button class="rv-skip" data-cilater>Later</button><button class="rv-go" data-ciopen>Start</button></div>`}
-function homeNav(){const rows=[],r=(id,ic,t,sub)=>`<button class="ib-entry" id="${id}"><span class="ib-entry-i">${ic}</span><span class="ib-entry-t"><b>${t}</b><small>${sub}</small></span>${CHEV}</button>`;
-  if(inboxOn()){const n=inboxItems().length,m=inboxNotes().length;rows.push(r('ibEntry',IB_ICON,'Inbox',n||m?[n&&`${n} ${n===1?'task':'tasks'} waiting`,m&&`${m} ${m===1?'note':'notes'}`].filter(Boolean).join(' · '):'Drop tasks and notes here'))}
-  if(habitsOn()&&!hbWidget()){const n=hbOpenToday().length,has=hbAll().length;rows.push(r('rhEntry',RH_ICON,'Habits',!has?'Small daily wins':n?`${n} left today`:'All done today'))}
-  if(goalsOn()&&!(nsCard()&&gAll().length<2)){const n=gAll().length;rows.push(r('glEntry',G_FLAG,'Goals',n?`${n} in progress`:'Big outcomes, step by step'))}
-  return rows.length?`<div class="hn">${rows.join('')}</div>`:''}
 function rhythmSide(){let h='';
   if(habitsOn()){const n=hbOpenToday().length;h+=`<button class="s-list s-home s-inbox ${rhOn?'on':''}" id="sRhythm" title="Habits">${RH_ICON}<span class="s-name">Habits</span>${n?`<span class="n">${n}</span>`:''}</button>`}
   if(goalsOn()){const n=gAll().length;h+=`<button class="s-list s-home s-inbox ${typeof glOn!=='undefined'&&glOn?'on':''}" id="sGoals" title="Goals">${G_FLAG}<span class="s-name">Goals</span>${n?`<span class="n">${n}</span>`:''}</button>`}
@@ -201,7 +196,7 @@ function habitsSetPage(){
 
 /* ---------- taps (capture, so a habit inside a space card or settings row never also opens something else) ---------- */
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-hbt],[data-hbe],[data-hbnew],[data-ciopen],[data-cilater],[data-hbopen],#rhEntry,#rhBack,#ciBack,[data-ciyes],[data-cino],[data-ciclose]');
+  const el=e.target.closest('[data-hbt],[data-hbe],[data-hbnew],[data-ciopen],[data-cilater],[data-hbopen],#rhBack,#ciBack,[data-ciyes],[data-cino],[data-ciclose]');
   if(!el)return;
   if(el.closest('.sheet')&&!el.closest('#hbSheet'))return;
   e.stopPropagation();e.preventDefault();
@@ -211,7 +206,6 @@ document.addEventListener('click',e=>{
   if(el.matches('[data-ciopen]'))return openCheckin();
   if(el.matches('[data-cilater]')){S.ciSkip=today();save();render();toast('Okay. It’ll be back tomorrow evening.');return}
   if(el.matches('[data-hbopen]'))return hbOpenHabits();
-  if(el.matches('#rhEntry'))return openRhythm();
   if(el.matches('#rhBack'))return closeRhythm();
   if(el.matches('#ciBack')||el.matches('[data-ciclose]'))return closeCheckin();
   if(el.matches('[data-ciyes]'))return ciAnswer(true);
