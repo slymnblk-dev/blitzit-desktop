@@ -79,7 +79,6 @@
 .gd-top{justify-content:space-between}
 @media (min-width:1100px){.gd-pg .ib-in{max-width:1080px;padding-top:24px}.gd-top{display:flex}}
 .gd-mw .lh-pop{top:44px;right:0}
-.gd-ns{display:inline-flex;align-items:center;gap:5px;color:var(--week)}.gd-ns svg{width:12px;height:12px}
 .gd-e{margin-right:.22em}
 .gd-sec{display:flex;align-items:center;gap:10px;margin:26px 2px 10px}
 .gd-sec h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}

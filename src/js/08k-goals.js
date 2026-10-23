@@ -200,7 +200,8 @@ $('gdPg').addEventListener('click',e=>{
   if(e.target.closest('#gdBack'))return closeGoal();
   if(e.target.closest('#gdMore')){e.stopPropagation();const was=pop.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);pop.classList.add('on')}return}
   const m=e.target.closest('[data-gm]');if(m){pop.classList.remove('on');const a=m.dataset.gm;
-    if(a==='edit')return openGoalSheet(g.id);if(a==='star')return gToggleStar(g);if(a==='win')return gSetWin(g,!g.done);if(a==='del')return gDelete(g);return}
+    if(a==='edit')return openGoalSheet(g.id);
+    if(a==='why'){g.hideWhy=!g.hideWhy;if(!g.hideWhy)delete g.hideWhy;save();render();toast(g.hideWhy?'Why hidden from the page · it stays in Edit goal':'Why shows on the page again');return}if(a==='star')return gToggleStar(g);if(a==='win')return gSetWin(g,!g.done);if(a==='del')return gDelete(g);return}
   const v=e.target.closest('[data-gview]');if(v){if((g.view||C().gView)!==v.dataset.gview){g.view=v.dataset.gview;haptic(5);save();gdAnim=true;drawGoal();gdAnim=false}return}
   if(e.target.closest('[data-gwhy]')){openGoalSheet(g.id,true);return}
   const tk=e.target.closest('[data-gtask]');if(tk){haptic(5);return openDetail(+tk.dataset.gtask)}
@@ -303,13 +304,16 @@ document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="gSheet"><di
   <div class="grab"></div><h2>Edit goal</h2>
   <div class="sp-form"><span class="sp-prev hb-prev g-prev" id="gPrev" role="button" aria-label="Choose an icon"></span><input class="field sp-name-in" id="gName" placeholder="Goal" maxlength="60" autocomplete="off" enterkeyhint="done"></div>
   <div class="lbl">Why it matters</div><textarea class="field g-whyin" id="gWhy" rows="2" maxlength="160" placeholder="Optional"></textarea>
+  <div class="g-whyvis" id="gWhyVis" role="group" aria-label="Why on the goal page"><span>On the goal page</span><button type="button" data-gwv="1">Show</button><button type="button" data-gwv="0">Hide</button></div>
   <div class="le-card sp-opts" id="gOpts"></div>
   <button class="primary" id="gSave">Save</button>
   <div class="le-acts"><button class="le-btn" id="gWinB" type="button">Mark achieved</button><button class="le-btn warn" id="gDelB" type="button">Delete goal</button></div>
 </div></div>`);
 let gDraft=null,gSub=null;
+function gWvPaint(){$('gWhyVis').querySelectorAll('[data-gwv]').forEach(b=>{const on=(b.dataset.gwv==='0')===!!gDraft.hideWhy;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
+$('gWhyVis').addEventListener('click',e=>{const b=e.target.closest('[data-gwv]');if(!b||!gDraft)return;gDraft.hideWhy=b.dataset.gwv==='0';haptic(4);gWvPaint()});
 function openGoalSheet(id,why){const g=gById(id);if(!g)return;
-  gDraft={id:g.id,name:g.name,e:g.e||'',space:g.space,due:g.due||gPlus(3),why:g.why||''};gSub=null;
+  gDraft={id:g.id,name:g.name,e:g.e||'',space:g.space,due:g.due||gPlus(3),why:g.why||'',hideWhy:!!g.hideWhy};gSub=null;gWvPaint();
   $('gName').value=g.name;$('gWhy').value=g.why||'';$('gWinB').textContent=g.done?'Back in progress':'Mark achieved';
   drawGoalSheet();openSheet('gSheet');if(why)setTimeout(()=>{if($('gSheet').classList.contains('on'))$('gWhy').focus()},300)}
 function drawGoalSheet(){
@@ -333,7 +337,7 @@ $('gName').oninput=e=>{gDraft.name=e.target.value;$('gSave').disabled=!gDraft.na
 $('gName').onkeydown=e=>{if(e.key==='Enter'&&gDraft.name.trim())$('gSave').click()};
 $('gWhy').oninput=e=>{gDraft.why=e.target.value};
 $('gSave').onclick=()=>{const d=gDraft,g=d&&gById(d.id);if(!g||!d.name.trim())return;const inSet=settingsOpen();closeSheets();
-  commit(()=>Object.assign(g,{name:d.name.trim(),e:d.e,space:d.space&&spaceOf(d.space)?d.space:null,due:d.due,why:d.why.trim()}),'Goal saved');if(inSet)drawSettings()};
+  commit(()=>{Object.assign(g,{name:d.name.trim(),e:d.e,space:d.space&&spaceOf(d.space)?d.space:null,due:d.due,why:d.why.trim()});if(d.hideWhy)g.hideWhy=true;else delete g.hideWhy},'Goal saved');if(inSet)drawSettings()};
 $('gWinB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(!g)return;const inSet=settingsOpen();closeSheets();setTimeout(()=>{gSetWin(g,!g.done);if(inSet)drawSettings()},200)};
 $('gDelB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(g)gDelete(g)};
 

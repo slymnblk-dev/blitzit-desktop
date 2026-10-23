@@ -2482,7 +2482,6 @@ body.no-amb .amb-btn{display:none!important}
 .gd-top{justify-content:space-between}
 @media (min-width:1100px){.gd-pg .ib-in{max-width:1080px;padding-top:24px}.gd-top{display:flex}}
 .gd-mw .lh-pop{top:44px;right:0}
-.gd-ns{display:inline-flex;align-items:center;gap:5px;color:var(--week)}.gd-ns svg{width:12px;height:12px}
 .gd-e{margin-right:.22em}
 .gd-sec{display:flex;align-items:center;gap:10px;margin:26px 2px 10px}
 .gd-sec h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
@@ -2776,10 +2775,14 @@ button.hg-c:active{transform:scale(.88)}
 /* ===== Goal: shared ===== */
 .gv{--gb-m1:color-mix(in srgb,var(--text) 9%,var(--bg));--gb-f1:color-mix(in srgb,var(--text) 5%,var(--bg))}
 .gv-h{font-size:clamp(38px,10vw,64px);font-weight:800;letter-spacing:-.045em;line-height:1;margin:0;overflow-wrap:anywhere}
-.gv-why{font-size:17px;line-height:1.45;color:var(--muted);text-align:left;padding:0;max-width:560px;transition:color .2s}
-.gv-why:hover{color:var(--text)}
-.gv-why.add{font-size:14.5px;opacity:.75}
-.gv-why.q{font-style:normal}
+.gv-why{font-size:14.5px;line-height:1.45;color:var(--muted);text-align:left;padding:0;max-width:560px;transition:color .2s}
+.gv-why.add{display:inline-flex;align-items:center;gap:6px;opacity:.7}.gv-why.add svg{width:13px;height:13px}
+.gv-why.add:hover{opacity:1;color:var(--text)}
+/* the why reads as a quiet quote: a little larger, softer ink, coral quote marks hanging outside the text */
+.gv-why.q{position:relative;font-size:18px;font-weight:500;line-height:1.4;letter-spacing:-.01em;color:color-mix(in srgb,var(--text) 72%,var(--bg));padding-left:.55em;text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gv-why.q:hover{color:var(--text)}
+.gv-why.q .gq{color:var(--gm-mid,color-mix(in srgb,var(--today) 50%,transparent));font-weight:800;font-size:1.15em;line-height:0}
+.gv-why.q .gq:first-child{position:absolute;left:0;top:-.02em}
 .gp-ok,.gp-ahead,.gp-won{color:var(--text)}.gp-behind{color:var(--week)}.gp-none{color:var(--muted)}
 .gv-add{width:100%;min-width:0;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:16px;padding:4px 0}
 .gv-add::placeholder{color:var(--muted)}
@@ -2831,14 +2834,7 @@ button.hg-c:active{transform:scale(.88)}
 .gb-svg.anim .gb-mtn,.gb-svg.anim .gb-far{animation:gbRise 1s var(--ease) both}
 @keyframes gbRise{from{opacity:0;transform:translateY(24px)}}
 .gv.anim .gb-head{animation:pgIn .6s var(--ease) both}
-.gb-stats{display:flex;align-items:flex-end;flex-wrap:wrap;gap:16px 44px;margin:6px 0 30px}
-.gb-stats>span{display:flex;flex-direction:column;gap:2px}
-.gb-stats b{font-size:34px;font-weight:800;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
-.gb-stats small{font-size:13.5px;color:var(--muted)}
 .gb-pace{font-size:24px!important;line-height:34px!important}
-.gb-stats .gv-win{margin-left:auto;align-self:center}
-.gv.anim .gb-stats>*{animation:pgIn .55s var(--ease) both}
-.gv.anim .gb-stats>*:nth-child(2){animation-delay:.08s}.gv.anim .gb-stats>*:nth-child(3){animation-delay:.16s}
 .gs-addb{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 10px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:color .2s,box-shadow .2s}
 .gs-addb svg{width:14px;height:14px}
 .gs-addb:hover{color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 30%,transparent)}
@@ -2916,8 +2912,6 @@ button.hg-c:active{transform:scale(.88)}
   .hp-head{margin-top:6px}
   .gb-stage{height:auto;display:flex;flex-direction:column;margin:-8px -22px 0;-webkit-mask-image:none;mask-image:none}
   .gb-svg{position:relative;height:auto;margin-top:-10px}
-  .gb-stats{gap:14px 28px}
-  .gb-stats b{font-size:30px}
 }
 .gb-svg{overflow:visible}
 .gpth-k.ghost{box-shadow:none;border:2px dashed color-mix(in srgb,var(--text) 16%,transparent);box-sizing:border-box}
@@ -3182,6 +3176,22 @@ button.hg-c:active{transform:scale(.88)}
 .gm-tt b+.gm-in{margin-left:10px}
 .gm-card.hot .gm-in{color:rgba(255,255,255,.8)}
 .gs-lbl span{font-weight:500;color:var(--muted);margin-left:4px}
+
+/* Option A: one calm line of facts under the hill */
+.gb-facts{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:6px 0 26px}
+.gb-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0;font-size:15px;color:var(--muted)}
+.gb-line>*{white-space:nowrap}
+.gb-line>*+*::before{content:"·";margin:0 10px;color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.gb-line b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+.gb-line .gb-pace{font-size:inherit!important;line-height:inherit!important;font-weight:600}
+.gb-facts .gv-win{margin-left:auto}
+.gv-st{display:inline-grid;place-items:center;width:.42em;height:.42em;margin-left:.2em;vertical-align:.36em;color:var(--week)}.gv-st svg{width:100%;height:100%}
+.gb-head .gv-h{font-size:clamp(34px,8vw,58px);text-wrap:balance}
+/* Edit goal: show or hide the why on the page */
+.g-whyvis{display:flex;align-items:center;gap:6px;margin:8px 0 14px;font-size:13.5px;color:var(--muted)}
+.g-whyvis span{flex:1}
+.g-whyvis button{height:30px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.g-whyvis button.on{background:var(--text);color:var(--bg);box-shadow:none}
 </style>
 </head>
 <body>
@@ -3376,7 +3386,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=166; // bumped with every published update
+const APP_VERSION=167; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -6154,7 +6164,8 @@ $('gdPg').addEventListener('click',e=>{
   if(e.target.closest('#gdBack'))return closeGoal();
   if(e.target.closest('#gdMore')){e.stopPropagation();const was=pop.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);pop.classList.add('on')}return}
   const m=e.target.closest('[data-gm]');if(m){pop.classList.remove('on');const a=m.dataset.gm;
-    if(a==='edit')return openGoalSheet(g.id);if(a==='star')return gToggleStar(g);if(a==='win')return gSetWin(g,!g.done);if(a==='del')return gDelete(g);return}
+    if(a==='edit')return openGoalSheet(g.id);
+    if(a==='why'){g.hideWhy=!g.hideWhy;if(!g.hideWhy)delete g.hideWhy;save();render();toast(g.hideWhy?'Why hidden from the page · it stays in Edit goal':'Why shows on the page again');return}if(a==='star')return gToggleStar(g);if(a==='win')return gSetWin(g,!g.done);if(a==='del')return gDelete(g);return}
   const v=e.target.closest('[data-gview]');if(v){if((g.view||C().gView)!==v.dataset.gview){g.view=v.dataset.gview;haptic(5);save();gdAnim=true;drawGoal();gdAnim=false}return}
   if(e.target.closest('[data-gwhy]')){openGoalSheet(g.id,true);return}
   const tk=e.target.closest('[data-gtask]');if(tk){haptic(5);return openDetail(+tk.dataset.gtask)}
@@ -6257,13 +6268,16 @@ document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="gSheet"><di
   <div class="grab"></div><h2>Edit goal</h2>
   <div class="sp-form"><span class="sp-prev hb-prev g-prev" id="gPrev" role="button" aria-label="Choose an icon"></span><input class="field sp-name-in" id="gName" placeholder="Goal" maxlength="60" autocomplete="off" enterkeyhint="done"></div>
   <div class="lbl">Why it matters</div><textarea class="field g-whyin" id="gWhy" rows="2" maxlength="160" placeholder="Optional"></textarea>
+  <div class="g-whyvis" id="gWhyVis" role="group" aria-label="Why on the goal page"><span>On the goal page</span><button type="button" data-gwv="1">Show</button><button type="button" data-gwv="0">Hide</button></div>
   <div class="le-card sp-opts" id="gOpts"></div>
   <button class="primary" id="gSave">Save</button>
   <div class="le-acts"><button class="le-btn" id="gWinB" type="button">Mark achieved</button><button class="le-btn warn" id="gDelB" type="button">Delete goal</button></div>
 </div></div>`);
 let gDraft=null,gSub=null;
+function gWvPaint(){$('gWhyVis').querySelectorAll('[data-gwv]').forEach(b=>{const on=(b.dataset.gwv==='0')===!!gDraft.hideWhy;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
+$('gWhyVis').addEventListener('click',e=>{const b=e.target.closest('[data-gwv]');if(!b||!gDraft)return;gDraft.hideWhy=b.dataset.gwv==='0';haptic(4);gWvPaint()});
 function openGoalSheet(id,why){const g=gById(id);if(!g)return;
-  gDraft={id:g.id,name:g.name,e:g.e||'',space:g.space,due:g.due||gPlus(3),why:g.why||''};gSub=null;
+  gDraft={id:g.id,name:g.name,e:g.e||'',space:g.space,due:g.due||gPlus(3),why:g.why||'',hideWhy:!!g.hideWhy};gSub=null;gWvPaint();
   $('gName').value=g.name;$('gWhy').value=g.why||'';$('gWinB').textContent=g.done?'Back in progress':'Mark achieved';
   drawGoalSheet();openSheet('gSheet');if(why)setTimeout(()=>{if($('gSheet').classList.contains('on'))$('gWhy').focus()},300)}
 function drawGoalSheet(){
@@ -6287,7 +6301,7 @@ $('gName').oninput=e=>{gDraft.name=e.target.value;$('gSave').disabled=!gDraft.na
 $('gName').onkeydown=e=>{if(e.key==='Enter'&&gDraft.name.trim())$('gSave').click()};
 $('gWhy').oninput=e=>{gDraft.why=e.target.value};
 $('gSave').onclick=()=>{const d=gDraft,g=d&&gById(d.id);if(!g||!d.name.trim())return;const inSet=settingsOpen();closeSheets();
-  commit(()=>Object.assign(g,{name:d.name.trim(),e:d.e,space:d.space&&spaceOf(d.space)?d.space:null,due:d.due,why:d.why.trim()}),'Goal saved');if(inSet)drawSettings()};
+  commit(()=>{Object.assign(g,{name:d.name.trim(),e:d.e,space:d.space&&spaceOf(d.space)?d.space:null,due:d.due,why:d.why.trim()});if(d.hideWhy)g.hideWhy=true;else delete g.hideWhy},'Goal saved');if(inSet)drawSettings()};
 $('gWinB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(!g)return;const inSet=settingsOpen();closeSheets();setTimeout(()=>{gSetWin(g,!g.done);if(inSet)drawSettings()},200)};
 $('gDelB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(g)gDelete(g)};
 
@@ -6720,6 +6734,7 @@ function gMenuHTML(g){const v=gView(g);
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"','Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
     <span class="pm-sep"></span><button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
+    ${g.why?`<button data-gm="why" role="menuitem"><span class="lpm-i">${g.hideWhy?CK:X}</span>${g.hideWhy?'Show why on the page':'Hide why on the page'}</button>`:''}
     ${g.done&&!g.ms.length?'':`<button data-gedit role="menuitem"><span class="lpm-i">${PEN_S}</span>${g.ms.length?'Edit milestones':'Add milestones'}</button>`}
     ${g.done?'':`<button data-gm="star" role="menuitem"><span class="lpm-i">${G_STAR}</span>${g.star?'Remove north star':'Make it my north star'}</button>`}
     <button data-gm="win" role="menuitem"><span class="lpm-i">${G_FLAG}</span>${g.done?'Back in progress':'Mark as achieved'}</button>
@@ -6838,12 +6853,17 @@ $('gdPg').addEventListener('focusout',e=>{if(e.target.matches('[data-gren]')&&gR
 
 /* the milestone card and Other tasks: side by side on computers */
 function gCols(c,o){return c||o?`<div class="gm-cols${c&&o?' two':''}">${c}${o?`<div class="gm-other">${o}</div>`:''}</div>`:''}
+/* the goal's "why": a quiet quote under the name. Optional: hide it from the page (⋯ or Edit goal); it stays in the goal */
+function gWhy(g){if(g.hideWhy)return '';return g.why?`<button class="gv-why q" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit"><span class="gq" aria-hidden="true">“</span>${esc(g.why)}<span class="gq" aria-hidden="true">”</span></button>`
+  :`<button class="gv-why add" data-gwhy>${PLUS_S}Why it matters</button>`}
+/* one calm line of facts: 1/5 milestones · 41 days to Dec 3 · On track */
+function gFacts(g){const pr=gProg(g),dd=gDays(g),dl=gDaysLeft(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,due=g.due?gShort(g.due):'';
+  const days=g.done?`<span>Achieved ${gShort(g.doneAt)}</span>`:`<span><b>${dd.n}</b> ${dl!==null&&dl>=0&&due?`${dd.n===1?'day':'days'} to ${due}`:dd.t}</span>`;
+  return `<div class="gb-facts"><div class="gb-line"><span><b>${pr.n}/${pr.of}</b> milestones</span>${days}${top||g.done?'':`<span class="gb-pace">${gPaceTxt(g)}</span>`}</div>${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
 function gClimbView(g,anim){
-  const pr=gProg(g),dd=gDays(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
-  return `<div class="gb-stage">${gbScene(g,anim)}<div class="gb-head"><span class="hp-eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:`Goal${g.due?` · by ${gLong(g.due)}`:''}`}${g.star&&!g.done?`<span class="gd-ns">${G_STAR}North star</span>`:''}</span>
-      <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why" data-gwhy>${esc(g.why)}</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}</div></div>
-    <div class="gb-stats"><span><b data-cnt="${pr.n}">${pr.n}</b><small>of ${pr.of} milestones</small></span>${g.done?'':`<span><b ${typeof dd.n==='number'?`data-cnt="${dd.n}"`:''}>${dd.n}</b><small>${dd.t}</small></span>`}${top?'':`<span><b class="gb-pace">${gPaceTxt(g)}</b><small>pace</small></span>`}
-      ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>
+  return `<div class="gb-stage">${gbScene(g,anim)}<div class="gb-head">
+      <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}${g.star&&!g.done?`<span class="gv-st" title="North star" aria-label="North star">${G_STAR}</span>`:''}</h1>${gWhy(g)}</div></div>
+    ${gFacts(g)}
     ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,gSel(g)),gTasksSec(g))}`}
 function gPathView(g){
   const pr=gProg(g),dd=gDays(g),nx=gNext(g),sel=gSel(g);
@@ -6851,7 +6871,7 @@ function gPathView(g){
     return `<div class="gpth ${k}" style="--i:${i}"><span class="gpth-ln"><button class="gpth-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}<i></i></button><b></b></span>
       <span class="gpth-tx">${m===nx&&!g.done?'<span class="gpth-nx">Next</span>':''}<button class="gpth-t" data-gsel="${m.id}" aria-expanded="${m===sel}">${esc(m.t)}</button>${m.done&&m.doneAt?`<small>Done ${gShort(m.doneAt)}</small>`:''}${m===sel?gMsCard(g,m,'in'):(n=>n?`<small>${gKids(m).filter(x=>x.done).length} of ${n} tasks</small>`:'')(gKids(m).length)}</span></div>`}).join('');
   return `<div class="gpv"><span class="hp-eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:`${esc((spaceOf(g.space)||{}).name||'Goal')}${g.due?` · by ${gLong(g.due)}`:''}`}</span>
-    <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why q" data-gwhy>“${esc(g.why)}”</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}
+    <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${gWhy(g)}
     <div class="gpv-bar"><i style="--w:${(pr.p*100).toFixed(1)}%"></i></div>
     <div class="gpv-meta"><span><b>${pr.n} of ${pr.of}</b> milestones</span><span>${gPaceTxt(g)}${g.done||dd.n==='—'?'':gDaysLeft(g)<0?` · ${dd.n} ${dd.n===1?'day':'days'} over`:` · ${dd.n} ${dd.t}`}</span></div>
     <div class="gpth-list">${st}${g.ms.length<MS_MAX&&!g.done?`<div class="gpth add"><span class="gpth-ln"><span class="gpth-k ghost"></span></span><span class="gpth-tx">${gAddInput(g.ms.length?'Add a milestone':'Add your first milestone')}</span></div>`:''}</div>

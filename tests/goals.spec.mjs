@@ -175,7 +175,7 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await expect(page.locator('#gdPg .gm-n').last()).toBeInViewport();
   expect(await page.evaluate(() => { const r = document.querySelector('#gdPg .gm-track'); return r.scrollWidth <= r.clientWidth + 1; })).toBe(true);
   // past due: counts the days over, never "0 days left"
-  await expect(page.locator('#gdPg .gb-stats')).toContainText('days past due');
+  await expect(page.locator('#gdPg .gb-facts')).toContainText('days past due');
   // the card opens on Next; a quick double tap on Mark done ticks it once
   await expect(page.locator('#gdPg .gm-card .gm-tag')).toHaveText('Next');
   await page.locator('#gdPg .gm-card [data-gtk]').dblclick();
@@ -232,7 +232,7 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   expect(same).toBe(true);
   // summit: the Mark achieved button stands in for the pace
   await page.evaluate(() => { S.goals[0].ms.forEach(m => m.done = true); save(); render(); });
-  await expect(page.locator('#gdPg .gb-stats [data-gwin]')).toBeVisible();
+  await expect(page.locator('#gdPg .gb-facts [data-gwin]')).toBeVisible();
   await expect(page.locator('#gdPg .gb-pace')).toHaveCount(0);
   // poster and path: past due wording
   await page.evaluate(() => { S.goals[0].ms[5].done = false; S.goals[0].view = 'poster'; save(); openGoal('g1'); });
@@ -436,5 +436,30 @@ test('goal page and Goals page: ⋯ menus to rename, move, add subtasks, delete;
   await menu('#goalsPg [data-gcm="g1"]', 'Delete goal');
   await page.locator('#dlgYes').click();
   expect(await page.evaluate(() => S.goals.length)).toBe(0);
+  noErrors(errors);
+});
+
+test('goal page: one calm facts line; why as a quote that can be hidden from the page', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true;
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: null, why: 'Feel strong', due: dkey(new Date(Date.now() + 41 * DAY)), created: Date.now(), star: true, ms: [{ id: 'm0', t: 'A', done: true }, { id: 'm1', t: 'B', done: false }] }];
+    save(); applySettings(); openGoal('g1'); });
+  await expect(page.locator('#gdPg .gb-line')).toContainText('1/2 milestones');
+  await expect(page.locator('#gdPg .gb-line')).toContainText('41 days to');
+  await expect(page.locator('#gdPg .gv-st')).toHaveCount(1); // north star: a small star by the name
+  await expect(page.locator('#gdPg .gv-why.q')).toContainText('Feel strong');
+  // hide it from the ⋯ menu; it stays in the goal
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gm="why"]').click();
+  await expect(page.locator('#gdPg .gv-why')).toHaveCount(0);
+  expect(await page.evaluate(() => [S.goals[0].hideWhy, S.goals[0].why])).toEqual([true, 'Feel strong']);
+  // Edit goal shows it and can bring it back
+  await page.evaluate(() => openGoalSheet('g1'));
+  await expect(page.locator('#gWhy')).toHaveValue('Feel strong');
+  await expect(page.locator('#gWhyVis [data-gwv="0"]')).toHaveClass(/on/);
+  await page.locator('#gWhyVis [data-gwv="1"]').click();
+  await page.locator('#gSave').click();
+  await expect(page.locator('#gdPg .gv-why.q')).toHaveCount(1);
   noErrors(errors);
 });
