@@ -24,6 +24,8 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await expect(page.locator('#gsNext')).toBeDisabled();
   await page.fill('#gsName', 'Run a half marathon');
   await expect(page.locator('#gsE')).toHaveText('🏃'); // auto icon from the name
+  await expect(page.locator('#gsPg [data-gssp=""]')).toHaveClass(/on/); // no space by default
+  await page.locator('#gsPg [data-gssp]:not([data-gssp=""])').first().click(); // this one goes in a space
   await page.locator('#gsNext').click();
   await page.locator('[data-gsm="6"]').click();
   await page.locator('#gsNext').click();
@@ -51,18 +53,16 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   // tick the first milestone
   await page.locator('#gdPg [data-gtk]').first().click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
-  // the card shows the next milestone; a task added there lands in My week, linked to goal and milestone
+  // the card shows the next milestone; a task added there stays in the goal (no list, no stage)
   await expect(page.locator('#gdPg .gm-card .gm-hx b')).toHaveText('Run 15 km');
   await page.fill('#gMtIn', 'Long run Sunday');
   await page.keyboard.press('Enter');
-  const t = await page.evaluate(() => S.tasks.find(x => x.title === 'Long run Sunday'));
-  expect(t.stage).toBe('week');
-  expect(t.goal).toBe(g.id);
-  expect(t.ms).toBe(g.ms[1].id);
+  expect(await page.evaluate(() => S.tasks.some(x => x.title === 'Long run Sunday'))).toBe(false);
+  expect(await page.evaluate(() => S.goals[0].ms[1].items.map(x => x.t))).toEqual(['Long run Sunday']);
   await expect(page.locator('#gMtIn')).toBeFocused(); // ready for the next one
-  // finishing its last task ticks the milestone (the page catches up once you leave the field)
+  // finishing its last task ticks the milestone
   await page.locator('#gMtIn').blur();
-  await page.evaluate(id => { const x = S.tasks.find(y => y.id === id); commit(() => setStage(x, 'done'), 'Done'); }, t.id);
+  await page.locator('#gdPg .gm-card [data-gmt]').first().click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[1].done)).toBe(true);
   await expect(page.locator('#gdPg [data-gwin]')).toBeVisible(); // summit reached → offer to mark achieved
 
@@ -204,7 +204,7 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.fill('#gMtIn', 'B');
   await page.keyboard.press('Enter');
   await expect(page.locator('#gdPg .gm-card .gm-t')).toHaveCount(2);
-  const st = () => page.evaluate(() => [S.goals[0].ms[5].done, ...['A', 'B'].map(n => S.tasks.find(x => x.ms === 'm5' && x.title === n).stage)]);
+  const st = () => page.evaluate(() => [S.goals[0].ms[5].done, ...['A', 'B'].map(n => S.goals[0].ms[5].items.find(x => x.t === n).done ? 'done' : 'week')]);
   await expect(page.locator('#gdPg .gm-card .gm-tt b')).toHaveText(['A', 'B']); // oldest first, add field at the bottom
   await page.locator('#gdPg .gm-card .gm-t').nth(0).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
@@ -212,7 +212,8 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.locator('#gdPg .gm-card .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([true, 'done', 'done']);
   await expect(page.locator('#gdPg .gm-card .gm-tag')).toContainText('Done'); // the moment shows on the same card
-  await page.evaluate(() => { const x = S.tasks.find(y => y.title === 'B'); commit(() => setStage(x, 'week'), 'x'); });
+  await page.waitForTimeout(450);
+  await page.locator('#gdPg .gm-card .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
   await page.evaluate(() => gMsToggle(S.goals[0], S.goals[0].ms[5]));
   await expect.poll(st).toEqual([true, 'done', 'done']);
@@ -322,20 +323,53 @@ test('goal page: subtask rings, lists that scroll inside, even track, milestone 
   noErrors(errors);
 });
 
-test('goal page: a milestone takes many tasks (My week first, then Later), newest scrolls into view', async ({ page }) => {
+test('goal page: milestone tasks need no space or list; add one to a list and back; standalone goals and habits', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
-  await page.evaluate(() => { S.cfg.goals = true; const sp = S.spaces[0].id;
-    S.goals = [{ id: 'g1', name: 'Run', e: '', space: sp, why: '', due: '', created: Date.now(), star: false, ms: [{ id: 'm0', t: 'A', done: false }] }];
+  await page.evaluate(() => { S.cfg.goals = true; S.cfg.habits = true;
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: null, why: '', due: '', created: Date.now(), star: false, ms: [{ id: 'm0', t: 'A', done: false }, { id: 'm1', t: 'B', done: false }] }];
     save(); applySettings(); openGoal('g1'); });
-  const room = await page.evaluate(() => { const ls = S.lists.filter(l => l.space === S.goals[0].space); return ls.reduce((n, l) => n + Math.max(0, STAGE_MAX - stageCount(l.id, 'week')), 0); });
-  for (let i = 0; i < room + 3; i++) { await page.fill('#gMtIn', 'T' + i); await page.keyboard.press('Enter'); }
-  const st = await page.evaluate(() => S.tasks.filter(x => x.ms === 'm0').map(x => x.stage));
-  expect(st.length).toBe(room + 3);
-  expect(st.filter(s => s === 'backlog').length).toBe(3);
-  await expect(page.locator('#toastMsg')).toContainText('My week is full');
+  // a goal with no space shows everywhere it should
+  expect(await page.evaluate(() => gAll().length)).toBe(1);
+  // many tasks, no limit popup: they live in the goal
+  for (let i = 0; i < 14; i++) { await page.fill('#gMtIn', 'T' + i); await page.keyboard.press('Enter'); }
+  expect(await page.evaluate(() => [S.goals[0].ms[0].items.length, S.tasks.filter(x => x.goal === 'g1').length])).toEqual([14, 0]);
   await expect(page.locator('#gdPg .gm-t').last()).toBeInViewport();
   expect(await page.evaluate(() => { const el = document.querySelector('#gdPg .gm-ts'); return el.scrollHeight > el.clientHeight; })).toBe(true);
+  await expect(page.locator('#gdPg .gm-t .gm-in')).toHaveCount(0); // goal-only tasks show no list
+  // ⋯ → Add to a list…: it becomes a real task in that list (My week), still in the milestone
+  await page.locator('#gMtIn').blur();
+  const listName = await page.evaluate(() => S.lists[0].name);
+  await page.locator('#gdPg .gm-t').first().hover();
+  await page.locator('#gdPg .gm-t').first().locator('[data-gtm]').click();
+  await page.locator('#cxPop button', { hasText: 'Add to a list' }).click();
+  await page.locator('#cxPop button', { hasText: listName }).first().click();
+  const t = await page.evaluate(() => S.tasks.find(x => x.title === 'T0'));
+  expect([t.stage, t.goal, t.ms]).toEqual(['week', 'g1', 'm0']);
+  expect(await page.evaluate(() => S.goals[0].ms[0].items.length)).toBe(13);
+  await expect(page.locator('#gdPg .gm-t .gm-in')).toHaveCount(1); // it now shows its list
+  // ⋯ → Keep in the goal only: back to a goal task, out of the list
+  const k = 't' + t.id;
+  await page.locator(`#gdPg [data-gtm="${k}"]`).click();
+  await page.locator('#cxPop button', { hasText: 'Keep in the goal only' }).click();
+  expect(await page.evaluate(() => [S.tasks.some(x => x.title === 'T0'), S.goals[0].ms[0].items.length])).toEqual([false, 14]);
+  // move a goal task to another milestone; ticking B's only task ticks B
+  await page.locator('#gdPg .gm-t').first().hover();
+  await page.locator('#gdPg .gm-t').first().locator('[data-gtm]').click();
+  await page.locator('#cxPop button', { hasText: 'Move to' }).click();
+  await page.locator('#cxPop button', { hasText: 'B' }).click();
+  expect(await page.evaluate(() => S.goals[0].ms[1].items.length)).toBe(1);
+  await page.evaluate(() => { gSelId = 'm1'; drawGoal(); });
+  await page.locator('#gdPg .gm-card [data-gmt]').first().click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms[1].done)).toBe(true);
+  // setup and editing offer "No space" (the default); habits need no space either
+  await page.evaluate(() => { closeGoal(); openSetup(); });
+  await expect(page.locator('#gsPg [data-gssp=""]')).toHaveClass(/on/);
+  await page.evaluate(() => closeSetup());
+  await page.evaluate(() => openHabit(null));
+  await page.fill('#hbName', 'Walk');
+  await page.locator('#hbSave').click();
+  expect(await page.evaluate(() => [S.habits.at(-1).space, hbAll().some(h => h.name === 'Walk')])).toEqual([null, true]);
   noErrors(errors);
 });
 
@@ -348,34 +382,34 @@ test('goal page and Goals page: ⋯ menus to rename, move, add subtasks, delete;
     save(); applySettings(); openGoal('g1'); });
   const menu = async (sel, item) => { await page.locator(sel).click(); await page.locator('#cxPop button', { hasText: item }).first().click(); };
   // rename inline
-  await menu('#gdPg [data-gtm="9001"]', 'Rename');
-  await expect(page.locator('#gdPg [data-gren="9001"]')).toBeFocused();
+  await menu('#gdPg [data-gtm="t9001"]', 'Rename');
+  await expect(page.locator('#gdPg [data-gren="t9001"]')).toBeFocused();
   await page.keyboard.press('Control+a'); await page.keyboard.type('New name'); await page.keyboard.press('Enter');
   expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).title)).toBe('New name');
   // add subtasks inline, then delete one
-  await menu('#gdPg [data-gtm="9001"]', 'Add a subtask');
-  await expect(page.locator('#gdPg [data-gsadd="9001"]')).toBeFocused();
+  await menu('#gdPg [data-gtm="t9001"]', 'Add a subtask');
+  await expect(page.locator('#gdPg [data-gsadd="t9001"]')).toBeFocused();
   await page.keyboard.type('one'); await page.keyboard.press('Enter');
   await page.keyboard.type('two'); await page.keyboard.press('Enter');
   await expect(page.locator('#gdPg .gm-sub')).toHaveText('0/2');
   await page.locator('#gdPg .gm-sx').first().click();
   expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).subs.map(s => s.t))).toEqual(['two']);
   // Escape in the add field leaves the page open
-  await page.locator('#gdPg [data-gsadd="9001"]').focus(); await page.keyboard.press('Escape');
+  await page.locator('#gdPg [data-gsadd="t9001"]').focus(); await page.keyboard.press('Escape');
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
   // move to another milestone, then to Other tasks
-  await page.locator('#gdPg [data-gtm="9001"]').click();
+  await page.locator('#gdPg [data-gtm="t9001"]').click();
   await page.locator('#cxPop button', { hasText: 'Move to' }).click();
   await page.locator('#cxPop button', { hasText: 'B' }).click();
   expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).ms)).toBe('m1');
   await page.locator('#gdPg .gm-n[data-gsel="m1"]').click();
-  await page.locator('#gdPg [data-gtm="9001"]').click();
+  await page.locator('#gdPg [data-gtm="t9001"]').click();
   await page.locator('#cxPop button', { hasText: 'Move to' }).click();
   await page.locator('#cxPop button', { hasText: 'Other tasks' }).click();
   expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).ms)).toBeUndefined();
-  await expect(page.locator('#gdPg .g-tr2 [data-gtm="9001"]')).toHaveCount(1);
+  await expect(page.locator('#gdPg .g-tr2 [data-gtm="t9001"]')).toHaveCount(1);
   // delete asks first
-  await menu('#gdPg .g-tr2 [data-gtm="9001"]', 'Delete task');
+  await menu('#gdPg .g-tr2 [data-gtm="t9001"]', 'Delete task');
   await page.locator('#dlgYes').click();
   expect(await page.evaluate(() => S.tasks.some(x => x.id === 9001))).toBe(false);
   // milestone menu: rename opens the popup on that name; the popup adds with its Add button

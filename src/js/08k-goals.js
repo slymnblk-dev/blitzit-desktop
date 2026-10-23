@@ -5,8 +5,11 @@
      (★ Goal in its details) and wears a small star; finishing it shows up as "moved it this week".
    • Goal page: The climb (default), Path or Poster, switchable per goal under ⋯ → View; drawn in 08n-pages.js.
    • 30-second setup: what, by when, first milestones.
-   Data: S.goals [{id,name,e,space,why,due:'YYYY-MM-DD',created,star,view,done,doneAt,
-     ms:[{id,t,done,doneAt,task?}]}]. Milestones are parent tasks: a task belongs to one with t.ms (and t.goal).
+   Spaces are optional: a goal with no space stands on its own (g.space null). A goal in a space hides when that
+   space is archived or deleted, like before.
+   Data: S.goals [{id,name,e,space?,why,due:'YYYY-MM-DD',created,star,view,done,doneAt,
+     ms:[{id,t,done,doneAt,items:[{id,t,done,doneAt,subs}],task?}]}]. Milestones are parent tasks. Their tasks live in
+   the goal itself (m.items, in no list or stage) unless you add one to a list: then it is a real task (t.ms, t.goal).
    Finishing a milestone's last task ticks it; marking a milestone done finishes its open tasks; reopening a
    milestone leaves its tasks as they are. (ms.task is the older one-task link and still counts as a member.) Goals sync, back up and undo like tasks.
    Constants are var (not const) because other files may draw before this one runs. */
@@ -26,8 +29,9 @@ function goalsOn(){return !!(S.cfg&&S.cfg.goals)}
 function gList(){if(!Array.isArray(S.goals))S.goals=[];return S.goals}
 function gById(id){return gList().find(g=>g&&String(g.id)===String(id))}
 /* active goals whose space still exists (an archived or deleted space hides its goals) */
-function gAll(){return gList().filter(g=>g&&!g.done&&spaceOf(g.space))}
-function gWon(sp){return gList().filter(g=>g&&g.done&&spaceOf(g.space)&&(!sp||g.space===sp)).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0))}
+const gSpaceOk=x=>!x.space||!!spaceOf(x.space);
+function gAll(){return gList().filter(g=>g&&!g.done&&gSpaceOk(g))}
+function gWon(sp){return gList().filter(g=>g&&g.done&&gSpaceOk(g)&&(!sp||g.space===sp)).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0))}
 function gStarred(){return gAll().find(g=>g.star)||null}
 function gNoon(d){const x=new Date(d);x.setHours(12,0,0,0);return x}
 function gDate(k){const p=String(k||'').split('-').map(Number);return p[0]?new Date(p[0],p[1]-1,p[2],12):null}
@@ -60,6 +64,19 @@ function gMsTasks(m){if(!m)return [];return S.tasks.filter(t=>!t.archived&&!t.in
 const gMsOf=(g,t)=>g.ms.find(m=>String(t.ms)===String(m.id)||(m.task!=null&&t.id===m.task))||null;
 /* the goal's tasks that sit in no milestone */
 function gLoose(g){return gTasks(g).filter(t=>!gMsOf(g,t))}
+/* everything under a milestone, oldest first: its own items (only in the goal) and tasks added to a list.
+   Each kid: {k:key, kind:'i'|'t', it|t, m, title, done, subs} — keys look like 'i<msId>.<itemId>' or 't<taskId>' */
+function gKids(m){if(!m)return [];
+  const its=(m.items||[]).map(it=>({k:'i'+m.id+'.'+it.id,kind:'i',it,m,id:+it.id||0,title:it.t,done:!!it.done,subs:it.subs||[]}));
+  const ts=gMsTasks(m).map(t=>({k:'t'+t.id,kind:'t',t,m,id:+t.id||0,title:t.title,done:t.stage==='done',subs:t.subs||[]}));
+  return [...its,...ts].sort((a,b)=>a.id-b.id)}
+function gKid(g,k){if(!k)return null;
+  if(k[0]==='t'){const t=S.tasks.find(x=>String(x.id)===k.slice(1));if(!t)return null;const m=gMsOf(g,t);return {k,kind:'t',t,m,id:t.id,title:t.title,done:t.stage==='done',subs:t.subs||[]}}
+  const [mid,iid]=k.slice(1).split('.'),m=g.ms.find(x=>x.id===mid),it=m&&(m.items||[]).find(x=>String(x.id)===iid);
+  return it?{k,kind:'i',it,m,id:it.id,title:it.t,done:!!it.done,subs:it.subs||[]}:null}
+/* a milestone follows its kids: all done → done; one reopened → reopened */
+function gMsSync(m){const ks=gKids(m);if(!ks.length)return;const all=ks.every(x=>x.done);
+  if(all&&!m.done){m.done=true;m.doneAt=Date.now()}else if(!all&&m.done){m.done=false;delete m.doneAt}}
 function gSubLine(gs){
   if(!gs.length)return 'No goals yet';
   const near=gs.map(gDaysLeft).filter(n=>n!==null&&n>=0).sort((a,b)=>a-b)[0];
@@ -138,30 +155,28 @@ function closeGoal(){
   if(typeof renderDesk==='function')renderDesk();
 }
 /* ---------- actions ---------- */
-function gSpaceList(g,stage){const ls=S.lists.filter(l=>l.space===g.space);return ls.find(l=>stageRoom(l.id,stage))||ls[0]||null}
 /* marking a milestone done finishes its open tasks; reopening it leaves them as they are */
 function gMsToggle(g,m){
   const on=!m.done,pr=gProg(g),all=on&&pr.n+1>=pr.of;
-  commit(()=>{m.done=on;if(on){m.doneAt=Date.now();gMsTasks(m).forEach(t=>{if(t.stage!=='done')setStage(t,'done')})}else delete m.doneAt},
+  commit(()=>{m.done=on;if(on){m.doneAt=Date.now();(m.items||[]).forEach(it=>{if(!it.done){it.done=true;it.doneAt=Date.now()}});gMsTasks(m).forEach(t=>{if(t.stage!=='done')setStage(t,'done')})}else delete m.doneAt},
     on?(all?'Summit reached. Every milestone is done.':`Milestone done · ${pr.n+1} of ${pr.of}`):'Milestone reopened');
   if(on)haptic([8,30,12]);
 }
 /* a new task for a milestone lands in My week, in the goal's space */
-/* where a goal's task can go: My week in any list of the goal's space with room, else Later (each list holds up to STAGE_MAX per stage) */
-function gRoom(g){const ls=S.lists.filter(l=>l.space===g.space);for(const st of ['week','backlog']){const l=ls.find(x=>stageRoom(x.id,st));if(l)return {l,st}}return null}
-function gMsAddTask(g,m,title){
-  if(!S.lists.some(l=>l.space===g.space)){toast('Add a list to this space first');return false}
-  const r=gRoom(g);if(!r){toast(`Every list in this space is full in My week and Later (${STAGE_MAX} each). Finish or move a few first.`);haptic([10,40,10]);return false}
-  const sn=STAGES[idx(r.st)].name;
-  commit(()=>{addTask({id:newId(),title,stage:r.st,list:r.l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id,ms:m.id});if(m.done){m.done=false;delete m.doneAt}},
-    r.st==='week'?`Added to ${r.l.name} · My week`:`Added to ${r.l.name} · ${sn} (My week is full)`);
-  try{sfx('add')}catch(e){}return true;
-}
+/* a new task for a milestone lives in the goal itself: no space, list or stage needed */
+function gMsAddItem(g,m,title){commit(()=>{m.items=m.items||[];m.items.push({id:newId(),t:title,done:false,subs:[]});if(m.done){m.done=false;delete m.doneAt}},'Task added');try{sfx('add')}catch(e){}return true}
+/* optional: put a milestone's task into a list (My week if it has room, else Later), or bring a list task back into the goal */
+function gItemToList(g,m,it,l){const st=it.done?'done':stageRoom(l.id,'week')?'week':stageRoom(l.id,'backlog')?'backlog':null;
+  if(!st){toast(`${l.name} is full in My week and Later (${STAGE_MAX} each). Pick another list.`);haptic([10,40,10]);return}
+  commit(()=>{addTask({id:newId(),title:it.t,stage:st,list:l.id,est:S.cfg.defEst||30,subs:(it.subs||[]).map(s=>({...s})),notes:'',repeat:'none',goal:g.id,ms:m.id,...(it.done?{doneAt:it.doneAt||Date.now()}:{})});
+    m.items=(m.items||[]).filter(x=>x!==it)},`Added to ${l.name} · ${STAGES[idx(st)].name}`)}
+function gTaskToGoal(g,m,t){commit(()=>{m.items=m.items||[];m.items.push({id:newId(),t:t.title,done:t.stage==='done',...(t.stage==='done'?{doneAt:t.doneAt||Date.now()}:{}),subs:(t.subs||[]).map(s=>({...s}))});
+    S.tasks=S.tasks.filter(x=>x!==t);g.ms.forEach(x=>{if(x.task===t.id)delete x.task})},'Now only in this goal · taken out of its list')}
 /* tick a task from the milestone card; un-ticking puts it back in My week */
 function gTaskToggle(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;const on=t.stage!=='done',back=stageRoom(t.list,'week')?'week':'backlog';
   commit(()=>setStage(t,on?'done':back),on?'Task done':`Task back in ${STAGES[idx(back)].name}`);if(on)haptic([8,30,12])}
 /* deleting a milestone keeps its tasks; they move to Other tasks */
-function gMsDelete(g,ms){commit(()=>{g.ms=g.ms.filter(x=>x!==ms);S.tasks.forEach(t=>{if(String(t.ms)===String(ms.id))delete t.ms})},'Milestone removed · its tasks stay')}
+function gMsDelete(g,ms){const n=gMsTasks(ms).length;commit(()=>{g.ms=g.ms.filter(x=>x!==ms);S.tasks.forEach(t=>{if(String(t.ms)===String(ms.id))delete t.ms})},n?'Milestone removed · its list tasks stay':'Milestone removed')}
 function gMsAdd(g){
   const i=$('gMsIn'),v=(i&&i.value||'').trim();if(!v)return;
   if(g.ms.length>=MS_MAX){toast(`Up to ${MS_MAX} milestones. Keep them big.`);return}
@@ -197,7 +212,7 @@ $('gdPg').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&g){
     if(e.target.id==='gMsIn'){e.preventDefault();return gMsAdd(g)}
     if(e.target.id==='gMtIn'){e.preventDefault();const v=e.target.value.trim(),m=g.ms.find(x=>x.id===e.target.dataset.gms);if(!v||!m)return;
-      if(gMsAddTask(g,m,v)){drawGoal();const n=$('gMtIn');if(n)n.focus();const ts=$('gdIn').querySelector('.gm-ts');if(ts){ts.scrollTop=ts.scrollHeight;vFade(ts)}}return} // show the new task at the bottom
+      if(gMsAddItem(g,m,v)){drawGoal();const n=$('gMtIn');if(n)n.focus();const ts=$('gdIn').querySelector('.gm-ts');if(ts){ts.scrollTop=ts.scrollHeight;vFade(ts)}}return} // show the new task at the bottom
   }
   if(e.key==='Escape'){
     if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on'))return;
@@ -215,7 +230,7 @@ function openSetup(sp){
   if(!goalsOn())return;
   if(gAll().length>=G_MAX){toast(`Up to ${G_MAX} goals at once. Finish one to start another.`);return}
   const sps=orderedSpaces();
-  gsD={step:1,name:'',e:'',touched:false,space:sp&&spaceOf(sp)?sp:inSpaceMode()&&spaceOf(S.space)?S.space:(sps[0]||{}).id,why:'',pick:3,due:gPlus(3),ms:[],star:!gStarred()};
+  gsD={step:1,name:'',e:'',touched:false,space:sp&&spaceOf(sp)?sp:null,why:'',pick:3,due:gPlus(3),ms:[],star:!gStarred()};
   gsOn=true;drawSetup();$('gsPg').classList.add('on');$('gsPg').scrollTop=0;haptic(6);
   setTimeout(()=>{if(gsOn&&$('gsName'))$('gsName').focus()},330);
 }
@@ -226,7 +241,7 @@ function drawSetup(){
   let body='';
   if(st===1)body=`<span class="rv-eye gs-eye">New goal</span><h1 class="gs-q">What do you want to achieve?</h1>
     <div class="gs-name"><span class="gs-e" id="gsE">${d.e?esc(d.e):G_FLAG}</span><input id="gsName" value="${esc(d.name)}" placeholder="Run a half marathon" maxlength="60" autocomplete="off" enterkeyhint="next" aria-label="Goal"></div>
-    ${S.spaces.length>1?`<div class="gs-lbl">Space</div><div class="gs-chips">${orderedSpaces().map(x=>`<button class="gs-chip${d.space===x.id?' on':''}" data-gssp="${x.id}">${spMini(x)}${esc(x.name)}</button>`).join('')}</div>`:''}
+    ${S.spaces.length?`<div class="gs-lbl">Space <span>Optional</span></div><div class="gs-chips"><button class="gs-chip${!d.space?' on':''}" data-gssp="">No space</button>${orderedSpaces().map(x=>`<button class="gs-chip${d.space===x.id?' on':''}" data-gssp="${x.id}">${spMini(x)}${esc(x.name)}</button>`).join('')}</div>`:''}
     <div class="gs-lbl">Why does it matter? <span>Optional</span></div><textarea id="gsWhy" rows="2" maxlength="160" placeholder="So I feel strong and proud of myself" aria-label="Why it matters">${esc(d.why)}</textarea>`;
   if(st===2){const tm=new Date();tm.setDate(tm.getDate()+1);
     body=`<span class="rv-eye gs-eye">${d.e?esc(d.e)+' ':''}${esc(d.name)}</span><h1 class="gs-q">By when?</h1>
@@ -250,12 +265,12 @@ function gsStep(n){
 }
 function gsAddMs(){const i=$('gsMs'),v=(i&&i.value||'').trim();if(!v||gsD.ms.length>=MS_MAX)return;gsD.ms.push(v);haptic(6);drawSetup();const n=$('gsMs');if(n)n.focus()}
 function gsCreate(){
-  const d=gsD;if(!d||!d.name.trim()||!spaceOf(d.space))return;
+  const d=gsD;if(!d||!d.name.trim())return;
   const pend=($('gsMs')&&$('gsMs').value||'').trim();if(pend&&d.ms.length<MS_MAX)d.ms.push(pend);
   if(gAll().length>=G_MAX){toast(`Up to ${G_MAX} goals at once.`);return}
   const id='g'+newId(),name=d.name.trim(),inSet=settingsOpen();
   commit(()=>{if(d.star)gList().forEach(x=>{if(x.star)x.star=false});
-    gList().push({id,name,e:d.e,space:d.space,why:d.why.trim(),due:d.due,created:Date.now(),star:!!d.star,ms:d.ms.map(t=>({id:'m'+newId(),t,done:false}))})},`Goal set: ${name}`);
+    gList().push({id,name,e:d.e,space:d.space&&spaceOf(d.space)?d.space:null,why:d.why.trim(),due:d.due,created:Date.now(),star:!!d.star,ms:d.ms.map(t=>({id:'m'+newId(),t,done:false}))})},`Goal set: ${name}`);
   try{sfx('add')}catch(e){}haptic([8,30,12]);closeSetup();
   if(inSet)drawSettings();else setTimeout(()=>openGoal(id),140);
 }
@@ -264,7 +279,7 @@ $('gsPg').addEventListener('click',e=>{
   if(e.target.closest('#gsBack')){if(d.step>1)gsStep(d.step-1);else closeSetup();return}
   if(e.target.closest('#gsNext'))return gsStep(d.step+1);
   if(e.target.closest('#gsGo'))return gsCreate();
-  const sp=e.target.closest('[data-gssp]');if(sp){d.space=sp.dataset.gssp;haptic(5);$('gsPg').querySelectorAll('[data-gssp]').forEach(b=>b.classList.toggle('on',b===sp));return}
+  const sp=e.target.closest('[data-gssp]');if(sp){d.space=sp.dataset.gssp||null;haptic(5);$('gsPg').querySelectorAll('[data-gssp]').forEach(b=>b.classList.toggle('on',b===sp));return}
   const m=e.target.closest('[data-gsm]');if(m){d.pick=+m.dataset.gsm;d.due=gPlus(d.pick);haptic(5);return drawSetup()}
   if(e.target.closest('#gsStar')){d.star=!d.star;haptic(5);return drawSetup()}
   const x=e.target.closest('[data-gsx]');if(x){d.ms.splice(+x.dataset.gsx,1);haptic(5);return drawSetup()}
@@ -303,14 +318,14 @@ function drawGoalSheet(){
   $('gOpts').innerHTML=
     lxRow('i','Icon',`<span class="lx-ico">${d.e?esc(d.e):'None'}</span>`,`<div class="ico-grid"><button data-gico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">–</button>${G_ICONS.map(i=>`<button data-gico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,gSub==='i')+
     lxRow('d','By when',`<span class="lx-t">${gShort(d.due)}</span>`,`<div class="hb-pre g-pre">${[1,3,6,12].map(m=>`<button data-gdm="${m}">${m===12?'1 year':`${m} ${m===1?'month':'months'}`}</button>`).join('')}</div><input type="date" class="g-date" id="gDue" value="${d.due}" min="${dkey(tm)}" aria-label="Due date">`,gSub==='d')+
-    (S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name||'')}</span>`,`<div class="lx-list">${orderedSpaces().map(x=>`<button class="lx-opt${d.space===x.id?' on':''}" data-gsp="${x.id}">${spMini(x)}<span>${esc(x.name)}</span>${d.space===x.id?tick():''}</button>`).join('')}</div>`,gSub==='s'):'');
+    (S.spaces.length?lxRow('s','Space',d.space&&sp.id?`${spMini(sp)}<span class="lx-t">${esc(sp.name||'')}</span>`:'<span class="lx-t">No space</span>',`<div class="lx-list"><button class="lx-opt${!d.space?' on':''}" data-gsp=""><span>No space</span>${!d.space?tick():''}</button>${orderedSpaces().map(x=>`<button class="lx-opt${d.space===x.id?' on':''}" data-gsp="${x.id}">${spMini(x)}<span>${esc(x.name)}</span>${d.space===x.id?tick():''}</button>`).join('')}</div>`,gSub==='s'):'');
 }
 $('gOpts').addEventListener('click',e=>{
   const t=e.target.closest('[data-lxt]');if(t){lxToggle(t,v=>gSub=v);return}
   const d=gDraft;if(!d)return;
   const ic=e.target.closest('[data-gico]');if(ic){d.e=ic.dataset.gico;haptic(5);return drawGoalSheet()}
   const dm=e.target.closest('[data-gdm]');if(dm){d.due=gPlus(+dm.dataset.gdm);haptic(5);return drawGoalSheet()}
-  const sp=e.target.closest('[data-gsp]');if(sp){d.space=sp.dataset.gsp;haptic(5);return drawGoalSheet()}
+  const sp=e.target.closest('[data-gsp]');if(sp){d.space=sp.dataset.gsp||null;haptic(5);return drawGoalSheet()}
 });
 $('gOpts').addEventListener('change',e=>{if(e.target.id==='gDue'&&e.target.value){gDraft.due=e.target.value;drawGoalSheet()}});
 $('gPrev').onclick=()=>{const t=$('gOpts').querySelector('[data-lxt="i"]');if(t&&gSub!=='i')lxToggle(t,v=>gSub=v)};
@@ -318,7 +333,7 @@ $('gName').oninput=e=>{gDraft.name=e.target.value;$('gSave').disabled=!gDraft.na
 $('gName').onkeydown=e=>{if(e.key==='Enter'&&gDraft.name.trim())$('gSave').click()};
 $('gWhy').oninput=e=>{gDraft.why=e.target.value};
 $('gSave').onclick=()=>{const d=gDraft,g=d&&gById(d.id);if(!g||!d.name.trim())return;const inSet=settingsOpen();closeSheets();
-  commit(()=>Object.assign(g,{name:d.name.trim(),e:d.e,space:spaceOf(d.space)?d.space:g.space,due:d.due,why:d.why.trim()}),'Goal saved');if(inSet)drawSettings()};
+  commit(()=>Object.assign(g,{name:d.name.trim(),e:d.e,space:d.space&&spaceOf(d.space)?d.space:null,due:d.due,why:d.why.trim()}),'Goal saved');if(inSet)drawSettings()};
 $('gWinB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(!g)return;const inSet=settingsOpen();closeSheets();setTimeout(()=>{gSetWin(g,!g.done);if(inSet)drawSettings()},200)};
 $('gDelB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(g)gDelete(g)};
 
@@ -348,9 +363,7 @@ document.addEventListener('click',e=>{
 /* finishing a task that came from a milestone ticks the milestone (and un-finishing it reopens it) */
 const _gSetStage=setStage;
 setStage=function(t,stage){const was=t.stage;_gSetStage(t,stage);
-  try{if(was!==stage)gList().forEach(g=>{const m=gMsOf(g,t);if(!m)return;
-    if(stage==='done'&&!m.done&&gMsTasks(m).every(x=>x.stage==='done')){m.done=true;m.doneAt=Date.now()}
-    else if(was==='done'&&stage!=='done'&&m.done){m.done=false;delete m.doneAt}})}catch(err){}};
+  try{if(was!==stage&&(stage==='done'||was==='done'))gList().forEach(g=>{const m=gMsOf(g,t);if(m)gMsSync(m)})}catch(err){}};
 /* keep the goal page in step with edits, undo and sync, without stealing focus while typing */
 const _gRender=render;
 render=function(d){_gRender(d);try{

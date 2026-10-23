@@ -47,7 +47,7 @@ $('saveBtn').onclick=()=>{
   if(addKind==='idea'){const t={id:newId(),title:v,stage:'backlog',list:null,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',inbox:true,created:Date.now()};
     closeSheets();commit(()=>S.tasks.push(t),'Idea saved to Inbox');try{sfx('add')}catch(e){}return}
   if(addKind==='habit'){if(hbAll().length>=HB_MAX){toast(`Up to ${HB_MAX} habits. Fewer, kept daily, beat many.`);return}
-    const sp=spaceOf(draft.space)?draft.space:(orderedSpaces()[0]||{}).id,days=[...addHb.days];
+    const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null,days=[...addHb.days]; // a habit needs no space unless you add it inside one
     closeSheets();commit(()=>{S.habits=S.habits||[];S.habits.push({id:'h'+newId(),name:v,e:hbIcon(v),space:sp,days,done:{},created:Date.now()})},`${v} added`);try{sfx('add')}catch(e){}return}
 };
 
@@ -106,7 +106,7 @@ let hbPicks=new Set();
 function hbStarters(){if(hbAll().length)return '';
   return `<div class="st-pick"><b>Start with a few</b><small>Pick up to 3. You can change them any time.</small><div class="st-grid">${HB_STARTERS.map(([e,n],i)=>`<button class="st-c${hbPicks.has(i)?' on':''}" data-hbpick="${i}" aria-pressed="${hbPicks.has(i)}"><em>${e}</em>${n}</button>`).join('')}</div>
     <button class="primary st-go" data-hbstart ${hbPicks.size?'':'disabled'}>${hbPicks.size?`Add ${hbPicks.size} ${hbPicks.size===1?'habit':'habits'}`:'Pick a few'}</button></div>`}
-function hbStartAdd(){if(!hbPicks.size)return;const sp=(orderedSpaces()[0]||{}).id;if(!sp)return;const picks=[...hbPicks].map(i=>HB_STARTERS[i]);hbPicks=new Set();
+function hbStartAdd(){if(!hbPicks.size)return;const sp=null;const picks=[...hbPicks].map(i=>HB_STARTERS[i]);hbPicks=new Set();
   commit(()=>{S.habits=S.habits||[];picks.forEach(([e,n])=>S.habits.push({id:'h'+newId(),name:n,e,space:sp,days:[0,1,2,3,4,5,6],done:{},created:Date.now()}))},`${picks.length} ${picks.length===1?'habit':'habits'} added`);
   if(settingsOpen())drawSettings()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-hbpick]');if(!b)return;e.stopPropagation();const i=+b.dataset.hbpick;

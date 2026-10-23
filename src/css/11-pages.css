@@ -512,3 +512,10 @@ button.hg-c:active{transform:scale(.88)}
 .gme-days:hover{background:var(--surface);color:var(--text)}
 .hbe-e{box-shadow:none;font-size:16px;width:26px}
 @media (max-width:699px){.gme-days{font-size:0;gap:0;padding:0 8px}.gme-days svg{width:15px;height:15px}}
+
+/* a milestone task that sits in a list shows which one, with the list's colour; tasks kept in the goal stay plain */
+.gm-in{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap;margin-left:auto}
+.gm-in i{width:7px;height:7px;border-radius:50%;flex:none}
+.gm-tt b+.gm-in{margin-left:10px}
+.gm-card.hot .gm-in{color:rgba(255,255,255,.8)}
+.gs-lbl span{font-weight:500;color:var(--muted);margin-left:4px}

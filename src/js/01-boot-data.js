@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=163; // bumped with every published update
+const APP_VERSION=164; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -91,9 +91,9 @@ function sanitize(){
   S.habits=Array.isArray(S.habits)?S.habits.filter(h=>obj(h)&&h.id!=null&&typeof h.name==='string'):[];
   S.habits.forEach(h=>{if(!obj(h.done))h.done={};if(!Array.isArray(h.days)||!h.days.length)h.days=[0,1,2,3,4,5,6];if(typeof h.e!=='string')h.e=''});
   S.hchains=Array.isArray(S.hchains)?S.hchains.filter(c=>obj(c)&&c.id!=null):[];
-  // goals (Modes → Goals): {id,name,e,space,why,due:'YYYY-MM-DD',created,star,view,lq,lw,done,doneAt,ms:[{id,t,done,task?}]}
+  // goals (Modes → Goals): {id,name,e,space?,why,due:'YYYY-MM-DD',created,star,view,done,doneAt,ms:[{id,t,done,items:[{id,t,done,subs}],task?}]}
   S.goals=Array.isArray(S.goals)?S.goals.filter(g=>obj(g)&&g.id!=null&&typeof g.name==='string'):[];
-  S.goals.forEach(g=>{if(!Array.isArray(g.ms))g.ms=[];g.ms=g.ms.filter(m=>obj(m)&&m.id!=null)});
+  S.goals.forEach(g=>{if(!Array.isArray(g.ms))g.ms=[];g.ms=g.ms.filter(m=>obj(m)&&m.id!=null);g.ms.forEach(m=>{if(m.items!=null)m.items=Array.isArray(m.items)?m.items.filter(it=>obj(it)&&it.id!=null&&typeof it.t==='string'):[]})});
   if(!obj(S.lens))S.lens={};
   if(!obj(S.cfg))delete S.cfg;
   if(!obj(S.tomb))S.tomb={};

@@ -46,7 +46,7 @@ test('habits: off by default, turn on in Modes, add, Habits page, tick, turn off
   expect(await page.evaluate(() => !!S.habits[0].done[today()])).toBe(false);
   await page.evaluate(() => setCfg('hbView', 'grid'));
   // spaces stay plain: no switch inside them
-  await page.evaluate(() => { closeRhythm(); openSpace(S.habits[0].space); });
+  await page.evaluate(() => { closeRhythm(); openSpace(S.spaces[0].id); });
   await expect(page.locator('#hero')).toBeVisible();
 
   // off again: gone everywhere, data kept

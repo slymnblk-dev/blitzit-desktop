@@ -21,8 +21,8 @@ const ICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 const RH_ICON='<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><path d="M12 34a12 12 0 0 1 24 0"/><path d="M5 34h38"/><path d="M24 9v7M12.4 13.4l4 4M35.6 13.4l-4 4"/></svg>';
 
 function habitsOn(){return !!(S.cfg&&S.cfg.habits)}
-/* habits whose space still exists (a deleted or archived space hides its habits; restoring the space brings them back) */
-function hbAll(){return (S.habits||[]).filter(h=>h&&spaceOf(h.space))}
+/* a habit needs no space; one in a space hides while that space is archived or deleted (restoring it brings it back) */
+function hbAll(){return (S.habits||[]).filter(h=>h&&(!h.space||spaceOf(h.space)))}
 const hbById=id=>(S.habits||[]).find(h=>String(h.id)===String(id));
 const hbNoon=d=>{const x=new Date(d);x.setHours(12,0,0,0);return x};
 const hbDue=(h,d)=>!Array.isArray(h.days)||h.days.length>=7||h.days.includes(d.getDay());
@@ -145,7 +145,7 @@ function openHabit(id,sp){
   if(!h&&hbAll().length>=HB_MAX){toast(`Up to ${HB_MAX} habits. Fewer, kept daily, beat many.`);return}
   const sps=orderedSpaces();
   hbDraft=h?{...h,days:[...(h.days||[0,1,2,3,4,5,6])]}
-    :{id:null,name:'',e:'',space:(sp&&spaceOf(sp)?sp:inSpaceMode()?S.space:(sps[0]||{}).id),days:[0,1,2,3,4,5,6]};
+    :{id:null,name:'',e:'',space:sp&&spaceOf(sp)?sp:inSpaceMode()&&spaceOf(S.space)?S.space:null,days:[0,1,2,3,4,5,6]};
   hbDraft.touched=!!(h&&h.e);hbSub=null;
   $('hbTitle').textContent=h?'Edit habit':'New habit';$('hbName').value=hbDraft.name;$('hbDelW').hidden=!h;
   drawHabitSheet();openSheet('hbSheet');setTimeout(()=>{if($('hbSheet').classList.contains('on')&&!h)$('hbName').focus()},300);
@@ -158,7 +158,7 @@ function drawHabitSheet(){
     lxRow('i','Icon',`<span class="lx-ico">${d.e?esc(d.e):'Auto'}</span>`,`<div class="ico-grid" id="hbIcons"><button data-hbico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">–</button>${HB_ICONS.map(i=>`<button data-hbico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,hbSub==='i')+
     lxRow('d','Days',`<span class="lx-t">${daysLabel(d.days)}</span>`,`<div class="hb-days">${[1,2,3,4,5,6,0].map(n=>`<button data-hday="${n}" class="${d.days.includes(n)?'on':''}" aria-pressed="${d.days.includes(n)}" aria-label="${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][n]}">${'SMTWTFS'[n]}</button>`).join('')}</div>
       <div class="hb-pre"><button data-hdp="all">Every day</button><button data-hdp="wk">Weekdays</button><button data-hdp="we">Weekends</button></div>`,hbSub==='d')+
-    (S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name||'')}</span>`,`<div class="lx-list">${orderedSpaces().map(x=>`<button class="lx-opt${d.space===x.id?' on':''}" data-hbsp="${x.id}">${spMini(x)}<span>${esc(x.name)}</span>${d.space===x.id?tick():''}</button>`).join('')}</div>`,hbSub==='s'):'');
+    (S.spaces.length?lxRow('s','Space',d.space&&sp.id?`${spMini(sp)}<span class="lx-t">${esc(sp.name||'')}</span>`:'<span class="lx-t">No space</span>',`<div class="lx-list"><button class="lx-opt${!d.space?' on':''}" data-hbsp=""><span>No space</span>${!d.space?tick():''}</button>${orderedSpaces().map(x=>`<button class="lx-opt${d.space===x.id?' on':''}" data-hbsp="${x.id}">${spMini(x)}<span>${esc(x.name)}</span>${d.space===x.id?tick():''}</button>`).join('')}</div>`,hbSub==='s'):'');
 }
 $('hbOpts').addEventListener('click',e=>{
   const t=e.target.closest('[data-lxt]');if(t){lxToggle(t,v=>hbSub=v);return}
@@ -166,13 +166,13 @@ $('hbOpts').addEventListener('click',e=>{
   const ic=e.target.closest('[data-hbico]');if(ic){d.e=ic.dataset.hbico;d.touched=true;haptic(5);return drawHabitSheet()}
   const dy=e.target.closest('[data-hday]');if(dy){const n=+dy.dataset.hday;if(d.days.includes(n)){if(d.days.length>1)d.days=d.days.filter(x=>x!==n);else toast('A habit needs at least one day')}else d.days.push(n);haptic(4);return drawHabitSheet()}
   const dp=e.target.closest('[data-hdp]');if(dp){d.days={all:[0,1,2,3,4,5,6],wk:[1,2,3,4,5],we:[0,6]}[dp.dataset.hdp].slice();haptic(4);return drawHabitSheet()}
-  const sp=e.target.closest('[data-hbsp]');if(sp){d.space=sp.dataset.hbsp;haptic(5);return drawHabitSheet()}
+  const sp=e.target.closest('[data-hbsp]');if(sp){d.space=sp.dataset.hbsp||null;haptic(5);return drawHabitSheet()}
 });
 $('hbPrev').onclick=()=>{const t=$('hbOpts').querySelector('[data-lxt="i"]');if(t&&hbSub!=='i')lxToggle(t,v=>hbSub=v)};
 $('hbName').oninput=e=>{hbDraft.name=e.target.value;if(!hbDraft.touched)hbDraft.e=hbIcon(hbDraft.name);drawHabitSheet()};
 $('hbName').onkeydown=e=>{if(e.key==='Enter'&&hbDraft.name.trim())$('hbSave').click()};
 $('hbSave').onclick=()=>{
-  const d=hbDraft;if(!d||!d.name.trim()||!spaceOf(d.space))return;
+  const d=hbDraft;if(!d||!d.name.trim())return;if(d.space&&!spaceOf(d.space))d.space=null;
   const name=d.name.trim(),wasNew=!d.id,inSet=settingsOpen();
   closeSheets();
   commit(()=>{
@@ -192,7 +192,8 @@ $('hbDel').onclick=()=>{const d=hbDraft;if(!d||!d.id)return;const h=hbById(d.id)
 function modesSummary(){const on=[habitsOn()&&'Habits',goalsOn()&&'Goals'].filter(Boolean);return on.length?`${on.join(' and ')} on`:'All off'}
 function habitsSetPage(){
   const hs=hbAll();
-  const groups=orderedSpaces().map(sp=>{const g=hs.filter(h=>h.space===sp.id);if(!g.length)return '';
+  const row=h=>`<button class="link-row" data-hbe="${h.id}"><span class="hs-n">${hbName(h)}</span><span class="hint">${daysLabel(h.days)}${CHEV}</span></button>`,free=hs.filter(h=>!h.space);
+  const groups=(free.length?`<div class="set-sec"><h3>${S.spaces.length&&hs.some(h=>h.space)?'No space':'Your habits'}</h3>${free.map(row).join('')}</div>`:'')+orderedSpaces().map(sp=>{const g=hs.filter(h=>h.space===sp.id);if(!g.length)return '';
     return `<div class="set-sec"><h3>${sp.e?esc(sp.e)+' ':''}${esc(sp.name)}</h3>${g.map(h=>`<button class="link-row" data-hbe="${h.id}"><span class="hs-n">${hbName(h)}</span><span class="hint">${daysLabel(h.days)}${CHEV}</span></button>`).join('')}</div>`}).join('');
   return `<p class="sub-p">Up to ${HB_MAX} habits, so each one gets real attention. Tap one to change it.</p>${groups||'<p class="sub-p hs-none">No habits yet.</p>'}
     ${hs.length<HB_MAX?`<button class="primary hs-new" data-hbnew="">New habit</button>`:''}`;
