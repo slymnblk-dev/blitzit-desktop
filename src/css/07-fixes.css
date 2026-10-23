@@ -13,13 +13,12 @@
   .f-main{justify-content:flex-start;padding:4px 0}
   .f-title{font-size:24px;-webkit-line-clamp:1}
   .f-time{font-size:60px!important;margin:10px 0 8px!important}
-  .f-step{margin-top:8px;padding:8px 12px}
   .f-steps{margin-top:8px}.fs-list{max-height:34vh}.fs-r{min-height:40px}
   .f-next{display:none}
   .f-btn{width:50px;height:50px}.f-done{height:50px}
   .tide .t-main .f-title{font-size:22px;-webkit-line-clamp:1}
   .tide .t-orb{width:min(120px,30vh)!important;height:min(120px,30vh)!important;margin:4px auto!important}
-  .tide .t-main .f-up{display:none}.tide .f-step{margin-top:6px;padding:6px 12px}.tide .t-cap{margin-top:4px}
+  .tide .t-main .f-up{display:none}.tide .f-steps{margin-top:6px}.tide .t-cap{margin-top:4px}
   .tide .t-ctl .f-btn{width:46px;height:46px}.tide .t-ctl .f-done{height:46px}
   .tide .t-time{font-size:34px!important}
   .tide .t-ch{margin-top:6px}

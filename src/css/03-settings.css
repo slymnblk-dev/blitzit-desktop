@@ -151,13 +151,6 @@
 .f-main{justify-content:center;padding:12px 0}
 .f-up{font-size:14px;font-weight:600}
 .f-title{margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.f-step{display:flex;align-items:center;gap:12px;width:100%;margin-top:22px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.08);text-align:left;font-size:16px;font-weight:600}
-.f-step[hidden]{display:none}
-.f-step i{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--ink);transition:background .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
-.f-step .fs-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .3s}
-.f-step .fs-n{font-size:13px;opacity:.55;font-variant-numeric:tabular-nums}
-.f-step.tick i{background:var(--ink);transform:scale(1.15)}
-.f-step.tick .fs-t{opacity:.4;text-decoration:line-through}
 /* classic focus: every step of the task, tickable, plus "Add step" */
 .f-steps{width:100%;margin-top:22px;display:flex;flex-direction:column}
 .f-steps.has{padding:4px 6px 6px;border-radius:20px;background:rgba(255,255,255,.2)}

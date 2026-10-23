@@ -306,7 +306,7 @@
 /* midnight focus: light tints instead of dark ones */
 :root[data-focusdark="1"] .focus .f-x,:root[data-focusdark="1"] .focus .f-btn,:root[data-focusdark="1"] .focus .mode{background:rgba(255,255,255,.1)}
 :root[data-focusdark="1"] .focus .f-bar{background:rgba(255,255,255,.14)}
-:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-step,:root[data-focusdark="1"] .focus .f-steps.has,:root[data-focusdark="1"] .focus .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
+:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-steps.has,:root[data-focusdark="1"] .focus .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
 /* focus colour picker */
 .fc-sw{max-width:340px}
 .fc-prev{display:flex;align-items:center;justify-content:space-between;gap:12px;height:96px;padding:0 20px;border-radius:22px;margin:4px 0 14px;background:var(--pb);color:var(--pi);

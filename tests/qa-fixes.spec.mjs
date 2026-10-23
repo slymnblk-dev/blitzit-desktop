@@ -179,3 +179,32 @@ test('focus shows every step: tick, untick, add, keys never end the task', async
   expect(await page.evaluate(() => [F.on, S.tasks[0].subs.map(s => s.t)])).toEqual([true, ['Flag urgent', 'Reply to Sara', 'Archive the rest', 'Clear the spam folder']]);
   noErrors(errors);
 });
+
+test('Tide focus shows every step too: tick, untick, add; typing never pauses the tide', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => {
+    const l = S.lists[0], t = newTask('Inbox zero', 'today', l.id, 30);
+    t.subs = [{ id: 901, t: 'Flag urgent', done: false }, { id: 902, t: 'Reply to Sara', done: false }];
+    S.tasks.unshift(t); save(); startTide([t]);
+  });
+  await page.waitForTimeout(400);
+  await page.locator('#tide [data-a="go"]').click();
+  const rows = page.locator('#tSteps .fs-r');
+  await expect(rows).toHaveCount(2);
+  await rows.first().click();
+  await expect(page.locator('#tSteps #fsN')).toHaveText('1 of 2');
+  await rows.first().click();
+  await expect(page.locator('#tSteps #fsN')).toHaveText('0 of 2');
+  await page.locator('#tSteps [data-fsadd]').click();
+  await page.keyboard.type('Archive the rest');
+  await page.keyboard.press('Enter');
+  await expect(rows).toHaveCount(3);
+  expect(await page.evaluate(() => T.mode)).toBe('run'); // the space key typed a word, it didn't pause
+  // the steps survive a pause/resume redraw
+  await page.locator('#tide [data-a="pause"]').click();
+  await expect(rows).toHaveCount(3);
+  expect(await page.evaluate(() => S.tasks[0].subs.map(s => s.t))).toEqual(['Flag urgent', 'Reply to Sara', 'Archive the rest']);
+  await page.evaluate(() => tideLeave());
+  noErrors(errors);
+});

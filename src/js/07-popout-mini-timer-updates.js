@@ -161,7 +161,7 @@ function pipAct(a){
   if(a==='play'){if(inT)tb(T.mode==='run'?'pause':T.mode==='pick'?'go':T.mode==='end'?'more':'resume');else $('fPause').click()}
   else if(a==='done'){if(inT)tb(T.mode==='pick'?'go':'done');else $("fDone").click()}
   else if(a==='more'){if(inT)tb('more');else{F.extra=(F.extra||0)+300;F.upd=false;drawTime()}}
-  else if(a==='step'){if(inT)tb('step');else fTickNext()}
+  else if(a==='step')fTickNext();
   else if(a==='size'&&PIP){S.cfg.pipMode=pipMode()==='mini'?'compact':'mini';save();syncPip();const z=PIP_SIZE[pipMode()];try{PIP.resizeTo(z.width,z.height+(PIP.outerHeight-PIP.innerHeight||0))}catch(_){}}
   else if(a==='back')closePip();
   setTimeout(drawPip,60);

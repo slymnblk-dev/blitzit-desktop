@@ -25,11 +25,6 @@ function startTide(q,from){if(!from){sfx('start');setTimeout(ambFocusStart,300)}
   tideRender();clearInterval(tideT);tideT=setInterval(tideTick,250);tSave();
 }
 function tReveal(){const el=$('tide');el.classList.remove('quiet');clearTimeout(tideQ);if(T&&T.mode==='run')tideQ=setTimeout(()=>el.classList.add('quiet'),3000)}
-function tStepHTML(t){
-  const nx=t.subs.find(x=>!x.done),dn=t.subs.filter(x=>x.done).length;
-  return nx?`<button class="f-step" id="tStep" data-a="step" data-s="${nx.id}"><i></i><span class="fs-t">${esc(nx.t)}</span><span class="fs-n">${dn+1} / ${t.subs.length}</span></button>`
-    :'';
-}
 function tideRender(){
   const t=tCur();if(!t)return tideFinish();
   const l=listOf(t.list),m=T.mode,el=$('tide');
@@ -45,7 +40,7 @@ function tideRender(){
     <div class="t-main">
       <div class="f-up">${esc(l.name)}${F.q.length>1?`, ${F.i+1} of ${F.q.length}`:''}</div>
       <div class="f-title">${esc(t.title)}</div>
-      ${tStepHTML(t)}
+      <div class="f-steps" id="tSteps" role="group" aria-label="Steps"></div>
       <div class="t-orb${m==='run'?' run':''}${m==='end'?' pop':''}"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><clipPath id="tideClip"><circle cx="100" cy="100" r="96"/></clipPath></defs>
         <circle class="o" cx="100" cy="100" r="96"/><g clip-path="url(#tideClip)"><g class="lvl" id="tLvl" style="transform:translateY(210px)"><g class="wv"><path d="M0 0q25-9 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0V260H0z"/></g><g class="wv wv2"><path d="M0 4q25-7 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0V260H0z"/></g></g></g></svg>
         ${m==='pick'?`<label class="t-time t-set"><input id="tIn" class="t-in" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" value="${Math.round(T.dur/6e4)}" aria-label="Minutes"><span>min</span></label>`:`<div class="t-time" id="tTime" aria-live="off"></div>`}
@@ -54,6 +49,7 @@ function tideRender(){
         :`<div class="t-cap"><span id="tCap"></span><span>${Math.round(T.dur/6e4)} min</span></div>`}
     </div>
     <div class="t-ctl">${ctl}</div>`;
+  if(F.stepFor!==t.id){F.stepFor=t.id;fAddStep=false}drawSteps();
   tideTick();tReveal();
 }
 function tideTick(){
@@ -79,14 +75,15 @@ function switchStyle(to){
   save();
 }
 $('tide').addEventListener('pointerdown',tReveal);
+/* steps inside Tide work like Classic's (the box is redrawn with the page, so listen on the page) */
+$('tide').addEventListener('click',e=>{if(e.target.closest('#tSteps'))fsClick(e)});
+$('tide').addEventListener('keydown',e=>{if(e.target.closest('#tSteps'))fsKey(e)});
+$('tide').addEventListener('focusout',e=>{if(e.target.closest('#tSteps'))fsOut(e)});
 $('tide').addEventListener('click',e=>{
   const sw=e.target.closest('[data-fs]');if(sw){if(sw.dataset.fs!=='tide')switchStyle(sw.dataset.fs);return}
   const b=e.target.closest('[data-a],[data-d]');if(!b||!T)return;
   if(b.dataset.d){T.dur=+b.dataset.d*6e4;haptic(5);tideRender();return}
   const a=b.dataset.a,n=Date.now();
-  if(a==='step'){if(b.classList.contains('tick'))return;const t=tCur(),st=t&&t.subs.find(x=>x.id===+b.dataset.s);if(!st)return;
-    b.classList.add('tick');haptic(10);sfx('tick');
-    setTimeout(()=>{st.done=true;save();shuffleFocus();const el=$('tStep');if(el){el.outerHTML=tStepHTML(t);const ne=$('tStep');if(ne)ne.classList.add('t-in-step')}},380);return}
   if(a==='go'){if(Date.now()-(F.tapAt||0)<900)return;const v=+(($('tIn')||{}).value||0);if(v>=1)T.dur=Math.min(300,v)*6e4;S.cfg.tideMin=Math.round(T.dur/6e4);T.mode='run';T.st=n;T.pa=0;T.pt=0;T.logged=0;haptic(10);tSave();tideRender()}
   else if(a==='pause'){T.mode='pause';T.pt=n;tLog();tSave();tideRender()}
   else if(a==='resume'){T.pa+=n-T.pt;T.pt=0;T.mode='run';tSave();tideRender()}

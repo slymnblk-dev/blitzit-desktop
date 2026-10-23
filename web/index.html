@@ -558,13 +558,6 @@ html,body{overscroll-behavior-y:contain}
 .f-main{justify-content:center;padding:12px 0}
 .f-up{font-size:14px;font-weight:600}
 .f-title{margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.f-step{display:flex;align-items:center;gap:12px;width:100%;margin-top:22px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.08);text-align:left;font-size:16px;font-weight:600}
-.f-step[hidden]{display:none}
-.f-step i{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--ink);transition:background .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
-.f-step .fs-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .3s}
-.f-step .fs-n{font-size:13px;opacity:.55;font-variant-numeric:tabular-nums}
-.f-step.tick i{background:var(--ink);transform:scale(1.15)}
-.f-step.tick .fs-t{opacity:.4;text-decoration:line-through}
 /* classic focus: every step of the task, tickable, plus "Add step" */
 .f-steps{width:100%;margin-top:22px;display:flex;flex-direction:column}
 .f-steps.has{padding:4px 6px 6px;border-radius:20px;background:rgba(255,255,255,.2)}
@@ -993,7 +986,7 @@ html,body{overscroll-behavior-y:contain}
 /* midnight focus: light tints instead of dark ones */
 :root[data-focusdark="1"] .focus .f-x,:root[data-focusdark="1"] .focus .f-btn,:root[data-focusdark="1"] .focus .mode{background:rgba(255,255,255,.1)}
 :root[data-focusdark="1"] .focus .f-bar{background:rgba(255,255,255,.14)}
-:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-step,:root[data-focusdark="1"] .focus .f-steps.has,:root[data-focusdark="1"] .focus .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
+:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-steps.has,:root[data-focusdark="1"] .focus .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
 /* focus colour picker */
 .fc-sw{max-width:340px}
 .fc-prev{display:flex;align-items:center;justify-content:space-between;gap:12px;height:96px;padding:0 20px;border-radius:22px;margin:4px 0 14px;background:var(--pb);color:var(--pi);
@@ -1148,11 +1141,9 @@ html,body{overscroll-behavior-y:contain}
 .dsheet .subs.scrolled{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 22px,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to bottom,transparent,#000 22px,#000 calc(100% - 22px),transparent)}
 .dsheet .subs.scrolled.at-end{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 22px);mask-image:linear-gradient(to bottom,transparent,#000 22px)}
 /* ---------- Tide: same page, type and controls as Classic ---------- */
-.tide .f-step{margin-top:20px}
 .tide .t-alldone{opacity:.6;cursor:default}
 .tide .t-alldone i{background:var(--ink)}
 .tide .t-in-step{animation:inU .35s cubic-bezier(.2,.8,.2,1)}
-:root[data-focusdark="1"] .tide .f-step{background:rgba(255,255,255,.08)}
 .focus .f-top{display:grid;grid-template-columns:1fr auto 1fr}
 .focus .f-top .mode{justify-self:start}
 .tide{position:fixed;inset:0;z-index:31;display:none;flex-direction:column;background:var(--fbg,var(--today));--ink:var(--fink,#0F1013);color:var(--ink);
@@ -1166,7 +1157,10 @@ html,body{overscroll-behavior-y:contain}
 .t-main{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:460px;width:100%;margin:0 auto;padding:12px 0;min-height:0}
 .t-main .f-title{margin-top:8px}
 .t-orb{position:relative;width:min(100%,300px,38vh);aspect-ratio:1;margin:26px auto 0;flex:none}
-.tide:has(.f-step) .t-orb{width:min(100%,280px,33vh)}
+.tide:has(.f-steps.has) .t-orb{width:min(100%,250px,28vh)}
+.tide .f-steps{margin-top:16px}
+.tide .fs-list{max-height:min(22vh,184px)}
+:root[data-focusdark="1"] .tide .f-steps.has,:root[data-focusdark="1"] .tide .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
 .t-orb svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .t-orb .o{fill:color-mix(in srgb,var(--ink) 6%,transparent);stroke:var(--ink);stroke-opacity:.28;stroke-width:3}
 .t-orb .wv path{fill:var(--ink);opacity:.16}
@@ -1180,13 +1174,13 @@ html,body{overscroll-behavior-y:contain}
 @keyframes tBreathe{50%{transform:scale(1.025)}}
 .t-orb.pop{animation:tPop .8s cubic-bezier(.2,.8,.2,1)}
 @keyframes tPop{0%{transform:scale(1)}35%{transform:scale(1.09)}65%{transform:scale(.97)}100%{transform:scale(1)}}
-.t-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:6px;font-size:clamp(54px,16vw,80px);font-weight:800;letter-spacing:-.06em;line-height:1;font-variant-numeric:tabular-nums}
+.t-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:6px;font-size:min(clamp(54px,16vw,80px),26cqw);font-weight:800;letter-spacing:-.06em;line-height:1;font-variant-numeric:tabular-nums}
 .t-set{cursor:text;align-items:center}
 .mode button,.fsw button,.t-ch button{white-space:nowrap}
 .t-in{all:unset;box-sizing:content-box;width:2.2ch;text-align:center;font:inherit;letter-spacing:inherit;color:inherit;border-bottom:3px dashed color-mix(in srgb,var(--ink) 35%,transparent);caret-color:var(--ink)}
 .t-in:focus{border-bottom-color:var(--ink)}
 .t-set span{font-size:18px;font-weight:600;letter-spacing:0;opacity:.65}
-.t-cap{display:flex;justify-content:space-between;gap:12px;margin-top:22px;font-size:14px;font-weight:500;opacity:.65}
+.t-cap{display:flex;justify-content:space-between;gap:12px;margin-top:22px;font-size:14px;font-weight:600}
 .t-ch{display:flex;gap:2px;align-self:center;margin-top:18px;background:rgba(0,0,0,.12);border-radius:999px;padding:3px}
 .t-ch button{height:32px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600;opacity:.7}
 .t-ch button.on{background:var(--ink);color:var(--fbg,var(--today));opacity:1}
@@ -1217,6 +1211,17 @@ html,body{overscroll-behavior-y:contain}
 
 .field:focus-visible,.d-title:focus-visible,.notes:focus-visible,.quick input:focus-visible,.ca-in:focus-visible,#nlIn:focus-visible,.sub-add input:focus-visible{outline:none}
 @property --ga{syntax:'<angle>';inherits:false;initial-value:0deg}
+/* centred while there's room; when there isn't, nothing gets pushed off the top */
+.t-main,.f-main{justify-content:flex-start}
+.t-main>:first-child,.f-main>:first-child{margin-top:auto}
+.t-main>:last-child,.f-main>:last-child{margin-bottom:auto}
+/* nothing in Tide gets squashed; on short screens the steps show two at a time (they scroll) and the orb gets smaller */
+.t-main>*{flex-shrink:0}
+@media (max-height:740px){.tide:has(.f-steps.has) .t-orb{width:min(100%,170px,23vh);margin-top:16px}.tide .fs-list{max-height:92px}}
+/* the time always fits inside the orb, whatever its size */
+.t-orb{container-type:inline-size}
+/* very short screens with steps: the page scrolls rather than letting things overlap */
+@media (max-height:700px){.tide:has(.f-steps.has){overflow-y:auto}.tide:has(.f-steps.has) .t-main{flex:none}.tide:has(.f-steps.has) .t-ctl{margin-top:18px}}
 /* ---------- you: avatar, profile chip, You page, Today blitz ---------- */
 .av{--p:0;position:relative;flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface2)}
 .av.has-goal{background:conic-gradient(var(--done) calc(var(--p)*1%),color-mix(in srgb,var(--text) 12%,transparent) 0)}
@@ -1389,13 +1394,12 @@ html,body{overscroll-behavior-y:contain}
   .f-main{justify-content:flex-start;padding:4px 0}
   .f-title{font-size:24px;-webkit-line-clamp:1}
   .f-time{font-size:60px!important;margin:10px 0 8px!important}
-  .f-step{margin-top:8px;padding:8px 12px}
   .f-steps{margin-top:8px}.fs-list{max-height:34vh}.fs-r{min-height:40px}
   .f-next{display:none}
   .f-btn{width:50px;height:50px}.f-done{height:50px}
   .tide .t-main .f-title{font-size:22px;-webkit-line-clamp:1}
   .tide .t-orb{width:min(120px,30vh)!important;height:min(120px,30vh)!important;margin:4px auto!important}
-  .tide .t-main .f-up{display:none}.tide .f-step{margin-top:6px;padding:6px 12px}.tide .t-cap{margin-top:4px}
+  .tide .t-main .f-up{display:none}.tide .f-steps{margin-top:6px}.tide .t-cap{margin-top:4px}
   .tide .t-ctl .f-btn{width:46px;height:46px}.tide .t-ctl .f-done{height:46px}
   .tide .t-time{font-size:34px!important}
   .tide .t-ch{margin-top:6px}
@@ -3624,7 +3628,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=177; // bumped with every published update
+const APP_VERSION=178; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -4810,14 +4814,15 @@ function drawFocus(){
   const n=F.q[F.i+1];$('fNext').innerHTML=n?`Up next <b>${esc(n.title)}</b>`:'';
   $('fPause').innerHTML=F.run?PAUSE:PLAY;drawTime();
 }
-/* the task's steps, all of them: tick (or untick) any, add one, without leaving focus */
+/* the task's steps, all of them: tick (or untick) any, add one, without leaving focus (Classic and Tide alike) */
 let fAddStep=false;
+const fsBox=()=>document.querySelector('#tide.on #tSteps')||$('fSteps');
 const fCur=()=>F.on&&F.q?liveTask(F.q[F.i]):null;
 const FS_TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 12.5l3.5 3.5 7.5-8"/></svg>';
 const FS_PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 const fsLabel=s=>(s.done?'Mark not done: ':'Mark done: ')+s.t;
 function drawSteps(){
-  const t=fCur(),el=$('fSteps');if(!el)return;if(!t){el.innerHTML='';return}
+  const t=fCur(),el=fsBox();if(!el)return;if(!t){el.innerHTML='';return}
   const ss=t.subs||[],dn=ss.filter(s=>s.done).length,a=document.activeElement,typing=a&&a.id==='fsIn'?a.value:null;
   el.classList.toggle('has',ss.length>0);
   el.innerHTML=(ss.length?`<div class="fs-h"><span>Steps</span><span id="fsN">${dn} of ${ss.length}</span></div><div class="fs-list">${ss.map(s=>`<button class="fs-r${s.done?' on':''}" data-fst="${s.id}" aria-pressed="${!!s.done}" aria-label="${esc(fsLabel(s))}"><i>${FS_TICK}</i><span>${esc(s.t)}</span></button>`).join('')}</div>`:'')
@@ -4827,23 +4832,24 @@ function drawSteps(){
 }
 function fTickStep(id){const t=fCur(),s=t&&(t.subs||[]).find(x=>x.id===id);if(!s)return;s.done=!s.done;save();
   if(s.done){haptic(10);sfx('tick');shuffleFocus()}else haptic(5);
-  const b=$('fSteps').querySelector(`[data-fst="${id}"]`);if(!b)return drawSteps();
+  const b=fsBox().querySelector(`[data-fst="${id}"]`);if(!b)return drawSteps();
   b.classList.toggle('on',s.done);b.setAttribute('aria-pressed',s.done);b.setAttribute('aria-label',fsLabel(s));
   const n=$('fsN');if(n)n.textContent=`${t.subs.filter(x=>x.done).length} of ${t.subs.length}`}
 /* the mini timer's step button ticks the next open one */
 function fTickNext(){const t=fCur(),s=t&&(t.subs||[]).find(x=>!x.done);if(s)fTickStep(s.id)}
-$('fSteps').addEventListener('click',e=>{
+function fsClick(e){
   const b=e.target.closest('[data-fst]');if(b)return fTickStep(+b.dataset.fst);
-  if(e.target.closest('[data-fsadd]')){fAddStep=true;haptic(4);drawSteps();const i=$('fsIn');if(i)i.focus()}});
-$('fSteps').addEventListener('keydown',e=>{
+  if(e.target.closest('[data-fsadd]')){fAddStep=true;haptic(4);drawSteps();const i=$('fsIn');if(i)i.focus()}}
+function fsKey(e){
   if(e.target.id==='fsIn'){e.stopPropagation(); // typing a step never pauses, finishes or closes focus
     if(e.key==='Enter'){e.preventDefault();const v=e.target.value.trim();if(!v){fAddStep=false;return drawSteps()}
       const t=fCur();if(!t||!canStep(t))return;t.subs=t.subs||[];t.subs.push({id:newId(),t:v,done:false});haptic(6);try{sfx('add')}catch(err){}save();
-      e.target.value='';drawSteps();const l=$('fSteps').querySelector('.fs-list');if(l)l.scrollTop=l.scrollHeight}
+      e.target.value='';drawSteps();const l=fsBox().querySelector('.fs-list');if(l)l.scrollTop=l.scrollHeight}
     else if(e.key==='Escape'){e.preventDefault();fAddStep=false;drawSteps()}
     return}
-  const b=e.target.closest('[data-fst]');if(b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();fTickStep(+b.dataset.fst)}});
-$('fSteps').addEventListener('focusout',e=>{if(e.target.id!=='fsIn')return;setTimeout(()=>{const a=document.activeElement,i=$('fsIn');if(fAddStep&&i&&a!==i&&!i.value.trim()){fAddStep=false;drawSteps()}},150)});
+  const b=e.target.closest('[data-fst]');if(b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();fTickStep(+b.dataset.fst)}}
+function fsOut(e){if(e.target.id!=='fsIn')return;setTimeout(()=>{const a=document.activeElement,i=$('fsIn');if(fAddStep&&i&&a!==i&&!i.value.trim()){fAddStep=false;drawSteps()}},150)}
+$('fSteps').addEventListener('click',fsClick);$('fSteps').addEventListener('keydown',fsKey);$('fSteps').addEventListener('focusout',fsOut);
 $('fMode').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.m===F.mode)return;
   step();F.last=Date.now();F.mode=b.dataset.m;S.cfg.focusMode=F.mode;save();F.phase='work';F.left=POMO.work;F.round=1;$('focus').classList.remove('brk');haptic(6);drawFocus()};
 function nextFocus(){
@@ -4991,11 +4997,6 @@ function startTide(q,from){if(!from){sfx('start');setTimeout(ambFocusStart,300)}
   tideRender();clearInterval(tideT);tideT=setInterval(tideTick,250);tSave();
 }
 function tReveal(){const el=$('tide');el.classList.remove('quiet');clearTimeout(tideQ);if(T&&T.mode==='run')tideQ=setTimeout(()=>el.classList.add('quiet'),3000)}
-function tStepHTML(t){
-  const nx=t.subs.find(x=>!x.done),dn=t.subs.filter(x=>x.done).length;
-  return nx?`<button class="f-step" id="tStep" data-a="step" data-s="${nx.id}"><i></i><span class="fs-t">${esc(nx.t)}</span><span class="fs-n">${dn+1} / ${t.subs.length}</span></button>`
-    :'';
-}
 function tideRender(){
   const t=tCur();if(!t)return tideFinish();
   const l=listOf(t.list),m=T.mode,el=$('tide');
@@ -5011,7 +5012,7 @@ function tideRender(){
     <div class="t-main">
       <div class="f-up">${esc(l.name)}${F.q.length>1?`, ${F.i+1} of ${F.q.length}`:''}</div>
       <div class="f-title">${esc(t.title)}</div>
-      ${tStepHTML(t)}
+      <div class="f-steps" id="tSteps" role="group" aria-label="Steps"></div>
       <div class="t-orb${m==='run'?' run':''}${m==='end'?' pop':''}"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><clipPath id="tideClip"><circle cx="100" cy="100" r="96"/></clipPath></defs>
         <circle class="o" cx="100" cy="100" r="96"/><g clip-path="url(#tideClip)"><g class="lvl" id="tLvl" style="transform:translateY(210px)"><g class="wv"><path d="M0 0q25-9 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0V260H0z"/></g><g class="wv wv2"><path d="M0 4q25-7 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0V260H0z"/></g></g></g></svg>
         ${m==='pick'?`<label class="t-time t-set"><input id="tIn" class="t-in" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" value="${Math.round(T.dur/6e4)}" aria-label="Minutes"><span>min</span></label>`:`<div class="t-time" id="tTime" aria-live="off"></div>`}
@@ -5020,6 +5021,7 @@ function tideRender(){
         :`<div class="t-cap"><span id="tCap"></span><span>${Math.round(T.dur/6e4)} min</span></div>`}
     </div>
     <div class="t-ctl">${ctl}</div>`;
+  if(F.stepFor!==t.id){F.stepFor=t.id;fAddStep=false}drawSteps();
   tideTick();tReveal();
 }
 function tideTick(){
@@ -5045,14 +5047,15 @@ function switchStyle(to){
   save();
 }
 $('tide').addEventListener('pointerdown',tReveal);
+/* steps inside Tide work like Classic's (the box is redrawn with the page, so listen on the page) */
+$('tide').addEventListener('click',e=>{if(e.target.closest('#tSteps'))fsClick(e)});
+$('tide').addEventListener('keydown',e=>{if(e.target.closest('#tSteps'))fsKey(e)});
+$('tide').addEventListener('focusout',e=>{if(e.target.closest('#tSteps'))fsOut(e)});
 $('tide').addEventListener('click',e=>{
   const sw=e.target.closest('[data-fs]');if(sw){if(sw.dataset.fs!=='tide')switchStyle(sw.dataset.fs);return}
   const b=e.target.closest('[data-a],[data-d]');if(!b||!T)return;
   if(b.dataset.d){T.dur=+b.dataset.d*6e4;haptic(5);tideRender();return}
   const a=b.dataset.a,n=Date.now();
-  if(a==='step'){if(b.classList.contains('tick'))return;const t=tCur(),st=t&&t.subs.find(x=>x.id===+b.dataset.s);if(!st)return;
-    b.classList.add('tick');haptic(10);sfx('tick');
-    setTimeout(()=>{st.done=true;save();shuffleFocus();const el=$('tStep');if(el){el.outerHTML=tStepHTML(t);const ne=$('tStep');if(ne)ne.classList.add('t-in-step')}},380);return}
   if(a==='go'){if(Date.now()-(F.tapAt||0)<900)return;const v=+(($('tIn')||{}).value||0);if(v>=1)T.dur=Math.min(300,v)*6e4;S.cfg.tideMin=Math.round(T.dur/6e4);T.mode='run';T.st=n;T.pa=0;T.pt=0;T.logged=0;haptic(10);tSave();tideRender()}
   else if(a==='pause'){T.mode='pause';T.pt=n;tLog();tSave();tideRender()}
   else if(a==='resume'){T.pa+=n-T.pt;T.pt=0;T.mode='run';tSave();tideRender()}
@@ -5239,7 +5242,7 @@ function pipAct(a){
   if(a==='play'){if(inT)tb(T.mode==='run'?'pause':T.mode==='pick'?'go':T.mode==='end'?'more':'resume');else $('fPause').click()}
   else if(a==='done'){if(inT)tb(T.mode==='pick'?'go':'done');else $("fDone").click()}
   else if(a==='more'){if(inT)tb('more');else{F.extra=(F.extra||0)+300;F.upd=false;drawTime()}}
-  else if(a==='step'){if(inT)tb('step');else fTickNext()}
+  else if(a==='step')fTickNext();
   else if(a==='size'&&PIP){S.cfg.pipMode=pipMode()==='mini'?'compact':'mini';save();syncPip();const z=PIP_SIZE[pipMode()];try{PIP.resizeTo(z.width,z.height+(PIP.outerHeight-PIP.innerHeight||0))}catch(_){}}
   else if(a==='back')closePip();
   setTimeout(drawPip,60);
