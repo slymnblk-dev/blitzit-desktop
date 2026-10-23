@@ -521,7 +521,6 @@ button.hg-c:active{transform:scale(.88)}
 .gb-line b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
 .gb-line .gb-pace{font-size:inherit!important;line-height:inherit!important;font-weight:600}
 .gb-facts .gv-win{margin-left:auto}
-.gv-st{display:inline-grid;place-items:center;width:.42em;height:.42em;margin-left:.2em;vertical-align:.36em;color:var(--week)}.gv-st svg{width:100%;height:100%}
 .gb-head .gv-h{font-size:clamp(34px,8vw,58px);text-wrap:balance}
 /* Edit goal: show or hide the why on the page */
 .g-whyvis{display:flex;align-items:center;gap:6px;margin:8px 0 14px;font-size:13.5px;color:var(--muted)}

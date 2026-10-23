@@ -447,7 +447,6 @@ test('goal page: one calm facts line; why as a quote that can be hidden from the
     save(); applySettings(); openGoal('g1'); });
   await expect(page.locator('#gdPg .gb-line')).toContainText('1/2 milestones');
   await expect(page.locator('#gdPg .gb-line')).toContainText('41 days to');
-  await expect(page.locator('#gdPg .gv-st')).toHaveCount(1); // north star: a small star by the name
   await expect(page.locator('#gdPg .gv-why.note')).toContainText('Feel strong');
   // hide it from the ⋯ menu; it stays in the goal
   await page.locator('#gdMore').click();

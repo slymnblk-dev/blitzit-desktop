@@ -360,7 +360,7 @@ function gFacts(g){const pr=gProg(g),dd=gDays(g),dl=gDaysLeft(g),top=pr.of>0&&pr
   return `<div class="gb-facts"><div class="gb-line"><span><b>${pr.n}/${pr.of}</b> milestones</span>${days}${top||g.done?'':`<span class="gb-pace">${gPaceTxt(g)}</span>`}</div>${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
 function gClimbView(g,anim){
   return `<div class="gb-stage">${gbScene(g,anim)}<div class="gb-head">
-      <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}${g.star&&!g.done?`<span class="gv-st" title="North star" aria-label="North star">${G_STAR}</span>`:''}</h1>${gWhy(g)}</div></div>
+      <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${gWhy(g)}</div></div>
     ${gFacts(g)}
     ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,gSel(g)),gTasksSec(g))}`}
 function gPathView(g){

@@ -3188,7 +3188,6 @@ button.hg-c:active{transform:scale(.88)}
 .gb-line b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
 .gb-line .gb-pace{font-size:inherit!important;line-height:inherit!important;font-weight:600}
 .gb-facts .gv-win{margin-left:auto}
-.gv-st{display:inline-grid;place-items:center;width:.42em;height:.42em;margin-left:.2em;vertical-align:.36em;color:var(--week)}.gv-st svg{width:100%;height:100%}
 .gb-head .gv-h{font-size:clamp(34px,8vw,58px);text-wrap:balance}
 /* Edit goal: show or hide the why on the page */
 .g-whyvis{display:flex;align-items:center;gap:6px;margin:8px 0 14px;font-size:13.5px;color:var(--muted)}
@@ -3398,7 +3397,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=168; // bumped with every published update
+const APP_VERSION=169; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -6883,7 +6882,7 @@ function gFacts(g){const pr=gProg(g),dd=gDays(g),dl=gDaysLeft(g),top=pr.of>0&&pr
   return `<div class="gb-facts"><div class="gb-line"><span><b>${pr.n}/${pr.of}</b> milestones</span>${days}${top||g.done?'':`<span class="gb-pace">${gPaceTxt(g)}</span>`}</div>${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
 function gClimbView(g,anim){
   return `<div class="gb-stage">${gbScene(g,anim)}<div class="gb-head">
-      <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}${g.star&&!g.done?`<span class="gv-st" title="North star" aria-label="North star">${G_STAR}</span>`:''}</h1>${gWhy(g)}</div></div>
+      <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${gWhy(g)}</div></div>
     ${gFacts(g)}
     ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,gSel(g)),gTasksSec(g))}`}
 function gPathView(g){
