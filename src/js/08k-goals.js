@@ -145,10 +145,11 @@ function gMakeTask(g,m){
   if(!canPut(l.id,'week'))return;
   commit(()=>{const t={id:newId(),title:m.t,stage:'week',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id};addTask(t);m.task=t.id},`Added to ${l.name} · My week`);
 }
+/* a milestone and its linked task always match: ticking one finishes the task, reopening it puts the task back in My week */
 function gMsToggle(g,m){
-  const on=!m.done,pr=gProg(g),all=on&&pr.n+1>=pr.of;
-  commit(()=>{m.done=on;if(on){m.doneAt=Date.now();const t=gTaskOf(m);if(t&&t.stage!=='done')setStage(t,'done')}else delete m.doneAt},
-    on?(all?'Summit reached. Every milestone is done.':`Milestone done · ${pr.n+1} of ${pr.of}`):'Milestone reopened');
+  const on=!m.done,pr=gProg(g),all=on&&pr.n+1>=pr.of,t=gTaskOf(m),back=!on&&t&&t.stage==='done';
+  commit(()=>{m.done=on;if(on){m.doneAt=Date.now();if(t&&t.stage!=='done')setStage(t,'done')}else{delete m.doneAt;if(back)setStage(t,'week')}},
+    on?(all?'Summit reached. Every milestone is done.':`Milestone done · ${pr.n+1} of ${pr.of}`):back?'Milestone reopened · its task is back in My week':'Milestone reopened');
   if(on)haptic([8,30,12]);
 }
 function gMsAdd(g){

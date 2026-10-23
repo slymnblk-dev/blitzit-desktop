@@ -2845,6 +2845,10 @@ button.hg-c:active{transform:scale(.88)}
 .gb-stats .gv-win{margin-left:auto;align-self:center}
 .gv.anim .gb-stats>*{animation:pgIn .55s var(--ease) both}
 .gv.anim .gb-stats>*:nth-child(2){animation-delay:.08s}.gv.anim .gb-stats>*:nth-child(3){animation-delay:.16s}
+.gs-head{display:flex;justify-content:flex-end;margin:-14px 0 10px}
+.gs-addb{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 10px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:color .2s,box-shadow .2s}
+.gs-addb svg{width:14px;height:14px}
+.gs-addb:hover{color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 30%,transparent)}
 .gs-row{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px;scroll-snap-type:x proximity}
 .gs-row::-webkit-scrollbar{display:none}
 .gs-step{flex:1 0 170px;max-width:280px;display:flex;flex-direction:column;gap:9px;scroll-snap-align:start}
@@ -3184,7 +3188,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=154; // bumped with every published update
+const APP_VERSION=155; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5908,10 +5912,11 @@ function gMakeTask(g,m){
   if(!canPut(l.id,'week'))return;
   commit(()=>{const t={id:newId(),title:m.t,stage:'week',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id};addTask(t);m.task=t.id},`Added to ${l.name} · My week`);
 }
+/* a milestone and its linked task always match: ticking one finishes the task, reopening it puts the task back in My week */
 function gMsToggle(g,m){
-  const on=!m.done,pr=gProg(g),all=on&&pr.n+1>=pr.of;
-  commit(()=>{m.done=on;if(on){m.doneAt=Date.now();const t=gTaskOf(m);if(t&&t.stage!=='done')setStage(t,'done')}else delete m.doneAt},
-    on?(all?'Summit reached. Every milestone is done.':`Milestone done · ${pr.n+1} of ${pr.of}`):'Milestone reopened');
+  const on=!m.done,pr=gProg(g),all=on&&pr.n+1>=pr.of,t=gTaskOf(m),back=!on&&t&&t.stage==='done';
+  commit(()=>{m.done=on;if(on){m.doneAt=Date.now();if(t&&t.stage!=='done')setStage(t,'done')}else{delete m.doneAt;if(back)setStage(t,'week')}},
+    on?(all?'Summit reached. Every milestone is done.':`Milestone done · ${pr.n+1} of ${pr.of}`):back?'Milestone reopened · its task is back in My week':'Milestone reopened');
   if(on)haptic([8,30,12]);
 }
 function gMsAdd(g){
@@ -6427,6 +6432,7 @@ function gClimbView(g,anim){
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why" data-gwhy>${esc(g.why)}</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}</div></div>
     <div class="gb-stats"><span><b data-cnt="${pr.n}">${pr.n}</b><small>of ${pr.of} milestones</small></span>${g.done?'':`<span><b ${typeof dd.n==='number'?`data-cnt="${dd.n}"`:''}>${dd.n}</b><small>${dd.t}</small></span>`}${top?'':`<span><b class="gb-pace">${gPaceTxt(g)}</b><small>pace</small></span>`}
       ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>
+    ${g.ms.length<MS_MAX&&!g.done&&g.ms.length?`<div class="gs-head"><button class="gs-addb" data-gaddms>${PLUS_S}Milestone</button></div>`:''}
     <div class="gs-row">${steps}${g.ms.length<MS_MAX&&!g.done?`<div class="gs-step add"><span class="gs-bar"></span>${gAddInput(g.ms.length?'New milestone':'Add your first milestone')}</div>`:''}</div>`}
 function gPathView(g){
   const pr=gProg(g),dd=gDays(g),nx=gNext(g);
@@ -6457,16 +6463,18 @@ function drawGoal(){
   if(!anim&&html===gdHtml)return;
   const old=$('gdIn').querySelector('.gs-row'),sl=old?old.scrollLeft:0;
   gdHtml=html;$('gdIn').innerHTML=html;$('gdPg').scrollTop=y;if(anim)countUp($('gdIn'));
-  /* the milestone row: on open, start one step before "Next" so the last win shows too;
+  /* the milestone row: on open, if "Next" is out of sight, start one step before it so the last win shows too;
      on later redraws stay put, gliding only if "Next" moved out of sight */
   const row=$('gdIn').querySelector('.gs-row'),now=row&&row.querySelector('.gs-step.now');if(!row)return;
   if(!anim)row.scrollLeft=sl;if(!now)return;
   const r=row.getBoundingClientRect(),n=now.getBoundingClientRect(),prev=now.previousElementSibling;
-  if(anim){row.scrollLeft=Math.max(0,(prev||now).getBoundingClientRect().left-r.left-4);return}
-  if(n.left<r.left||n.right>r.right)row.scrollTo({left:row.scrollLeft+n.left-r.left-4,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+  const hid=n.left<r.left||n.right>r.right;
+  if(anim){if(hid)row.scrollLeft=Math.max(0,row.scrollLeft+(prev||now).getBoundingClientRect().left-r.left-4);return}
+  if(hid)row.scrollTo({left:row.scrollLeft+n.left-r.left-4,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
 }
 $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
+  if(e.target.closest('[data-gaddms]')){const i=$('gMsIn');if(i){haptic(5);i.closest('.gs-step').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest',inline:'end'});i.focus({preventScroll:true})}return}
   const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m||gTickBusy)return;gTickBusy=true;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);
     setTimeout(()=>{try{gMsToggle(g,m)}finally{setTimeout(()=>gTickBusy=false,250)}},200);return}
 });

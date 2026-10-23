@@ -172,6 +172,20 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   // a quick double tap ticks one milestone, not on-then-off
   await page.locator('#gdPg .gs-step.now [data-gtk]').dblclick();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(4);
+  // "+ Milestone" is always in reach: it brings the add field into view and focuses it
+  await page.locator('#gdPg [data-gaddms]').click();
+  await expect(page.locator('#gMsIn')).toBeFocused();
+  await expect(page.locator('#gMsIn')).toBeInViewport();
+  await page.keyboard.type('Extra step');
+  await page.keyboard.press('Enter');
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms.length)).toBe(7);
+  await page.evaluate(() => { S.goals[0].ms.pop(); save(); render(); document.activeElement.blur(); });
+  // reopening a milestone puts its finished task back in My week
+  const tid = await page.evaluate(() => { const g = S.goals[0], l = S.lists.find(x => x.space === g.space); const x = { id: newId(), title: 'Step 1 task', stage: 'done', doneAt: Date.now(), list: l.id, est: 30, subs: [], notes: '', repeat: 'none', goal: g.id }; S.tasks.push(x); g.ms[0].task = x.id; save(); render(); return x.id; });
+  await page.evaluate(() => gMsToggle(S.goals[0], S.goals[0].ms[0]));
+  expect(await page.evaluate(id => [S.goals[0].ms[0].done, S.tasks.find(x => x.id === id).stage], tid)).toEqual([false, 'week']);
+  await page.evaluate(() => gMsToggle(S.goals[0], S.goals[0].ms[0]));
+  expect(await page.evaluate(id => [S.goals[0].ms[0].done, S.tasks.find(x => x.id === id).stage], tid)).toEqual([true, 'done']);
   // nothing changed → no redraw (motion stays calm)
   const same = await page.evaluate(() => { render(); const a = document.querySelector('#gdIn .gb-svg'); render(); return a === document.querySelector('#gdIn .gb-svg'); });
   expect(same).toBe(true);

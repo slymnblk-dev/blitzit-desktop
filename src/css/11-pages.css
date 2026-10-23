@@ -173,6 +173,10 @@ button.hg-c:active{transform:scale(.88)}
 .gb-stats .gv-win{margin-left:auto;align-self:center}
 .gv.anim .gb-stats>*{animation:pgIn .55s var(--ease) both}
 .gv.anim .gb-stats>*:nth-child(2){animation-delay:.08s}.gv.anim .gb-stats>*:nth-child(3){animation-delay:.16s}
+.gs-head{display:flex;justify-content:flex-end;margin:-14px 0 10px}
+.gs-addb{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 10px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:color .2s,box-shadow .2s}
+.gs-addb svg{width:14px;height:14px}
+.gs-addb:hover{color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 30%,transparent)}
 .gs-row{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px;scroll-snap-type:x proximity}
 .gs-row::-webkit-scrollbar{display:none}
 .gs-step{flex:1 0 170px;max-width:280px;display:flex;flex-direction:column;gap:9px;scroll-snap-align:start}

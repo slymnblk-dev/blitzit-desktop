@@ -146,6 +146,7 @@ function gClimbView(g,anim){
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why" data-gwhy>${esc(g.why)}</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}</div></div>
     <div class="gb-stats"><span><b data-cnt="${pr.n}">${pr.n}</b><small>of ${pr.of} milestones</small></span>${g.done?'':`<span><b ${typeof dd.n==='number'?`data-cnt="${dd.n}"`:''}>${dd.n}</b><small>${dd.t}</small></span>`}${top?'':`<span><b class="gb-pace">${gPaceTxt(g)}</b><small>pace</small></span>`}
       ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>
+    ${g.ms.length<MS_MAX&&!g.done&&g.ms.length?`<div class="gs-head"><button class="gs-addb" data-gaddms>${PLUS_S}Milestone</button></div>`:''}
     <div class="gs-row">${steps}${g.ms.length<MS_MAX&&!g.done?`<div class="gs-step add"><span class="gs-bar"></span>${gAddInput(g.ms.length?'New milestone':'Add your first milestone')}</div>`:''}</div>`}
 function gPathView(g){
   const pr=gProg(g),dd=gDays(g),nx=gNext(g);
@@ -176,16 +177,18 @@ function drawGoal(){
   if(!anim&&html===gdHtml)return;
   const old=$('gdIn').querySelector('.gs-row'),sl=old?old.scrollLeft:0;
   gdHtml=html;$('gdIn').innerHTML=html;$('gdPg').scrollTop=y;if(anim)countUp($('gdIn'));
-  /* the milestone row: on open, start one step before "Next" so the last win shows too;
+  /* the milestone row: on open, if "Next" is out of sight, start one step before it so the last win shows too;
      on later redraws stay put, gliding only if "Next" moved out of sight */
   const row=$('gdIn').querySelector('.gs-row'),now=row&&row.querySelector('.gs-step.now');if(!row)return;
   if(!anim)row.scrollLeft=sl;if(!now)return;
   const r=row.getBoundingClientRect(),n=now.getBoundingClientRect(),prev=now.previousElementSibling;
-  if(anim){row.scrollLeft=Math.max(0,(prev||now).getBoundingClientRect().left-r.left-4);return}
-  if(n.left<r.left||n.right>r.right)row.scrollTo({left:row.scrollLeft+n.left-r.left-4,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+  const hid=n.left<r.left||n.right>r.right;
+  if(anim){if(hid)row.scrollLeft=Math.max(0,row.scrollLeft+(prev||now).getBoundingClientRect().left-r.left-4);return}
+  if(hid)row.scrollTo({left:row.scrollLeft+n.left-r.left-4,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
 }
 $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
+  if(e.target.closest('[data-gaddms]')){const i=$('gMsIn');if(i){haptic(5);i.closest('.gs-step').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest',inline:'end'});i.focus({preventScroll:true})}return}
   const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m||gTickBusy)return;gTickBusy=true;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);
     setTimeout(()=>{try{gMsToggle(g,m)}finally{setTimeout(()=>gTickBusy=false,250)}},200);return}
 });
