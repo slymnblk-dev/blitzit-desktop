@@ -48,7 +48,7 @@ function hpSun(hs){
 function hpMenuHTML(){const v=hpView(),left=hbOpenToday().length;
   return `<div class="lh-wrap hp-mw"><button class="pm-btn" id="hpMore" type="button" aria-label="Habits options" aria-haspopup="menu" aria-expanded="${hpMenu}">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop${hpMenu?' on':''}" id="hpPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-hpv="grid"','Week grid',v==='grid')}${mItem('data-hpv="sun"','Sunrise',v==='sun')}
-    <span class="pm-sep"></span><button data-hbnew="" role="menuitem"><span class="lpm-i">${PLUS_S}</span>New habit</button>${left?`<button data-ciopen role="menuitem"><span class="lpm-i">${RH_ICON}</span>Evening check-in</button>`:''}</div></div>`}
+    <span class="pm-sep"></span><button data-hbnew="" role="menuitem"><span class="lpm-i">${PLUS_S}</span>New habit</button>${hbAll().length>1?`<button data-hbord role="menuitem"><span class="lpm-i">${GRIP}</span>Reorder habits</button>`:''}${left?`<button data-ciopen role="menuitem"><span class="lpm-i">${RH_ICON}</span>Evening check-in</button>`:''}</div></div>`}
 function drawRhythm(){
   const y=$('rhythmPg').scrollTop,hs=hbAll(),v=hpView(),anim=!$('rhIn').dataset.v||$('rhIn').dataset.v!==v||$('rhIn').dataset.fresh==='1';
   let head,body;
@@ -70,7 +70,9 @@ const _hpOpen=openRhythm;openRhythm=function(){hpWeek=0;hpMenu=false;$('rhIn').d
 function hpRefreshSoon(){clearTimeout(hgT);hgT=setTimeout(()=>{if(!document.querySelector('.sheet.on'))render()},1100)}
 function hpSetDay(id,k){
   const h=hbById(id);if(!h)return;const now=Date.now();if(now-(hpTapAt[id+k]||0)<350)return;hpTapAt[id+k]=now;
-  if(k===today()){hbToggle(id)}else{h.done=h.done||{};const on=!h.done[k];if(on)h.done[k]=1;else delete h.done[k];haptic(on?[8,30,12]:6);try{sfx(on?'done':'undone')}catch(e){}save()}
+  if(k===today()){hbToggle(id)}else{h.done=h.done||{};const on=!h.done[k];if(on)h.done[k]=1;else delete h.done[k];haptic(on?[8,30,12]:6);try{sfx(on?'done':'undone')}catch(e){}save();
+    const day=new Date(k+'T12:00').toLocaleDateString(undefined,{weekday:'long'});
+    toast(`${h.name} · ${on?'kept':'cleared'} on ${day}`,()=>{const x=hbById(id);if(!x)return;x.done=x.done||{};if(on)delete x.done[k];else x.done[k]=1;save();render()})}
   const on=!!(h.done||{})[k];document.querySelectorAll(`[data-hgd="${id}|${k}"]`).forEach(b=>{b.classList.toggle('on',on);b.classList.toggle('miss',!on&&k<today());b.setAttribute('aria-pressed',on);b.classList.remove('pop');void b.offsetWidth;if(on)b.classList.add('pop')});
   const s=document.querySelector(`[data-hgs="${id}"]`);if(s)s.innerHTML=hpStreak(h);
   hpRefreshSoon();
@@ -91,8 +93,36 @@ $('rhythmPg').addEventListener('click',e=>{
   const w=e.target.closest('[data-hpw]');if(w&&!w.disabled){hpWeek=Math.min(0,hpWeek+(+w.dataset.hpw));haptic(4);$('rhIn').dataset.fresh='1';drawRhythm();return}
   const c=e.target.closest('[data-hgd]');if(c){const [id,k]=c.dataset.hgd.split('|');return hpSetDay(id,k)}
   const s=e.target.closest('[data-hst]');if(s)return hpSunTick(s.dataset.hst);
+  if(e.target.closest('#hpPop [data-hbord]')){hpMenu=false;return openReorder()}
   if(e.target.closest('#hpPop [data-hbnew],#hpPop [data-ciopen]')){hpMenu=false}
 });
+
+/* ---------- reorder habits: drag a row by its handle (or focus the handle and use the arrow keys) ---------- */
+var GRIP='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.7"/><circle cx="15" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/><circle cx="9" cy="18" r="1.7"/><circle cx="15" cy="18" r="1.7"/></svg>';
+document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="hoSheet"><div class="sheet-in"><div class="grab"></div><h2>Reorder habits</h2>
+  <p class="ho-tip">Drag to set the order. The first ones show on Home.</p><div class="ho-list" id="hoList"></div><button class="primary" id="hoDone">Done</button></div></div>`);
+let hoDrag=null;
+function openReorder(){if(hbAll().length<2)return;drawReorder(hbAll().map(h=>h.id));openSheet('hoSheet')}
+function drawReorder(ids,focus){
+  $('hoList').innerHTML=ids.map((id,i)=>{const h=hbById(id);return h?`<div class="ho-row" data-hoid="${h.id}"><span class="ho-i">${i+1}</span><span class="ho-n">${hbName(h)}</span><button class="ho-grip" type="button" aria-label="Move ${esc(h.name)}, number ${i+1} of ${ids.length}. Arrow keys move it.">${GRIP}</button></div>`:''}).join('');
+  if(focus!=null){const b=$('hoList').querySelector(`[data-hoid="${focus}"] .ho-grip`);if(b)b.focus()}}
+const hoIds=()=>[...$('hoList').querySelectorAll('.ho-row')].map(r=>r.dataset.hoid);
+/* the visible habits take the new order; hidden ones (in archived spaces) keep their places */
+function hoApply(ids){const cur=hbAll().map(h=>String(h.id));if(ids.join()===cur.join())return;
+  const slots=[];S.habits.forEach((h,i)=>{if(cur.includes(String(h.id)))slots.push(i)});
+  const moved=ids.map(id=>hbById(id)).filter(Boolean),out=S.habits.slice();slots.forEach((s,i)=>out[s]=moved[i]);S.habits=out;save();render()}
+$('hoList').addEventListener('pointerdown',e=>{const g=e.target.closest('.ho-grip');if(!g)return;e.preventDefault();
+  const row=g.closest('.ho-row');hoDrag={row,pid:e.pointerId,off:e.clientY-row.getBoundingClientRect().top};row.classList.add('lifted');haptic(10);try{g.setPointerCapture(e.pointerId)}catch(_){}});
+/* the dragged row itself never moves in the page (that would drop the pointer); its neighbours step around it */
+addEventListener('pointermove',e=>{const d=hoDrag;if(!d||e.pointerId!==d.pid)return;const row=d.row,p=row.previousElementSibling,n=row.nextElementSibling,mid=el=>{const b=el.getBoundingClientRect();return b.top+b.height/2};
+  if(p&&e.clientY<mid(p)){row.after(p);haptic(4)}else if(n&&e.clientY>mid(n)){row.before(n);haptic(4)}
+  row.style.transform='';row.style.transform=`translateY(${e.clientY-d.off-row.getBoundingClientRect().top}px)`});
+const hoEnd=e=>{const d=hoDrag;if(!d||(e&&e.pointerId!==d.pid))return;hoDrag=null;d.row.style.transform='';d.row.classList.remove('lifted');const ids=hoIds();drawReorder(ids);hoApply(ids)};
+addEventListener('pointerup',hoEnd);addEventListener('pointercancel',hoEnd);
+$('hoList').addEventListener('keydown',e=>{const g=e.target.closest('.ho-grip');if(!g||(e.key!=='ArrowUp'&&e.key!=='ArrowDown'))return;e.preventDefault();
+  const ids=hoIds(),id=g.closest('.ho-row').dataset.hoid,i=ids.indexOf(id),j=e.key==='ArrowUp'?i-1:i+1;if(j<0||j>=ids.length)return;
+  [ids[i],ids[j]]=[ids[j],ids[i]];haptic(4);drawReorder(ids,id);hoApply(ids)});
+$('hoDone').onclick=()=>closeSheets();
 
 /* Escape on the Habits page: closes the ⋯ menu first, then the check-in, then the page, wherever focus is */
 document.addEventListener('keydown',e=>{
@@ -225,7 +255,7 @@ function hbWidget(){
   const head=`<button class="hw-head" data-hbopen><b>Habits</b><span>${due.length?`<em>${dn.length}</em> of ${due.length} today`:'Rest day'}</span>${CHEV}</button>`;
   if(st==='one'){const nx=open[0],C2=2*Math.PI*31,p=due.length?dn.length/due.length:1;
     return `<div class="hw hw-one"><button class="hw-ring" data-hbopen aria-label="Open habits"><svg viewBox="0 0 76 76" aria-hidden="true"><circle class="hw-r0" cx="38" cy="38" r="31"/><circle class="hw-r1" cx="38" cy="38" r="31" style="stroke-dasharray:${(C2*p).toFixed(1)} ${C2.toFixed(1)}"/></svg><b>${dn.length}/${due.length}</b></button>
-      <button class="hw-tx" data-hbopen>${nx?`<small>Next habit</small><b>${nx.e?esc(nx.e)+' ':''}${esc(nx.name)}</b><span>${open.length>1?`+${open.length-1} more today`:'Last one today'}</span>`:`<small>Habits</small><b>${due.length?'All done today':'Rest day'}</b><span>${due.length?'Nice. See you tomorrow.':'Nothing due today'}</span>`}</button>
+      <button class="hw-tx" data-hbopen>${nx?`<small>Next habit</small><b>${nx.e?esc(nx.e)+' ':''}${esc(nx.name)}</b><span>${(st=>st>1?`<em class="hw-st">${st} days in a row</em>${open.length>1?` · +${open.length-1} more`:''}`:open.length>1?`+${open.length-1} more today`:'Last one today')(hbStats(nx).st)}</span>`:`<small>Habits</small><b>${due.length?'All done today':'Rest day'}</b><span>${due.length?'Nice. See you tomorrow.':'Nothing due today'}</span>`}</button>
       ${nx?`<button class="hw-done" data-hbt="${nx.id}" aria-pressed="false">Done</button>`:''}</div>`}
   const ck='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   const list=due.slice(0,HW_MAX),more=due.length-list.length;

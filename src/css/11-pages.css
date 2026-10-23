@@ -304,6 +304,7 @@ button.hg-c:active{transform:scale(.88)}
 .hw-tx small{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .hw-tx b{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hw-tx span{font-size:13px;color:var(--muted)}
+.hw-st{font-style:normal;color:var(--today);font-weight:700}
 .hw-done{height:44px;padding:0 20px;border-radius:999px;background:var(--today);color:#fff;font-weight:700;font-size:15px;flex:none;transition:transform .15s,opacity .3s}
 .hw-done:active{transform:scale(.94)}
 .hw-done.on{opacity:.5;pointer-events:none}
@@ -331,3 +332,15 @@ button.hg-c:active{transform:scale(.88)}
 .hw-pl .hw-more{height:44px;padding:0 14px;box-shadow:inset 0 0 0 1px var(--line)}
 .hw-tiles .hw-more{display:block;margin:10px 0 -4px auto;padding:6px 10px}
 @media (max-width:699px){.hw-pill{height:40px;padding:0 13px 0 8px;font-size:13.5px;gap:7px}.hw-pill .hw-k{width:20px;height:20px}.hw-pl{gap:6px}.hw-pl .hw-more{height:40px}}
+
+/* ===== Reorder habits ===== */
+.ho-tip{margin:-8px 0 14px;font-size:14px;color:var(--muted)}
+.ho-list{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.ho-row{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 6px 0 14px;border-radius:16px;background:var(--surface2);position:relative;user-select:none;-webkit-user-select:none}
+.ho-row.lifted{z-index:2;box-shadow:0 16px 36px rgba(0,0,0,.25);transform-origin:center}
+.ho-i{width:18px;font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.ho-n{flex:1;min-width:0;font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ho-grip{width:44px;height:44px;display:grid;place-items:center;color:var(--muted);cursor:grab;touch-action:none;border-radius:12px}
+.ho-grip svg{width:20px;height:20px}
+.ho-row.lifted .ho-grip{cursor:grabbing;color:var(--text)}
+.ho-grip:focus-visible{outline:2px solid var(--today);outline-offset:-2px}
