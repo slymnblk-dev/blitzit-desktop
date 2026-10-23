@@ -162,3 +162,41 @@ test('habits on Home: one spot, widget shows up to 6, one nudge at a time', asyn
   await expect(page.locator('#rhEntry')).toHaveCount(1);
   noErrors(errors);
 });
+
+test('habits page: double tap ticks once, Escape closes menu then page, Sunrise keeps order', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.habits = true; S.cfg.wHabits = true; S.cfg.hwStyle = 'tiles'; const sp = S.spaces[0].id;
+    S.habits = ['Water', 'Read', 'Walk'].map((n, i) => ({ id: 'h' + i, name: n, e: '', space: sp, days: [0,1,2,3,4,5,6], done: {}, created: Date.now() - 30 * DAY }));
+    save(); applySettings(); openRhythm(); });
+  const done = () => page.evaluate(() => S.habits.map(h => !!h.done[today()]));
+  // week grid, past day and Home tiles: a quick double tap ticks once
+  await page.locator('#rhythmPg .hg-c.now').first().dblclick();
+  expect(await done()).toEqual([true, false, false]);
+  await page.locator('#rhythmPg .hg-row').nth(1).locator('.hg-c.miss').first().dblclick();
+  expect(await page.evaluate(() => Object.keys(S.habits[1].done).length)).toBe(1);
+  // Sunrise: chips keep your order after a tick
+  await page.evaluate(() => setCfg('hbView', 'sun'));
+  await page.locator('#rhythmPg .hs-chip').nth(1).click();
+  await page.waitForTimeout(1300);
+  await expect(page.locator('#rhythmPg .hs-chip').nth(1)).toHaveClass(/on/);
+  await expect(page.locator('#rhythmPg .hs-chip .hs-n')).toHaveText(['Water', 'Read', 'Walk']);
+  // Escape: menu first, then the page, even when focus left the page
+  await page.locator('#hpMore').click();
+  await page.evaluate(() => { render(); document.activeElement.blur(); });
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#hpPop')).not.toHaveClass(/on/);
+  await expect(page.locator('#rhythmPg')).toHaveClass(/on/);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#rhythmPg')).not.toHaveClass(/on/);
+  // the check-in closes on Escape too
+  await page.evaluate(() => openCheckin());
+  await page.evaluate(() => document.activeElement.blur());
+  await page.keyboard.press('Escape');
+  expect(await page.evaluate(() => ciOn)).toBe(false);
+  // Home tiles: double tap ticks once
+  await page.evaluate(() => { S.habits.forEach(h => delete h.done[today()]); save(); goHome(); });
+  await page.locator('.app .hw-tile').nth(2).dblclick();
+  expect(await done()).toEqual([false, false, true]);
+  noErrors(errors);
+});

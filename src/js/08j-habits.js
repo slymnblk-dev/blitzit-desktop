@@ -91,15 +91,16 @@ function closeRhythm(){
   const a=document.activeElement;if(a&&a.closest&&a.closest('#rhythmPg'))a.blur();
   if(typeof renderDesk==='function')renderDesk();
 }
-$('rhythmPg').addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('.sheet.on')){e.stopPropagation();closeRhythm()}});
 
 /* ---------- tick a habit: the sun rises in place, the rest of the screen catches up a moment later ---------- */
 let hbRefreshT=null;
 function hbPaint(el,s){el.classList.toggle('on',s.dt);el.setAttribute('aria-pressed',s.dt);
   const sun=el.querySelector('.hb-sun');if(sun){sun.classList.toggle('on',s.dt);sun.querySelector('.dg').style.transform=`translateY(${(-s.lvl*12/7).toFixed(2)}px)`;sun.querySelector('.rays').style.opacity=s.lvl>=7?1:0}
   const t=el.querySelector('[data-hbs]');if(t)t.textContent=hbText(s)}
+let hbTapAt={};
 function hbToggle(id,force){
-  const h=hbById(id);if(!h)return;h.done=h.done||{};const k=today(),on=force===undefined?!h.done[k]:force;
+  const h=hbById(id);if(!h)return;
+  if(force===undefined){const now=Date.now();if(now-(hbTapAt[id]||0)<350)return;hbTapAt[id]=now}h.done=h.done||{};const k=today(),on=force===undefined?!h.done[k]:force;
   if(on)h.done[k]=1;else delete h.done[k];
   haptic(on?[8,30,12]:6);try{sfx(on?'done':'undone')}catch(e){}
   save();const s=hbStats(h);document.querySelectorAll(`[data-hbt="${h.id}"]`).forEach(el=>hbPaint(el,s));
@@ -131,7 +132,6 @@ function ciAnswer(yes){
   top.classList.add(yes?'out-yes':'out-no');ciI++;
   setTimeout(()=>{drawCi();if(ciI>=ciQ.length){S.ciSkip=today();save()}},280);
 }
-$('ciPg').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();closeCheckin()}});
 
 /* ---------- habit editor ---------- */
 document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="hbSheet"><div class="sheet-in">

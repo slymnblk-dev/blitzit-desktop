@@ -3,7 +3,7 @@
    Goal:   The climb (default), Path or Poster, picked under ⋯ → View (per goal; default in Settings → Modes).
    Completed things use the brand colour (--today); green stays for switches in Settings.
    Data, sheets and actions live in 08j-habits.js and 08k-goals.js. */
-var hpWeek=0,hpMenu=false,hgT=null,gbPrev=null,gdHtml='',gTickBusy=false;
+var hpWeek=0,hpMenu=false,hgT=null,hpHtml='',hpTapAt={},gbPrev=null,gdHtml='',gTickBusy=false;
 const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const DOTS_V='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
 const ARR_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
@@ -41,10 +41,10 @@ function hpSunSvg(p,all,cls){const y=Math.round(96*(1-p))-26;
     <path class="hs-hz" d="M20 220h380"/><g class="hs-rays${all?' on':''}"><path d="M210 48v-20M136 76l-14-14M284 76l14-14M92 128l-18-6M328 128l18-6"/></g></svg>`}
 function hpSun(hs){
   const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt}),dn=due.filter(h=>hbStats(h).dt),p=due.length?dn.length/due.length:0;
-  const open=due.filter(h=>!hbStats(h).dt),done=due.filter(h=>hbStats(h).dt),rest=hs.filter(h=>!due.includes(h));
+  const rest=hs.filter(h=>!due.includes(h)); // chips keep your order, so a ticked one stays where you tapped it
   const chip=(h,i)=>{const s=hbStats(h);return `<button class="hs-chip${s.dt?' on':''}" data-hst="${h.id}" aria-pressed="${s.dt}" style="--i:${i}"><span class="hs-k">${CK}</span><span class="hs-n">${h.e?esc(h.e)+' ':''}${esc(h.name)}</span><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></button>`};
   return `<div class="hs"><div class="hs-l">${hpSunSvg(p,due.length&&p>=1)}<b class="hs-big"><span data-hsn>${dn.length}</span> of ${due.length}</b><span class="hs-cap" data-hscap>${!due.length?'A rest day. Enjoy it.':p>=1?'Every habit kept. The sun is up.':'Your sun rises with every habit you keep today.'}</span></div>
-    <div class="hs-r">${[...open,...done].map(chip).join('')}${rest.length?`<div class="hs-rest">Resting today: ${rest.map(h=>esc(h.name)).join(', ')}</div>`:''}</div></div>`}
+    <div class="hs-r">${due.map(chip).join('')}${rest.length?`<div class="hs-rest">Resting today: ${rest.map(h=>esc(h.name)).join(', ')}</div>`:''}</div></div>`}
 function hpMenuHTML(){const v=hpView(),left=hbOpenToday().length;
   return `<div class="lh-wrap hp-mw"><button class="pm-btn" id="hpMore" type="button" aria-label="Habits options" aria-haspopup="menu" aria-expanded="${hpMenu}">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop${hpMenu?' on':''}" id="hpPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-hpv="grid"','Week grid',v==='grid')}${mItem('data-hpv="sun"','Sunrise',v==='sun')}
@@ -60,14 +60,16 @@ function drawRhythm(){
   else{const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt});
     head=`<span class="hp-eye">Habits · ${longDate()}</span><h1 class="hp-h">Today</h1><span class="hp-sub">${due.length?`<b>${due.filter(h=>hbStats(h).dt).length} of ${due.length}</b> done`:'Rest day'}</span>`;body=hpSun(hs)}
   const nav=hs.length&&v==='grid'?`<div class="hp-nav"><button class="pm-btn" data-hpw="-1" aria-label="Previous week">${ARR_L}</button><button class="pm-btn" data-hpw="1" aria-label="Next week" ${hpWeek>=0?'disabled':''}>${ARR_R}</button></div>`:'';
-  $('rhIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>
+  const html=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>
     <div class="hp-head"><div class="hp-tt">${head}</div><div class="hp-acts">${nav}${hpMenuHTML()}</div></div><div class="hp-body${anim?' anim':''}">${body}</div>`;
-  $('rhIn').dataset.v=v;$('rhIn').dataset.fresh='';$('rhythmPg').scrollTop=y;
+  $('rhIn').dataset.v=v;$('rhIn').dataset.fresh='';
+  if(!anim&&html===hpHtml)return; // nothing changed: leave the page (and its motion) alone
+  hpHtml=html;$('rhIn').innerHTML=html;$('rhythmPg').scrollTop=y;
 }
 const _hpOpen=openRhythm;openRhythm=function(){hpWeek=0;hpMenu=false;$('rhIn').dataset.fresh='1';_hpOpen()};
 function hpRefreshSoon(){clearTimeout(hgT);hgT=setTimeout(()=>{if(!document.querySelector('.sheet.on'))render()},1100)}
 function hpSetDay(id,k){
-  const h=hbById(id);if(!h)return;
+  const h=hbById(id);if(!h)return;const now=Date.now();if(now-(hpTapAt[id+k]||0)<350)return;hpTapAt[id+k]=now;
   if(k===today()){hbToggle(id)}else{h.done=h.done||{};const on=!h.done[k];if(on)h.done[k]=1;else delete h.done[k];haptic(on?[8,30,12]:6);try{sfx(on?'done':'undone')}catch(e){}save()}
   const on=!!(h.done||{})[k];document.querySelectorAll(`[data-hgd="${id}|${k}"]`).forEach(b=>{b.classList.toggle('on',on);b.classList.toggle('miss',!on&&k<today());b.setAttribute('aria-pressed',on);b.classList.remove('pop');void b.offsetWidth;if(on)b.classList.add('pop')});
   const s=document.querySelector(`[data-hgs="${id}"]`);if(s)s.innerHTML=hpStreak(h);
@@ -90,6 +92,16 @@ $('rhythmPg').addEventListener('click',e=>{
   const c=e.target.closest('[data-hgd]');if(c){const [id,k]=c.dataset.hgd.split('|');return hpSetDay(id,k)}
   const s=e.target.closest('[data-hst]');if(s)return hpSunTick(s.dataset.hst);
   if(e.target.closest('#hpPop [data-hbnew],#hpPop [data-ciopen]')){hpMenu=false}
+});
+
+/* Escape on the Habits page: closes the ⋯ menu first, then the check-in, then the page, wherever focus is */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||e.defaultPrevented||!(rhOn||ciOn))return;
+  if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on')||moOn||cdOn||gdOn||(typeof srchOpen!=='undefined'&&srchOpen))return;
+  e.stopPropagation();
+  if(rhOn&&hpMenu){hpMenu=false;const p=$('hpPop');if(p)p.classList.remove('on');const b=$('hpMore');if(b){b.setAttribute('aria-expanded','false');b.focus()}return}
+  if(ciOn)return closeCheckin();
+  closeRhythm();
 });
 
 /* ================= Goal ================= */
