@@ -10,7 +10,7 @@
    Finishing a milestone's last task ticks it; marking a milestone done finishes its open tasks; reopening a
    milestone leaves its tasks as they are. (ms.task is the older one-task link and still counts as a member.) Goals sync, back up and undo like tasks.
    Constants are var (not const) because other files may draw before this one runs. */
-var gdOn=false,gsOn=false,gdId=null,gdEdit=false,gdAnim=false;
+var gdOn=false,gsOn=false,gdId=null,gdAnim=false;
 var G_MAX=3,MS_MAX=12;
 var G_STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"/></svg>';
 var G_FLAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
@@ -129,20 +129,14 @@ document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg gd-pg" id="gd
 function openGoal(id){
   if(!goalsOn()||!gById(id))return;
   if(typeof closeSearch==='function')closeSearch();
-  gdId=id;gdEdit=false;gSelId=null;gAddMs=false;gdOn=true;gdAnim=true;drawGoal();gdAnim=false;
+  gdId=id;gSelId=null;gAddMs=false;gSubOpen.clear();gdOn=true;gdAnim=true;drawGoal();gdAnim=false;
   $('gdPg').classList.add('on');$('gdPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
 }
 function closeGoal(){
-  if(!gdOn)return;gdOn=false;gdEdit=false;$('gdPg').classList.remove('on');
+  if(!gdOn)return;gdOn=false;if(gmeOn)closeMsEdit();$('gdPg').classList.remove('on');
   const a=document.activeElement;if(a&&a.closest&&a.closest('#gdPg'))a.blur();
   if(typeof renderDesk==='function')renderDesk();
 }
-/* the milestone editor under the goal: rename, reorder, delete */
-function gMsRows(g){
-  return g.ms.map((m,i)=>`<div class="g-ms ed"><input class="g-msin" data-msren="${m.id}" value="${esc(m.t)}" maxlength="80" aria-label="Milestone name" autocomplete="off" enterkeyhint="done">
-      <button data-msup="${i}" ${i?'':'disabled'} aria-label="Move up">${UP_S}</button><button data-msdn="${i}" ${i<g.ms.length-1?'':'disabled'} aria-label="Move down">${DN_S}</button><button class="g-msx" data-msdel="${m.id}" aria-label="Delete milestone">${X}</button></div>`).join('');
-}
-
 /* ---------- actions ---------- */
 function gSpaceList(g,stage){const ls=S.lists.filter(l=>l.space===g.space);return ls.find(l=>stageRoom(l.id,stage))||ls[0]||null}
 /* marking a milestone done finishes its open tasks; reopening it leaves them as they are */
@@ -162,6 +156,8 @@ function gMsAddTask(g,m,title){
 /* tick a task from the milestone card; un-ticking puts it back in My week */
 function gTaskToggle(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;const on=t.stage!=='done';
   commit(()=>setStage(t,on?'done':'week'),on?'Task done':'Task back in My week');if(on)haptic([8,30,12])}
+/* deleting a milestone keeps its tasks; they move to Other tasks */
+function gMsDelete(g,ms){commit(()=>{g.ms=g.ms.filter(x=>x!==ms);S.tasks.forEach(t=>{if(String(t.ms)===String(ms.id))delete t.ms})},'Milestone removed · its tasks stay')}
 function gMsAdd(g){
   const i=$('gMsIn'),v=(i&&i.value||'').trim();if(!v)return;
   if(g.ms.length>=MS_MAX){toast(`Up to ${MS_MAX} milestones. Keep them big.`);return}
@@ -190,14 +186,7 @@ $('gdPg').addEventListener('click',e=>{
   if(e.target.closest('[data-gwhy]')){openGoalSheet(g.id,true);return}
   const tk=e.target.closest('[data-gtask]');if(tk){haptic(5);return openDetail(+tk.dataset.gtask)}
   if(e.target.closest('[data-gwin]'))return gSetWin(g,true);
-  if(e.target.closest('[data-gedit]')){gdEdit=!gdEdit;haptic(5);return drawGoal()}
-  const up=e.target.closest('[data-msup]'),dn=e.target.closest('[data-msdn]');
-  if(up||dn){const i=+(up?up.dataset.msup:dn.dataset.msdn),j=up?i-1:i+1;if(j<0||j>=g.ms.length)return;[g.ms[i],g.ms[j]]=[g.ms[j],g.ms[i]];haptic(4);save();drawGoal();return}
-  const dl=e.target.closest('[data-msdel]');if(dl){const ms=g.ms.find(x=>x.id===dl.dataset.msdel);if(!ms)return;commit(()=>{g.ms=g.ms.filter(x=>x!==ms);S.tasks.forEach(t=>{if(String(t.ms)===String(ms.id))delete t.ms})},'Milestone removed · its tasks stay');if(!g.ms.length)gdEdit=false;return}
-});
-$('gdPg').addEventListener('change',e=>{
-  const g=gById(gdId);if(!g)return;
-  const r=e.target.dataset.msren;if(r){const ms=g.ms.find(x=>x.id===r),v=e.target.value.trim();if(ms&&v){ms.t=v;save();render()}else if(ms)e.target.value=ms.t}
+  if(e.target.closest('[data-gedit]')){pop.classList.remove('on');return openMsEdit()}
 });
 $('gdPg').addEventListener('keydown',e=>{
   const g=gById(gdId);
@@ -205,7 +194,6 @@ $('gdPg').addEventListener('keydown',e=>{
     if(e.target.id==='gMsIn'){e.preventDefault();return gMsAdd(g)}
     if(e.target.id==='gMtIn'){e.preventDefault();const v=e.target.value.trim(),m=g.ms.find(x=>x.id===e.target.dataset.gms);if(!v||!m)return;
       if(gMsAddTask(g,m,v)){drawGoal();const n=$('gMtIn');if(n)n.focus()}return}
-    if(e.target.matches('.g-msin')){e.preventDefault();e.target.blur();haptic(5);return}
   }
   if(e.key==='Escape'){
     if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on'))return;

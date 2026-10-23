@@ -3,7 +3,7 @@
    Goal:   The climb (default), Path or Poster, picked under ⋯ → View (per goal; default in Settings → Modes).
    Completed things use the brand colour (--today); green stays for switches in Settings.
    Data, sheets and actions live in 08j-habits.js and 08k-goals.js. */
-var hpWeek=0,hpMenu=false,hgT=null,hpHtml='',hpTapAt={},gbPrev=null,gdHtml='',gTickBusy=false,gSelId=null,gAddMs=false;
+var hpWeek=0,hpMenu=false,hgT=null,hpHtml='',hpTapAt={},gbPrev=null,gdHtml='',gTickBusy=false,gSelId=null,gAddMs=false,gmeOn=false,gSubOpen=new Set();
 const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const DOTS_V='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
 const ARR_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
@@ -97,31 +97,68 @@ $('rhythmPg').addEventListener('click',e=>{
   if(e.target.closest('#hpPop [data-hbnew],#hpPop [data-ciopen]')){hpMenu=false}
 });
 
+/* a soft fade at the top or bottom of a list that scrolls inside itself, where more rows wait */
+function vFade(el){const x=el.scrollTop,max=el.scrollHeight-el.clientHeight;el.classList.toggle('ft',x>4);el.classList.toggle('fb',x<max-4)}
+/* drag a row by its handle (.ho-grip) to reorder a list; with the handle focused, the arrow keys move it too.
+   The dragged row never moves in the page itself (that would drop the pointer): its neighbours step around it. */
+function sortable(list,rowSel,idOf,onOrder){let d=null;const ids=()=>[...list.querySelectorAll(rowSel)].map(idOf);
+  list.addEventListener('pointerdown',e=>{const g=e.target.closest('.ho-grip');if(!g)return;e.preventDefault();const row=g.closest(rowSel);
+    d={row,pid:e.pointerId,off:e.clientY-row.getBoundingClientRect().top};row.classList.add('lifted');haptic(10)});
+  addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.pid)return;const row=d.row,p=row.previousElementSibling,n=row.nextElementSibling,mid=el=>{const b=el.getBoundingClientRect();return b.top+b.height/2};
+    if(p&&p.matches(rowSel)&&e.clientY<mid(p)){row.after(p);haptic(4)}else if(n&&n.matches(rowSel)&&e.clientY>mid(n)){row.before(n);haptic(4)}
+    row.style.transform='';row.style.transform=`translateY(${e.clientY-d.off-row.getBoundingClientRect().top}px)`});
+  const end=e=>{if(!d||(e&&e.pointerId!==d.pid))return;const row=d.row;d=null;row.style.transform='';row.classList.remove('lifted');onOrder(ids())};
+  addEventListener('pointerup',end);addEventListener('pointercancel',end);
+  list.addEventListener('keydown',e=>{const g=e.target.closest('.ho-grip');if(!g||(e.key!=='ArrowUp'&&e.key!=='ArrowDown'))return;e.preventDefault();
+    const row=g.closest(rowSel),sib=e.key==='ArrowUp'?row.previousElementSibling:row.nextElementSibling;if(!sib||!sib.matches(rowSel))return;
+    if(e.key==='ArrowUp')sib.before(row);else sib.after(row);haptic(4);onOrder(ids(),idOf(row))});
+}
+
+/* ---------- edit milestones: a calm popup in the middle of the screen ---------- */
+document.body.insertAdjacentHTML('beforeend',`<div class="dlg gme" id="gmEd" role="dialog" aria-modal="true" aria-labelledby="gmeT"><div class="dlg-in gme-in">
+  <div class="gme-h"><h3 id="gmeT">Milestones</h3><button class="icon-btn gme-x0" id="gmeClose" aria-label="Close">${X}</button></div>
+  <p class="gme-tip">Drag to reorder. Click a name to rename it.</p><div class="gme-list" id="gmeList"></div>
+  <label class="gme-add" id="gmeAddW"><span class="gm-plus">${PLUS_S}</span><input id="gmeAdd" placeholder="Add a milestone" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
+  <button class="primary" id="gmeDone">Done</button></div></div>`);
+function openMsEdit(){const g=gById(gdId);if(!g)return;gmeOn=true;drawMsEdit();$('gmEd').classList.add('on');haptic(5);setTimeout(()=>{if(gmeOn&&!g.ms.length)$('gmeAdd').focus()},60)}
+function closeMsEdit(){if(!gmeOn)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#gmEd'))a.blur();gmeOn=false;$('gmEd').classList.remove('on');if(gdOn)drawGoal()}
+function drawMsEdit(focus){const g=gById(gdId);if(!g)return closeMsEdit();
+  $('gmeList').innerHTML=g.ms.map((m,i)=>{const ts=gMsTasks(m),dn=ts.filter(t=>t.stage==='done').length;
+    return `<div class="gme-r${m.done?' done':''}" data-mid="${m.id}"><button class="ho-grip" type="button" aria-label="Move ${esc(m.t)}, number ${i+1} of ${g.ms.length}. Arrow keys move it.">${GRIP}</button>
+      <span class="gme-i">${m.done?CK:i+1}</span><input class="gme-n" data-mren="${m.id}" value="${esc(m.t)}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Milestone ${i+1} name">
+      ${ts.length?`<small>${dn}/${ts.length}</small>`:''}<button class="gme-del" data-mdel="${m.id}" aria-label="Delete ${esc(m.t)}">${BIN_S}</button></div>`}).join('')||'<p class="gme-none">No milestones yet. Add the first one below.</p>';
+  $('gmeAddW').hidden=g.ms.length>=MS_MAX||g.done;
+  if(focus!=null){const b=$('gmeList').querySelector(`[data-mid="${focus}"] .ho-grip`);if(b)b.focus()}}
+sortable($('gmeList'),'.gme-r',r=>r.dataset.mid,(ids,focus)=>{const g=gById(gdId);if(!g)return;const by=new Map(g.ms.map(m=>[m.id,m]));
+  const next=ids.map(id=>by.get(id)).filter(Boolean);if(next.map(m=>m.id).join()===g.ms.map(m=>m.id).join())return;g.ms=next;save();render();drawMsEdit(focus)});
+$('gmEd').addEventListener('click',e=>{
+  if(e.target===$('gmEd')||e.target.closest('#gmeDone,#gmeClose'))return closeMsEdit();
+  const dl=e.target.closest('[data-mdel]');if(dl){const g=gById(gdId),m=g&&g.ms.find(x=>x.id===dl.dataset.mdel);if(m){gMsDelete(g,m);drawMsEdit()}}
+});
+$('gmEd').addEventListener('change',e=>{const id=e.target.dataset.mren;if(!id)return;const g=gById(gdId),m=g&&g.ms.find(x=>x.id===id),v=e.target.value.trim();if(!m)return;
+  if(v&&v!==m.t){m.t=v;save();render()}else e.target.value=m.t});
+$('gmEd').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.matches('.gme-n')){e.preventDefault();e.target.blur();return}
+  if(e.key==='Enter'&&e.target.id==='gmeAdd'){e.preventDefault();const g=gById(gdId),v=e.target.value.trim();if(!g||!v)return;if(g.ms.length>=MS_MAX){toast(`Up to ${MS_MAX} milestones. Keep them big.`);return}
+    g.ms.push({id:'m'+newId(),t:v,done:false});save();try{sfx('add')}catch(err){}haptic(8);render();drawMsEdit();$('gmeAdd').value='';$('gmeAdd').focus();return}
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();if(e.target.matches('input')&&e.target.value&&e.target.id==='gmeAdd'){e.target.value='';return}closeMsEdit()}
+});
+/* undo, sync and edits elsewhere keep the popup current (but never while you type in it) */
+const _gmeRender=render;render=function(d){_gmeRender(d);try{if(gmeOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#gmEd')&&a.matches('input')))drawMsEdit()}}catch(err){console.error(err)}};
+
 /* ---------- reorder habits: drag a row by its handle (or focus the handle and use the arrow keys) ---------- */
 var GRIP='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.7"/><circle cx="15" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/><circle cx="9" cy="18" r="1.7"/><circle cx="15" cy="18" r="1.7"/></svg>';
 document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="hoSheet"><div class="sheet-in"><div class="grab"></div><h2>Reorder habits</h2>
   <p class="ho-tip">Drag to set the order. The first ones show on Home.</p><div class="ho-list" id="hoList"></div><button class="primary" id="hoDone">Done</button></div></div>`);
-let hoDrag=null;
 function openReorder(){if(hbAll().length<2)return;drawReorder(hbAll().map(h=>h.id));openSheet('hoSheet')}
 function drawReorder(ids,focus){
   $('hoList').innerHTML=ids.map((id,i)=>{const h=hbById(id);return h?`<div class="ho-row" data-hoid="${h.id}"><span class="ho-i">${i+1}</span><span class="ho-n">${hbName(h)}</span><button class="ho-grip" type="button" aria-label="Move ${esc(h.name)}, number ${i+1} of ${ids.length}. Arrow keys move it.">${GRIP}</button></div>`:''}).join('');
   if(focus!=null){const b=$('hoList').querySelector(`[data-hoid="${focus}"] .ho-grip`);if(b)b.focus()}}
-const hoIds=()=>[...$('hoList').querySelectorAll('.ho-row')].map(r=>r.dataset.hoid);
 /* the visible habits take the new order; hidden ones (in archived spaces) keep their places */
 function hoApply(ids){const cur=hbAll().map(h=>String(h.id));if(ids.join()===cur.join())return;
   const slots=[];S.habits.forEach((h,i)=>{if(cur.includes(String(h.id)))slots.push(i)});
   const moved=ids.map(id=>hbById(id)).filter(Boolean),out=S.habits.slice();slots.forEach((s,i)=>out[s]=moved[i]);S.habits=out;save();render()}
-$('hoList').addEventListener('pointerdown',e=>{const g=e.target.closest('.ho-grip');if(!g)return;e.preventDefault();
-  const row=g.closest('.ho-row');hoDrag={row,pid:e.pointerId,off:e.clientY-row.getBoundingClientRect().top};row.classList.add('lifted');haptic(10);try{g.setPointerCapture(e.pointerId)}catch(_){}});
-/* the dragged row itself never moves in the page (that would drop the pointer); its neighbours step around it */
-addEventListener('pointermove',e=>{const d=hoDrag;if(!d||e.pointerId!==d.pid)return;const row=d.row,p=row.previousElementSibling,n=row.nextElementSibling,mid=el=>{const b=el.getBoundingClientRect();return b.top+b.height/2};
-  if(p&&e.clientY<mid(p)){row.after(p);haptic(4)}else if(n&&e.clientY>mid(n)){row.before(n);haptic(4)}
-  row.style.transform='';row.style.transform=`translateY(${e.clientY-d.off-row.getBoundingClientRect().top}px)`});
-const hoEnd=e=>{const d=hoDrag;if(!d||(e&&e.pointerId!==d.pid))return;hoDrag=null;d.row.style.transform='';d.row.classList.remove('lifted');const ids=hoIds();drawReorder(ids);hoApply(ids)};
-addEventListener('pointerup',hoEnd);addEventListener('pointercancel',hoEnd);
-$('hoList').addEventListener('keydown',e=>{const g=e.target.closest('.ho-grip');if(!g||(e.key!=='ArrowUp'&&e.key!=='ArrowDown'))return;e.preventDefault();
-  const ids=hoIds(),id=g.closest('.ho-row').dataset.hoid,i=ids.indexOf(id),j=e.key==='ArrowUp'?i-1:i+1;if(j<0||j>=ids.length)return;
-  [ids[i],ids[j]]=[ids[j],ids[i]];haptic(4);drawReorder(ids,id);hoApply(ids)});
+sortable($('hoList'),'.ho-row',r=>r.dataset.hoid,(ids,focus)=>{drawReorder(ids,focus);hoApply(ids)});
 $('hoDone').onclick=()=>closeSheets();
 
 /* Escape on the Habits page: closes the ⋯ menu first, then the check-in, then the page, wherever focus is */
@@ -140,7 +177,7 @@ function gMenuHTML(g){const v=gView(g);
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"','Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
     <span class="pm-sep"></span><button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
-    ${g.ms.length?`<button data-gedit role="menuitem"><span class="lpm-i">${UP_S}</span>${gdEdit?'Done editing milestones':'Edit milestones'}</button>`:''}
+    ${g.ms.length?`<button data-gedit role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit milestones</button>`:''}
     ${g.done?'':`<button data-gm="star" role="menuitem"><span class="lpm-i">${G_STAR}</span>${g.star?'Remove north star':'Make it my north star'}</button>`}
     <button data-gm="win" role="menuitem"><span class="lpm-i">${G_FLAG}</span>${g.done?'Back in progress':'Mark as achieved'}</button>
     <button data-gm="del" class="warn" role="menuitem"><span class="lpm-i">${BIN_S}</span>Delete goal</button></div></div>`}
@@ -177,36 +214,40 @@ function gbScene(g,anim){
 /* tasks linked to the goal but to no milestone */
 function gTasksSec(g){const lo=gLoose(g),wk=gMon(),moved=lo.filter(t=>t.stage==='done'&&(t.doneAt||0)>=wk),open=lo.filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
   const row=t=>`<button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>`;
-  return `<div class="gv-sec"><h2>Other tasks</h2><span>${moved.length?`${moved.length} done this week`:''}</span></div><div class="g-tasks">${open.slice(0,8).map(row).join('')}${moved.slice(0,5).map(row).join('')}</div>`}
-function gEditSec(g){return gdEdit?`<div class="gv-sec"><h2>Milestones</h2><button class="txt-btn gd-ed" data-gedit>Done</button></div><div class="g-mslist editing">${gMsRows(g)}</div>`:''}
+  return `<div class="gv-sec"><h2>Other tasks</h2><span>${moved.length?`${moved.length} done this week`:''}</span></div><div class="g-tasks" data-sk="other">${open.map(row).join('')}${moved.map(row).join('')}</div>`}
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
 const gSmooth=()=>matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
 /* the selected milestone (tap one on the track, the hill or the path); by default the next one */
 function gSel(g){return g.ms.find(m=>m.id===gSelId)||gNext(g)||g.ms[g.ms.length-1]||null}
-function gTaskRow(t){const on=t.stage==='done';
-  return `<div class="gm-t${on?' on':''}"><button class="gm-k" data-gmt="${t.id}" aria-pressed="${on}" aria-label="${on?'Reopen':'Done'}: ${esc(t.title)}">${CK}</button><button class="gm-tt" data-gtask="${t.id}"><b>${esc(t.title)}</b><small>${on?'Done':esc(STAGES[idx(t.stage)].name)}</small></button></div>`}
+const gRing=p=>`<svg viewBox="0 0 20 20" aria-hidden="true"><circle class="r0" cx="10" cy="10" r="7.5"/><circle class="r1" cx="10" cy="10" r="7.5" pathLength="100" style="stroke-dasharray:${(p*100).toFixed(1)} 100"/></svg>`;
+function gTaskRow(t){const on=t.stage==='done',subs=t.subs||[],n=subs.length,d=subs.filter(s=>s.done).length,open=n&&gSubOpen.has(String(t.id));
+  return `<div class="gm-t${on?' on':''}${open?' open':''}"><button class="gm-k" data-gmt="${t.id}" aria-pressed="${on}" aria-label="${on?'Reopen':'Done'}: ${esc(t.title)}">${CK}</button><button class="gm-tt" data-gtask="${t.id}"><b>${esc(t.title)}</b><small>${on?'Done':esc(STAGES[idx(t.stage)].name)}</small></button>
+    ${n?`<button class="gm-sub${d===n?' all':''}" data-gsubs="${t.id}" aria-expanded="${!!open}" aria-label="${d} of ${n} subtasks done. ${open?'Hide':'Show'} subtasks">${gRing(d/n)}<span>${d}/${n}</span></button>`:''}
+    ${open?`<div class="gm-subs">${subs.map(s=>`<button class="gm-s${s.done?' on':''}" data-gsub="${t.id}|${s.id}" aria-pressed="${!!s.done}"><span class="gm-sk">${CK}</span><span class="gm-st">${esc(s.t||'')}</span></button>`).join('')}</div>`:''}</div>`}
 /* a milestone's card: its tasks (in the order you added them), add a task, mark it done */
 function gMsCard(g,m,cls){if(!m)return '';
   const i=g.ms.indexOf(m),ts=gMsTasks(m).sort((a,b)=>a.id-b.id),dn=ts.filter(t=>t.stage==='done').length,nx=gNext(g),live=!m.done&&!g.done;
   return `<div class="gm-card${cls?' '+cls:''}" data-gcard="${m.id}"><div class="gm-h"><div class="gm-hx"><span class="gm-tag">${m.done?(m.doneAt?`Done · ${gShort(m.doneAt)}`:'Done'):m===nx?'Next':`Milestone ${i+1}`}</span><b>${esc(m.t)}</b>
       <small>${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'} done`:'No tasks yet'}</small></div>
     ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':'Mark done'}</button>`}</div>
-    ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts">${ts.map(gTaskRow).join('')}</div>`
+    ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts" data-sk="ms-${m.id}">${ts.map(gTaskRow).join('')}</div>`
       :live?`<p class="gm-empty">Break it into a few tasks. They land in My week, and finishing the last one completes this milestone.</p>`:''}
     ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
 /* every milestone on one track that always fits: the first one is always in view, nothing scrolls sideways */
-function gTrack(g){const sel=gSel(g),nx=gNext(g),N=g.ms.length,last=g.ms.map(m=>!!m.done).lastIndexOf(true),f=N>1&&last>0?last/(N-1):0;
-  return `<div class="gm-tw"><div class="gm-track${N>6?' many':''}" style="--f:${f.toFixed(4)}"><i class="gm-fill"></i>${g.ms.map((m,i)=>{const ts=gMsTasks(m),dn=ts.filter(t=>t.stage==='done').length;
-    return `<button class="gm-n${m.done?' done':''}${m===nx&&!g.done?' now':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}" style="--i:${i}"><span class="gm-nk">${m.done?CK:i+1}</span><span class="gm-nl">${esc(m.t)}</span>${ts.length?`<span class="gm-np">${dn}/${ts.length} tasks</span>`:''}</button>`}).join('')}</div>
-    ${N<MS_MAX&&!g.done?`<button class="gs-addb" data-gaddms aria-expanded="${gAddMs}" aria-label="Add a milestone">${PLUS_S}Milestone</button>`:''}</div>`}
+function gTrack(g){const sel=gSel(g),nx=gNext(g),N=g.ms.length,last=g.ms.map(m=>!!m.done).lastIndexOf(true),f=N>1&&last>0?last/(N-1):0,pr=gProg(g);
+  return `<div class="gm-head"><h2>Milestones</h2><span>${pr.n} of ${N} done</span><div class="gm-acts">${N<MS_MAX&&!g.done?`<button class="gs-addb" data-gaddms aria-expanded="${gAddMs}" aria-label="Add a milestone">${PLUS_S}<span>Milestone</span></button>`:''}<button class="gs-addb" data-gedit aria-label="Edit milestones">${PEN_S}<span>Edit</span></button></div></div>
+    <div class="gm-tw"><div class="gm-track${N>6?' many':''}" style="--n:${N};--f:${f.toFixed(4)}"><i class="gm-fill"></i>${g.ms.map((m,i)=>{const ts=gMsTasks(m),dn=ts.filter(t=>t.stage==='done').length;
+    return `<button class="gm-n${m.done?' done':''}${m===nx&&!g.done?' now':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}" style="--i:${i}"><span class="gm-nk">${m.done?CK:i+1}</span><span class="gm-nl">${esc(m.t)}</span>${ts.length?`<span class="gm-np">${dn}/${ts.length} tasks</span>`:''}</button>`}).join('')}</div></div>`}
 function gAddMsRow(g,ph){return (gAddMs||!g.ms.length)&&g.ms.length<MS_MAX&&!g.done?`<div class="gm-addms">${gAddInput(ph||(g.ms.length?'New milestone':'Add your first milestone'))}</div>`:''}
+/* the milestone card and Other tasks: side by side on computers */
+function gCols(c,o){return c||o?`<div class="gm-cols${c&&o?' two':''}">${c}${o?`<div class="gm-other">${o}</div>`:''}</div>`:''}
 function gClimbView(g,anim){
   const pr=gProg(g),dd=gDays(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
   return `<div class="gb-stage">${gbScene(g,anim)}<div class="gb-head"><span class="hp-eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:`Goal${g.due?` · by ${gLong(g.due)}`:''}`}${g.star&&!g.done?`<span class="gd-ns">${G_STAR}North star</span>`:''}</span>
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why" data-gwhy>${esc(g.why)}</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}</div></div>
     <div class="gb-stats"><span><b data-cnt="${pr.n}">${pr.n}</b><small>of ${pr.of} milestones</small></span>${g.done?'':`<span><b ${typeof dd.n==='number'?`data-cnt="${dd.n}"`:''}>${dd.n}</b><small>${dd.t}</small></span>`}${top?'':`<span><b class="gb-pace">${gPaceTxt(g)}</b><small>pace</small></span>`}
       ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>
-    ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gMsCard(g,gSel(g))}`}
+    ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,gSel(g)),gTasksSec(g))}`}
 function gPathView(g){
   const pr=gProg(g),dd=gDays(g),nx=gNext(g),sel=gSel(g);
   const st=g.ms.map((m,i)=>{const k=`${m.done?'done':m===nx?'now':''}${m===sel?' sel':''}`;
@@ -232,9 +273,13 @@ function drawGoal(){
   const y=$('gdPg').scrollTop,v=gView(g),anim=gdAnim;
   const body=v==='path'?gPathView(g):v==='poster'?gPosterView(g):gClimbView(g,anim);
   const html=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${gMenuHTML(g)}</div>
-    <div class="gv gv-${v}${anim?' anim':''}">${body}${gEditSec(g)}${gTasksSec(g)}</div>`;
+    <div class="gv gv-${v}${anim?' anim':''}">${body}${v==='climb'?'':gTasksSec(g)}</div>`;
   if(!anim&&html===gdHtml)return;
+  // the task lists scroll inside themselves: keep where you were in them across redraws
+  const keep=[...$('gdIn').querySelectorAll('[data-sk]')].map(el=>[el.dataset.sk,el.scrollTop]);
   gdHtml=html;$('gdIn').innerHTML=html;$('gdPg').scrollTop=y;if(anim)countUp($('gdIn'));
+  keep.forEach(([k,s])=>{const el=$('gdIn').querySelector(`[data-sk="${k}"]`);if(el)el.scrollTop=s});
+  $('gdIn').querySelectorAll('[data-sk]').forEach(el=>{vFade(el);el.addEventListener('scroll',()=>vFade(el),{passive:true})});
 }
 /* while you type, outside changes wait; once you leave the field the page catches up */
 $('gdPg').addEventListener('focusout',e=>{if(!e.target.matches('input,textarea'))return;setTimeout(()=>{const a=document.activeElement;if(gdOn&&!(a&&a.closest&&a.closest('#gdPg')&&a.matches('input,textarea')))drawGoal()},0)});
@@ -243,6 +288,9 @@ $('gdPg').addEventListener('click',e=>{
   const sl=e.target.closest('[data-gsel]');if(sl){gSelId=sl.dataset.gsel;haptic(5);drawGoal();
     if(sl.closest('.gb-svg')){const c=$('gdIn').querySelector('.gm-card');if(c)c.scrollIntoView({behavior:gSmooth(),block:'nearest'})}return}
   if(e.target.closest('[data-gaddms]')){gAddMs=!gAddMs;haptic(5);drawGoal();const i=$('gMsIn');if(i&&gAddMs)i.focus();return}
+  const sb=e.target.closest('[data-gsubs]');if(sb){const k=sb.dataset.gsubs;gSubOpen.has(k)?gSubOpen.delete(k):gSubOpen.add(k);haptic(5);return drawGoal()}
+  const su=e.target.closest('[data-gsub]');if(su){const [tid,sid]=su.dataset.gsub.split('|'),t=S.tasks.find(x=>String(x.id)===tid),s=t&&(t.subs||[]).find(x=>String(x.id)===sid);if(!s)return;
+    s.done=!s.done;haptic(s.done?[6,20,8]:5);try{sfx(s.done?'done':'undone')}catch(err){}su.classList.toggle('on',s.done);save();render();return}
   const mt=e.target.closest('[data-gmt]');if(mt){if(gTickBusy)return;gTickBusy=true;const t=S.tasks.find(x=>x.id===+mt.dataset.gmt),m=t&&gMsOf(g,t);
     if(m)gSelId=m.id;mt.closest('.gm-t').classList.toggle('on');
     setTimeout(()=>{try{gTaskToggle(+mt.dataset.gmt);
@@ -256,6 +304,7 @@ $('gdPg').addEventListener('click',e=>{
    (With focus inside the goal page its own handler runs first and also clears a milestone being typed.) */
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape'||e.defaultPrevented||!(gdOn||glOn))return;
+  if(gmeOn){e.stopPropagation();return closeMsEdit()}
   if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on')||moOn||cdOn||gsOn||(typeof srchOpen!=='undefined'&&srchOpen))return;
   e.stopPropagation();
   const pop=$('gdPop');if(gdOn&&pop&&pop.classList.contains('on')){pop.classList.remove('on');const b=$('gdMore');if(b)b.focus();return}

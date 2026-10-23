@@ -84,23 +84,19 @@
 .gd-sec{display:flex;align-items:center;gap:10px;margin:26px 2px 10px}
 .gd-sec h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .gd-sec span{flex:1;font-size:13px;color:var(--muted)}
-.gd-ed{color:var(--text)!important;padding:9px 4px;margin:-6px -4px}
 
 /* milestones */
-.g-mslist{background:var(--surface);border-radius:20px;overflow:hidden}
+
 .g-ms{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-top:1px solid var(--line)}
 .g-ms:first-child{border-top:0}
 .g-ms.on .hc-dot,.g-trow.on .hc-dot{background:var(--today);border-color:var(--today);color:#fff}
 .g-ms .hc-dot{transition:background .2s,border-color .2s,color .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
 .g-ms.on .hc-dot{transform:scale(1.04)}
 .g-ms.ed{padding:7px 8px 7px 12px;gap:4px}
-.g-msin{flex:1;min-width:0;height:40px;border-radius:12px;background:var(--surface2);border:0;padding:0 12px;color:var(--text);font:inherit;font-size:15px;outline:none;margin-right:4px}
-.g-msin:focus{box-shadow:0 0 0 2px var(--text)}
 .g-ms.ed button{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--muted);flex:none}
 .g-ms.ed button:hover:not(:disabled){background:var(--surface2);color:var(--text)}
 .g-ms.ed button:disabled{opacity:.25}
 .g-ms.ed button svg{width:16px;height:16px}
-.g-ms.ed .g-msx:hover{color:var(--today)!important}
 
 /* linked tasks */
 .g-tasks{background:var(--surface);border-radius:20px;overflow:hidden}

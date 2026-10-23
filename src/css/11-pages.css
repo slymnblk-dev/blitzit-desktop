@@ -113,8 +113,6 @@ button.hg-c:active{transform:scale(.88)}
 .gv-why.add{font-size:14.5px;opacity:.75}
 .gv-why.q{font-style:normal}
 .gp-ok,.gp-ahead,.gp-won{color:var(--text)}.gp-behind{color:var(--week)}.gp-none{color:var(--muted)}
-.gv-link{font-size:14px;font-weight:600;color:var(--muted);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--muted) 40%,transparent);text-underline-offset:4px;padding:2px 0;text-align:left;align-self:flex-start;transition:color .2s}
-.gv-link:hover{color:var(--text)}
 .gv-add{width:100%;min-width:0;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:16px;padding:4px 0}
 .gv-add::placeholder{color:var(--muted)}
 .gv-win{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:999px;background:var(--today);color:#fff;font-weight:700;font-size:14.5px;align-self:center;transition:transform .15s}
@@ -320,28 +318,33 @@ button.hg-c:active{transform:scale(.88)}
 .ho-grip:focus-visible{outline:2px solid var(--today);outline-offset:-2px}
 
 /* ===== Milestones as parent tasks: the track and the milestone card ===== */
-.gm-tw{display:flex;align-items:flex-start;gap:16px;margin:4px 0 18px}
-.gm-track{--f:0;position:relative;flex:1;min-width:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
-.gm-track::before,.gm-fill{content:"";position:absolute;left:14px;top:13px;height:3px;border-radius:2px}
-.gm-track::before{right:14px;background:color-mix(in srgb,var(--text) 10%,transparent)}
-.gm-fill{width:calc((100% - 28px)*var(--f));background:var(--today);transition:width .6s var(--ease)}
+.gv{--gm-soft:color-mix(in srgb,var(--today) 16%,var(--surface));--gm-mid:color-mix(in srgb,var(--today) 50%,transparent);--gm-line:color-mix(in srgb,var(--text) 10%,transparent)}
+.gm-head{display:flex;align-items:center;gap:12px;margin:6px 0 14px}
+.gm-head h2{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.gm-head>span{flex:1;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gm-acts{display:flex;gap:8px}
+.gm-tw{margin:0 0 22px}
+/* every milestone in an equal column, centred on it: the gaps between rings are always the same */
+.gm-track{--n:1;--f:0;position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+.gm-track::before,.gm-fill{content:"";position:absolute;left:calc(50% / var(--n));top:14px;height:2px;border-radius:1px}
+.gm-track::before{right:calc(50% / var(--n));background:var(--gm-line)}
+.gm-fill{width:calc((100% - 100% / var(--n)) * var(--f));background:var(--gm-mid);transition:width .6s var(--ease)}
 .gv.anim .gm-fill{animation:gmFill 1.2s .4s var(--ease) both}
 @keyframes gmFill{from{width:0}}
-.gm-n{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0;padding:0 8px 4px 0;text-align:left;border-radius:10px}
-.gm-n:last-child{align-items:flex-end;text-align:right;padding:0 0 4px}
-.gm-nk{position:relative;z-index:1;width:29px;height:29px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 2.5px color-mix(in srgb,var(--text) 22%,transparent);display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;transition:background .3s var(--ease),box-shadow .3s,color .2s,transform .3s var(--spring)}
+.gm-n{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;padding:0 4px 4px;text-align:center;border-radius:12px}
+.gm-nk{position:relative;z-index:1;width:30px;height:30px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 18%,transparent);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;transition:background .3s var(--ease),box-shadow .3s,color .2s,transform .35s var(--spring)}
 .gm-nk svg{width:13px;height:13px}
-.gm-n:hover .gm-nk{box-shadow:inset 0 0 0 2.5px var(--today)}
-.gm-n.done .gm-nk{background:var(--today);box-shadow:none;color:#fff}
-.gm-n.now .gm-nk{box-shadow:inset 0 0 0 2.5px var(--today);color:var(--today)}
-.gm-n.sel .gm-nk{transform:scale(1.16)}
-.gm-n.sel .gm-nk::after{content:"";position:absolute;inset:-6px;border-radius:50%;box-shadow:0 0 0 2px color-mix(in srgb,var(--today) 32%,transparent)}
-.gm-nl{font-size:13.5px;font-weight:600;line-height:1.25;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;overflow-wrap:anywhere}
-.gm-n.sel .gm-nl{color:var(--text)}
+.gm-n:hover .gm-nk{box-shadow:inset 0 0 0 1.5px var(--gm-mid);color:var(--text)}
+.gm-n.done .gm-nk{background:var(--gm-soft);box-shadow:none;color:var(--today)}
+.gm-n.now .gm-nk{box-shadow:inset 0 0 0 1.5px var(--gm-mid);color:var(--today)}
+.gm-n.sel .gm-nk{transform:scale(1.14);background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--gm-mid),0 6px 16px -6px color-mix(in srgb,var(--today) 45%,transparent)}
+.gm-n.done.sel .gm-nk{background:var(--gm-soft);box-shadow:0 6px 16px -6px color-mix(in srgb,var(--today) 45%,transparent)}
+.gm-nl{font-size:13px;font-weight:600;line-height:1.25;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;overflow-wrap:anywhere;transition:color .2s}
+.gm-n.sel .gm-nl{color:var(--text);font-weight:700}
 .gm-np{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .gm-track.many .gm-nl{-webkit-line-clamp:1}
 .gv.anim .gm-n{animation:pgIn .5s var(--ease) both;animation-delay:calc(var(--i)*60ms + .3s)}
-.gm-tw .gs-addb{flex:none}
+.gm-head .gs-addb{height:32px}
 .gm-addms{background:var(--surface);border-radius:18px;padding:6px 18px;margin:0 0 14px}
 .gm-addms .gv-add{padding:12px 0}
 /* the card */
@@ -399,8 +402,56 @@ button.hg-c:active{transform:scale(.88)}
 .gpo-m.sel .gpo-ml{font-weight:700}
 @media (max-width:699px){
   .gm-nl,.gm-np{display:none}
-  .gm-n{align-items:center;padding:0}.gm-n:first-child{align-items:flex-start}.gm-n:last-child{align-items:flex-end}
-  .gm-tw{gap:10px}
-  .gm-tw .gs-addb{padding:0 10px;font-size:0;gap:0}.gm-tw .gs-addb svg{width:16px;height:16px}
   .gm-card{padding:18px}
 }
+
+/* subtasks on a milestone's task: a small ring and count; tap to tick them here */
+.gm-t{flex-wrap:wrap}
+.gm-sub{flex:none;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 9px 0 6px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;transition:background .2s,color .2s}
+.gm-sub:hover,.gm-t.open .gm-sub{background:var(--surface2);color:var(--text)}
+.gm-sub svg{width:17px;height:17px;transform:rotate(-90deg)}
+.gm-sub .r0{fill:none;stroke:var(--gm-line);stroke-width:3}
+.gm-sub .r1{fill:none;stroke:var(--today);stroke-width:3;stroke-linecap:round;transition:stroke-dasharray .4s var(--ease)}
+.gm-sub.all{color:var(--today)}
+.gm-subs{flex-basis:100%;display:flex;flex-direction:column;margin:-4px 0 10px 36px;padding-left:12px;border-left:2px solid var(--gm-line)}
+.gm-s{display:flex;align-items:center;gap:10px;padding:6px 0;text-align:left;font-size:14px}
+.gm-sk{width:18px;height:18px;border-radius:6px;flex:none;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 25%,transparent);display:grid;place-items:center;color:transparent;transition:background .2s,box-shadow .2s}
+.gm-sk svg{width:10px;height:10px}
+.gm-s.on .gm-sk{background:var(--today);box-shadow:none;color:#fff}
+.gm-s.on .gm-st{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 45%,transparent)}
+.gm-card.hot .gm-sub{color:rgba(255,255,255,.85)}.gm-card.hot .gm-sub:hover,.gm-card.hot .gm-t.open .gm-sub{background:rgba(255,255,255,.16);color:#fff}
+.gm-card.hot .gm-sub .r0{stroke:rgba(255,255,255,.3)}.gm-card.hot .gm-sub .r1{stroke:#fff}
+.gm-card.hot .gm-subs{border-color:rgba(255,255,255,.3)}.gm-card.hot .gm-sk{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6)}.gm-card.hot .gm-s.on .gm-sk{background:#fff;color:var(--today)}
+/* long lists scroll inside themselves, with a soft fade where more rows wait, so the page stays short */
+.gm-ts,.g-tasks[data-sk]{max-height:min(380px,48vh);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.gm-ts.fb,.g-tasks.fb{-webkit-mask-image:linear-gradient(#000 calc(100% - 36px),transparent);mask-image:linear-gradient(#000 calc(100% - 36px),transparent)}
+.gm-ts.ft,.g-tasks.ft{-webkit-mask-image:linear-gradient(transparent,#000 24px);mask-image:linear-gradient(transparent,#000 24px)}
+.gm-ts.ft.fb,.g-tasks.ft.fb{-webkit-mask-image:linear-gradient(transparent,#000 24px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(transparent,#000 24px,#000 calc(100% - 36px),transparent)}
+/* computers: the milestone card and Other tasks side by side */
+@media (min-width:1100px){.gm-cols.two{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:24px;align-items:start}.gm-cols.two .gm-other .gv-sec{margin-top:4px}}
+/* the milestone editor popup: centred, the page behind dims a little */
+.dlg.gme{background:rgba(10,10,14,.32)}
+.gme-in{max-width:520px;max-height:min(720px,calc(100vh - 40px));display:flex;flex-direction:column;gap:12px;padding:22px 22px 20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.35)}
+.gme-h{display:flex;align-items:center;gap:10px}
+.gme-h h3{margin:0;flex:1;font-size:22px;font-weight:800;letter-spacing:-.03em}
+.gme-x0 svg{width:16px;height:16px}
+.gme-tip{margin:-6px 0 2px;font-size:13.5px;color:var(--muted)}
+.gme-list{display:flex;flex-direction:column;gap:6px;overflow-y:auto;min-height:0;padding:2px}
+.gme-r{display:flex;align-items:center;gap:8px;min-height:50px;padding:0 6px 0 2px;border-radius:14px;background:var(--surface2);position:relative}
+.gme-r.lifted{z-index:2;box-shadow:0 16px 36px rgba(0,0,0,.22)}
+.gme-r .ho-grip{width:36px;height:44px}
+.gme-i{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 18%,transparent)}
+.gme-i svg{width:11px;height:11px}
+.gme-r.done .gme-i{background:var(--gm-soft,color-mix(in srgb,var(--today) 16%,var(--surface)));box-shadow:none;color:var(--today)}
+.gme-n{flex:1;min-width:0;border:0;background:none;color:var(--text);font:inherit;font-size:15.5px;font-weight:600;padding:8px 6px;border-radius:8px;outline:none}
+.gme-n:focus{background:var(--surface);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--today) 45%,transparent)}
+.gme-r small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gme-del{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--muted);flex:none;transition:color .2s,background .2s}
+.gme-del svg{width:16px;height:16px}
+.gme-del:hover{color:var(--today);background:color-mix(in srgb,var(--today) 10%,transparent)}
+.gme-none{margin:6px 2px;font-size:14px;color:var(--muted)}
+.gme-add{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;border-radius:14px;box-shadow:inset 0 0 0 1.5px var(--line);cursor:text}
+.gme-add input{flex:1;min-width:0;border:0;background:none;outline:none;color:var(--text);font:inherit;font-size:15px}
+.gme-add input::placeholder{color:var(--muted)}
+.gme-in .primary{margin-top:4px}
+@media (max-width:699px){.gm-head .gs-addb span{display:none}.gm-head .gs-addb{padding:0 10px}.gm-subs{margin-left:18px}}

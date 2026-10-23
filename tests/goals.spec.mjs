@@ -261,3 +261,63 @@ test('goals: Escape closes the ⋯ menu, then the goal page, then the Goals page
   await expect(page.locator('#goalsPg')).not.toHaveClass(/on/);
   noErrors(errors);
 });
+
+test('goal page: subtask rings, lists that scroll inside, even track, milestone editor popup', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true; const sp = S.spaces[0].id, l = S.lists.find(x => x.space === sp);
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: sp, why: '', due: '', created: Date.now(), star: false, ms: ['A', 'B', 'C', 'D'].map((t, i) => ({ id: 'm' + i, t, done: i === 0 })) }];
+    const mk = (title, subs) => S.tasks.push({ id: newId(), title, stage: 'week', list: l.id, est: 30, subs, notes: '', repeat: 'none', goal: 'g1', ms: 'm1' });
+    mk('With subs', [{ id: 1, t: 'one', done: true }, { id: 2, t: 'two', done: false }, { id: 3, t: 'three', done: false }]);
+    for (let i = 0; i < 12; i++) mk('Task ' + i, []);
+    save(); applySettings(); openGoal('g1'); });
+  // the track: rings evenly spaced, no second ring on the selected one
+  const xs = await page.evaluate(() => [...document.querySelectorAll('#gdPg .gm-nk')].map(e => { const b = e.getBoundingClientRect(); return Math.round(b.left + b.width / 2); }));
+  const gaps = xs.slice(1).map((x, i) => x - xs[i]);
+  expect(Math.max(...gaps) - Math.min(...gaps)).toBeLessThanOrEqual(2);
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gdPg .gm-n.sel .gm-nk'), '::after').content)).toBe('none');
+  // subtasks: a ring with 1/3; tap it to see and tick them
+  await expect(page.locator('#gdPg .gm-sub')).toHaveText('1/3');
+  await page.locator('#gdPg .gm-sub').click();
+  await expect(page.locator('#gdPg .gm-s')).toHaveCount(3);
+  await page.locator('#gdPg .gm-s').nth(1).click();
+  expect(await page.evaluate(() => S.tasks.find(x => x.title === 'With subs').subs.map(s => !!s.done))).toEqual([true, true, false]);
+  await expect(page.locator('#gdPg .gm-sub')).toHaveText('2/3');
+  // a long task list scrolls inside the card (and keeps its place across redraws)
+  const sc = await page.evaluate(() => { const el = document.querySelector('#gdPg .gm-ts'); el.scrollTop = 120; render(); const n = document.querySelector('#gdPg .gm-ts'); return [n.scrollHeight > n.clientHeight, n.scrollTop]; });
+  expect(sc[0]).toBe(true);
+  expect(sc[1]).toBeGreaterThan(100);
+  await expect(page.locator('#gdPg .gm-ts')).toHaveClass(/fb/);
+  // milestone editor: a popup in the middle; rename, reorder (drag and keys), add, delete; Escape closes only the popup
+  await page.locator('#gdPg .gm-head [data-gedit]').click();
+  await expect(page.locator('#gmEd')).toHaveClass(/on/);
+  const box = await page.locator('#gmEd .gme-in').boundingBox();
+  expect(Math.abs(box.x + box.width / 2 - 700)).toBeLessThan(4);
+  await page.locator('#gmEd [data-mren="m3"]').fill('D renamed');
+  await page.keyboard.press('Enter');
+  expect(await page.evaluate(() => S.goals[0].ms[3].t)).toBe('D renamed');
+  await page.waitForTimeout(300);
+  const g = await page.locator('#gmEd .gme-r').nth(3).locator('.ho-grip').boundingBox();
+  const top = await page.locator('#gmEd .gme-r').nth(0).boundingBox();
+  await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++) await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2 - (g.y - top.y + 10) * i / 10);
+  await page.mouse.up();
+  expect(await page.evaluate(() => S.goals[0].ms.map(m => m.t))).toEqual(['D renamed', 'A', 'B', 'C']);
+  await page.locator('#gmEd .gme-r').nth(0).locator('.ho-grip').focus();
+  await page.keyboard.press('ArrowDown');
+  expect(await page.evaluate(() => S.goals[0].ms.map(m => m.t))).toEqual(['A', 'D renamed', 'B', 'C']);
+  await page.fill('#gmeAdd', 'E');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#gmEd .gme-r')).toHaveCount(5);
+  await expect(page.locator('#gmeAdd')).toBeFocused();
+  await page.locator('#gmEd [data-mdel="m2"]').click();
+  await expect(page.locator('#gmEd .gme-r')).toHaveCount(4);
+  expect(await page.evaluate(() => S.tasks.filter(x => x.ms === 'm2').length)).toBe(0);
+  await page.locator('#gmeAdd').blur();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#gmEd')).not.toHaveClass(/on/);
+  await expect(page.locator('#gdPg')).toHaveClass(/on/);
+  await expect(page.locator('#gdPg .gm-n')).toHaveCount(4);
+  noErrors(errors);
+});

@@ -19,8 +19,6 @@ const HB_WORDS=[[/water|drink|hydrat/,'💧'],[/run|jog|workout|gym|train|exerci
 const hbIcon=n=>{const s=String(n||'').toLowerCase();const m=HB_WORDS.find(([r])=>r.test(s));return m?m[1]:''};
 const ICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const RH_ICON='<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><path d="M12 34a12 12 0 0 1 24 0"/><path d="M5 34h38"/><path d="M24 9v7M12.4 13.4l4 4M35.6 13.4l-4 4"/></svg>';
-const UP_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>';
-const DN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 
 function habitsOn(){return !!(S.cfg&&S.cfg.habits)}
 /* habits whose space still exists (a deleted or archived space hides its habits; restoring the space brings them back) */
