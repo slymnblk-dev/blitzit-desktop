@@ -28,6 +28,9 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   await expect(page.locator('#inboxPg .ib-note')).toHaveCount(1);
   await page.locator('#inboxPg [data-ibtab="tasks"]').click();
   await expect(page.locator('#inboxPg .ib-note')).toHaveCount(0);
+  // the filters never overlap what is under them
+  const gap = await page.evaluate(() => document.querySelector('#inboxPg .ib-list').getBoundingClientRect().top - document.querySelector('#inboxPg .ib-tabs').getBoundingClientRect().bottom);
+  expect(gap).toBeGreaterThan(4);
   await page.locator('#inboxPg [data-ibtab="all"]').click();
   // edit in the popup: it saves as you type; pin it
   await page.locator('#inboxPg .ib-note').click();
@@ -52,10 +55,22 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   await page.locator('#nbDel').click();
   await page.locator('#dlgYes').click();
   expect(await page.evaluate(() => S.tasks.some(x => x.id === 777))).toBe(false);
+  // ⋯ on a task: turn it into a note (its name becomes the first line); ⋯ on a note: pin, then delete
+  const tid = await page.evaluate(() => S.tasks.find(x => x.inbox && !x.note && x.title === 'Call the bank').id);
+  await page.locator(`#inboxPg [data-ibm="${tid}"]`).click();
+  await page.locator('#cxPop button', { hasText: 'Turn into a note' }).click();
+  expect(await page.evaluate(id => { const x = S.tasks.find(y => y.id === id); return [x.note, x.notes]; }, tid)).toEqual([true, 'Call the bank']);
+  await page.locator(`#inboxPg [data-ibm="${tid}"]`).click();
+  await page.locator('#cxPop button', { hasText: 'Pin to the top' }).click();
+  await expect(page.locator('#inboxPg .ib-note.pin')).toHaveCount(1);
+  await page.locator(`#inboxPg [data-ibm="${tid}"]`).click();
+  await page.locator('#cxPop button', { hasText: 'Delete note' }).click();
+  await page.locator('#dlgYes').click();
+  expect(await page.evaluate(id => S.tasks.some(x => x.id === id), tid)).toBe(false);
   // the Home row counts both
   await page.evaluate(() => { S.tasks.push({ id: 778, title: 'N', stage: 'backlog', list: null, est: 0, subs: [], notes: 'N', repeat: 'none', inbox: true, note: true, created: Date.now() }); save(); closeInbox(); });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => goHome());
-  await expect(page.locator('#ibEntry small')).toHaveText('2 tasks waiting · 1 note');
+  await expect(page.locator('#ibEntry small')).toHaveText('1 task waiting · 1 note');
   noErrors(errors);
 });

@@ -569,7 +569,8 @@ button.hg-c:active{transform:scale(.88)}
 .ib-cap textarea::placeholder{color:var(--muted)}
 .ib-cap.note .ib-cap-go{align-self:flex-end}
 .ib-hint{margin:8px 4px 0;font-size:12px;color:var(--muted)}
-.ib-tabs{display:flex;gap:6px;margin:24px 0 -10px}
+.ib-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:24px 0 14px}
+.ib-tabs+.ib-count{margin-top:6px}
 .ib-tabs button{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:background .2s,color .2s}
 .ib-tabs button small{font-size:12px;font-weight:600;opacity:.7;font-variant-numeric:tabular-nums}
 .ib-tabs button.on{background:var(--text);color:var(--bg);box-shadow:none}
@@ -594,3 +595,15 @@ button.hg-c:active{transform:scale(.88)}
 .nb-acts{display:flex;gap:8px}
 .nb-acts .le-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .nb-acts .le-btn svg{width:16px;height:16px}
+
+/* Inbox: wider on computers so notes breathe; narrow phones show the kind switch as icons */
+@media (min-width:1100px){#inboxPg .ib-in{max-width:760px}}
+@media (max-width:479px){.ib-kind button span{display:none}.ib-kind button{padding:0 9px}.ib-cap{gap:6px}}
+/* ⋯ on task rows and note cards */
+.ib-list .row-in{align-items:center}
+.ib-list .row-in .gm-more{margin-left:2px;margin-right:-6px}
+.ib-nw{position:relative;break-inside:avoid;margin:0 0 12px}
+.ib-nw .ib-note{margin:0;padding-right:40px}
+.ib-nw>.gm-more{position:absolute;top:8px;right:8px}
+.ib-nw.enter{animation:pgIn .45s var(--ease) both}
+@media (hover:hover){.ib-nw>.gm-more,.ib-list .row-in .gm-more{opacity:0}.ib-nw:hover>.gm-more,.ib-nw:focus-within>.gm-more,.ib-list .row:hover .gm-more,.ib-list .row:focus-within .gm-more,.gm-more[aria-expanded="true"]{opacity:1}}

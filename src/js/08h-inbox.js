@@ -44,13 +44,22 @@ function ibRow(t){
     <div class="row-in">
       <button class="check ib-go" data-ibgo="${t.id}" aria-label="Send ${esc(t.title)} to a list" title="Send to a list">${I_SEND}</button>
       <div class="body"><div class="title"><span>${esc(t.title)||'Untitled'}</span></div>${meta?`<div class="meta">${meta}</div>`:''}</div>
-      <div class="est">${fmt(t.est)}</div>
+      <div class="est">${fmt(t.est)}</div>${MORE(`data-ibm="${t.id}"`,`Options for ${esc(t.title)||'task'}`)}
     </div></li>`;
 }
 /* a note as a soft card: its first line stands out, the rest follows quietly */
 function ibNoteCard(t){const lines=String(t.notes||'').trim().split('\n'),head=lines[0]||'',rest=lines.slice(1).join('\n').trim();
-  return `<button class="ib-note${t.pin?' pin':''}${t.id===enterId?' enter':''}" data-ibnote="${t.id}"><b>${esc(head)||'Empty note'}</b>${rest?`<span>${esc(rest)}</span>`:''}
-    <small>${t.pin?`<i class="ib-pin">${I_PIN}</i>`:''}${nbWhen(t)}</small></button>`}
+  return `<div class="ib-nw${t.id===enterId?' enter':''}"><button class="ib-note${t.pin?' pin':''}" data-ibnote="${t.id}"><b>${esc(head)||'Empty note'}</b>${rest?`<span>${esc(rest)}</span>`:''}
+    <small>${t.pin?`<i class="ib-pin">${I_PIN}</i>`:''}${nbWhen(t)}</small></button>${MORE(`data-ibm="${t.id}"`,`Options for note ${esc(head)}`)}</div>`}
+/* note ↔ task: a note's first line becomes the task's name; a task's name and steps become the note's lines */
+function nbToTask(t){const lines=String(t.notes||'').trim().split('\n');if(!lines[0]){toast('Write something first');return}
+  commit(()=>{t.note=false;delete t.pin;t.title=lines[0].slice(0,120);t.notes=lines.slice(1).join('\n').trim();t.est=S.cfg.defEst||30},'Now a task in your Inbox')}
+function ibToNote(t){commit(()=>{const steps=(t.subs||[]).map(s=>`${s.done?'✓':'•'} ${s.t}`);t.notes=[t.title,...steps,(t.notes||'').trim()].filter(Boolean).join('\n');t.subs=[];t.note=true;t.est=0;t.edited=Date.now();delete t.pri},'Now a note in your Inbox')}
+function ibDelete(t){confirmAsk({title:t.note?'Delete this note?':'Delete this task?',text:`“${(t.note?nbTitle(t.notes):t.title)||'Untitled'}” will be deleted.`,yes:'Yes, delete',no:'No',
+  onYes:()=>{try{sfx('remove')}catch(e){}commit(()=>{S.tasks=S.tasks.filter(x=>x!==t)},t.note?'Note deleted':'Task deleted')}})}
+function ibMenu(t){return t.note?[{t:'Edit',ic:PEN_S,act:()=>openNote(t.id)},{t:t.pin?'Unpin':'Pin to the top',ic:I_PIN,act:()=>{t.pin=!t.pin;if(!t.pin)delete t.pin;save();render();toast(t.pin?'Pinned to the top':'Unpinned')}},
+    {t:'Turn into a task',ic:I_TASK2,act:()=>nbToTask(t)},{sep:1},{t:'Delete note',ic:BIN_S,warn:1,act:()=>ibDelete(t)}]
+  :[{t:'Open',ic:CHEV,act:()=>ibOpen(t.id)},{t:'Send to a list…',ic:I_SEND,act:()=>ibOpen(t.id,true)},{t:'Turn into a note',ic:I_NOTE2,act:()=>ibToNote(t)},{sep:1},{t:'Delete task',ic:BIN_S,warn:1,act:()=>ibDelete(t)}]}
 function drawInbox(){
   const items=inboxItems(),notes=inboxNotes(),nT=items.length,nN=notes.length,tab=nT&&nN?ibTab:'all',note=ibKind==='note';
   const tabs=nT&&nN?`<div class="ib-tabs" role="tablist" aria-label="Show">${[['all','All',nT+nN],['tasks','Tasks',nT],['notes','Notes',nN]].map(([k,l,n])=>`<button role="tab" data-ibtab="${k}" aria-selected="${tab===k}" class="${tab===k?'on':''}">${l}<small>${n}</small></button>`).join('')}</div>`:'';
@@ -58,7 +67,7 @@ function drawInbox(){
   const notesSec=nN&&tab!=='tasks'?`${tab==='all'?`<div class="ib-count">${nN} ${nN===1?'note':'notes'}</div>`:''}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div>`:'';
   $('ibIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="ibBack" aria-label="Back">${BACK_SVG}</button></div>
     <h1 class="ib-h">Inbox</h1><p class="ib-lede">Catch anything: a task for later, or a note to keep. Sort it out when you’re ready.</p>
-    <div class="ib-cap${note?' note':''}"><div class="ib-kind" role="tablist" aria-label="Add a"><button role="tab" data-ibk="task" aria-selected="${!note}" class="${note?'':'on'}">${I_TASK2}Task</button><button role="tab" data-ibk="note" aria-selected="${note}" class="${note?'on':''}">${I_NOTE2}Note</button></div>
+    <div class="ib-cap${note?' note':''}"><div class="ib-kind" role="tablist" aria-label="Add a"><button role="tab" data-ibk="task" aria-selected="${!note}" aria-label="Task" class="${note?'':'on'}">${I_TASK2}<span>Task</span></button><button role="tab" data-ibk="note" aria-selected="${note}" aria-label="Note" class="${note?'on':''}">${I_NOTE2}<span>Note</span></button></div>
       ${note?`<textarea id="ibNew" rows="1" placeholder="Write a note…" maxlength="4000" aria-label="New note"></textarea>`:`<input id="ibNew" placeholder="Add a task" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="New task">`}
       <button class="ib-cap-go" id="ibAdd" aria-label="${note?'Add note':'Add task'}">Add</button></div>
     ${note?'<p class="ib-hint">Enter for a new line · Ctrl or ⌘ + Enter to add</p>':''}
@@ -94,8 +103,7 @@ $('nbEd').addEventListener('click',e=>{
   if(e.target===$('nbEd')||e.target.closest('#nbDone,#nbClose'))return closeNote();
   const t=S.tasks.find(x=>x.id===nbId);if(!t)return;
   if(e.target.closest('#nbPin')){t.pin=!t.pin;if(!t.pin)delete t.pin;save();nbPaint(t);haptic(5);toast(t.pin?'Pinned to the top':'Unpinned');return}
-  if(e.target.closest('#nbTask')){nbSave();const lines=String(t.notes||'').trim().split('\n');if(!lines[0]){toast('Write something first');return}nbId=null;$('nbEd').classList.remove('on');
-    commit(()=>{t.note=false;delete t.pin;t.title=lines[0].slice(0,120);t.notes=lines.slice(1).join('\n').trim();t.est=S.cfg.defEst||30},'Now a task in your Inbox');return}
+  if(e.target.closest('#nbTask')){nbSave();if(!String(t.notes||'').trim()){toast('Write something first');return}nbId=null;$('nbEd').classList.remove('on');return nbToTask(t)}
   if(e.target.closest('#nbDel'))return confirmAsk({title:'Delete this note?',text:`“${nbTitle(t.notes)||'Empty note'}” will be deleted.`,yes:'Yes, delete',no:'No',
     onYes:()=>{nbId=null;$('nbEd').classList.remove('on');try{sfx('remove')}catch(err){}commit(()=>{S.tasks=S.tasks.filter(x=>x!==t)},'Note deleted')}});
 });
@@ -124,6 +132,7 @@ $('inboxPg').addEventListener('click',e=>{
   if(e.target.closest('#ibAdd'))return ibAdd();
   const k=e.target.closest('[data-ibk]');if(k){const was=$('ibNew').value;ibKind=k.dataset.ibk;haptic(5);drawInbox();const n=$('ibNew');n.value=was;ibGrow(n);n.focus();return}
   const tb=e.target.closest('[data-ibtab]');if(tb){ibTab=tb.dataset.ibtab;haptic(4);return drawInbox()}
+  const mo=e.target.closest('[data-ibm]');if(mo){e.stopPropagation();const t=S.tasks.find(x=>x.id===+mo.dataset.ibm);if(t)cxOpen(mo,ibMenu(t));return}
   const nt=e.target.closest('[data-ibnote]');if(nt)return openNote(+nt.dataset.ibnote);
   const g=e.target.closest('[data-ibgo]');if(g){haptic(6);return ibOpen(+g.dataset.ibgo,true)}
   const r=e.target.closest('[data-ibid] .row-in');if(r)return ibOpen(+r.closest('[data-ibid]').dataset.ibid);
