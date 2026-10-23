@@ -129,6 +129,7 @@ function gbScene(g,anim){
     <path class="gb-mtn" d="${route} L${(S[0]+W*.06).toFixed(1)} ${(S[1]+H*.14).toFixed(1)} L${W} ${(H*.7).toFixed(1)} L${W} ${H} L0 ${H} L0 ${P[0][1].toFixed(1)}Z" fill="url(#gbM)"/>
     <path class="gb-rt0" d="${route}"/><path class="gb-rt1" pathLength="1" d="${route}"/>
     ${g.ms.map((m,i)=>`<circle class="gb-ms${m.done?' on':''}${!m.done&&i===pr.n&&!top?' nx':''}" style="--d:${i}" cx="${P[i+1][0].toFixed(1)}" cy="${P[i+1][1].toFixed(1)}" r="7"/>`).join('')}
+    ${g.ms.map((m,i)=>`<circle class="gb-hit" data-gsel="${m.id}" cx="${P[i+1][0].toFixed(1)}" cy="${P[i+1][1].toFixed(1)}" r="30"><title>${esc(m.t)}</title></circle>`).join('')}
     <g class="gb-flag" transform="translate(${S[0].toFixed(1)} ${S[1].toFixed(1)})"><path class="gb-pole" d="M0 0V-46"/><path class="gb-cloth" d="M0 -46l30 10 -30 10z"/></g>
     <g class="gb-me"><circle class="gb-halo" r="22"/><circle class="gb-dot" r="10"/></g></svg>`}
 function gTasksSec(g){const moved=gMoved(g),open=gTasks(g).filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
@@ -137,6 +138,12 @@ function gTasksSec(g){const moved=gMoved(g),open=gTasks(g).filter(t=>t.stage!=='
 function gEditSec(g){return gdEdit?`<div class="gv-sec"><h2>Milestones</h2><button class="txt-btn gd-ed" data-gedit>Done</button></div><div class="g-mslist editing">${gMsRows(g)}</div>`:''}
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
 function gNextAct(g,m){const tk=gTaskOf(m);return tk?`<button class="gv-link" data-gtask="${tk.id}">Linked to “${esc(tk.title)}”</button>`:`<button class="gv-link" data-gmk="${m.id}">Make it a task</button>`}
+const gSmooth=()=>matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
+/* a soft fade on the edge that still has steps behind it, so it's clear the row scrolls */
+function gsFade(row){const x=row.scrollLeft,max=row.scrollWidth-row.clientWidth;row.classList.toggle('fl',x>4);row.classList.toggle('fr',x<max-4)}
+/* tapping a dot on the hill brings its step into view and lights it up for a moment (it never ticks it) */
+function gsShow(id){const b=document.querySelector(`#gdPg .gs-row [data-gtk="${id}"]`),st=b&&b.closest('.gs-step');if(!st)return;haptic(5);
+  const row=st.parentElement;row.scrollTo({left:row.scrollLeft+st.getBoundingClientRect().left-row.getBoundingClientRect().left-14,behavior:gSmooth()});st.classList.remove('flash');void st.offsetWidth;st.classList.add('flash');setTimeout(()=>st.classList.remove('flash'),1400)}
 function gClimbView(g,anim){
   const pr=gProg(g),dd=gDays(g),nx=gNext(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
   const steps=g.ms.map((m,i)=>{const k=m.done?'done':m===nx?'now':'';
@@ -180,15 +187,17 @@ function drawGoal(){
   /* the milestone row: on open, if "Next" is out of sight, start one step before it so the last win shows too;
      on later redraws stay put, gliding only if "Next" moved out of sight */
   const row=$('gdIn').querySelector('.gs-row'),now=row&&row.querySelector('.gs-step.now');if(!row)return;
-  if(!anim)row.scrollLeft=sl;if(!now)return;
+  row.addEventListener('scroll',()=>gsFade(row),{passive:true});requestAnimationFrame(()=>gsFade(row));
+  if(!anim)row.scrollLeft=sl;gsFade(row);if(!now)return;
   const r=row.getBoundingClientRect(),n=now.getBoundingClientRect(),prev=now.previousElementSibling;
   const hid=n.left<r.left||n.right>r.right;
-  if(anim){if(hid)row.scrollLeft=Math.max(0,row.scrollLeft+(prev||now).getBoundingClientRect().left-r.left-4);return}
-  if(hid)row.scrollTo({left:row.scrollLeft+n.left-r.left-4,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+  if(anim){if(hid)row.scrollLeft=Math.max(0,row.scrollLeft+(prev||now).getBoundingClientRect().left-r.left-14);return}
+  if(hid)row.scrollTo({left:row.scrollLeft+n.left-r.left-14,behavior:gSmooth()});
 }
 $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
-  if(e.target.closest('[data-gaddms]')){const i=$('gMsIn');if(i){haptic(5);i.closest('.gs-step').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest',inline:'end'});i.focus({preventScroll:true})}return}
+  const dot=e.target.closest('[data-gsel]');if(dot)return gsShow(dot.dataset.gsel);
+  if(e.target.closest('[data-gaddms]')){const i=$('gMsIn');if(i){haptic(5);i.closest('.gs-step').scrollIntoView({behavior:gSmooth(),block:'nearest',inline:'end'});i.focus({preventScroll:true})}return}
   const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m||gTickBusy)return;gTickBusy=true;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);
     setTimeout(()=>{try{gMsToggle(g,m)}finally{setTimeout(()=>gTickBusy=false,250)}},200);return}
 });

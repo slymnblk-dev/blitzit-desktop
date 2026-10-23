@@ -186,6 +186,16 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   expect(await page.evaluate(id => [S.goals[0].ms[0].done, S.tasks.find(x => x.id === id).stage], tid)).toEqual([false, 'week']);
   await page.evaluate(() => gMsToggle(S.goals[0], S.goals[0].ms[0]));
   expect(await page.evaluate(id => [S.goals[0].ms[0].done, S.tasks.find(x => x.id === id).stage], tid)).toEqual([true, 'done']);
+  // the row hints it scrolls: a fade on the side that has more steps
+  await page.evaluate(() => { const r = document.querySelector('#gdPg .gs-row'); r.scrollLeft = 0; r.dispatchEvent(new Event('scroll')); });
+  await expect(page.locator('#gdPg .gs-row')).toHaveClass(/fr/);
+  await expect(page.locator('#gdPg .gs-row')).not.toHaveClass(/fl/);
+  // tapping a dot on the hill shows that step (lights it up) and never ticks it
+  const before = await page.evaluate(() => S.goals[0].ms.map(m => !!m.done));
+  await page.evaluate(() => document.querySelector('#gdPg [data-gsel="m5"]').dispatchEvent(new MouseEvent('click', { bubbles: true })));
+  await expect(page.locator('#gdPg .gs-step.flash')).toHaveCount(1);
+  await expect(page.locator('#gdPg .gs-step.flash')).toBeInViewport();
+  expect(await page.evaluate(() => S.goals[0].ms.map(m => !!m.done))).toEqual(before);
   // nothing changed → no redraw (motion stays calm)
   const same = await page.evaluate(() => { render(); const a = document.querySelector('#gdIn .gb-svg'); render(); return a === document.querySelector('#gdIn .gb-svg'); });
   expect(same).toBe(true);
