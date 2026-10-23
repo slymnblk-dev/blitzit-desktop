@@ -181,7 +181,7 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.locator('#gdPg .gm-card [data-gtk]').dblclick();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(4);
   // adding a milestone lives in the goal's ⋯ menu → Edit milestones (no extra buttons on the page)
-  await expect(page.locator('#gdPg .gm-head button')).toHaveCount(0);
+  await expect(page.locator('#gdPg .gm-head')).toHaveCount(0); // the stats above already count milestones
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gedit]').click();
   await page.fill('#gmeAdd', 'Extra step');

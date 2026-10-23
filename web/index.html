@@ -2988,10 +2988,6 @@ button.hg-c:active{transform:scale(.88)}
 /* ===== Milestones as parent tasks: the track and the milestone card ===== */
 :root{--tick-soft:color-mix(in srgb,var(--today) 16%,var(--surface));--tick-mid:color-mix(in srgb,var(--today) 50%,transparent)}
 .gv{--gm-soft:color-mix(in srgb,var(--today) 16%,var(--surface));--gm-mid:color-mix(in srgb,var(--today) 50%,transparent);--gm-line:color-mix(in srgb,var(--text) 10%,transparent)}
-.gm-head{display:flex;align-items:center;gap:12px;margin:6px 0 14px}
-.gm-head h2{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.gm-head>span{flex:1;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.gm-acts{display:flex;gap:8px}
 .gm-tw{margin:0 0 22px}
 /* every milestone in an equal column, centred on it: the gaps between rings are always the same */
 .gm-track{--n:1;--f:0;position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
@@ -3013,7 +3009,6 @@ button.hg-c:active{transform:scale(.88)}
 .gm-np{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .gm-track.many .gm-nl{-webkit-line-clamp:1}
 .gv.anim .gm-n{animation:pgIn .5s var(--ease) both;animation-delay:calc(var(--i)*60ms + .3s)}
-.gm-head .gs-addb{height:32px}
 .gm-addms{background:var(--surface);border-radius:18px;padding:6px 18px;margin:0 0 14px}
 .gm-addms .gv-add{padding:12px 0}
 /* the card */
@@ -3123,7 +3118,7 @@ button.hg-c:active{transform:scale(.88)}
 .gme-add input{flex:1;min-width:0;border:0;background:none;outline:none;color:var(--text);font:inherit;font-size:15px}
 .gme-add input::placeholder{color:var(--muted)}
 .gme-in .primary{margin-top:4px}
-@media (max-width:699px){.gm-head .gs-addb span{display:none}.gm-head .gs-addb{padding:0 10px}.gm-subs{margin-left:18px}}
+@media (max-width:699px){.gm-subs{margin-left:18px}}
 
 /* ===== ⋯ menus on rows and cards (Goals, Goal page, Habits) ===== */
 .cx-pop{display:none;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 18px 40px rgba(0,0,0,.18);transform-origin:top right}
@@ -3381,7 +3376,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=165; // bumped with every published update
+const APP_VERSION=166; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -6788,9 +6783,8 @@ function gMsCard(g,m,cls){if(!m)return '';
       :live?`<p class="gm-empty">Break it into a few tasks. They stay with this goal (no list needed), and finishing the last one completes the milestone.</p>`:''}
     ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
 /* every milestone on one track that always fits: the first one is always in view, nothing scrolls sideways */
-function gTrack(g){const sel=gSel(g),nx=gNext(g),N=g.ms.length,last=g.ms.map(m=>!!m.done).lastIndexOf(true),f=N>1&&last>0?last/(N-1):0,pr=gProg(g);
-  return `<div class="gm-head"><h2>Milestones</h2><span>${pr.n} of ${N} done</span></div>
-    <div class="gm-tw"><div class="gm-track${N>6?' many':''}" style="--n:${N};--f:${f.toFixed(4)}"><i class="gm-fill"></i>${g.ms.map((m,i)=>{const ts=gKids(m),dn=ts.filter(x=>x.done).length;
+function gTrack(g){const sel=gSel(g),nx=gNext(g),N=g.ms.length,last=g.ms.map(m=>!!m.done).lastIndexOf(true),f=N>1&&last>0?last/(N-1):0;
+  return `    <div class="gm-tw"><div class="gm-track${N>6?' many':''}" style="--n:${N};--f:${f.toFixed(4)}"><i class="gm-fill"></i>${g.ms.map((m,i)=>{const ts=gKids(m),dn=ts.filter(x=>x.done).length;
     return `<button class="gm-n${m.done?' done':''}${m===nx&&!g.done?' now':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}" style="--i:${i}"><span class="gm-nk">${m.done?CK:i+1}</span><span class="gm-nl">${esc(m.t)}</span>${ts.length?`<span class="gm-np">${dn}/${ts.length} tasks</span>`:''}</button>`}).join('')}</div></div>`}
 function gAddMsRow(g,ph){return (gAddMs||!g.ms.length)&&g.ms.length<MS_MAX&&!g.done?`<div class="gm-addms">${gAddInput(ph||(g.ms.length?'New milestone':'Add your first milestone'))}</div>`:''}
 /* ---------- Goals page: each goal's ⋯ menu ---------- */
