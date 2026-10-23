@@ -51,6 +51,7 @@
 .g-wi{width:34px;height:34px;border-radius:11px;background:var(--surface);display:grid;place-items:center;font-size:17px;flex:none}
 .g-wrow>svg{width:15px;height:15px;color:var(--muted);flex:none}
 .g-empty .g-emi{display:block;width:170px;margin:0 auto 8px;border-radius:18px;overflow:hidden;background:var(--surface)}
+.g-empty .g-emi svg{width:100%;height:auto;opacity:1;margin:0}
 
 /* the climb */
 .g-climb{width:100%;height:auto;display:block;overflow:visible;--g-m1:color-mix(in srgb,var(--text) 9%,var(--surface));--g-m2:var(--surface)}

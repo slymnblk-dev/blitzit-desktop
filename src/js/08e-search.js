@@ -27,7 +27,7 @@ function srchGroups(){
   const q=srchNorm(srchQ.trim()),words=q.split(/\s+/).filter(Boolean),has=s=>{const h=srchNorm(s);return words.every(w=>h.includes(w))};
   const g={task:srchHits(),note:[],goal:[],habit:[]};if(!q||srchFiltering())return g;
   if(typeof inboxOn==='function'&&inboxOn())g.note=inboxNotes().filter(t=>has(t.notes||t.title)).slice(0,10);
-  if(typeof goalsOn==='function'&&goalsOn())g.goal=gList().filter(x=>x&&gSpaceOk(x)&&has([x.name,x.why,...(x.ms||[]).map(m=>m.t)].join(' '))).sort((a,b)=>!!a.done-!!b.done).slice(0,8);
+  if(typeof goalsOn==='function'&&goalsOn())g.goal=gList().filter(x=>x&&gSpaceOk(x)&&has([x.name,x.why,...(x.ms||[]).flatMap(m=>[m.t,...(m.items||[]).map(i=>i.t)])].join(' '))).sort((a,b)=>!!a.done-!!b.done).slice(0,8);
   if(typeof habitsOn==='function'&&habitsOn())g.habit=hbAll().filter(h=>has(h.name)).slice(0,8);
   return g;
 }
@@ -54,9 +54,11 @@ function srchRow(k,x,i){const sel=i===srchSel?' sel':'',q=srchQ;
     return `<button class="sr-item${sel} ${t.stage==='done'?'done':''}" data-srt="${t.id}" role="option"><i class="sr-st" style="background:${color(t.stage)}"></i><span class="sr-tx"><b>${srchMark(t.title,q)}</b><small>${sp?esc(sp.name)+' › ':''}${esc(l.name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${pr?`<span class="sr-pr ${pr.id}">${priIcon(pr.n)}</span>`:''}</button>`}
   if(k==='note'){const sn=srchSnip(x);
     return `<button class="sr-item${sel}" data-srn="${x.id}" role="option"><span class="sr-ic">${I_NOTE2}</span><span class="sr-tx"><b>${srchMark(x.title,q)}</b>${sn?`<span class="sr-sn">${srchMark(sn,q)}</span>`:''}<small>Note · ${esc(nbWhen(x))}</small></span></button>`}
-  if(k==='goal'){const ms=x.ms||[],dn=ms.filter(m=>m.done).length,w=srchNorm(q.trim()).split(/\s+/)[0]||'',hit=!srchNorm(x.name).includes(w)&&ms.find(m=>srchNorm(m.t).includes(w)),left=gDaysLeft(x);
+  if(k==='goal'){const ms=x.ms||[],dn=ms.filter(m=>m.done).length,w=srchNorm(q.trim()).split(/\s+/)[0]||'',inName=srchNorm(x.name).includes(w),left=gDaysLeft(x);
+    const hit=!inName&&ms.find(m=>srchNorm(m.t).includes(w)),ih=!inName&&!hit&&ms.map(m=>[m,(m.items||[]).find(i=>srchNorm(i.t).includes(w))]).find(([,i])=>i);
     const meta=x.done?'Achieved':[ms.length?`${dn} of ${ms.length} milestones`:'',left!==null&&left>=0?`${left} ${left===1?'day':'days'} left`:''].filter(Boolean).join(' · ');
-    return `<button class="sr-item${sel}" data-srg="${x.id}" role="option"><span class="sr-ic g">${G_FLAG}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>${hit?`Milestone: ${srchMark(hit.t,q)}`:`Goal${meta?' · '+meta:''}`}</small></span></button>`}
+    const sm=hit?hit.id:ih?ih[0].id:'',sub=hit?`Milestone: ${srchMark(hit.t,q)}`:ih?`${srchMark(ih[1].t,q)} · in ${esc(ih[0].t)}`:`Goal${meta?' · '+meta:''}`;
+    return `<button class="sr-item${sel}" data-srg="${x.id}"${sm?` data-srm="${esc(sm)}"`:''} role="option"><span class="sr-ic g">${G_FLAG}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>${sub}</small></span></button>`}
   const st=hbStats(x).st;
   return `<button class="sr-item${sel}" data-srh="${x.id}" role="option"><span class="sr-ic">${RH_ICON}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>Habit · ${srHbDays(x)}${st>1?` · ${st}-day streak`:''}</small></span></button>`}
 function srchResults(){
@@ -120,7 +122,7 @@ document.addEventListener('click',e=>{
   const k=e.target.closest('[data-srk]');if(k){srchKind=k.dataset.srk;srchSel=0;haptic(4);srchDraw();$('srchIn').focus({preventScroll:true});return}
   const it=e.target.closest('[data-srt]');if(it){const id=+it.dataset.srt,t=S.tasks.find(x=>x.id===id);closeSearch();if(t&&t.inbox)srchToInbox();setTimeout(()=>openDetail(id),120);return}
   const nt=e.target.closest('[data-srn]');if(nt){const id=+nt.dataset.srn;closeSearch();srchToInbox();setTimeout(()=>openNote(id),160);return}
-  const go=e.target.closest('[data-srg]');if(go){closeSearch();openGoal(go.dataset.srg);return}
+  const go=e.target.closest('[data-srg]');if(go){closeSearch();openGoal(go.dataset.srg);if(go.dataset.srm&&gdOn){gSelId=go.dataset.srm;drawGoal()}return}
   if(e.target.closest('[data-srh]')){closeSearch();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();openRhythm();return}
   const fp=e.target.closest('[data-sfp]');if(fp){const v=fp.dataset.sfp;SF.pri.has(v)?SF.pri.delete(v):SF.pri.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
   const ft=e.target.closest('[data-sft]');if(ft){const v=ft.dataset.sft;SF.tags.has(v)?SF.tags.delete(v):SF.tags.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}

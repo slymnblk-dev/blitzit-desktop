@@ -96,7 +96,7 @@ function eveningNow(){const at=+C().hbCiAt;return new Date().getHours()>=(Number
 function cdCard(){
   if(!C().closeDay||S.cdDone===today()||S.cdSkip===today()||!eveningNow())return '';
   const n=habitsOn()?hbOpenToday().length:0;
-  return `<div class="ci-home cd-home"><span class="ci-hi cd-hi">${RH_ICON}</span><span class="ci-ht"><b>Close the day</b><small>${n?`${n} ${n===1?'habit':'habits'} left · `:''}30 seconds</small></span>
+  return `<div class="ci-home cd-home"><span class="ci-hi cd-hi">${RH_ICON}</span><span class="ci-ht"><b>Close the day</b><small>${n?`${n} ${n===1?'habit':'habits'} left`:'Takes 30 seconds'}</small></span>
     <button class="rv-skip" data-cdlater>Later</button><button class="rv-go" data-cdopen>Start</button></div>`}
 /* the evening card: Close the day takes the place of the habits check-in when it's on */
 const _cdCi=ciCard;ciCard=function(){return C().closeDay?cdCard():_cdCi()};

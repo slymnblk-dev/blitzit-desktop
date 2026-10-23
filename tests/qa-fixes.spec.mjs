@@ -208,3 +208,28 @@ test('Tide focus shows every step too: tick, untick, add; typing never pauses th
   await page.evaluate(() => tideLeave());
   noErrors(errors);
 });
+
+test('search finds a task inside a goal milestone and opens the goal on that milestone', async ({ page }) => {
+  await page.setViewportSize({ width: 1300, height: 860 });
+  const errors = await openApp(page);
+  await page.evaluate(() => {
+    S.cfg.goals = true;
+    S.goals = [{ id: 'g1', name: 'Half marathon', e: '', space: null, why: '', due: gPlus(3), created: Date.now(), ms: [{ id: 'm1', t: '5 km', done: false }, { id: 'm2', t: '10 km', done: false, items: [{ id: 7, t: 'Hill repeats', done: false, subs: [] }] }] }];
+    save(); render(); openSearch();
+  });
+  await page.keyboard.type('hill');
+  await expect(page.locator('#srch [data-srg]')).toContainText('Hill repeats · in 10 km');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#gdPg')).toHaveClass(/on/);
+  await expect(page.locator('#gdPg .gm-card .gm-hx b')).toHaveText('10 km');
+  noErrors(errors);
+});
+
+test('a brand new day: the empty Today card is a calm card you can read', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.tasks = []; save(); goHome(); });
+  const c = await page.evaluate(() => { const el = document.querySelector('.app .td-card.td-empty'); const cs = getComputedStyle(el); return [cs.backgroundImage, cs.backgroundColor === getComputedStyle(document.querySelector('.app .sp-card, .app .sp-row') || el).backgroundColor]; });
+  expect(c[0]).toBe('none');
+  noErrors(errors);
+});

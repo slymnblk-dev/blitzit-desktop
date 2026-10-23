@@ -37,10 +37,10 @@
 .mode button,.fsw button,.t-ch button{white-space:nowrap}
 .t-in{all:unset;box-sizing:content-box;width:2.2ch;text-align:center;font:inherit;letter-spacing:inherit;color:inherit;border-bottom:3px dashed color-mix(in srgb,var(--ink) 35%,transparent);caret-color:var(--ink)}
 .t-in:focus{border-bottom-color:var(--ink)}
-.t-set span{font-size:18px;font-weight:600;letter-spacing:0;opacity:.65}
+.t-set span{font-size:18px;font-weight:600;letter-spacing:0}
 .t-cap{display:flex;justify-content:space-between;gap:12px;margin-top:22px;font-size:14px;font-weight:600}
-.t-ch{display:flex;gap:2px;align-self:center;margin-top:18px;background:rgba(0,0,0,.12);border-radius:999px;padding:3px}
-.t-ch button{height:32px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600;opacity:.7}
+.t-ch{display:flex;gap:2px;align-self:center;margin-top:18px;background:rgba(255,255,255,.2);border-radius:999px;padding:3px}
+.t-ch button{height:36px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600}
 .t-ch button.on{background:var(--ink);color:var(--fbg,var(--today));opacity:1}
 .t-ctl{display:flex;gap:10px;max-width:460px;width:100%;margin:0 auto;transition:opacity .5s}
 .t-ctl .f-done{flex:1}

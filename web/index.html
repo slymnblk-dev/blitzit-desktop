@@ -1179,10 +1179,10 @@ html,body{overscroll-behavior-y:contain}
 .mode button,.fsw button,.t-ch button{white-space:nowrap}
 .t-in{all:unset;box-sizing:content-box;width:2.2ch;text-align:center;font:inherit;letter-spacing:inherit;color:inherit;border-bottom:3px dashed color-mix(in srgb,var(--ink) 35%,transparent);caret-color:var(--ink)}
 .t-in:focus{border-bottom-color:var(--ink)}
-.t-set span{font-size:18px;font-weight:600;letter-spacing:0;opacity:.65}
+.t-set span{font-size:18px;font-weight:600;letter-spacing:0}
 .t-cap{display:flex;justify-content:space-between;gap:12px;margin-top:22px;font-size:14px;font-weight:600}
-.t-ch{display:flex;gap:2px;align-self:center;margin-top:18px;background:rgba(0,0,0,.12);border-radius:999px;padding:3px}
-.t-ch button{height:32px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600;opacity:.7}
+.t-ch{display:flex;gap:2px;align-self:center;margin-top:18px;background:rgba(255,255,255,.2);border-radius:999px;padding:3px}
+.t-ch button{height:36px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600}
 .t-ch button.on{background:var(--ink);color:var(--fbg,var(--today));opacity:1}
 .t-ctl{display:flex;gap:10px;max-width:460px;width:100%;margin:0 auto;transition:opacity .5s}
 .t-ctl .f-done{flex:1}
@@ -2346,7 +2346,7 @@ body.no-amb .amb-btn{display:none!important}
 .rv-row:first-child{border-top:0}
 .rv-row.leaving{opacity:0;transform:translateX(14px)}
 .rv-tt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.rv-tt b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv-tt b{font-size:15px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .rv-tt small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden}
 .rv-tt small i{width:7px;height:7px;border-radius:2px;flex:none}
 .rv-acts{display:flex;gap:2px;flex:none}
@@ -2505,6 +2505,7 @@ body.no-amb .amb-btn{display:none!important}
 .g-wi{width:34px;height:34px;border-radius:11px;background:var(--surface);display:grid;place-items:center;font-size:17px;flex:none}
 .g-wrow>svg{width:15px;height:15px;color:var(--muted);flex:none}
 .g-empty .g-emi{display:block;width:170px;margin:0 auto 8px;border-radius:18px;overflow:hidden;background:var(--surface)}
+.g-empty .g-emi svg{width:100%;height:auto;opacity:1;margin:0}
 
 /* the climb */
 .g-climb{width:100%;height:auto;display:block;overflow:visible;--g-m1:color-mix(in srgb,var(--text) 9%,var(--surface));--g-m2:var(--surface)}
@@ -2646,7 +2647,7 @@ body.no-amb .amb-btn{display:none!important}
 .ak-extra .opt small{font-size:12px;opacity:.6;margin-left:2px;font-weight:600}
 .ak-tip{margin:10px 2px 0;font-size:13px;line-height:1.4;color:var(--muted)}
 .ak-tip b{color:var(--text);font-weight:600}
-.ak-opt{margin-left:4px;font-weight:500;opacity:.8}
+.ak-opt{margin-left:4px;font-weight:500}
 .ak-note{display:block;width:100%;box-sizing:border-box;min-height:132px;max-height:40vh;resize:none;font:inherit;font-size:17px;line-height:1.5;padding:14px 16px;border-radius:18px;background:var(--surface2);border:0}
 .ak-nrow{margin-top:12px;align-items:center}
 .ak-nrow .opt svg{width:15px;height:15px;margin-right:2px}
@@ -3370,6 +3371,10 @@ button.hg-c:active{transform:scale(.88)}
 .also .ci-home,.also .rv-card{gap:12px;padding:12px 12px 12px 14px}
 .also .ci-ht b,.also .ci-ht small,.also .rv-t b,.also .rv-t small{white-space:normal}
 
+/* the empty Today card (nothing planned yet, or a brand new user) is a calm plain card, not coral */
+.td-card.td-empty{background:var(--surface);color:var(--text);box-shadow:none}
+.td-card.td-empty .td-lbl{color:var(--text)}
+
 /* ===== Phones: bottom tab bar ===== */
 .tabbar{display:none}
 @media (max-width:1099px){
@@ -3403,17 +3408,18 @@ button.hg-c:active{transform:scale(.88)}
 @media (max-width:1099px){
   .sp-more,.gauge .seg,.row-in .check,#dMore,#dClose,#dPills .pill,.sub .sc,.sub .sx,.sr-x,#fMode button,.stg-dot,#stReset,.chips .opt,#youSet,
   .ib-kind button,.ib-tabs button,.hg-c,.ho-grip,.gme-days,.gme-del,.gme-addb,.gm-more,.gm-done,.gm-k,.gm-sub,.gpth-t,.gpo-k,.gpo-ml,
-  #gWhyIco button,#gWhyVis button,#inSkip,.rv-go,.rv-skip,.segc button,.gm-n,.gpth-k{position:relative}
+  #gWhyIco button,#gWhyVis button,#inSkip,.rv-go,.rv-skip,.segc button,.gm-n,.gpth-k,.gs-mi button,.t-ch button{position:relative}
   .sp-more::after,.gauge .seg::after,.row-in .check::after,#dMore::after,#dClose::after,#dPills .pill::after,.sub .sc::after,.sub .sx::after,
   .sr-x::after,#fMode button::after,.stg-dot::after,#stReset::after,.chips .opt::after,#youSet::after,.ib-kind button::after,.ib-tabs button::after,
   .hg-c::after,.ho-grip::after,.gme-days::after,.gme-del::after,.gme-addb::after,.gm-more::after,.gm-done::after,.gm-k::after,.gm-sub::after,
   .gpth-t::after,.gpo-k::after,.gpo-ml::after,#gWhyIco button::after,#gWhyVis button::after,#inSkip::after,.rv-go::after,.rv-skip::after,
-  .segc button::after,.gm-n::after,.gpth-k::after,.tg::before{content:'';position:absolute;inset:-5px}
+  .segc button::after,.gm-n::after,.gpth-k::after,.gs-mi button::after,.t-ch button::after,.tg::before{content:'';position:absolute;inset:-5px}
   .sub .sc::after{inset:-12px}
   .row-in .check::after{inset:-9px -14px -9px -9px}
   .gm-k::after,.gpo-k::after{inset:-10px}
   .sub .sx::after,.stg-dot::after,.gpth-k::after{inset:-8px}
-  .sr-x::after,.gm-more::after,.ib-kind button::after{inset:-6px}
+  .sr-x::after,.gm-more::after,.ib-kind button::after,.gs-mi button::after{inset:-6px}
+  .t-ch button::after{inset:-6px -1px}
   #dClose::after,#gWhyVis button::after{inset:-7px -4px}
   #dPills .pill::after,.chips .opt::after{inset:-4px -2px}
   #gWhyIco button::after{inset:-5px -3px}
@@ -3430,9 +3436,9 @@ button.hg-c:active{transform:scale(.88)}
   /* segmented switches and the Inbox Task / Note switch: a little taller on phones */
   .segc button{min-height:38px}
   .ib-kind button{height:38px;min-width:42px;justify-content:center}
-  /* long choices in a stacked switch wrap instead of being cut */
-  .set-row.r-stack .segc button{white-space:normal;text-overflow:clip;line-height:1.15;padding:4px 6px}
 }
+/* long choices in a stacked switch wrap instead of being cut */
+.set-row.r-stack .segc button{white-space:normal;text-overflow:clip;line-height:1.15;padding:4px 6px}
 </style>
 </head>
 <body>
@@ -3588,7 +3594,7 @@ button.hg-c:active{transform:scale(.88)}
   <div class="dlg-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></div>
   <h3 id="dlgT"></h3><p id="dlgP"></p>
   <fieldset class="dlg-ch" id="dlgCh" hidden></fieldset>
-  <label class="dlg-l">Type <b id="dlgW"></b> to confirm</label>
+  <label class="dlg-l" for="dlgIn">Type <b id="dlgW"></b> to confirm</label>
   <input class="acc-in" id="dlgIn" autocomplete="off" spellcheck="false">
   <div class="dlg-b"><button class="secondary" id="dlgNo">Cancel</button><button class="danger" id="dlgYes" disabled>Delete</button></div>
 </div></div>
@@ -3628,7 +3634,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=178; // bumped with every published update
+const APP_VERSION=179; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5741,7 +5747,7 @@ function srchGroups(){
   const q=srchNorm(srchQ.trim()),words=q.split(/\s+/).filter(Boolean),has=s=>{const h=srchNorm(s);return words.every(w=>h.includes(w))};
   const g={task:srchHits(),note:[],goal:[],habit:[]};if(!q||srchFiltering())return g;
   if(typeof inboxOn==='function'&&inboxOn())g.note=inboxNotes().filter(t=>has(t.notes||t.title)).slice(0,10);
-  if(typeof goalsOn==='function'&&goalsOn())g.goal=gList().filter(x=>x&&gSpaceOk(x)&&has([x.name,x.why,...(x.ms||[]).map(m=>m.t)].join(' '))).sort((a,b)=>!!a.done-!!b.done).slice(0,8);
+  if(typeof goalsOn==='function'&&goalsOn())g.goal=gList().filter(x=>x&&gSpaceOk(x)&&has([x.name,x.why,...(x.ms||[]).flatMap(m=>[m.t,...(m.items||[]).map(i=>i.t)])].join(' '))).sort((a,b)=>!!a.done-!!b.done).slice(0,8);
   if(typeof habitsOn==='function'&&habitsOn())g.habit=hbAll().filter(h=>has(h.name)).slice(0,8);
   return g;
 }
@@ -5768,9 +5774,11 @@ function srchRow(k,x,i){const sel=i===srchSel?' sel':'',q=srchQ;
     return `<button class="sr-item${sel} ${t.stage==='done'?'done':''}" data-srt="${t.id}" role="option"><i class="sr-st" style="background:${color(t.stage)}"></i><span class="sr-tx"><b>${srchMark(t.title,q)}</b><small>${sp?esc(sp.name)+' › ':''}${esc(l.name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${pr?`<span class="sr-pr ${pr.id}">${priIcon(pr.n)}</span>`:''}</button>`}
   if(k==='note'){const sn=srchSnip(x);
     return `<button class="sr-item${sel}" data-srn="${x.id}" role="option"><span class="sr-ic">${I_NOTE2}</span><span class="sr-tx"><b>${srchMark(x.title,q)}</b>${sn?`<span class="sr-sn">${srchMark(sn,q)}</span>`:''}<small>Note · ${esc(nbWhen(x))}</small></span></button>`}
-  if(k==='goal'){const ms=x.ms||[],dn=ms.filter(m=>m.done).length,w=srchNorm(q.trim()).split(/\s+/)[0]||'',hit=!srchNorm(x.name).includes(w)&&ms.find(m=>srchNorm(m.t).includes(w)),left=gDaysLeft(x);
+  if(k==='goal'){const ms=x.ms||[],dn=ms.filter(m=>m.done).length,w=srchNorm(q.trim()).split(/\s+/)[0]||'',inName=srchNorm(x.name).includes(w),left=gDaysLeft(x);
+    const hit=!inName&&ms.find(m=>srchNorm(m.t).includes(w)),ih=!inName&&!hit&&ms.map(m=>[m,(m.items||[]).find(i=>srchNorm(i.t).includes(w))]).find(([,i])=>i);
     const meta=x.done?'Achieved':[ms.length?`${dn} of ${ms.length} milestones`:'',left!==null&&left>=0?`${left} ${left===1?'day':'days'} left`:''].filter(Boolean).join(' · ');
-    return `<button class="sr-item${sel}" data-srg="${x.id}" role="option"><span class="sr-ic g">${G_FLAG}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>${hit?`Milestone: ${srchMark(hit.t,q)}`:`Goal${meta?' · '+meta:''}`}</small></span></button>`}
+    const sm=hit?hit.id:ih?ih[0].id:'',sub=hit?`Milestone: ${srchMark(hit.t,q)}`:ih?`${srchMark(ih[1].t,q)} · in ${esc(ih[0].t)}`:`Goal${meta?' · '+meta:''}`;
+    return `<button class="sr-item${sel}" data-srg="${x.id}"${sm?` data-srm="${esc(sm)}"`:''} role="option"><span class="sr-ic g">${G_FLAG}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>${sub}</small></span></button>`}
   const st=hbStats(x).st;
   return `<button class="sr-item${sel}" data-srh="${x.id}" role="option"><span class="sr-ic">${RH_ICON}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>Habit · ${srHbDays(x)}${st>1?` · ${st}-day streak`:''}</small></span></button>`}
 function srchResults(){
@@ -5834,7 +5842,7 @@ document.addEventListener('click',e=>{
   const k=e.target.closest('[data-srk]');if(k){srchKind=k.dataset.srk;srchSel=0;haptic(4);srchDraw();$('srchIn').focus({preventScroll:true});return}
   const it=e.target.closest('[data-srt]');if(it){const id=+it.dataset.srt,t=S.tasks.find(x=>x.id===id);closeSearch();if(t&&t.inbox)srchToInbox();setTimeout(()=>openDetail(id),120);return}
   const nt=e.target.closest('[data-srn]');if(nt){const id=+nt.dataset.srn;closeSearch();srchToInbox();setTimeout(()=>openNote(id),160);return}
-  const go=e.target.closest('[data-srg]');if(go){closeSearch();openGoal(go.dataset.srg);return}
+  const go=e.target.closest('[data-srg]');if(go){closeSearch();openGoal(go.dataset.srg);if(go.dataset.srm&&gdOn){gSelId=go.dataset.srm;drawGoal()}return}
   if(e.target.closest('[data-srh]')){closeSearch();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();openRhythm();return}
   const fp=e.target.closest('[data-sfp]');if(fp){const v=fp.dataset.sfp;SF.pri.has(v)?SF.pri.delete(v):SF.pri.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
   const ft=e.target.closest('[data-sft]');if(ft){const v=ft.dataset.sft;SF.tags.has(v)?SF.tags.delete(v):SF.tags.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
@@ -6818,7 +6826,7 @@ function eveningNow(){const at=+C().hbCiAt;return new Date().getHours()>=(Number
 function cdCard(){
   if(!C().closeDay||S.cdDone===today()||S.cdSkip===today()||!eveningNow())return '';
   const n=habitsOn()?hbOpenToday().length:0;
-  return `<div class="ci-home cd-home"><span class="ci-hi cd-hi">${RH_ICON}</span><span class="ci-ht"><b>Close the day</b><small>${n?`${n} ${n===1?'habit':'habits'} left · `:''}30 seconds</small></span>
+  return `<div class="ci-home cd-home"><span class="ci-hi cd-hi">${RH_ICON}</span><span class="ci-ht"><b>Close the day</b><small>${n?`${n} ${n===1?'habit':'habits'} left`:'Takes 30 seconds'}</small></span>
     <button class="rv-skip" data-cdlater>Later</button><button class="rv-go" data-cdopen>Start</button></div>`}
 /* the evening card: Close the day takes the place of the habits check-in when it's on */
 const _cdCi=ciCard;ciCard=function(){return C().closeDay?cdCard():_cdCi()};
@@ -8231,7 +8239,7 @@ function youHead(){
   const tabs=[['profile','Profile'],['account','Account'],['stats','Stats'],['download','Download']];
   const warn=CLOUD&&!window.__u; // not backed up yet: a small dot on the Account tab
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close">${BACK_SVG}</button><button class="you-set" id="youSet">Settings${CHEV}</button></div>
-  <div class="you-head"><button class="you-av" id="youAv" type="button" aria-label="Change avatar">${avatarHTML('xl')}<span class="you-av-ed" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span></button><div class="you-hl"><input class="you-name you-name-in" id="youName" maxlength="40" autocomplete="name" autocapitalize="words" enterkeyhint="done" spellcheck="false" placeholder="Your name" aria-label="Your name" value="${esc(S.cfg.name||'')}"><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${streak()} day streak · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
+  <div class="you-head"><button class="you-av" id="youAv" type="button" aria-label="Change avatar">${avatarHTML('xl')}<span class="you-av-ed" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span></button><div class="you-hl"><input class="you-name you-name-in" id="youName" maxlength="40" autocomplete="name" autocapitalize="words" enterkeyhint="done" spellcheck="false" placeholder="Your name" aria-label="Your name" value="${esc(S.cfg.name||'')}"><p>${goalMin()?`${fmt(focusToday())} of ${fmt(goalMin())} focused today`:`${(s=>s?`${s}-day streak`:'No streak yet')(streak())} · ${S.tasks.filter(t=>t.doneAt&&dkey(t.doneAt)===today()).length} done today`}</p></div></div>
   <div class="segc you-tabs" role="tablist">${tabs.map(([k,l])=>`<button data-yt="${k}" class="${youTab===k?'on':''}" role="tab" aria-selected="${youTab===k}">${l}${k==='account'&&warn?'<i class="yt-dot" aria-label="Not backed up"></i>':''}</button>`).join('')}</div>`;
 }
 /* is my data safe? a clear card at the top of Profile */
