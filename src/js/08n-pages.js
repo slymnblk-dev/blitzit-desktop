@@ -362,11 +362,21 @@ function gFacts(g){const pr=gProg(g),dd=gDays(g),dl=gDaysLeft(g),top=pr.of>0&&pr
 var G_SPARK='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.5c.5 5.6 4.9 10 10.5 10.5-5.6.5-10 4.9-10.5 10.5C11.5 16.9 7.1 12.5 1.5 12 7.1 11.5 11.5 7.1 12 1.5z"/></svg>';
 /* your north star: a small gold star twinkling in the sky above the summit; hide it from the goal's ⋯ menu */
 const gNsSky=g=>g.star&&!g.done&&!g.hideNs?`<span class="gb-ns" role="img" aria-label="North star">${G_SPARK}<small>North star</small></span>`:'';
-function gClimbView(g,anim){
+/* computers: the selected milestone's tasks on the left; every milestone (tick, pick, add) and Other tasks on the right,
+   so the tasks sit right under the hero and nothing scrolls sideways. Phones keep the track above the card. */
+const gWide=()=>matchMedia('(min-width:1100px)').matches;
+function gMsList(g){if(!g.ms.length)return '';const sel=gSel(g),nx=gNext(g),pr=gProg(g);
+  return `<div class="gm-msl"><div class="gv-sec"><h2>Milestones</h2><span>${pr.n} of ${pr.of} done</span></div><div class="gpo-list">${g.ms.map((m,i)=>{const n=gKids(m).length;
+    return `<div class="gpo-m${m.done?' on':''}${m===sel?' sel':''}${m===nx&&!g.done?' nx':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks">${esc(m.t)}${n?`<small>${gKids(m).filter(x=>x.done).length}/${n}</small>`:''}</button></div>`}).join('')}
+    ${g.ms.length<MS_MAX&&!g.done?gAddInput('Add a milestone'):''}</div></div>`}
+function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);
   return `<div class="gb-stage">${gNsSky(g)}${gbScene(g,anim)}<div class="gb-head">
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${gWhy(g)}</div></div>
     ${gFacts(g)}
-    ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,gSel(g)),gTasksSec(g))}`}
+    ${wide?gCols(sel?gMsCard(g,sel):gAddMsRow(g),gMsList(g)+gTasksSec(g))
+      :`${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,sel),gTasksSec(g))}`}`}
+/* crossing between phone and computer layouts redraws the open goal */
+matchMedia('(min-width:1100px)').addEventListener('change',()=>{if(gdOn)drawGoal()});
 function gPathView(g){
   const pr=gProg(g),dd=gDays(g),nx=gNext(g),sel=gSel(g);
   const st=g.ms.map((m,i)=>{const k=`${m.done?'done':m===nx?'now':''}${m===sel?' sel':''}`;

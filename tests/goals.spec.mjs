@@ -138,7 +138,10 @@ test('goals: one north star, limit of 3, sync/backup/undo, desktop layout', asyn
   await expect(page.locator('#gsPg')).not.toHaveClass(/on/);
   // starring another moves the star
   await page.evaluate(() => openGoal('g2'));
-  await expect(page.locator('#gdPg .gm-track')).toBeVisible();
+  // computers: the milestones sit in a list beside the card, which starts right under the hero
+  await expect(page.locator('#gdPg .gm-msl')).toBeVisible();
+  await expect(page.locator('#gdPg .gm-track')).toHaveCount(0);
+  expect((await page.locator('#gdPg .gm-card').boundingBox()).y).toBeLessThan(700);
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gm="star"]').click();
   expect(await page.evaluate(() => S.goals.filter(g => g.star).map(g => g.id))).toEqual(['g2']);
@@ -263,7 +266,7 @@ test('goals: Escape closes the ⋯ menu, then the goal page, then the Goals page
 });
 
 test('goal page: subtask rings, lists that scroll inside, even track, milestone editor popup', async ({ page }) => {
-  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.setViewportSize({ width: 600, height: 900 }); // the track is the phone and tablet layout
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.goals = true; const sp = S.spaces[0].id, l = S.lists.find(x => x.space === sp);
     S.goals = [{ id: 'g1', name: 'Run', e: '', space: sp, why: '', due: '', created: Date.now(), star: false, ms: ['A', 'B', 'C', 'D'].map((t, i) => ({ id: 'm' + i, t, done: i === 0 })) }];
@@ -276,6 +279,9 @@ test('goal page: subtask rings, lists that scroll inside, even track, milestone 
   const gaps = xs.slice(1).map((x, i) => x - xs[i]);
   expect(Math.max(...gaps) - Math.min(...gaps)).toBeLessThanOrEqual(2);
   expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gdPg .gm-n.sel .gm-nk'), '::after').content)).toBe('none');
+  // a computer swaps the track for the list beside the card
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await expect(page.locator('#gdPg .gm-msl .gpo-m')).toHaveCount(4);
   // subtasks: a ring with 1/3; tap it to see and tick them
   await expect(page.locator('#gdPg .gm-sub')).toHaveText('1/3');
   await page.locator('#gdPg .gm-sub').click();
@@ -319,7 +325,7 @@ test('goal page: subtask rings, lists that scroll inside, even track, milestone 
   await page.keyboard.press('Escape');
   await expect(page.locator('#gmEd')).not.toHaveClass(/on/);
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
-  await expect(page.locator('#gdPg .gm-n')).toHaveCount(4);
+  await expect(page.locator('#gdPg .gm-msl .gpo-m')).toHaveCount(4);
   noErrors(errors);
 });
 
@@ -402,7 +408,7 @@ test('goal page and Goals page: ⋯ menus to rename, move, add subtasks, delete;
   await page.locator('#cxPop button', { hasText: 'Move to' }).click();
   await page.locator('#cxPop button', { hasText: 'B' }).click();
   expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).ms)).toBe('m1');
-  await page.locator('#gdPg .gm-n[data-gsel="m1"]').click();
+  await page.locator('#gdPg .gm-msl [data-gsel="m1"]').click();
   await page.locator('#gdPg [data-gtm="t9001"]').click();
   await page.locator('#cxPop button', { hasText: 'Move to' }).click();
   await page.locator('#cxPop button', { hasText: 'Other tasks' }).click();

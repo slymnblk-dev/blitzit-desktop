@@ -2841,9 +2841,10 @@ button.hg-c:active{transform:scale(.88)}
 .gd-pg .gd-top{position:relative;z-index:6}
 
 /* ===== Goal · The climb ===== */
-.gb-stage{position:relative;height:clamp(360px,56vh,480px);margin:-8px -22px 0;overflow:hidden;
+.gb-stage{position:relative;height:clamp(360px,56vh,480px);margin:-8px -22px 0;overflow:hidden}
+/* the hills fade out at the sides; the name and the why stay crisp */
+.gb-svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:78%;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
-.gb-svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:78%}
 .gb-head{position:relative;padding:8px 22px 0;display:flex;flex-direction:column;gap:10px;max-width:640px}
 .gb-far{opacity:.9}
 .gb-rt0{fill:none;stroke:color-mix(in srgb,var(--text) 22%,transparent);stroke-width:2.5;stroke-dasharray:4 10;stroke-linecap:round}
@@ -2955,8 +2956,8 @@ button.hg-c:active{transform:scale(.88)}
 @media (max-width:699px){
   .hp-acts{position:absolute;top:max(18px,env(safe-area-inset-top,0px));right:22px;z-index:7}
   .hp-head{margin-top:6px}
-  .gb-stage{height:auto;display:flex;flex-direction:column;margin:-8px -22px 0;-webkit-mask-image:none;mask-image:none}
-  .gb-svg{position:relative;height:auto;margin-top:-10px}
+  .gb-stage{height:auto;display:flex;flex-direction:column;margin:-8px -22px 0}
+  .gb-svg{position:relative;height:auto;margin-top:-10px;-webkit-mask-image:none;mask-image:none}
 }
 .gb-svg{overflow:visible}
 .gpth-k.ghost{box-shadow:none;border:2px dashed color-mix(in srgb,var(--text) 16%,transparent);box-sizing:border-box}
@@ -3132,6 +3133,17 @@ button.hg-c:active{transform:scale(.88)}
 .gm-ts.ft.fb,.g-tasks.ft.fb{-webkit-mask-image:linear-gradient(transparent,#000 24px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(transparent,#000 24px,#000 calc(100% - 36px),transparent)}
 /* computers: the milestone card and Other tasks side by side */
 @media (min-width:1100px){.gm-cols.two{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:24px;align-items:start}.gm-cols.two .gm-other .gv-sec{margin-top:4px}}
+/* computers: the milestones in a calm list beside the selected milestone's card */
+.gm-msl{background:var(--surface);border-radius:22px;padding:6px 20px 6px}
+.gm-msl .gv-sec{margin:12px 0 6px}
+.gm-msl .gpo-m{font-size:15.5px;padding:12px 0}
+.gm-msl .gpo-m:first-child{border-top:0}
+.gm-msl .gpo-m.nx:not(.on) .gpo-k{box-shadow:inset 0 0 0 2px var(--today)}
+.gm-msl .gpo-m.sel .gpo-ml{color:var(--text)}
+.gm-msl .gv-add{padding:12px 0;border-top:1px solid var(--line);font-size:15px}
+.gv.anim .gm-msl{animation:pgIn .55s .42s var(--ease) both}
+.gm-other>.gv-sec:first-child{margin-top:4px}
+.gm-msl+.gv-sec{margin-top:28px}
 /* the milestone editor popup: centred, the page behind dims a little */
 .dlg.gme{background:rgba(10,10,14,.32)}
 .gme-in{max-width:520px;max-height:min(720px,calc(100vh - 40px));display:flex;flex-direction:column;gap:12px;padding:22px 22px 20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.35)}
@@ -3563,7 +3575,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=175; // bumped with every published update
+const APP_VERSION=176; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7222,11 +7234,21 @@ function gFacts(g){const pr=gProg(g),dd=gDays(g),dl=gDaysLeft(g),top=pr.of>0&&pr
 var G_SPARK='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.5c.5 5.6 4.9 10 10.5 10.5-5.6.5-10 4.9-10.5 10.5C11.5 16.9 7.1 12.5 1.5 12 7.1 11.5 11.5 7.1 12 1.5z"/></svg>';
 /* your north star: a small gold star twinkling in the sky above the summit; hide it from the goal's ⋯ menu */
 const gNsSky=g=>g.star&&!g.done&&!g.hideNs?`<span class="gb-ns" role="img" aria-label="North star">${G_SPARK}<small>North star</small></span>`:'';
-function gClimbView(g,anim){
+/* computers: the selected milestone's tasks on the left; every milestone (tick, pick, add) and Other tasks on the right,
+   so the tasks sit right under the hero and nothing scrolls sideways. Phones keep the track above the card. */
+const gWide=()=>matchMedia('(min-width:1100px)').matches;
+function gMsList(g){if(!g.ms.length)return '';const sel=gSel(g),nx=gNext(g),pr=gProg(g);
+  return `<div class="gm-msl"><div class="gv-sec"><h2>Milestones</h2><span>${pr.n} of ${pr.of} done</span></div><div class="gpo-list">${g.ms.map((m,i)=>{const n=gKids(m).length;
+    return `<div class="gpo-m${m.done?' on':''}${m===sel?' sel':''}${m===nx&&!g.done?' nx':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks">${esc(m.t)}${n?`<small>${gKids(m).filter(x=>x.done).length}/${n}</small>`:''}</button></div>`}).join('')}
+    ${g.ms.length<MS_MAX&&!g.done?gAddInput('Add a milestone'):''}</div></div>`}
+function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);
   return `<div class="gb-stage">${gNsSky(g)}${gbScene(g,anim)}<div class="gb-head">
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${gWhy(g)}</div></div>
     ${gFacts(g)}
-    ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,gSel(g)),gTasksSec(g))}`}
+    ${wide?gCols(sel?gMsCard(g,sel):gAddMsRow(g),gMsList(g)+gTasksSec(g))
+      :`${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,sel),gTasksSec(g))}`}`}
+/* crossing between phone and computer layouts redraws the open goal */
+matchMedia('(min-width:1100px)').addEventListener('change',()=>{if(gdOn)drawGoal()});
 function gPathView(g){
   const pr=gProg(g),dd=gDays(g),nx=gNext(g),sel=gSel(g);
   const st=g.ms.map((m,i)=>{const k=`${m.done?'done':m===nx?'now':''}${m===sel?' sel':''}`;
