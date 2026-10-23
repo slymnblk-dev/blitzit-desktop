@@ -321,3 +321,20 @@ test('goal page: subtask rings, lists that scroll inside, even track, milestone 
   await expect(page.locator('#gdPg .gm-n')).toHaveCount(4);
   noErrors(errors);
 });
+
+test('goal page: a milestone takes many tasks (My week first, then Later), newest scrolls into view', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true; const sp = S.spaces[0].id;
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: sp, why: '', due: '', created: Date.now(), star: false, ms: [{ id: 'm0', t: 'A', done: false }] }];
+    save(); applySettings(); openGoal('g1'); });
+  const room = await page.evaluate(() => { const ls = S.lists.filter(l => l.space === S.goals[0].space); return ls.reduce((n, l) => n + Math.max(0, STAGE_MAX - stageCount(l.id, 'week')), 0); });
+  for (let i = 0; i < room + 3; i++) { await page.fill('#gMtIn', 'T' + i); await page.keyboard.press('Enter'); }
+  const st = await page.evaluate(() => S.tasks.filter(x => x.ms === 'm0').map(x => x.stage));
+  expect(st.length).toBe(room + 3);
+  expect(st.filter(s => s === 'backlog').length).toBe(3);
+  await expect(page.locator('#toastMsg')).toContainText('My week is full');
+  await expect(page.locator('#gdPg .gm-t').last()).toBeInViewport();
+  expect(await page.evaluate(() => { const el = document.querySelector('#gdPg .gm-ts'); return el.scrollHeight > el.clientHeight; })).toBe(true);
+  noErrors(errors);
+});

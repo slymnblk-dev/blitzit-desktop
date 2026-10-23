@@ -147,15 +147,19 @@ function gMsToggle(g,m){
   if(on)haptic([8,30,12]);
 }
 /* a new task for a milestone lands in My week, in the goal's space */
+/* where a goal's task can go: My week in any list of the goal's space with room, else Later (each list holds up to STAGE_MAX per stage) */
+function gRoom(g){const ls=S.lists.filter(l=>l.space===g.space);for(const st of ['week','backlog']){const l=ls.find(x=>stageRoom(x.id,st));if(l)return {l,st}}return null}
 function gMsAddTask(g,m,title){
-  const l=gSpaceList(g,'week');if(!l){toast('Add a list to this space first');return false}
-  if(!canPut(l.id,'week'))return false;
-  commit(()=>{addTask({id:newId(),title,stage:'week',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id,ms:m.id});if(m.done){m.done=false;delete m.doneAt}},`Added to ${l.name} · My week`);
+  if(!S.lists.some(l=>l.space===g.space)){toast('Add a list to this space first');return false}
+  const r=gRoom(g);if(!r){toast(`Every list in this space is full in My week and Later (${STAGE_MAX} each). Finish or move a few first.`);haptic([10,40,10]);return false}
+  const sn=STAGES[idx(r.st)].name;
+  commit(()=>{addTask({id:newId(),title,stage:r.st,list:r.l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id,ms:m.id});if(m.done){m.done=false;delete m.doneAt}},
+    r.st==='week'?`Added to ${r.l.name} · My week`:`Added to ${r.l.name} · ${sn} (My week is full)`);
   try{sfx('add')}catch(e){}return true;
 }
 /* tick a task from the milestone card; un-ticking puts it back in My week */
-function gTaskToggle(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;const on=t.stage!=='done';
-  commit(()=>setStage(t,on?'done':'week'),on?'Task done':'Task back in My week');if(on)haptic([8,30,12])}
+function gTaskToggle(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;const on=t.stage!=='done',back=stageRoom(t.list,'week')?'week':'backlog';
+  commit(()=>setStage(t,on?'done':back),on?'Task done':`Task back in ${STAGES[idx(back)].name}`);if(on)haptic([8,30,12])}
 /* deleting a milestone keeps its tasks; they move to Other tasks */
 function gMsDelete(g,ms){commit(()=>{g.ms=g.ms.filter(x=>x!==ms);S.tasks.forEach(t=>{if(String(t.ms)===String(ms.id))delete t.ms})},'Milestone removed · its tasks stay')}
 function gMsAdd(g){
@@ -193,7 +197,7 @@ $('gdPg').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&g){
     if(e.target.id==='gMsIn'){e.preventDefault();return gMsAdd(g)}
     if(e.target.id==='gMtIn'){e.preventDefault();const v=e.target.value.trim(),m=g.ms.find(x=>x.id===e.target.dataset.gms);if(!v||!m)return;
-      if(gMsAddTask(g,m,v)){drawGoal();const n=$('gMtIn');if(n)n.focus()}return}
+      if(gMsAddTask(g,m,v)){drawGoal();const n=$('gMtIn');if(n)n.focus();const ts=$('gdIn').querySelector('.gm-ts');if(ts){ts.scrollTop=ts.scrollHeight;vFade(ts)}}return} // show the new task at the bottom
   }
   if(e.key==='Escape'){
     if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on'))return;
