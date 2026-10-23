@@ -293,7 +293,7 @@ function gMsCard(g,m,cls){if(!m)return '';
     ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
 /* every milestone on one track that always fits: the first one is always in view, nothing scrolls sideways */
 function gTrack(g){const sel=gSel(g),nx=gNext(g),N=g.ms.length,last=g.ms.map(m=>!!m.done).lastIndexOf(true),f=N>1&&last>0?last/(N-1):0,pr=gProg(g);
-  return `<div class="gm-head"><h2>Milestones</h2><span>${pr.n} of ${N} done</span><div class="gm-acts">${N<MS_MAX&&!g.done?`<button class="gs-addb" data-gaddms aria-expanded="${gAddMs}" aria-label="Add a milestone">${PLUS_S}<span>Milestone</span></button>`:''}<button class="gs-addb" data-gedit aria-label="Edit milestones">${PEN_S}<span>Edit</span></button></div></div>
+  return `<div class="gm-head"><h2>Milestones</h2><span>${pr.n} of ${N} done</span></div>
     <div class="gm-tw"><div class="gm-track${N>6?' many':''}" style="--n:${N};--f:${f.toFixed(4)}"><i class="gm-fill"></i>${g.ms.map((m,i)=>{const ts=gKids(m),dn=ts.filter(x=>x.done).length;
     return `<button class="gm-n${m.done?' done':''}${m===nx&&!g.done?' now':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}" style="--i:${i}"><span class="gm-nk">${m.done?CK:i+1}</span><span class="gm-nl">${esc(m.t)}</span>${ts.length?`<span class="gm-np">${dn}/${ts.length} tasks</span>`:''}</button>`}).join('')}</div></div>`}
 function gAddMsRow(g,ph){return (gAddMs||!g.ms.length)&&g.ms.length<MS_MAX&&!g.done?`<div class="gm-addms">${gAddInput(ph||(g.ms.length?'New milestone':'Add your first milestone'))}</div>`:''}
@@ -394,7 +394,6 @@ $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
   const sl=e.target.closest('[data-gsel]');if(sl){gSelId=sl.dataset.gsel;haptic(5);drawGoal();
     if(sl.closest('.gb-svg')){const c=$('gdIn').querySelector('.gm-card');if(c)c.scrollIntoView({behavior:gSmooth(),block:'nearest'})}return}
-  if(e.target.closest('[data-gaddms]')){gAddMs=!gAddMs;haptic(5);drawGoal();const i=$('gMsIn');if(i&&gAddMs)i.focus();return}
   const tm=e.target.closest('[data-gtm]');if(tm){const r=gKid(g,tm.dataset.gtm);if(r)cxOpen(tm,gTaskMenu(g,r));return}
   const ed=e.target.closest('[data-gedt]');if(ed){gRen=ed.dataset.gedt;drawGoal();gFocus(`[data-gren="${gRen}"]`);return}
   const mm=e.target.closest('[data-gmm]');if(mm){const m=g.ms.find(x=>x.id===mm.dataset.gmm);if(m)cxOpen(mm,gMsMenu(g,m));return}

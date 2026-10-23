@@ -180,14 +180,15 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await expect(page.locator('#gdPg .gm-card .gm-tag')).toHaveText('Next');
   await page.locator('#gdPg .gm-card [data-gtk]').dblclick();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(4);
-  // "+ Milestone" opens the add field and focuses it
-  await page.locator('#gdPg [data-gaddms]').click();
-  await expect(page.locator('#gMsIn')).toBeFocused();
-  await page.keyboard.type('Extra step');
+  // adding a milestone lives in the goal's ⋯ menu → Edit milestones (no extra buttons on the page)
+  await expect(page.locator('#gdPg .gm-head button')).toHaveCount(0);
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gedit]').click();
+  await page.fill('#gmeAdd', 'Extra step');
   await page.keyboard.press('Enter');
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.length)).toBe(7);
-  await page.keyboard.press('Escape'); // closes the add row, not the page
-  await expect(page.locator('#gMsIn')).toHaveCount(0);
+  await page.keyboard.press('Escape'); // closes the popup, not the page
+  await expect(page.locator('#gmEd')).not.toHaveClass(/on/);
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
   await page.evaluate(() => { S.goals[0].ms.pop(); save(); render(); });
   // tapping a milestone (track or hill dot) opens its card and never ticks it
@@ -290,7 +291,8 @@ test('goal page: subtask rings, lists that scroll inside, even track, milestone 
   expect(sc[1]).toBeGreaterThan(100);
   await expect(page.locator('#gdPg .gm-ts')).toHaveClass(/fb/);
   // milestone editor: a popup in the middle; rename, reorder (drag and keys), add, delete; Escape closes only the popup
-  await page.locator('#gdPg .gm-head [data-gedit]').click();
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gedit]').click();
   await expect(page.locator('#gmEd')).toHaveClass(/on/);
   const box = await page.locator('#gmEd .gme-in').boundingBox();
   expect(Math.abs(box.x + box.width / 2 - 700)).toBeLessThan(4);
