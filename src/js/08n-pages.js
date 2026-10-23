@@ -3,7 +3,7 @@
    Goal:   The climb (default), Path or Poster, picked under ⋯ → View (per goal; default in Settings → Modes).
    Completed things use the brand colour (--today); green stays for switches in Settings.
    Data, sheets and actions live in 08j-habits.js and 08k-goals.js. */
-var hpWeek=0,hpMenu=false,hgT=null,hpHtml='',hpTapAt={},gbPrev=null,gdHtml='',gTickBusy=false;
+var hpWeek=0,hpMenu=false,hgT=null,hpHtml='',hpTapAt={},gbPrev=null,gdHtml='',gTickBusy=false,gSelId=null,gAddMs=false;
 const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const DOTS_V='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
 const ARR_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
@@ -174,34 +174,44 @@ function gbScene(g,anim){
     ${g.ms.map((m,i)=>`<circle class="gb-hit" data-gsel="${m.id}" cx="${P[i+1][0].toFixed(1)}" cy="${P[i+1][1].toFixed(1)}" r="30"><title>${esc(m.t)}</title></circle>`).join('')}
     <g class="gb-flag" transform="translate(${S[0].toFixed(1)} ${S[1].toFixed(1)})"><path class="gb-pole" d="M0 0V-46"/><path class="gb-cloth" d="M0 -46l30 10 -30 10z"/></g>
     <g class="gb-me"><circle class="gb-halo" r="22"/><circle class="gb-dot" r="10"/></g></svg>`}
-function gTasksSec(g){const moved=gMoved(g),open=gTasks(g).filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
+/* tasks linked to the goal but to no milestone */
+function gTasksSec(g){const lo=gLoose(g),wk=gMon(),moved=lo.filter(t=>t.stage==='done'&&(t.doneAt||0)>=wk),open=lo.filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
   const row=t=>`<button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>`;
-  return `<div class="gv-sec"><h2>Linked tasks</h2><span>${moved.length?`${moved.length} moved it this week`:''}</span></div><div class="g-tasks">${open.slice(0,8).map(row).join('')}${moved.slice(0,5).map(row).join('')}</div>`}
+  return `<div class="gv-sec"><h2>Other tasks</h2><span>${moved.length?`${moved.length} done this week`:''}</span></div><div class="g-tasks">${open.slice(0,8).map(row).join('')}${moved.slice(0,5).map(row).join('')}</div>`}
 function gEditSec(g){return gdEdit?`<div class="gv-sec"><h2>Milestones</h2><button class="txt-btn gd-ed" data-gedit>Done</button></div><div class="g-mslist editing">${gMsRows(g)}</div>`:''}
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
-function gNextAct(g,m){const tk=gTaskOf(m);return tk?`<button class="gv-link" data-gtask="${tk.id}">Linked to “${esc(tk.title)}”</button>`:`<button class="gv-link" data-gmk="${m.id}">Make it a task</button>`}
 const gSmooth=()=>matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
-/* a soft fade on the edge that still has steps behind it, so it's clear the row scrolls */
-function gsFade(row){const x=row.scrollLeft,max=row.scrollWidth-row.clientWidth;row.classList.toggle('fl',x>4);row.classList.toggle('fr',x<max-4)}
-/* tapping a dot on the hill brings its step into view and lights it up for a moment (it never ticks it) */
-function gsShow(id){const b=document.querySelector(`#gdPg .gs-row [data-gtk="${id}"]`),st=b&&b.closest('.gs-step');if(!st)return;haptic(5);
-  const row=st.parentElement;row.scrollTo({left:row.scrollLeft+st.getBoundingClientRect().left-row.getBoundingClientRect().left-14,behavior:gSmooth()});st.classList.remove('flash');void st.offsetWidth;st.classList.add('flash');setTimeout(()=>st.classList.remove('flash'),1400)}
+/* the selected milestone (tap one on the track, the hill or the path); by default the next one */
+function gSel(g){return g.ms.find(m=>m.id===gSelId)||gNext(g)||g.ms[g.ms.length-1]||null}
+function gTaskRow(t){const on=t.stage==='done';
+  return `<div class="gm-t${on?' on':''}"><button class="gm-k" data-gmt="${t.id}" aria-pressed="${on}" aria-label="${on?'Reopen':'Done'}: ${esc(t.title)}">${CK}</button><button class="gm-tt" data-gtask="${t.id}"><b>${esc(t.title)}</b><small>${on?'Done':esc(STAGES[idx(t.stage)].name)}</small></button></div>`}
+/* a milestone's card: its tasks (in the order you added them), add a task, mark it done */
+function gMsCard(g,m,cls){if(!m)return '';
+  const i=g.ms.indexOf(m),ts=gMsTasks(m).sort((a,b)=>a.id-b.id),dn=ts.filter(t=>t.stage==='done').length,nx=gNext(g),live=!m.done&&!g.done;
+  return `<div class="gm-card${cls?' '+cls:''}" data-gcard="${m.id}"><div class="gm-h"><div class="gm-hx"><span class="gm-tag">${m.done?(m.doneAt?`Done · ${gShort(m.doneAt)}`:'Done'):m===nx?'Next':`Milestone ${i+1}`}</span><b>${esc(m.t)}</b>
+      <small>${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'} done`:'No tasks yet'}</small></div>
+    ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':'Mark done'}</button>`}</div>
+    ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts">${ts.map(gTaskRow).join('')}</div>`
+      :live?`<p class="gm-empty">Break it into a few tasks. They land in My week, and finishing the last one completes this milestone.</p>`:''}
+    ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
+/* every milestone on one track that always fits: the first one is always in view, nothing scrolls sideways */
+function gTrack(g){const sel=gSel(g),nx=gNext(g),N=g.ms.length,last=g.ms.map(m=>!!m.done).lastIndexOf(true),f=N>1&&last>0?last/(N-1):0;
+  return `<div class="gm-tw"><div class="gm-track${N>6?' many':''}" style="--f:${f.toFixed(4)}"><i class="gm-fill"></i>${g.ms.map((m,i)=>{const ts=gMsTasks(m),dn=ts.filter(t=>t.stage==='done').length;
+    return `<button class="gm-n${m.done?' done':''}${m===nx&&!g.done?' now':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}" style="--i:${i}"><span class="gm-nk">${m.done?CK:i+1}</span><span class="gm-nl">${esc(m.t)}</span>${ts.length?`<span class="gm-np">${dn}/${ts.length} tasks</span>`:''}</button>`}).join('')}</div>
+    ${N<MS_MAX&&!g.done?`<button class="gs-addb" data-gaddms aria-expanded="${gAddMs}" aria-label="Add a milestone">${PLUS_S}Milestone</button>`:''}</div>`}
+function gAddMsRow(g,ph){return (gAddMs||!g.ms.length)&&g.ms.length<MS_MAX&&!g.done?`<div class="gm-addms">${gAddInput(ph||(g.ms.length?'New milestone':'Add your first milestone'))}</div>`:''}
 function gClimbView(g,anim){
-  const pr=gProg(g),dd=gDays(g),nx=gNext(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
-  const steps=g.ms.map((m,i)=>{const k=m.done?'done':m===nx?'now':'';
-    return `<div class="gs-step ${k}" style="--i:${i}"><span class="gs-bar"><i></i></span><button class="gs-tk" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}"><span class="gs-ring">${CK}</span><span class="gs-lb">${m.done?(m.doneAt?gShort(m.doneAt):'Done'):m===nx?'Next':`Step ${i+1}`}</span></button>
-      <span class="gs-t">${esc(m.t)}</span>${m===nx&&!g.done?gNextAct(g,m):''}</div>`}).join('');
+  const pr=gProg(g),dd=gDays(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
   return `<div class="gb-stage">${gbScene(g,anim)}<div class="gb-head"><span class="hp-eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:`Goal${g.due?` · by ${gLong(g.due)}`:''}`}${g.star&&!g.done?`<span class="gd-ns">${G_STAR}North star</span>`:''}</span>
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why" data-gwhy>${esc(g.why)}</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}</div></div>
     <div class="gb-stats"><span><b data-cnt="${pr.n}">${pr.n}</b><small>of ${pr.of} milestones</small></span>${g.done?'':`<span><b ${typeof dd.n==='number'?`data-cnt="${dd.n}"`:''}>${dd.n}</b><small>${dd.t}</small></span>`}${top?'':`<span><b class="gb-pace">${gPaceTxt(g)}</b><small>pace</small></span>`}
       ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>
-    ${g.ms.length<MS_MAX&&!g.done&&g.ms.length?`<div class="gs-head"><button class="gs-addb" data-gaddms>${PLUS_S}Milestone</button></div>`:''}
-    <div class="gs-row">${steps}${g.ms.length<MS_MAX&&!g.done?`<div class="gs-step add"><span class="gs-bar"></span>${gAddInput(g.ms.length?'New milestone':'Add your first milestone')}</div>`:''}</div>`}
+    ${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gMsCard(g,gSel(g))}`}
 function gPathView(g){
-  const pr=gProg(g),dd=gDays(g),nx=gNext(g);
-  const st=g.ms.map((m,i)=>{const k=m.done?'done':m===nx?'now':'';
+  const pr=gProg(g),dd=gDays(g),nx=gNext(g),sel=gSel(g);
+  const st=g.ms.map((m,i)=>{const k=`${m.done?'done':m===nx?'now':''}${m===sel?' sel':''}`;
     return `<div class="gpth ${k}" style="--i:${i}"><span class="gpth-ln"><button class="gpth-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}<i></i></button><b></b></span>
-      <span class="gpth-tx">${m===nx&&!g.done?'<span class="gpth-nx">Next</span>':''}<span class="gpth-t">${esc(m.t)}</span>${m.done&&m.doneAt?`<small>Done ${gShort(m.doneAt)}</small>`:''}${m===nx&&!g.done?gNextAct(g,m):''}</span></div>`}).join('');
+      <span class="gpth-tx">${m===nx&&!g.done?'<span class="gpth-nx">Next</span>':''}<button class="gpth-t" data-gsel="${m.id}" aria-expanded="${m===sel}">${esc(m.t)}</button>${m.done&&m.doneAt?`<small>Done ${gShort(m.doneAt)}</small>`:''}${m===sel?gMsCard(g,m,'in'):(n=>n?`<small>${gMsTasks(m).filter(t=>t.stage==='done').length} of ${n} tasks</small>`:'')(gMsTasks(m).length)}</span></div>`}).join('');
   return `<div class="gpv"><span class="hp-eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:`${esc((spaceOf(g.space)||{}).name||'Goal')}${g.due?` · by ${gLong(g.due)}`:''}`}</span>
     <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why q" data-gwhy>“${esc(g.why)}”</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}
     <div class="gpv-bar"><i style="--w:${(pr.p*100).toFixed(1)}%"></i></div>
@@ -209,14 +219,14 @@ function gPathView(g){
     <div class="gpth-list">${st}${g.ms.length<MS_MAX&&!g.done?`<div class="gpth add"><span class="gpth-ln"><span class="gpth-k ghost"></span></span><span class="gpth-tx">${gAddInput(g.ms.length?'Add a milestone':'Add your first milestone')}</span></div>`:''}</div>
     ${pr.of&&pr.n>=pr.of&&!g.done?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
 function gPosterView(g){
-  const pr=gProg(g),dl=gDaysLeft(g),nx=gNext(g),big=g.done?'Done':dl===null?'—':Math.abs(dl);
+  const pr=gProg(g),dl=gDaysLeft(g),nx=gNext(g),sel=gSel(g),big=g.done?'Done':dl===null?'—':Math.abs(dl);
   return `<div class="gpo"><div class="gpo-l"><span class="hp-eye">${esc(g.name)}${g.due?` · ${gLong(g.due)}`:''}</span>
       <div class="gpo-num"><b ${typeof big==='number'?`data-cnt="${big}"`:''}>${big}</b><span>${g.done?'Goal achieved.':dl===null?'No date set.':dl===0?'Today is the day.':dl<0?`${dl===-1?'day':'days'} past due.`:`${dl===1?'day':'days'} to go.`}</span></div>
       <div class="gpo-segs">${(g.ms.length?g.ms:[{}]).map((m,i)=>`<i class="${m.done?'on':''}" style="--i:${i}"></i>`).join('')}</div>
       <div class="gpv-meta"><span><b>${pr.n} of ${pr.of}</b> milestones</span><span>${gPaceTxt(g)}</span></div></div>
-    <div class="gpo-r">${nx&&!g.done?`<div class="gpo-next"><span>Next step</span><b>${esc(nx.t)}</b>${gTaskOf(nx)?`<button class="gpo-btn" data-gtask="${gTaskOf(nx).id}">Open the task</button>`:`<button class="gpo-btn" data-gmk="${nx.id}">Make it a task</button>`}</div>`
-      :pr.of&&!g.done?`<div class="gpo-next"><span>Summit reached</span><b>Every milestone is done.</b><button class="gpo-btn" data-gwin>Mark achieved</button></div>`:''}
-      <div class="gpo-list">${g.ms.map(m=>`<button class="gpo-m${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}"><span class="gpo-k">${CK}</span>${esc(m.t)}</button>`).join('')}${g.ms.length<MS_MAX&&!g.done?gAddInput(g.ms.length?'Add a milestone':'Add your first milestone'):''}</div></div></div>`}
+    <div class="gpo-r">${pr.of&&!nx&&!g.done&&gSelId==null?`<div class="gpo-next"><span>Summit reached</span><b>Every milestone is done.</b><button class="gpo-btn" data-gwin>Mark achieved</button></div>`
+      :g.ms.length&&!g.done?gMsCard(g,sel,'hot'):''}
+      <div class="gpo-list">${g.ms.map(m=>`<div class="gpo-m${m.done?' on':''}${m===sel&&!g.done?' sel':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}">${esc(m.t)}${(n=>n?`<small>${gMsTasks(m).filter(t=>t.stage==='done').length}/${n}</small>`:'')(gMsTasks(m).length)}</button></div>`).join('')}${g.ms.length<MS_MAX&&!g.done?gAddInput(g.ms.length?'Add a milestone':'Add your first milestone'):''}</div></div></div>`}
 function drawGoal(){
   const g=gById(gdId);if(!g){closeGoal();return}
   const y=$('gdPg').scrollTop,v=gView(g),anim=gdAnim;
@@ -224,23 +234,21 @@ function drawGoal(){
   const html=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${gMenuHTML(g)}</div>
     <div class="gv gv-${v}${anim?' anim':''}">${body}${gEditSec(g)}${gTasksSec(g)}</div>`;
   if(!anim&&html===gdHtml)return;
-  const old=$('gdIn').querySelector('.gs-row'),sl=old?old.scrollLeft:0;
   gdHtml=html;$('gdIn').innerHTML=html;$('gdPg').scrollTop=y;if(anim)countUp($('gdIn'));
-  /* the milestone row: on open, if "Next" is out of sight, start one step before it so the last win shows too;
-     on later redraws stay put, gliding only if "Next" moved out of sight */
-  const row=$('gdIn').querySelector('.gs-row'),now=row&&row.querySelector('.gs-step.now');if(!row)return;
-  row.addEventListener('scroll',()=>gsFade(row),{passive:true});requestAnimationFrame(()=>gsFade(row));
-  if(!anim)row.scrollLeft=sl;gsFade(row);if(!now)return;
-  const r=row.getBoundingClientRect(),n=now.getBoundingClientRect(),prev=now.previousElementSibling;
-  const hid=n.left<r.left||n.right>r.right;
-  if(anim){if(hid)row.scrollLeft=Math.max(0,row.scrollLeft+(prev||now).getBoundingClientRect().left-r.left-14);return}
-  if(hid)row.scrollTo({left:row.scrollLeft+n.left-r.left-14,behavior:gSmooth()});
 }
+/* while you type, outside changes wait; once you leave the field the page catches up */
+$('gdPg').addEventListener('focusout',e=>{if(!e.target.matches('input,textarea'))return;setTimeout(()=>{const a=document.activeElement;if(gdOn&&!(a&&a.closest&&a.closest('#gdPg')&&a.matches('input,textarea')))drawGoal()},0)});
 $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
-  const dot=e.target.closest('[data-gsel]');if(dot)return gsShow(dot.dataset.gsel);
-  if(e.target.closest('[data-gaddms]')){const i=$('gMsIn');if(i){haptic(5);i.closest('.gs-step').scrollIntoView({behavior:gSmooth(),block:'nearest',inline:'end'});i.focus({preventScroll:true})}return}
-  const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m||gTickBusy)return;gTickBusy=true;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);
+  const sl=e.target.closest('[data-gsel]');if(sl){gSelId=sl.dataset.gsel;haptic(5);drawGoal();
+    if(sl.closest('.gb-svg')){const c=$('gdIn').querySelector('.gm-card');if(c)c.scrollIntoView({behavior:gSmooth(),block:'nearest'})}return}
+  if(e.target.closest('[data-gaddms]')){gAddMs=!gAddMs;haptic(5);drawGoal();const i=$('gMsIn');if(i&&gAddMs)i.focus();return}
+  const mt=e.target.closest('[data-gmt]');if(mt){if(gTickBusy)return;gTickBusy=true;const t=S.tasks.find(x=>x.id===+mt.dataset.gmt),m=t&&gMsOf(g,t);
+    if(m)gSelId=m.id;mt.closest('.gm-t').classList.toggle('on');
+    setTimeout(()=>{try{gTaskToggle(+mt.dataset.gmt);
+      // the milestone just finished: let the moment show, then move on to the next one
+      if(m&&m.done)setTimeout(()=>{if(gdOn&&gSelId===m.id){gSelId=null;drawGoal()}},1200)}finally{setTimeout(()=>gTickBusy=false,250)}},180);return}
+  const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m||gTickBusy)return;gTickBusy=true;const el=t.closest('.gpth,.gpo-m,.gm-card')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);
     setTimeout(()=>{try{gMsToggle(g,m)}finally{setTimeout(()=>gTickBusy=false,250)}},200);return}
 });
 

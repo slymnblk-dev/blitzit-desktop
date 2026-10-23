@@ -173,38 +173,11 @@ button.hg-c:active{transform:scale(.88)}
 .gb-stats .gv-win{margin-left:auto;align-self:center}
 .gv.anim .gb-stats>*{animation:pgIn .55s var(--ease) both}
 .gv.anim .gb-stats>*:nth-child(2){animation-delay:.08s}.gv.anim .gb-stats>*:nth-child(3){animation-delay:.16s}
-.gs-head{display:flex;justify-content:flex-end;margin:-14px 0 10px}
 .gs-addb{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 10px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:color .2s,box-shadow .2s}
 .gs-addb svg{width:14px;height:14px}
 .gs-addb:hover{color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 30%,transparent)}
 .gb-hit{fill:transparent;pointer-events:all;cursor:pointer}
 .gb-svg{pointer-events:none}.gb-svg .gb-hit{pointer-events:all}
-.gs-step.flash .gs-t{animation:gsFlash 1.4s var(--ease)}
-.gs-step.flash .gs-ring{animation:gsRing 1.4s var(--ease)}
-@keyframes gsFlash{20%,60%{color:var(--today)}}
-@keyframes gsRing{20%{transform:scale(1.25);box-shadow:inset 0 0 0 2px var(--today)}60%{transform:scale(1)}}
-.gs-row.fr{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 48px),transparent)}
-.gs-row.fl{-webkit-mask-image:linear-gradient(to right,transparent,#000 12px);mask-image:linear-gradient(to right,transparent,#000 12px)}
-.gs-row.fl.fr{-webkit-mask-image:linear-gradient(to right,transparent,#000 12px,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(to right,transparent,#000 12px,#000 calc(100% - 48px),transparent)}
-.gs-row{display:flex;gap:18px;overflow-x:auto;scroll-padding-inline:14px;scrollbar-width:none;padding-bottom:6px;scroll-snap-type:x proximity}
-.gs-row::-webkit-scrollbar{display:none}
-.gs-step{flex:1 0 170px;max-width:280px;display:flex;flex-direction:column;gap:9px;scroll-snap-align:start}
-.gs-bar{height:3px;border-radius:2px;background:color-mix(in srgb,var(--text) 10%,transparent);overflow:hidden;display:block}
-.gs-bar i{display:block;height:100%;width:0;background:var(--today);border-radius:2px;transition:width .7s var(--ease)}
-.gs-step.done .gs-bar i{width:100%}
-.gs-step.now .gs-bar i{width:40%}
-.gs-step.add .gs-bar{background:none;border-top:2px dashed color-mix(in srgb,var(--text) 10%,transparent);height:0}
-.gs-tk{display:flex;align-items:center;gap:8px;padding:2px 0;align-self:flex-start}
-.gs-ring{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 25%,transparent);display:grid;place-items:center;color:transparent;transition:background .3s var(--ease),box-shadow .3s,color .2s,transform .35s var(--spring)}
-.gs-ring svg{width:11px;height:11px}
-.gs-tk:hover .gs-ring{box-shadow:inset 0 0 0 2px var(--today)}
-.gs-step.done .gs-ring{background:var(--today);box-shadow:none;color:#fff}
-.gs-step.now .gs-ring{box-shadow:inset 0 0 0 2px var(--today)}
-.gs-lb{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.gs-step.now .gs-lb{color:var(--today)}
-.gs-t{font-size:16.5px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
-.gs-step.done .gs-t{color:var(--muted);font-weight:500}
-.gv.anim .gs-step{animation:pgIn .55s var(--ease) both;animation-delay:calc(var(--i)*70ms + .3s)}
 @media (min-width:1100px){.gb-stage{margin:-8px -32px 0}.gb-head{padding:8px 32px 0}}
 
 /* ===== Goal · Path ===== */
@@ -261,6 +234,8 @@ button.hg-c:active{transform:scale(.88)}
 .gpo-k svg{width:12px;height:12px}
 .gpo-m.on .gpo-k{background:var(--today);box-shadow:none;color:#fff}
 .gpo-list .gv-add{padding:15px 0;border-top:1px solid var(--line)}
+/* the big number keeps its place at the foot of the poster, however tall the milestone card next to it grows */
+@media (min-width:900px){.gpo{align-items:start}.gpo-l{min-height:min(620px,72vh);justify-content:flex-end}}
 @media (max-width:899px){.gpo{grid-template-columns:minmax(0,1fr);gap:34px;min-height:0}}
 
 @media (prefers-reduced-motion:reduce){
@@ -277,7 +252,6 @@ button.hg-c:active{transform:scale(.88)}
   .gb-svg{position:relative;height:auto;margin-top:-10px}
   .gb-stats{gap:14px 28px}
   .gb-stats b{font-size:30px}
-  .gs-step{flex-basis:62%}
 }
 .gb-svg{overflow:visible}
 .gpth-k.ghost{box-shadow:none;border:2px dashed color-mix(in srgb,var(--text) 16%,transparent);box-sizing:border-box}
@@ -344,3 +318,89 @@ button.hg-c:active{transform:scale(.88)}
 .ho-grip svg{width:20px;height:20px}
 .ho-row.lifted .ho-grip{cursor:grabbing;color:var(--text)}
 .ho-grip:focus-visible{outline:2px solid var(--today);outline-offset:-2px}
+
+/* ===== Milestones as parent tasks: the track and the milestone card ===== */
+.gm-tw{display:flex;align-items:flex-start;gap:16px;margin:4px 0 18px}
+.gm-track{--f:0;position:relative;flex:1;min-width:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+.gm-track::before,.gm-fill{content:"";position:absolute;left:14px;top:13px;height:3px;border-radius:2px}
+.gm-track::before{right:14px;background:color-mix(in srgb,var(--text) 10%,transparent)}
+.gm-fill{width:calc((100% - 28px)*var(--f));background:var(--today);transition:width .6s var(--ease)}
+.gv.anim .gm-fill{animation:gmFill 1.2s .4s var(--ease) both}
+@keyframes gmFill{from{width:0}}
+.gm-n{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0;padding:0 8px 4px 0;text-align:left;border-radius:10px}
+.gm-n:last-child{align-items:flex-end;text-align:right;padding:0 0 4px}
+.gm-nk{position:relative;z-index:1;width:29px;height:29px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 2.5px color-mix(in srgb,var(--text) 22%,transparent);display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;transition:background .3s var(--ease),box-shadow .3s,color .2s,transform .3s var(--spring)}
+.gm-nk svg{width:13px;height:13px}
+.gm-n:hover .gm-nk{box-shadow:inset 0 0 0 2.5px var(--today)}
+.gm-n.done .gm-nk{background:var(--today);box-shadow:none;color:#fff}
+.gm-n.now .gm-nk{box-shadow:inset 0 0 0 2.5px var(--today);color:var(--today)}
+.gm-n.sel .gm-nk{transform:scale(1.16)}
+.gm-n.sel .gm-nk::after{content:"";position:absolute;inset:-6px;border-radius:50%;box-shadow:0 0 0 2px color-mix(in srgb,var(--today) 32%,transparent)}
+.gm-nl{font-size:13.5px;font-weight:600;line-height:1.25;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;overflow-wrap:anywhere}
+.gm-n.sel .gm-nl{color:var(--text)}
+.gm-np{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gm-track.many .gm-nl{-webkit-line-clamp:1}
+.gv.anim .gm-n{animation:pgIn .5s var(--ease) both;animation-delay:calc(var(--i)*60ms + .3s)}
+.gm-tw .gs-addb{flex:none}
+.gm-addms{background:var(--surface);border-radius:18px;padding:6px 18px;margin:0 0 14px}
+.gm-addms .gv-add{padding:12px 0}
+/* the card */
+.gm-card{background:var(--surface);border-radius:22px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.gm-h{display:flex;align-items:flex-start;gap:12px}
+.gm-hx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.gm-tag{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--today)}
+.gm-card[data-gcard] .gm-hx>b{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.2;overflow-wrap:anywhere}
+.gm-hx small{font-size:13px;color:var(--muted)}
+.gm-done{flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:background .3s,color .3s,box-shadow .3s}
+.gm-done:hover{color:var(--text)}
+.gm-done svg{width:13px;height:13px}
+.gm-done.on{background:var(--today);color:#fff;box-shadow:none}
+.gm-bar{height:5px;border-radius:9px;background:var(--surface2);overflow:hidden}
+.gm-bar i{display:block;height:100%;background:var(--today);border-radius:9px;transition:width .5s var(--ease)}
+.gm-ts{display:flex;flex-direction:column}
+.gm-t{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line)}
+.gm-t:first-child{border-top:0}
+.gm-k{width:24px;height:24px;flex:none;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 25%,transparent);display:grid;place-items:center;color:transparent;transition:background .25s var(--ease),box-shadow .25s,color .2s,transform .35s var(--spring)}
+.gm-k svg{width:12px;height:12px}
+.gm-k:hover{box-shadow:inset 0 0 0 2px var(--today)}
+.gm-t.on .gm-k{background:var(--today);box-shadow:none;color:#fff;transform:scale(1.06)}
+.gm-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;padding:12px 0;text-align:left}
+.gm-tt b{flex:1;min-width:0;font-size:15.5px;font-weight:600;overflow-wrap:anywhere}
+.gm-tt small{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.gm-t.on .gm-tt b{color:var(--muted);font-weight:500}
+.gm-empty{margin:0;font-size:14px;line-height:1.45;color:var(--muted)}
+.gm-add{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:12px;cursor:text}
+.gm-plus{width:24px;height:24px;display:grid;place-items:center;color:var(--muted);flex:none}
+.gm-plus svg{width:16px;height:16px}
+.gm-add input{flex:1;min-width:0;border:0;background:none;outline:none;color:var(--text);font:inherit;font-size:15.5px;padding:2px 0}
+.gm-add input::placeholder{color:var(--muted)}
+.gv.anim .gm-card{animation:pgIn .55s .35s var(--ease) both}
+/* Path: the card opens right under the milestone you tapped */
+.gpth-t{text-align:left;padding:0;color:inherit}
+.gpth-t:hover{color:var(--today)}
+.gm-card.in{margin:10px 0 4px;padding:14px 16px;border-radius:18px}
+.gm-card.in .gm-tag,.gm-card.in .gm-hx>b{display:none}
+.gm-card.in .gm-h{align-items:center}
+/* Poster: the coral block becomes the selected milestone's card */
+.gm-card.hot{background:var(--today);color:#fff;border-radius:26px;padding:24px 26px;animation:pgIn .6s .2s var(--ease) both}
+.gm-card.hot .gm-tag{color:#fff;opacity:.85;font-weight:800;letter-spacing:.1em}
+.gm-card.hot .gm-hx>b{font-size:26px}
+.gm-card.hot .gm-hx small,.gm-card.hot .gm-tt small,.gm-card.hot .gm-empty,.gm-card.hot .gm-plus,.gm-card.hot .gm-add input::placeholder{color:rgba(255,255,255,.78)}
+.gm-card.hot .gm-add input{color:#fff}
+.gm-card.hot .gm-t,.gm-card.hot .gm-add{border-color:rgba(255,255,255,.22)}
+.gm-card.hot .gm-bar{background:rgba(255,255,255,.25)}.gm-card.hot .gm-bar i{background:#fff}
+.gm-card.hot .gm-k{box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+.gm-card.hot .gm-t.on .gm-k{background:#fff;color:var(--today)}
+.gm-card.hot .gm-t.on .gm-tt b{color:rgba(255,255,255,.7)}
+.gm-card.hot .gm-done{background:#0F1013;color:#F3F2EE;box-shadow:none}
+.gm-card.hot .gm-done.on{background:#fff;color:var(--today)}
+.gpo-ml{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;text-align:left;font:inherit;color:inherit;padding:0}
+.gpo-ml small{margin-left:auto;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gpo-m.sel .gpo-ml{font-weight:700}
+@media (max-width:699px){
+  .gm-nl,.gm-np{display:none}
+  .gm-n{align-items:center;padding:0}.gm-n:first-child{align-items:flex-start}.gm-n:last-child{align-items:flex-end}
+  .gm-tw{gap:10px}
+  .gm-tw .gs-addb{padding:0 10px;font-size:0;gap:0}.gm-tw .gs-addb svg{width:16px;height:16px}
+  .gm-card{padding:18px}
+}

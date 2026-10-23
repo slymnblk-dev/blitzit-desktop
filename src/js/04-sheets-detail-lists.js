@@ -138,7 +138,7 @@ $('dPicker').onclick=e=>{
   else if(k==='repeat')t.repeat=v;
   else if(k==='pri'){if(v)t.pri=v;else delete t.pri}
   else if(k==='sec'){if(v)t.sec=v;else delete t.sec}
-  else if(k==='goal'){if(v)t.goal=v;else delete t.goal}
+  else if(k==='goal'){if(String(v)!==String(t.goal))delete t.ms;if(v)t.goal=v;else delete t.goal}
   if(k!=='stage'){save();render()}
   drawDetail();
 };
