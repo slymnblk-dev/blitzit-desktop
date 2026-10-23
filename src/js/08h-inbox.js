@@ -4,10 +4,19 @@
    (title, steps up to 10, notes, time, priority). "Send to a list" moves it to that list's Backlog
    (lists hold max 10 per stage).
    Ideas are ordinary tasks with inbox:true and no list, so sync, backup and undo just work;
-   shown() leaves them out of every board, count and search. */
+   shown() leaves them out of every board, count and search.
+   Notes live here too: inbox items with note:true. The text is in t.notes and its first line in t.title. A note never
+   goes on a board; it can be pinned, edited in a calm popup, turned into a task, or deleted. */
 var ibOn=false; // var: other files read ibOn, possibly before this file runs
 function inboxOn(){return !!(S.cfg&&S.cfg.inbox!==false)}
-function inboxItems(){return S.tasks.filter(t=>t.inbox&&!t.archived).sort((a,b)=>(b.created||0)-(a.created||0))}
+function inboxItems(){return S.tasks.filter(t=>t.inbox&&!t.archived&&!t.note).sort((a,b)=>(b.created||0)-(a.created||0))}
+function inboxNotes(){return S.tasks.filter(t=>t.inbox&&!t.archived&&t.note).sort((a,b)=>(!!b.pin-!!a.pin)||((b.edited||b.created||0)-(a.edited||a.created||0)))}
+var ibKind='task',ibTab='all',nbId=null;
+var I_NOTE2='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h8.5L19 8v12.5H6z"/><path d="M14 3.5V8h5M9 12.5h6M9 16h4"/></svg>';
+var I_TASK2='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M8.5 12.3l2.3 2.3 4.7-4.8"/></svg>';
+var I_PIN='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.5 3.5l5 5-2.6.9-3.3 3.3.4 4.3-1.9 1.9-3.7-3.7-4.6 4.6-1.1-1.1 4.6-4.6-3.7-3.7 1.9-1.9 4.3.4 3.3-3.3z"/></svg>';
+const nbTitle=s=>String(s||'').trim().split('\n')[0].slice(0,120);
+const nbWhen=t=>{const d=new Date(t.edited||t.created||Date.now()),n=new Date();return d.toDateString()===n.toDateString()?d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}):d.toLocaleDateString(undefined,{month:'short',day:'numeric'})};
 var IB_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l2.5-7.5h11L20 13v5.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/><path d="M4 13h4.5l1.5 2.5h4l1.5-2.5H20"/></svg>';
 var I_SEND='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>';
 
@@ -38,21 +47,61 @@ function ibRow(t){
       <div class="est">${fmt(t.est)}</div>
     </div></li>`;
 }
+/* a note as a soft card: its first line stands out, the rest follows quietly */
+function ibNoteCard(t){const lines=String(t.notes||'').trim().split('\n'),head=lines[0]||'',rest=lines.slice(1).join('\n').trim();
+  return `<button class="ib-note${t.pin?' pin':''}${t.id===enterId?' enter':''}" data-ibnote="${t.id}"><b>${esc(head)||'Empty note'}</b>${rest?`<span>${esc(rest)}</span>`:''}
+    <small>${t.pin?`<i class="ib-pin">${I_PIN}</i>`:''}${nbWhen(t)}</small></button>`}
 function drawInbox(){
-  const items=inboxItems();
+  const items=inboxItems(),notes=inboxNotes(),nT=items.length,nN=notes.length,tab=nT&&nN?ibTab:'all',note=ibKind==='note';
+  const tabs=nT&&nN?`<div class="ib-tabs" role="tablist" aria-label="Show">${[['all','All',nT+nN],['tasks','Tasks',nT],['notes','Notes',nN]].map(([k,l,n])=>`<button role="tab" data-ibtab="${k}" aria-selected="${tab===k}" class="${tab===k?'on':''}">${l}<small>${n}</small></button>`).join('')}</div>`:'';
+  const tasksSec=nT&&tab!=='notes'?`${tab==='all'?`<div class="ib-count">${nT} ${nT===1?'task':'tasks'}</div>`:''}<ul class="list ib-list">${items.map(ibRow).join('')}</ul>`:'';
+  const notesSec=nN&&tab!=='tasks'?`${tab==='all'?`<div class="ib-count">${nN} ${nN===1?'note':'notes'}</div>`:''}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div>`:'';
   $('ibIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="ibBack" aria-label="Back">${BACK_SVG}</button></div>
-    <h1 class="ib-h">Inbox</h1><p class="ib-lede">Drop ideas here, no sorting needed. Tap one to add steps or notes, then send it to a list’s Backlog.</p>
-    <div class="ib-cap"><span class="ib-cap-i">${PLUS_S}</span><input id="ibNew" placeholder="Add an idea" maxlength="120" enterkeyhint="done" autocomplete="off"><button class="ib-cap-go" id="ibAdd" aria-label="Add idea">Add</button></div>
-    ${items.length?`<div class="ib-count">${items.length} ${items.length===1?'idea':'ideas'}</div><ul class="list ib-list">${items.map(ibRow).join('')}</ul>`
-      :`<div class="ib-empty">${IB_ICON}<b>Your inbox is empty</b><span>Ideas you add show up here.</span></div>`}`;
+    <h1 class="ib-h">Inbox</h1><p class="ib-lede">Catch anything: a task for later, or a note to keep. Sort it out when you’re ready.</p>
+    <div class="ib-cap${note?' note':''}"><div class="ib-kind" role="tablist" aria-label="Add a"><button role="tab" data-ibk="task" aria-selected="${!note}" class="${note?'':'on'}">${I_TASK2}Task</button><button role="tab" data-ibk="note" aria-selected="${note}" class="${note?'on':''}">${I_NOTE2}Note</button></div>
+      ${note?`<textarea id="ibNew" rows="1" placeholder="Write a note…" maxlength="4000" aria-label="New note"></textarea>`:`<input id="ibNew" placeholder="Add a task" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="New task">`}
+      <button class="ib-cap-go" id="ibAdd" aria-label="${note?'Add note':'Add task'}">Add</button></div>
+    ${note?'<p class="ib-hint">Enter for a new line · Ctrl or ⌘ + Enter to add</p>':''}
+    ${nT||nN?`${tabs}${tasksSec}${notesSec}`:`<div class="ib-empty">${IB_ICON}<b>Your inbox is empty</b><span>Tasks and notes you add show up here.</span></div>`}`;
   enterId=null;
 }
 function ibAdd(){
   const i=$('ibNew'),v=(i.value||'').trim();if(!v)return;
-  const t={id:newId(),title:v,stage:'backlog',list:null,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',inbox:true,created:Date.now()};
-  S.tasks.push(t);enterId=t.id;save();sfx('add');haptic(8);drawInbox();if(typeof renderDesk==='function')renderDesk();
+  const t=ibKind==='note'?{id:newId(),title:nbTitle(v),stage:'backlog',list:null,est:0,subs:[],notes:v,repeat:'none',inbox:true,note:true,created:Date.now()}
+    :{id:newId(),title:v,stage:'backlog',list:null,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',inbox:true,created:Date.now()};
+  S.tasks.push(t);enterId=t.id;save();sfx('add');haptic(8);if(ibTab!=='all'&&ibTab!==(t.note?'notes':'tasks'))ibTab='all';drawInbox();if(typeof renderDesk==='function')renderDesk();
   $('ibNew').focus();
 }
+/* the textarea grows with the note */
+function ibGrow(el){if(!el||el.tagName!=='TEXTAREA')return;el.style.height='auto';el.style.height=Math.min(el.scrollHeight,240)+'px'}
+
+/* ---------- a note's editor: a calm popup in the middle of the screen; it saves as you type ---------- */
+document.body.insertAdjacentHTML('beforeend',`<div class="dlg gme nb" id="nbEd" role="dialog" aria-modal="true" aria-label="Note"><div class="dlg-in gme-in nb-in">
+  <div class="gme-h"><span class="nb-when" id="nbWhen"></span><button class="icon-btn" id="nbPin" aria-label="Pin note"></button><button class="icon-btn gme-x0" id="nbClose" aria-label="Close">${X}</button></div>
+  <textarea id="nbText" maxlength="4000" aria-label="Note" placeholder="Write a note…"></textarea>
+  <div class="nb-acts"><button class="le-btn" id="nbTask" type="button">${I_TASK2}Turn into a task</button><button class="le-btn warn" id="nbDel" type="button">${BIN_S}Delete</button></div>
+  <button class="primary" id="nbDone">Done</button></div></div>`);
+let nbT=null;
+function openNote(id){const t=S.tasks.find(x=>x.id===id&&x.note);if(!t)return;nbId=id;$('nbText').value=t.notes||'';nbPaint(t);$('nbEd').classList.add('on');haptic(5);
+  setTimeout(()=>{const a=$('nbText');a.focus();a.setSelectionRange(a.value.length,a.value.length)},60)}
+function nbPaint(t){$('nbWhen').textContent=(t.edited?'Edited ':'Added ')+nbWhen(t);$('nbPin').innerHTML=I_PIN;$('nbPin').classList.toggle('on',!!t.pin);$('nbPin').setAttribute('aria-pressed',!!t.pin);$('nbPin').setAttribute('aria-label',t.pin?'Unpin note':'Pin note')}
+function nbSave(){const t=S.tasks.find(x=>x.id===nbId);if(!t)return;const v=$('nbText').value;if(v===t.notes)return;t.notes=v;t.title=nbTitle(v);t.edited=Date.now();save()}
+function closeNote(){if(nbId==null)return;clearTimeout(nbT);nbSave();const t=S.tasks.find(x=>x.id===nbId);
+  if(t&&!String(t.notes||'').trim()){S.tasks=S.tasks.filter(x=>x!==t);save();toast('Empty note removed')} // an emptied note just goes away
+  nbId=null;$('nbEd').classList.remove('on');render()}
+$('nbText').addEventListener('input',()=>{clearTimeout(nbT);nbT=setTimeout(nbSave,400)});
+$('nbEd').addEventListener('click',e=>{
+  if(e.target===$('nbEd')||e.target.closest('#nbDone,#nbClose'))return closeNote();
+  const t=S.tasks.find(x=>x.id===nbId);if(!t)return;
+  if(e.target.closest('#nbPin')){t.pin=!t.pin;if(!t.pin)delete t.pin;save();nbPaint(t);haptic(5);toast(t.pin?'Pinned to the top':'Unpinned');return}
+  if(e.target.closest('#nbTask')){nbSave();const lines=String(t.notes||'').trim().split('\n');if(!lines[0]){toast('Write something first');return}nbId=null;$('nbEd').classList.remove('on');
+    commit(()=>{t.note=false;delete t.pin;t.title=lines[0].slice(0,120);t.notes=lines.slice(1).join('\n').trim();t.est=S.cfg.defEst||30},'Now a task in your Inbox');return}
+  if(e.target.closest('#nbDel'))return confirmAsk({title:'Delete this note?',text:`“${nbTitle(t.notes)||'Empty note'}” will be deleted.`,yes:'Yes, delete',no:'No',
+    onYes:()=>{nbId=null;$('nbEd').classList.remove('on');try{sfx('remove')}catch(err){}commit(()=>{S.tasks=S.tasks.filter(x=>x!==t)},'Note deleted')}});
+});
+$('nbEd').addEventListener('keydown',e=>{if(e.key==='Escape'){if($('dlg').classList.contains('on'))return;e.preventDefault();e.stopPropagation();closeNote()}
+  if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();closeNote()}});
+
 /* the "Send to a list" picker in the details sheet: lists grouped by space, with how full each Backlog is */
 function ibListPicks(){
   return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);if(!ls.length)return '';
@@ -73,13 +122,17 @@ document.addEventListener('click',e=>{if(e.target.closest('#ibEntry'))openInbox(
 $('inboxPg').addEventListener('click',e=>{
   if(e.target.closest('#ibBack'))return closeInbox();
   if(e.target.closest('#ibAdd'))return ibAdd();
+  const k=e.target.closest('[data-ibk]');if(k){const was=$('ibNew').value;ibKind=k.dataset.ibk;haptic(5);drawInbox();const n=$('ibNew');n.value=was;ibGrow(n);n.focus();return}
+  const tb=e.target.closest('[data-ibtab]');if(tb){ibTab=tb.dataset.ibtab;haptic(4);return drawInbox()}
+  const nt=e.target.closest('[data-ibnote]');if(nt)return openNote(+nt.dataset.ibnote);
   const g=e.target.closest('[data-ibgo]');if(g){haptic(6);return ibOpen(+g.dataset.ibgo,true)}
   const r=e.target.closest('[data-ibid] .row-in');if(r)return ibOpen(+r.closest('[data-ibid]').dataset.ibid);
 });
 $('inboxPg').addEventListener('keydown',e=>{
   if(e.key==='Escape'){if(e.target.id==='ibNew'&&e.target.value){e.target.value='';return}e.stopPropagation();closeInbox();return}
-  if(e.key==='Enter'&&e.target.id==='ibNew'){e.preventDefault();ibAdd()}
+  if(e.key==='Enter'&&e.target.id==='ibNew'&&(ibKind!=='note'||e.metaKey||e.ctrlKey)){e.preventDefault();ibAdd()}
 });
+$('inboxPg').addEventListener('input',e=>{if(e.target.id==='ibNew')ibGrow(e.target)});
 /* keep the page in step with edits, undo and sync, without stealing focus while typing */
 const _ibRender=render;
-render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;n.focus()}}};
+render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;ibGrow(n);n.focus()}}};

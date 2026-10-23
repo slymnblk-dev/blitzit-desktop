@@ -66,7 +66,7 @@ function ciCard(){
   return `<div class="ci-home"><span class="ci-hi">${hbSun(3,false)}</span><span class="ci-ht"><b>Evening check-in</b><small>${n} ${n===1?'habit':'habits'} left today</small></span>
     <button class="rv-skip" data-cilater>Later</button><button class="rv-go" data-ciopen>Start</button></div>`}
 function homeNav(){const rows=[],r=(id,ic,t,sub)=>`<button class="ib-entry" id="${id}"><span class="ib-entry-i">${ic}</span><span class="ib-entry-t"><b>${t}</b><small>${sub}</small></span>${CHEV}</button>`;
-  if(inboxOn()){const n=inboxItems().length;rows.push(r('ibEntry',IB_ICON,'Inbox',n?`${n} ${n===1?'idea':'ideas'} waiting`:'Drop ideas here'))}
+  if(inboxOn()){const n=inboxItems().length,m=inboxNotes().length;rows.push(r('ibEntry',IB_ICON,'Inbox',n||m?[n&&`${n} ${n===1?'task':'tasks'} waiting`,m&&`${m} ${m===1?'note':'notes'}`].filter(Boolean).join(' · '):'Drop tasks and notes here'))}
   if(habitsOn()&&!hbWidget()){const n=hbOpenToday().length,has=hbAll().length;rows.push(r('rhEntry',RH_ICON,'Habits',!has?'Small daily wins':n?`${n} left today`:'All done today'))}
   if(goalsOn()&&!(nsCard()&&gAll().length<2)){const n=gAll().length;rows.push(r('glEntry',G_FLAG,'Goals',n?`${n} in progress`:'Big outcomes, step by step'))}
   return rows.length?`<div class="hn">${rows.join('')}</div>`:''}

@@ -557,3 +557,40 @@ button.hg-c:active{transform:scale(.88)}
   .hw-wk i.t{background:transparent;box-shadow:0 0 0 1.5px color-mix(in srgb,var(--today) 55%,transparent);transition:background .3s}
   .hw-tile.on .hw-wk i.t{background:color-mix(in srgb,var(--today) 55%,transparent)}
 }
+
+/* ===== Inbox: tasks and notes ===== */
+.ib-cap{gap:8px;padding-left:6px}
+.ib-cap.note{height:auto;min-height:58px;align-items:flex-start;padding-top:9px;padding-bottom:9px}
+.ib-kind{display:flex;gap:2px;padding:3px;border-radius:12px;background:var(--surface2);flex:none}
+.ib-kind button{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px 0 9px;border-radius:9px;font-size:13px;font-weight:700;color:var(--muted);transition:background .2s,color .2s}
+.ib-kind button svg{width:15px;height:15px}
+.ib-kind button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ib-cap textarea{flex:1;min-width:0;background:none;border:0;outline:none;resize:none;color:var(--text);font:inherit;font-size:16px;line-height:1.45;padding:6px 4px;max-height:240px}
+.ib-cap textarea::placeholder{color:var(--muted)}
+.ib-cap.note .ib-cap-go{align-self:flex-end}
+.ib-hint{margin:8px 4px 0;font-size:12px;color:var(--muted)}
+.ib-tabs{display:flex;gap:6px;margin:24px 0 -10px}
+.ib-tabs button{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:background .2s,color .2s}
+.ib-tabs button small{font-size:12px;font-weight:600;opacity:.7;font-variant-numeric:tabular-nums}
+.ib-tabs button.on{background:var(--text);color:var(--bg);box-shadow:none}
+/* notes: soft cards, two columns on computers */
+.ib-notes{columns:1;column-gap:12px;margin-top:6px}
+@media (min-width:700px){.ib-notes{columns:2}}
+.ib-note{display:flex;flex-direction:column;gap:6px;width:100%;break-inside:avoid;margin:0 0 12px;padding:14px 16px 12px;border-radius:18px;background:var(--surface);text-align:left;box-shadow:0 1px 0 var(--line);transition:transform .15s,box-shadow .2s}
+.ib-note:hover{box-shadow:0 1px 0 var(--line),0 8px 22px -12px rgba(0,0,0,.25)}
+.ib-note:active{transform:scale(.985)}
+.ib-note b{font-size:15.5px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+.ib-note span{font-size:14px;line-height:1.5;color:var(--muted);white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.ib-note small{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-top:2px}
+.ib-note.pin{box-shadow:0 1px 0 var(--line),inset 0 0 0 1.5px color-mix(in srgb,var(--week) 35%,transparent)}
+.ib-pin{display:grid;place-items:center;width:13px;height:13px;color:var(--week)}.ib-pin svg{width:100%;height:100%}
+.ib-note.enter{animation:pgIn .45s var(--ease) both}
+/* the note editor */
+.nb-in{max-width:600px;gap:10px}
+.nb-when{flex:1;font-size:12.5px;color:var(--muted)}
+#nbPin{color:var(--muted)}#nbPin svg{width:16px;height:16px}#nbPin.on{color:var(--week)}
+#nbText{width:100%;min-height:min(320px,46vh);border:0;outline:none;resize:vertical;background:transparent;color:var(--text);font:inherit;font-size:17px;line-height:1.55;padding:4px 2px}
+#nbText::placeholder{color:var(--muted)}
+.nb-acts{display:flex;gap:8px}
+.nb-acts .le-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.nb-acts .le-btn svg{width:16px;height:16px}
