@@ -111,11 +111,14 @@ button.hg-c:active{transform:scale(.88)}
 .gv-why{font-size:14.5px;line-height:1.45;color:var(--muted);text-align:left;padding:0;max-width:560px;transition:color .2s}
 .gv-why.add{display:inline-flex;align-items:center;gap:6px;opacity:.7}.gv-why.add svg{width:13px;height:13px}
 .gv-why.add:hover{opacity:1;color:var(--text)}
-/* the why reads as a quiet quote: a little larger, softer ink, coral quote marks hanging outside the text */
-.gv-why.q{position:relative;font-size:18px;font-weight:500;line-height:1.4;letter-spacing:-.01em;color:color-mix(in srgb,var(--text) 72%,var(--bg));padding-left:.55em;text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.gv-why.q:hover{color:var(--text)}
-.gv-why.q .gq{color:var(--gm-mid,color-mix(in srgb,var(--today) 50%,transparent));font-weight:800;font-size:1.15em;line-height:0}
-.gv-why.q .gq:first-child{position:absolute;left:0;top:-.02em}
+/* the why is a soft note: a light rounded card, a small icon in a pastel coral circle (or an emoji, or none) */
+.gv-why.note{display:inline-flex;align-items:flex-start;gap:12px;margin-top:4px;padding:11px 16px 11px 11px;border-radius:18px;background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 1px 0 var(--line);color:color-mix(in srgb,var(--text) 82%,var(--bg));transition:background .2s,color .2s}
+.gv-why.note:hover{background:var(--surface);color:var(--text)}
+.gv-why.note.plain{padding-left:16px}
+.gv-why.note>span{font-size:15.5px;line-height:1.45;padding-top:3px;text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gw-i{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--tick-soft);color:var(--today);font-style:normal}
+.gw-i svg{width:14px;height:14px}
+.gw-i.e{font-size:15px;line-height:1}
 .gp-ok,.gp-ahead,.gp-won{color:var(--text)}.gp-behind{color:var(--week)}.gp-none{color:var(--muted)}
 .gv-add{width:100%;min-width:0;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:16px;padding:4px 0}
 .gv-add::placeholder{color:var(--muted)}
@@ -525,3 +528,12 @@ button.hg-c:active{transform:scale(.88)}
 .g-whyvis span{flex:1}
 .g-whyvis button{height:30px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
 .g-whyvis button.on{background:var(--text);color:var(--bg);box-shadow:none}
+
+/* Edit goal: the why's icon */
+.g-whyico{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0 4px;font-size:13.5px;color:var(--muted)}
+.g-whyico span{margin-right:4px}
+.g-whyico button{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;box-shadow:inset 0 0 0 1px var(--line);transition:background .2s,box-shadow .2s}
+.g-whyico button svg{width:14px;height:14px;color:var(--today)}
+.g-whyico button.on{background:var(--tick-soft);box-shadow:inset 0 0 0 1.5px var(--tick-mid)}
+.g-whyico button.none{width:auto;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;color:var(--muted)}
+.g-whyico button.none.on{color:var(--today)}

@@ -448,7 +448,7 @@ test('goal page: one calm facts line; why as a quote that can be hidden from the
   await expect(page.locator('#gdPg .gb-line')).toContainText('1/2 milestones');
   await expect(page.locator('#gdPg .gb-line')).toContainText('41 days to');
   await expect(page.locator('#gdPg .gv-st')).toHaveCount(1); // north star: a small star by the name
-  await expect(page.locator('#gdPg .gv-why.q')).toContainText('Feel strong');
+  await expect(page.locator('#gdPg .gv-why.note')).toContainText('Feel strong');
   // hide it from the ⋯ menu; it stays in the goal
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gm="why"]').click();
@@ -459,7 +459,15 @@ test('goal page: one calm facts line; why as a quote that can be hidden from the
   await expect(page.locator('#gWhy')).toHaveValue('Feel strong');
   await expect(page.locator('#gWhyVis [data-gwv="0"]')).toHaveClass(/on/);
   await page.locator('#gWhyVis [data-gwv="1"]').click();
+  await page.locator('#gWhyIco [data-gwe="🌱"]').click(); // pick an emoji for the note
   await page.locator('#gSave').click();
-  await expect(page.locator('#gdPg .gv-why.q')).toHaveCount(1);
+  await expect(page.locator('#gdPg .gv-why.note')).toHaveCount(1);
+  await expect(page.locator('#gdPg .gv-why.note .gw-i')).toHaveText('🌱');
+  // or no icon at all
+  await page.evaluate(() => openGoalSheet('g1'));
+  await page.locator('#gWhyIco [data-gwe="n"]').click();
+  await page.locator('#gSave').click();
+  await expect(page.locator('#gdPg .gv-why.note .gw-i')).toHaveCount(0);
+  expect(await page.evaluate(() => S.goals[0].whyE)).toBe('');
   noErrors(errors);
 });

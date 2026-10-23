@@ -348,8 +348,11 @@ $('gdPg').addEventListener('focusout',e=>{if(e.target.matches('[data-gren]')&&gR
 
 /* the milestone card and Other tasks: side by side on computers */
 function gCols(c,o){return c||o?`<div class="gm-cols${c&&o?' two':''}">${c}${o?`<div class="gm-other">${o}</div>`:''}</div>`:''}
-/* the goal's "why": a quiet quote under the name. Optional: hide it from the page (⋯ or Edit goal); it stays in the goal */
-function gWhy(g){if(g.hideWhy)return '';return g.why?`<button class="gv-why q" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit"><span class="gq" aria-hidden="true">“</span>${esc(g.why)}<span class="gq" aria-hidden="true">”</span></button>`
+/* the goal's "why": a soft note under the name, with a small heart, an emoji of your choice, or no icon (Edit goal).
+   Optional: hide it from the page (⋯ or Edit goal); it stays in the goal */
+var G_HEART='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z"/></svg>';
+function gWhyIcon(g){return g.whyE===''?'':g.whyE?`<i class="gw-i e" aria-hidden="true">${esc(g.whyE)}</i>`:`<i class="gw-i" aria-hidden="true">${G_HEART}</i>`}
+function gWhy(g){if(g.hideWhy)return '';return g.why?`<button class="gv-why note${g.whyE===''?' plain':''}" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${gWhyIcon(g)}<span>${esc(g.why)}</span></button>`
   :`<button class="gv-why add" data-gwhy>${PLUS_S}Why it matters</button>`}
 /* one calm line of facts: 1/5 milestones · 41 days to Dec 3 · On track */
 function gFacts(g){const pr=gProg(g),dd=gDays(g),dl=gDaysLeft(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,due=g.due?gShort(g.due):'';

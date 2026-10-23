@@ -2778,11 +2778,14 @@ button.hg-c:active{transform:scale(.88)}
 .gv-why{font-size:14.5px;line-height:1.45;color:var(--muted);text-align:left;padding:0;max-width:560px;transition:color .2s}
 .gv-why.add{display:inline-flex;align-items:center;gap:6px;opacity:.7}.gv-why.add svg{width:13px;height:13px}
 .gv-why.add:hover{opacity:1;color:var(--text)}
-/* the why reads as a quiet quote: a little larger, softer ink, coral quote marks hanging outside the text */
-.gv-why.q{position:relative;font-size:18px;font-weight:500;line-height:1.4;letter-spacing:-.01em;color:color-mix(in srgb,var(--text) 72%,var(--bg));padding-left:.55em;text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.gv-why.q:hover{color:var(--text)}
-.gv-why.q .gq{color:var(--gm-mid,color-mix(in srgb,var(--today) 50%,transparent));font-weight:800;font-size:1.15em;line-height:0}
-.gv-why.q .gq:first-child{position:absolute;left:0;top:-.02em}
+/* the why is a soft note: a light rounded card, a small icon in a pastel coral circle (or an emoji, or none) */
+.gv-why.note{display:inline-flex;align-items:flex-start;gap:12px;margin-top:4px;padding:11px 16px 11px 11px;border-radius:18px;background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 1px 0 var(--line);color:color-mix(in srgb,var(--text) 82%,var(--bg));transition:background .2s,color .2s}
+.gv-why.note:hover{background:var(--surface);color:var(--text)}
+.gv-why.note.plain{padding-left:16px}
+.gv-why.note>span{font-size:15.5px;line-height:1.45;padding-top:3px;text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gw-i{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--tick-soft);color:var(--today);font-style:normal}
+.gw-i svg{width:14px;height:14px}
+.gw-i.e{font-size:15px;line-height:1}
 .gp-ok,.gp-ahead,.gp-won{color:var(--text)}.gp-behind{color:var(--week)}.gp-none{color:var(--muted)}
 .gv-add{width:100%;min-width:0;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:16px;padding:4px 0}
 .gv-add::placeholder{color:var(--muted)}
@@ -3192,6 +3195,15 @@ button.hg-c:active{transform:scale(.88)}
 .g-whyvis span{flex:1}
 .g-whyvis button{height:30px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
 .g-whyvis button.on{background:var(--text);color:var(--bg);box-shadow:none}
+
+/* Edit goal: the why's icon */
+.g-whyico{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0 4px;font-size:13.5px;color:var(--muted)}
+.g-whyico span{margin-right:4px}
+.g-whyico button{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;box-shadow:inset 0 0 0 1px var(--line);transition:background .2s,box-shadow .2s}
+.g-whyico button svg{width:14px;height:14px;color:var(--today)}
+.g-whyico button.on{background:var(--tick-soft);box-shadow:inset 0 0 0 1.5px var(--tick-mid)}
+.g-whyico button.none{width:auto;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;color:var(--muted)}
+.g-whyico button.none.on{color:var(--today)}
 </style>
 </head>
 <body>
@@ -3386,7 +3398,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=167; // bumped with every published update
+const APP_VERSION=168; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -6268,16 +6280,22 @@ document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="gSheet"><di
   <div class="grab"></div><h2>Edit goal</h2>
   <div class="sp-form"><span class="sp-prev hb-prev g-prev" id="gPrev" role="button" aria-label="Choose an icon"></span><input class="field sp-name-in" id="gName" placeholder="Goal" maxlength="60" autocomplete="off" enterkeyhint="done"></div>
   <div class="lbl">Why it matters</div><textarea class="field g-whyin" id="gWhy" rows="2" maxlength="160" placeholder="Optional"></textarea>
+  <div class="g-whyico" id="gWhyIco" role="group" aria-label="Icon beside the why"></div>
   <div class="g-whyvis" id="gWhyVis" role="group" aria-label="Why on the goal page"><span>On the goal page</span><button type="button" data-gwv="1">Show</button><button type="button" data-gwv="0">Hide</button></div>
   <div class="le-card sp-opts" id="gOpts"></div>
   <button class="primary" id="gSave">Save</button>
   <div class="le-acts"><button class="le-btn" id="gWinB" type="button">Mark achieved</button><button class="le-btn warn" id="gDelB" type="button">Delete goal</button></div>
 </div></div>`);
 let gDraft=null,gSub=null;
+/* the why's icon: the heart (default), an emoji, or none */
+var G_WHY_E=['✨','🔥','🌱','💪','🙏','🎯','☀️','⭐','🏆','🧡'];
+function gWiPaint(){const d=gDraft,cur=d.whyE===undefined?'h':d.whyE===''?'n':d.whyE;
+  $('gWhyIco').innerHTML=`<span>Note icon</span><button type="button" data-gwe="h" class="${cur==='h'?'on':''}" aria-label="Heart" aria-pressed="${cur==='h'}">${G_HEART}</button>${G_WHY_E.map(e=>`<button type="button" data-gwe="${e}" class="${cur===e?'on':''}" aria-label="Icon ${e}" aria-pressed="${cur===e}">${e}</button>`).join('')}<button type="button" data-gwe="n" class="none${cur==='n'?' on':''}" aria-pressed="${cur==='n'}">No icon</button>`}
+$('gWhyIco').addEventListener('click',e=>{const b=e.target.closest('[data-gwe]');if(!b||!gDraft)return;const v=b.dataset.gwe;gDraft.whyE=v==='h'?undefined:v==='n'?'':v;haptic(4);gWiPaint()});
 function gWvPaint(){$('gWhyVis').querySelectorAll('[data-gwv]').forEach(b=>{const on=(b.dataset.gwv==='0')===!!gDraft.hideWhy;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
 $('gWhyVis').addEventListener('click',e=>{const b=e.target.closest('[data-gwv]');if(!b||!gDraft)return;gDraft.hideWhy=b.dataset.gwv==='0';haptic(4);gWvPaint()});
 function openGoalSheet(id,why){const g=gById(id);if(!g)return;
-  gDraft={id:g.id,name:g.name,e:g.e||'',space:g.space,due:g.due||gPlus(3),why:g.why||'',hideWhy:!!g.hideWhy};gSub=null;gWvPaint();
+  gDraft={id:g.id,name:g.name,e:g.e||'',space:g.space,due:g.due||gPlus(3),why:g.why||'',hideWhy:!!g.hideWhy,whyE:g.whyE};gSub=null;gWvPaint();gWiPaint();
   $('gName').value=g.name;$('gWhy').value=g.why||'';$('gWinB').textContent=g.done?'Back in progress':'Mark achieved';
   drawGoalSheet();openSheet('gSheet');if(why)setTimeout(()=>{if($('gSheet').classList.contains('on'))$('gWhy').focus()},300)}
 function drawGoalSheet(){
@@ -6301,7 +6319,7 @@ $('gName').oninput=e=>{gDraft.name=e.target.value;$('gSave').disabled=!gDraft.na
 $('gName').onkeydown=e=>{if(e.key==='Enter'&&gDraft.name.trim())$('gSave').click()};
 $('gWhy').oninput=e=>{gDraft.why=e.target.value};
 $('gSave').onclick=()=>{const d=gDraft,g=d&&gById(d.id);if(!g||!d.name.trim())return;const inSet=settingsOpen();closeSheets();
-  commit(()=>{Object.assign(g,{name:d.name.trim(),e:d.e,space:d.space&&spaceOf(d.space)?d.space:null,due:d.due,why:d.why.trim()});if(d.hideWhy)g.hideWhy=true;else delete g.hideWhy},'Goal saved');if(inSet)drawSettings()};
+  commit(()=>{Object.assign(g,{name:d.name.trim(),e:d.e,space:d.space&&spaceOf(d.space)?d.space:null,due:d.due,why:d.why.trim()});if(d.hideWhy)g.hideWhy=true;else delete g.hideWhy;if(d.whyE===undefined)delete g.whyE;else g.whyE=d.whyE},'Goal saved');if(inSet)drawSettings()};
 $('gWinB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(!g)return;const inSet=settingsOpen();closeSheets();setTimeout(()=>{gSetWin(g,!g.done);if(inSet)drawSettings()},200)};
 $('gDelB').onclick=()=>{const g=gDraft&&gById(gDraft.id);if(g)gDelete(g)};
 
@@ -6853,8 +6871,11 @@ $('gdPg').addEventListener('focusout',e=>{if(e.target.matches('[data-gren]')&&gR
 
 /* the milestone card and Other tasks: side by side on computers */
 function gCols(c,o){return c||o?`<div class="gm-cols${c&&o?' two':''}">${c}${o?`<div class="gm-other">${o}</div>`:''}</div>`:''}
-/* the goal's "why": a quiet quote under the name. Optional: hide it from the page (⋯ or Edit goal); it stays in the goal */
-function gWhy(g){if(g.hideWhy)return '';return g.why?`<button class="gv-why q" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit"><span class="gq" aria-hidden="true">“</span>${esc(g.why)}<span class="gq" aria-hidden="true">”</span></button>`
+/* the goal's "why": a soft note under the name, with a small heart, an emoji of your choice, or no icon (Edit goal).
+   Optional: hide it from the page (⋯ or Edit goal); it stays in the goal */
+var G_HEART='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z"/></svg>';
+function gWhyIcon(g){return g.whyE===''?'':g.whyE?`<i class="gw-i e" aria-hidden="true">${esc(g.whyE)}</i>`:`<i class="gw-i" aria-hidden="true">${G_HEART}</i>`}
+function gWhy(g){if(g.hideWhy)return '';return g.why?`<button class="gv-why note${g.whyE===''?' plain':''}" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${gWhyIcon(g)}<span>${esc(g.why)}</span></button>`
   :`<button class="gv-why add" data-gwhy>${PLUS_S}Why it matters</button>`}
 /* one calm line of facts: 1/5 milestones · 41 days to Dec 3 · On track */
 function gFacts(g){const pr=gProg(g),dd=gDays(g),dl=gDaysLeft(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,due=g.due?gShort(g.due):'';
