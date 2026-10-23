@@ -2,7 +2,7 @@
    Habits: Week grid (default) or Sunrise, picked under ⋯ → View (Settings → Modes too).
    Goal:   The climb (default), Path or Poster, picked under ⋯ → View (per goal; default in Settings → Modes).
    Completed things use the brand colour (--today); green stays for switches in Settings.
-   These replace the older drawRhythm / drawGoal bodies; data, sheets and actions are shared. */
+   Data, sheets and actions live in 08j-habits.js and 08k-goals.js. */
 var hpWeek=0,hpMenu=false,hgT=null,gbPrev=null;
 const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const DOTS_V='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
@@ -49,7 +49,7 @@ function hpMenuHTML(){const v=hpView(),left=hbOpenToday().length;
   return `<div class="lh-wrap hp-mw"><button class="pm-btn" id="hpMore" type="button" aria-label="Habits options" aria-haspopup="menu" aria-expanded="${hpMenu}">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop${hpMenu?' on':''}" id="hpPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-hpv="grid"','Week grid',v==='grid')}${mItem('data-hpv="sun"','Sunrise',v==='sun')}
     <span class="pm-sep"></span><button data-hbnew="" role="menuitem"><span class="lpm-i">${PLUS_S}</span>New habit</button>${left?`<button data-ciopen role="menuitem"><span class="lpm-i">${RH_ICON}</span>Evening check-in</button>`:''}</div></div>`}
-drawRhythm=function(){
+function drawRhythm(){
   const y=$('rhythmPg').scrollTop,hs=hbAll(),v=hpView(),anim=!$('rhIn').dataset.v||$('rhIn').dataset.v!==v||$('rhIn').dataset.fresh==='1';
   let head,body;
   if(!hs.length){head=`<span class="hp-eye">Habits</span><h1 class="hp-h">Habits</h1>`;
@@ -63,7 +63,7 @@ drawRhythm=function(){
   $('rhIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>
     <div class="hp-head"><div class="hp-tt">${head}</div><div class="hp-acts">${nav}${hpMenuHTML()}</div></div><div class="hp-body${anim?' anim':''}">${body}</div>`;
   $('rhIn').dataset.v=v;$('rhIn').dataset.fresh='';$('rhythmPg').scrollTop=y;
-};
+}
 const _hpOpen=openRhythm;openRhythm=function(){hpWeek=0;hpMenu=false;$('rhIn').dataset.fresh='1';_hpOpen()};
 function hpRefreshSoon(){clearTimeout(hgT);hgT=setTimeout(()=>{if(!document.querySelector('.sheet.on'))render()},1100)}
 function hpSetDay(id,k){
@@ -132,7 +132,7 @@ function gbScene(g,anim){
 function gTasksSec(g){const moved=gMoved(g),open=gTasks(g).filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
   const row=t=>`<button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>`;
   return `<div class="gv-sec"><h2>Linked tasks</h2><span>${moved.length?`${moved.length} moved it this week`:''}</span></div><div class="g-tasks">${open.slice(0,8).map(row).join('')}${moved.slice(0,5).map(row).join('')}</div>`}
-function gEditSec(g){return gdEdit?`<div class="gv-sec"><h2>Milestones</h2><button class="txt-btn gd-ed" data-gedit>Done</button></div><div class="g-mslist editing">${gMsRows(g,'ladder')}</div>`:''}
+function gEditSec(g){return gdEdit?`<div class="gv-sec"><h2>Milestones</h2><button class="txt-btn gd-ed" data-gedit>Done</button></div><div class="g-mslist editing">${gMsRows(g)}</div>`:''}
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
 function gNextAct(g,m){const tk=gTaskOf(m);return tk?`<button class="gv-link" data-gtask="${tk.id}">Linked to “${esc(tk.title)}”</button>`:`<button class="gv-link" data-gmk="${m.id}">Make it a task</button>`}
 function gClimbView(g,anim){
@@ -165,24 +165,26 @@ function gPosterView(g){
     <div class="gpo-r">${nx&&!g.done?`<div class="gpo-next"><span>Next step</span><b>${esc(nx.t)}</b>${gTaskOf(nx)?`<button class="gpo-btn" data-gtask="${gTaskOf(nx).id}">Open the task</button>`:`<button class="gpo-btn" data-gmk="${nx.id}">Make it a task</button>`}</div>`
       :pr.of&&!g.done?`<div class="gpo-next"><span>Summit reached</span><b>Every milestone is done.</b><button class="gpo-btn" data-gwin>Mark achieved</button></div>`:''}
       <div class="gpo-list">${g.ms.map(m=>`<button class="gpo-m${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}"><span class="gpo-k">${CK}</span>${esc(m.t)}</button>`).join('')}${g.ms.length<MS_MAX&&!g.done?gAddInput(g.ms.length?'Add a milestone':'Add your first milestone'):''}</div></div></div>`}
-drawGoal=function(){
+function drawGoal(){
   const g=gById(gdId);if(!g){closeGoal();return}
   const y=$('gdPg').scrollTop,v=gView(g),anim=gdAnim;
   const body=v==='path'?gPathView(g):v==='poster'?gPosterView(g):gClimbView(g,anim);
   $('gdIn').innerHTML=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${gMenuHTML(g)}</div>
     <div class="gv gv-${v}${anim?' anim':''}">${body}${gEditSec(g)}${gTasksSec(g)}</div>`;
-  $('gdPg').scrollTop=y;gdWin=false;if(anim)countUp($('gdIn'));
+  $('gdPg').scrollTop=y;if(anim)countUp($('gdIn'));
   const row=$('gdIn').querySelector('.gs-row'),now=row&&row.querySelector('.gs-step.now');if(now&&now.offsetLeft+now.offsetWidth>row.clientWidth)row.scrollLeft=now.offsetLeft-row.offsetLeft-4;
-};
+}
 $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
   const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m)return;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);setTimeout(()=>gMsToggle(g,m),200);return}
 });
 
 /* ================= Home habits widget: One at a time · Big tiles · Tap pills ================= */
-/* Default: One at a time on phones, Big tiles on computers. Settings → Modes → Habits → Widget style. */
+/* Default: One at a time on phones, Big tiles on computers. Settings → Modes → Habits → Widget style.
+   Tiles and pills show up to HW_MAX habits in your order; a ticked one stays in place (in coral) and the rest fold into "+N more". */
+const HW_MAX=6;
 function hwStyle(){const v=C().hwStyle;if(v==='one'||v==='tiles'||v==='pills')return v;return matchMedia('(min-width:1100px)').matches?'tiles':'one'}
-hbWidget=function(){
+function hbWidget(){
   if(!habitsOn()||!C().wHabits)return '';const hs=hbAll();if(!hs.length)return '';
   const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt}),dn=due.filter(h=>hbStats(h).dt),open=due.filter(h=>!hbStats(h).dt),st=hwStyle();
   const head=`<button class="hw-head" data-hbopen><b>Habits</b><span>${due.length?`<em>${dn.length}</em> of ${due.length} today`:'Rest day'}</span>${CHEV}</button>`;
@@ -191,7 +193,8 @@ hbWidget=function(){
       <button class="hw-tx" data-hbopen>${nx?`<small>Next habit</small><b>${nx.e?esc(nx.e)+' ':''}${esc(nx.name)}</b><span>${open.length>1?`+${open.length-1} more today`:'Last one today'}</span>`:`<small>Habits</small><b>${due.length?'All done today':'Rest day'}</b><span>${due.length?'Nice. See you tomorrow.':'Nothing due today'}</span>`}</button>
       ${nx?`<button class="hw-done" data-hbt="${nx.id}" aria-pressed="false">Done</button>`:''}</div>`}
   const ck='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-  const list=[...open,...dn];
-  if(st==='pills')return `<div class="hw hw-pills">${head}<div class="hw-pl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-pill${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span>${h.e?esc(h.e)+' ':''}${esc(h.name)}</button>`}).join('')}</div></div>`;
-  return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></span></button>`}).join('')}</div></div>`;
-};
+  const list=due.slice(0,HW_MAX),more=due.length-list.length;
+  const mr=more?`<button class="hw-more" data-hbopen>+${more} more</button>`:'';
+  if(st==='pills')return `<div class="hw hw-pills">${head}<div class="hw-pl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-pill${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span>${h.e?esc(h.e)+' ':''}${esc(h.name)}</button>`}).join('')}${mr}</div></div>`;
+  return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></span></button>`}).join('')}</div>${mr}</div>`;
+}

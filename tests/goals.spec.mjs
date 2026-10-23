@@ -1,5 +1,5 @@
 // Modes → Goals: off by default and invisible; 30-second setup; North star on Home; goal page with
-// The climb and Why ladder views; milestones (tick, make a task, finishing the task ticks it); task star + goal pill;
+// The climb, Path and Poster views; milestones (tick, make a task, finishing the task ticks it); task star + goal pill;
 // Goals page; mark achieved; turning it off hides everything but keeps data; sync/backup/undo carry goals.
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
@@ -88,10 +88,17 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   expect(await page.evaluate(id => S.tasks.find(x => x.id === id).goal, td.id)).toBeUndefined();
   await page.evaluate(() => closeSheets());
 
-  // the Goals page (from Home) lists it
+  // Home: the North star card is the one spot for a single goal, so no extra Goals row
   await page.evaluate(() => goHome());
+  await expect(page.locator('.ns-card:visible').first()).toContainText('2 of 3');
+  await expect(page.locator('.ns-sub')).toHaveCount(0);
+  await expect(page.locator('#glEntry')).toHaveCount(0);
+  // a second goal brings the Goals row back, so every goal stays one tap away
+  await page.evaluate(() => { S.goals.push({ id: 'g2', name: 'Read 12 books', e: '', space: S.goals[0].space, why: '', due: '', created: Date.now(), star: false, ms: [] }); save(); render(); });
   await page.locator('#glEntry').click();
   await expect(page.locator('#goalsPg')).toHaveClass(/on/);
+  await expect(page.locator('#goalsPg .g-card')).toHaveCount(2);
+  await page.evaluate(() => { S.goals = S.goals.filter(x => x.id !== 'g2'); save(); render(); });
   await expect(page.locator('#goalsPg .g-card')).toHaveCount(1);
 
   // mark achieved from the goal page menu: leaves Home and the active list

@@ -60,6 +60,8 @@ function cdCard(){
     <button class="rv-skip" data-cdlater>Later</button><button class="rv-go" data-cdopen>Start</button></div>`}
 /* the evening card: Close the day takes the place of the habits check-in when it's on */
 const _cdCi=ciCard;ciCard=function(){return C().closeDay?cdCard():_cdCi()};
+/* Home shows one nudge at a time, the most timely first: tonight's check-in, then the weekly review, then the backup reminder */
+function homeNudge(){return ciCard()||reviewCard()||backupCard()}
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg review-pg cd-pg" id="cdPg" role="dialog" aria-label="Close the day"><div class="ib-in" id="cdIn"></div></div>');
 let cdPick=null;
 function cdCands(){const sh=t=>shown(t)&&t.stage!=='done';return [...bySpaceOrder(S.tasks.filter(t=>sh(t)&&t.stage==='today')),...bySpaceOrder(S.tasks.filter(t=>sh(t)&&t.stage==='week'))].slice(0,6)}

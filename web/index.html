@@ -2318,87 +2318,24 @@ body.no-amb .amb-btn{display:none!important}
 .hb-sun .rays path{stroke:var(--today);stroke-width:2.6;stroke-linecap:round}
 
 /* segmented switch (goal views) */
-.lens-sw{display:inline-flex;gap:3px;background:var(--surface);border-radius:999px;padding:3px}
-.lens-sw button{height:32px;padding:0 15px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px;transition:background .2s,color .2s}
-.lens-sw button.on{background:var(--surface2);color:var(--text)}
-.lens-sw button:focus-visible{outline:2px solid var(--text);outline-offset:1px}
-.lens-sw i{font-style:normal;min-width:18px;height:18px;border-radius:9px;background:var(--today);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 5px}
-.lens-sw{max-width:100%;overflow-x:auto;scrollbar-width:none}.lens-sw::-webkit-scrollbar{display:none}.lens-sw button{flex:none}
 
 /* habits page */
-.hb-view{padding-bottom:40px}
+
 .hb-head{display:flex;flex-direction:column;gap:7px;margin:14px 0 18px}
 .hb-head .eye{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .hb-h{font-size:clamp(48px,14vw,72px);font-weight:800;letter-spacing:-.05em;line-height:.9;margin:0;color:var(--text)}
 .hb-sub{color:var(--muted);font-size:15px}.hb-sub b{color:var(--text);font-weight:700}
-.hb-acts{display:flex;align-items:center;gap:8px;margin-top:6px}
-.hb-ci{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px 0 12px;border-radius:999px;background:var(--today);color:#fff;font-weight:700;font-size:14px;transition:transform .15s,filter .15s}
-.hb-ci:active{transform:scale(.97)}.hb-ci:hover{filter:brightness(1.06)}
-.hb-ci svg{width:20px;height:20px}
-.hb-edit{margin-left:auto;color:var(--text)!important}
-.hb-card{background:var(--surface);border-radius:20px;overflow:hidden;margin-bottom:12px}
-.hb-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px 10px 12px;text-align:left;border-top:1px solid var(--line);transition:background .15s}
-.hb-row:first-child{border-top:0}
-.hb-row:hover{background:color-mix(in srgb,var(--text) 3%,transparent)}
-.hb-row:active{background:var(--surface2)}
-.hb-row:focus-visible,.hc-node:focus-visible,.hbwid-s:focus-visible{outline:2px solid var(--text);outline-offset:-2px;border-radius:14px}
-.hb-row.rest{opacity:.55}
-.hb-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.hb-tx b{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hb-tx small{font-size:12.5px;color:var(--muted)}
-.hb-ok{width:20px;height:20px;color:var(--today);opacity:0;transform:scale(.5);transition:opacity .25s,transform .3s cubic-bezier(.3,1.6,.5,1);flex:none;display:grid;place-items:center}
-.hb-ok svg{width:20px;height:20px}
-.hb-row.on .hb-ok,.hb-editing .hb-ok{opacity:1;transform:none}
-.hb-editing .hb-ok{color:var(--muted)}.hb-editing .hb-ok svg{width:16px;height:16px}
 .hb-add{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;border-radius:18px;border:1.5px dashed var(--line);color:var(--muted);font-weight:600;font-size:14.5px;margin-top:2px;transition:color .15s,border-color .15s}
 .hb-add:hover{color:var(--text);border-color:var(--muted)}
 .hb-add svg{width:16px;height:16px}
 .hb-note{font-size:13px;color:var(--muted);text-align:center;margin:10px 0}
-.hb-grp{display:flex;align-items:center;gap:8px;margin:18px 4px 8px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.hb-grp:first-child{margin-top:0}
-.hb-grp .sp-mini{width:20px;height:20px;border-radius:6px;font-size:11px;display:grid;place-items:center;color:#0F1013;letter-spacing:0}
 
 /* habit chains */
-.hc-card{background:var(--surface);border-radius:20px;padding:4px 16px 8px;margin-bottom:12px}
-.hc-head{display:flex;align-items:center;gap:10px;width:100%;padding:12px 0 6px;text-align:left}
-.hc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.hc-tx b{font-size:16px;font-weight:700;letter-spacing:-.01em}.hc-tx small{font-size:12.5px;color:var(--muted)}
-.hc-run{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface2);border-radius:999px;padding:4px 9px;white-space:nowrap}
-.hc-head svg,.hc-node>svg{width:16px;height:16px;color:var(--muted);flex:none}
-.hc-nodes{display:flex;flex-direction:column}
-.hc-node{display:flex;align-items:center;gap:12px;width:100%;padding:8px 0;text-align:left;position:relative}
+
 .hc-dot{width:26px;height:26px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--text) 20%,transparent);background:var(--surface);display:grid;place-items:center;color:transparent;flex:none;position:relative;z-index:1;transition:background .25s,border-color .25s,color .25s}
 .hc-dot svg{width:13px;height:13px}
-.hc-node.on .hc-dot{background:var(--today);border-color:var(--today);color:#fff}
-.hc-node::after{content:"";position:absolute;left:12px;top:calc(50% + 13px);height:calc(100% - 26px);width:2.5px;border-radius:2px;background:color-mix(in srgb,var(--text) 14%,transparent);transition:background .3s}
-.hc-node:last-child::after{display:none}
-.hc-node.on::after{background:var(--today)}
-.hc-next{font-size:11.5px;font-weight:700;color:var(--today);flex:none}
 
 /* wide view (computers): today on the left, the year fabric and numbers on the right */
-.hbw{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:22px;align-items:start}
-.hbw-bar{display:flex;align-items:center;gap:10px;margin:0 2px 12px}
-.hbw-bar .eye{flex:1;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.hbw-bar .hb-acts{margin:0}
-.hbw-card{background:var(--surface);border-radius:22px;padding:18px 20px}
-.hbw-cap{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-.fab-rows{display:flex;flex-direction:column;gap:9px}
-.fab-row{display:flex;align-items:center;gap:12px}
-.fab-row span{width:136px;flex:none;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fab-g{flex:1;min-width:0;display:grid;grid-template-columns:repeat(26,minmax(0,1fr));gap:3px}
-.fab-g i,.fab-leg i{display:block;aspect-ratio:1;border-radius:3px;background:var(--surface2)}
-.fab-g i.x{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
-.fab-g i.a,.fab-leg i.a{background:color-mix(in srgb,var(--today) 35%,var(--surface2))}
-.fab-g i.b,.fab-leg i.b{background:color-mix(in srgb,var(--today) 65%,var(--surface2))}
-.fab-g i.c,.fab-leg i.c{background:var(--today)}
-.fab-leg{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;font-size:12px;color:var(--muted)}
-.fab-leg span:last-child{display:flex;align-items:center;gap:4px;flex:none}
-.fab-leg i{width:10px;height:10px}
-.hbw-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
-.hbw-kpi{background:var(--surface);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:3px;min-width:0}
-.hbw-kpi small{font-size:12.5px;color:var(--muted)}
-.hbw-kpi b{font-size:21px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
-@media (max-width:1099px){.hbw{display:block}.hbw-r{display:none}}
 
 /* Rhythm page */
 @media (min-width:1100px){#rhythmPg .ib-in{max-width:1080px}}
@@ -2419,17 +2356,7 @@ body.no-amb .amb-btn{display:none!important}
 .ci-hi .hb-sun{width:32px;height:27px}
 .ci-ht{flex:1;min-width:0;display:flex;flex-direction:column}
 .ci-ht b{font-size:15.5px;font-weight:700}.ci-ht small{font-size:13px;color:var(--muted);margin-top:1px}
-.hbwid{background:var(--surface);border-radius:20px;padding:6px 8px 8px;margin:0 0 12px}
-.hbwid-h{display:flex;align-items:center;gap:8px;width:100%;padding:8px 8px 2px;text-align:left}
-.hbwid-h .eye{flex:1;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.hbwid-n{font-size:13px;color:var(--muted);font-weight:600}
-.hbwid-h>svg{width:15px;height:15px;color:var(--muted)}
-.hbwid-suns{display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:2px}
-.hbwid-s{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px 4px;border-radius:14px;min-width:0;transition:background .15s}
-.hbwid-s:hover{background:var(--surface2)}
-.hbwid-s .hb-sun{width:40px;height:33px}
-.hbwid-s span{font-size:15px;line-height:1;font-weight:700;color:var(--muted)}
-@media (min-width:1100px){.ci-home,.hbwid{margin-bottom:16px}.hbwid{padding:8px 12px 10px}.hbwid-suns{grid-template-columns:repeat(auto-fill,64px)}}
+@media (min-width:1100px){.ci-home{margin-bottom:16px}}
 
 /* evening check-in page */
 .ci-pg .ib-in{max-width:460px}
@@ -2465,21 +2392,7 @@ body.no-amb .amb-btn{display:none!important}
 .hb-pre{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .hb-pre button{height:30px;padding:0 12px;border-radius:999px;background:var(--surface);font-size:12.5px;font-weight:600}
 .lx-opt small{color:var(--muted);font-weight:500}
-.hb-newch{display:flex;gap:6px;margin-top:10px}
-.hb-newch input{flex:1;min-width:0;height:42px;border-radius:12px;background:var(--surface);border:0;padding:0 12px;color:var(--text);font:inherit;font-size:14px;outline:none}
-.hb-newch input:focus{box-shadow:0 0 0 2px var(--text)}
-.hb-newch button{height:42px;padding:0 16px;border-radius:12px;background:var(--text);color:var(--bg);font-weight:700;font-size:14px}
 .hb-del{grid-column:1/-1}
-.hc-in{margin-bottom:6px}
-.hc-ord{display:flex;flex-direction:column;background:var(--surface2);border-radius:16px;overflow:hidden}
-.hc-ord>div{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-top:1px solid var(--line)}
-.hc-ord>div:first-child{border-top:0}
-.hc-i{width:22px;height:22px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:11.5px;font-weight:800;color:var(--muted);flex:none}
-.hc-n{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hc-ord button{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
-.hc-ord button:hover:not(:disabled){background:var(--surface);color:var(--text)}
-.hc-ord button:disabled{opacity:.25}
-.hc-ord button svg{width:16px;height:16px}
 /* settings */
 .md-soon{font-size:13px;color:var(--muted);margin:12px 2px 0}
 .hs-new{margin-top:22px}
@@ -2507,10 +2420,9 @@ body.no-amb .amb-btn{display:none!important}
 .ns-top small{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
 .ns-bar{display:block;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
 .ns-bar i{display:block;height:100%;border-radius:3px;background:var(--week);min-width:6px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
-.ns-sub{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (min-width:1100px){.ns-card{margin-bottom:16px;padding:15px 22px 15px 15px}
-  .ns-t{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,36%);grid-template-areas:"top bar" "sub bar";column-gap:28px;row-gap:3px;align-items:center}
-  .ns-top{grid-area:top}.ns-sub{grid-area:sub}.ns-bar{grid-area:bar;height:8px;border-radius:4px}.ns-bar i{border-radius:4px}}
+  .ns-t{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,36%);grid-template-areas:"top bar";column-gap:28px;align-items:center}
+  .ns-top{grid-area:top}.ns-bar{grid-area:bar;height:8px;border-radius:4px}.ns-bar i{border-radius:4px}}
 
 /* goal cards (Goals lens, Rhythm page) */
 .g-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-bottom:12px}
@@ -2542,8 +2454,6 @@ body.no-amb .amb-btn{display:none!important}
 .g-wi{width:34px;height:34px;border-radius:11px;background:var(--surface);display:grid;place-items:center;font-size:17px;flex:none}
 .g-wrow>svg{width:15px;height:15px;color:var(--muted);flex:none}
 .g-empty .g-emi{display:block;width:170px;margin:0 auto 8px;border-radius:18px;overflow:hidden;background:var(--surface)}
-.rh-sec{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:34px 2px 12px}
-.gl-wide{max-width:1080px}
 
 /* the climb */
 .g-climb{width:100%;height:auto;display:block;overflow:visible;--g-m1:color-mix(in srgb,var(--text) 9%,var(--surface));--g-m2:var(--surface)}
@@ -2562,8 +2472,6 @@ body.no-amb .amb-btn{display:none!important}
 .g-flag{stroke:var(--text);stroke-width:2;stroke-linecap:round}.g-flagf{fill:var(--text)}
 .g-climb.anim .g-rt1{stroke-dasharray:1;stroke-dashoffset:1;animation:gDraw 1.1s .15s cubic-bezier(.45,0,.2,1) forwards}
 .g-climb.anim .g-sun{animation:gSun 1.5s .2s cubic-bezier(.2,.8,.2,1) both}
-.g-climb.rise .g-sun{animation:gSun 1.8s cubic-bezier(.2,.8,.2,1) both}
-.g-climb.rise .g-rays{animation:gRay .7s 1.4s both}
 @keyframes gDraw{to{stroke-dashoffset:0}}
 @keyframes gSun{from{transform:translateY(50px)}to{transform:translateY(var(--sy))}}
 @keyframes gRay{from{opacity:0}to{opacity:1}}
@@ -2574,63 +2482,20 @@ body.no-amb .amb-btn{display:none!important}
 .gd-top{justify-content:space-between}
 @media (min-width:1100px){.gd-pg .ib-in{max-width:1080px;padding-top:24px}.gd-top{display:flex}}
 .gd-mw .lh-pop{top:44px;right:0}
-.gd-head{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:6px 0 18px}
-.gd-head .eye{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .gd-ns{display:inline-flex;align-items:center;gap:5px;color:var(--week)}.gd-ns svg{width:12px;height:12px}
-.gd-h{font-size:clamp(34px,9.5vw,54px);font-weight:800;letter-spacing:-.045em;line-height:1.02;margin:0;color:var(--text);overflow-wrap:anywhere}
 .gd-e{margin-right:.22em}
-.gd-sp{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--muted)}
-.gd-sp .sp-mini{width:20px;height:20px;border-radius:6px;font-size:11px;display:grid;place-items:center;color:#0F1013}
-.gd-why{display:flex;flex-direction:column;gap:4px;width:100%;padding:14px 16px;border-radius:18px;background:var(--surface);text-align:left;margin-bottom:16px;transition:background .15s}
-.gd-why:hover{background:color-mix(in srgb,var(--text) 3%,var(--surface))}
-.gd-why small{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.gd-why span{font-size:15.5px;line-height:1.45;color:var(--text)}
-.gd-why.add{flex-direction:row;align-items:center;gap:8px;background:transparent;border:1.5px dashed var(--line);color:var(--muted);font-weight:600;font-size:14.5px;padding:13px 16px}
-.gd-why.add:hover{color:var(--text);border-color:var(--muted)}
-.gd-why.add svg{width:15px;height:15px}
-.gd-sw{margin:0 0 12px}
-.gd-climb{background:var(--surface);border-radius:22px;padding:14px 12px 0;overflow:hidden}
-.gd-next{display:flex;align-items:center;gap:12px;margin-top:10px;padding:12px 12px 12px 14px;border-radius:18px;background:var(--surface)}
-.gd-pin{font-size:20px;width:26px;text-align:center;flex:none}
-.gd-next .g-tx b{white-space:normal}
-.gd-next .g-tx small{white-space:normal}
-.gd-of{font-size:13px;font-weight:700;color:var(--muted);flex:none;padding-right:4px}
-.gd-mk{height:34px;padding:0 14px;border-radius:999px;background:var(--surface2);font-size:13px;font-weight:700;white-space:nowrap;flex:none;transition:background .15s,transform .15s}
-.gd-mk:hover{background:color-mix(in srgb,var(--text) 12%,var(--surface2))}
-.gd-mk:active{transform:scale(.97)}
-.gd-mk.dark{background:var(--text);color:var(--bg)}
-.gd-next.sum{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--week) 45%,transparent)}
-.gd-kpis{margin-top:10px}
-.gd-kpis .hbw-kpi b{font-size:19px}
 .gd-sec{display:flex;align-items:center;gap:10px;margin:26px 2px 10px}
 .gd-sec h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .gd-sec span{flex:1;font-size:13px;color:var(--muted)}
 .gd-ed{color:var(--text)!important;padding:9px 4px;margin:-6px -4px}
-.gd-r>.gd-sec:first-child{margin-top:0}
-.gd-cols{display:block}
-@media (min-width:1100px){
-  .gd-cols{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:28px;align-items:start}
-  .gd-r .gd-why{margin-bottom:22px}
-}
-@media (max-width:1099px){.gd-r>.gd-sec:first-child{margin-top:26px}}
 
 /* milestones */
 .g-mslist{background:var(--surface);border-radius:20px;overflow:hidden}
 .g-ms{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-top:1px solid var(--line)}
 .g-ms:first-child{border-top:0}
-.g-msc{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;flex:none}
-.g-msc:hover .hc-dot{border-color:color-mix(in srgb,var(--text) 45%,transparent)}
 .g-ms.on .hc-dot,.g-trow.on .hc-dot{background:var(--today);border-color:var(--today);color:#fff}
 .g-ms .hc-dot{transition:background .2s,border-color .2s,color .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
 .g-ms.on .hc-dot{transform:scale(1.04)}
-.g-mst{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:4px 0}
-.g-mst>span{font-size:15px;font-weight:500;line-height:1.35;overflow-wrap:anywhere}
-.g-ms.on .g-mst>span{color:var(--muted)}
-.g-mstk{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--muted);padding:1px 0}
-.g-mstk svg{width:11px;height:11px;color:var(--week)}
-.g-mstk:hover{color:var(--text)}
-.g-mk{height:30px;padding:0 12px;border-radius:999px;background:var(--surface2);font-size:12.5px;font-weight:700;white-space:nowrap;flex:none}
-.g-mk:hover{background:color-mix(in srgb,var(--text) 12%,var(--surface2))}
 .g-ms.ed{padding:7px 8px 7px 12px;gap:4px}
 .g-msin{flex:1;min-width:0;height:40px;border-radius:12px;background:var(--surface2);border:0;padding:0 12px;color:var(--text);font:inherit;font-size:15px;outline:none;margin-right:4px}
 .g-msin:focus{box-shadow:0 0 0 2px var(--text)}
@@ -2639,12 +2504,6 @@ body.no-amb .amb-btn{display:none!important}
 .g-ms.ed button:disabled{opacity:.25}
 .g-ms.ed button svg{width:16px;height:16px}
 .g-ms.ed .g-msx:hover{color:var(--today)!important}
-.g-msadd{display:flex;align-items:center;gap:12px;padding:4px 14px 4px 19px;border-top:1px solid var(--line)}
-.g-mslist>.g-msadd:first-child{border-top:0}
-.g-msp{color:var(--muted);display:grid;place-items:center;width:18px;flex:none}.g-msp svg{width:17px;height:17px}
-.g-msadd input{flex:1;min-width:0;height:46px;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:15px}
-.g-msadd input::placeholder{color:var(--muted)}
-.g-msadd:focus-within .g-msp{color:var(--text)}
 
 /* linked tasks */
 .g-tasks{background:var(--surface);border-radius:20px;overflow:hidden}
@@ -2659,26 +2518,6 @@ body.no-amb .amb-btn{display:none!important}
 .gd-hint .g-pst{vertical-align:-1px;margin-right:3px}
 
 /* why ladder */
-.g-ladder{display:flex;flex-direction:column}
-.g-rung{display:flex;gap:12px;position:relative;padding-bottom:12px}
-.g-rung:last-child{padding-bottom:0}
-.g-ln{width:14px;display:flex;flex-direction:column;align-items:center;flex:none;padding-top:16px}
-.g-ln i{width:10px;height:10px;border-radius:50%;background:color-mix(in srgb,var(--text) 22%,transparent);flex:none}
-.g-ln b{width:2px;flex:1;background:color-mix(in srgb,var(--text) 12%,transparent);margin:4px 0 -28px;border-radius:1px}
-.g-rung:last-child .g-ln b{display:none}
-.g-bx{flex:1;min-width:0;background:var(--surface);border-radius:18px;padding:12px 16px 13px}
-.g-bx small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.g-rt{display:block;font-size:16.5px;font-weight:650;letter-spacing:-.01em;text-align:left;line-height:1.3;color:var(--text)}
-.g-rtask:hover{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--text) 25%,transparent);text-underline-offset:3px}
-.g-rs{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
-.g-lin{width:100%;background:none;border:0;outline:none;color:var(--text);font:inherit;font-size:16px;font-weight:600;padding:2px 0;letter-spacing:-.01em}
-.g-lin::placeholder{color:var(--muted);font-weight:500}
-.g-bx:focus-within{box-shadow:inset 0 0 0 2px var(--text)}
-.g-rung.now .g-bx{background:color-mix(in srgb,var(--today) 9%,var(--surface));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--today) 40%,transparent)}
-.g-rung.now .g-bx:focus-within{box-shadow:inset 0 0 0 2px var(--today)}
-.g-rung.now .g-ln i{background:var(--today);box-shadow:0 0 0 4px color-mix(in srgb,var(--today) 22%,transparent)}
-.g-rtoday{display:inline-flex;align-items:center;gap:6px;color:var(--today);font-size:14.5px;font-weight:700;padding:8px 0;margin:-6px 0}
-.g-rtoday svg{width:15px;height:15px}
 
 /* 30-second setup */
 .gs-pg .ib-in{max-width:520px}
@@ -3128,7 +2967,7 @@ button.hg-c:active{transform:scale(.88)}
 .hw-done.on{opacity:.5;pointer-events:none}
 /* big tiles */
 .hw-tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-@media (min-width:1100px){.hw-tl{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}.hw{margin-bottom:16px;padding:18px}}
+@media (min-width:1100px){.hw-tl{grid-template-columns:repeat(6,minmax(0,1fr))}.hw{margin-bottom:16px;padding:18px}}
 .hw-tile{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:14px;min-height:98px;padding:12px;border-radius:18px;background:var(--surface2);text-align:left;transition:background .35s var(--ease),color .3s,transform .15s}
 .hw-tile:active{transform:scale(.96)}
 .hw-tt{display:flex;flex-direction:column;gap:3px;min-width:0;width:100%}
@@ -3144,7 +2983,12 @@ button.hg-c:active{transform:scale(.88)}
 .hw-pill.on{background:transparent;box-shadow:inset 0 0 0 1px var(--line);color:var(--muted)}
 .hw-pill.on .hw-k{background:var(--today);box-shadow:none;color:#fff}
 .hw-tx b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2;font-size:17px}
-@media (max-width:699px){.hw-pill{height:40px;padding:0 13px 0 8px;font-size:13.5px;gap:7px}.hw-pill .hw-k{width:20px;height:20px}.hw-pl{gap:6px}}
+/* "+N more": the rest fold away; tapping opens Habits */
+.hw-more{font-size:13.5px;font-weight:700;color:var(--muted);border-radius:999px;transition:color .2s,background .2s}
+.hw-more:hover{color:var(--text)}
+.hw-pl .hw-more{height:44px;padding:0 14px;box-shadow:inset 0 0 0 1px var(--line)}
+.hw-tiles .hw-more{display:block;margin:10px 0 -4px auto;padding:6px 10px}
+@media (max-width:699px){.hw-pill{height:40px;padding:0 13px 0 8px;font-size:13.5px;gap:7px}.hw-pill .hw-k{width:20px;height:20px}.hw-pl{gap:6px}.hw-pl .hw-more{height:40px}}
 </style>
 </head>
 <body>
@@ -3339,7 +3183,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=152; // bumped with every published update
+const APP_VERSION=153; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3756,7 +3600,7 @@ function spaceRows(){
       <span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>
       <span class="sp-rt"><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="sp-sub">${sub}</span></span>
       <button class="sp-more" data-more="${sp.id}" aria-label="Space options">${DOTS3}</button>
-      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button>${hbPopItem(sp.id)}<button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
+      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
     </div>`}).join('')+`<button class="sp-new sp-row-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
 }
 function spaceCards(){
@@ -3765,7 +3609,7 @@ function spaceCards(){
     return `<div class="sp-card" role="button" tabindex="0" data-space="${sp.id}" style="--sc:${sp.c}">
       <div class="sp-top"><span class="sp-ico">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><span class="sp-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span>
         <button class="sp-more" data-more="${sp.id}" aria-label="Space options"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></div>
-      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button>${hbPopItem(sp.id)}<button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
+      <div class="sp-pop" data-pop="${sp.id}"><button data-pin="${sp.id}">${sp.pinned?'Unpin':'Pin to top'}</button><button data-edit="${sp.id}">Edit space</button>${S.spaces.length>1?`<button data-sparc="${sp.id}">Archive</button>`:''}<button class="warn" data-del="${sp.id}">Delete space</button></div>
       <div class="sp-bar">${st.total?VS().map(x=>st.by[x.id]?`<span style="flex:${st.by[x.id]};background:var(--${x.id})"></span>`:'').join(''):''}</div>
       <div class="sp-meta"><span><b>${st.today}</b> today</span><span><b>${st.open}</b> open</span><span>${st.lists} ${st.lists===1?'list':'lists'}</span></div>
       ${(()=>{const nx=spNext(sp);return `<span class="sp-next">${nx?`<span class="sp-nk">Next</span><span class="sp-nt">${esc(nx.title)}</span>`:`<span class="sp-nk">All clear</span>`}</span>`})()}
@@ -3795,7 +3639,7 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${nsCard()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${nsCard()}${hbWidget()}${homeNudge()}${homeNav()}<div class="sp-grid">${spaceCards()}</div>`;
 }
 function render(dir){
   root.dataset.view=S.space?'space':'home';drawMe();
@@ -5069,7 +4913,7 @@ function renderDesk(){
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   const spp=!S.space&&spPage&&spPageOn()?spaceOf(spPage):null;if(!spp)spPage=null;
-  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${nsCard()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
+  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${nsCard()}${hbWidget()}${homeNudge()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
   const gk=S.space?S.space+'|'+S.list:'';
   if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
@@ -5129,7 +4973,7 @@ function todayFirst(){
   const side=orderedSpaces().map(sp=>{const st=spaceStats(sp);
     return `<button class="hf-sp" data-space="${sp.id}"><span class="hf-sph"><span class="hf-ic">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span class="hf-n">${st.today?st.today+' today':st.open?st.open+' open':'Clear'}</span></span>
       <span class="sp-bars">${st.total?VS().map(x=>st.by[x.id]?`<i style="flex:${st.by[x.id]};background:var(--${x.id})"></i>`:'').join(''):'<i class="sp-bars-0"></i>'}</span></button>`}).join('');
-  return `${nsCard()}${ciCard()}${hbWidget()}${reviewCard()}${backupCard()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
+  return `${nsCard()}${hbWidget()}${homeNudge()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
     ${rows||`<p class="hf-empty">Open a space and move a few tasks to Today. They’ll show up here, ready to tick off.</p>`}</section>
     <aside class="hf-side"><div class="hf-cap">Spaces</div>${side}<button class="hf-new" id="spNew">${PLUS_S}New space</button></aside></div>`;
 }
@@ -5700,11 +5544,11 @@ $('reviewPg').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagat
    (The page's element ids still say "rhythm" from an earlier name.)
    Sunrise streaks: a habit's sun rises one notch for each day you keep it and sinks one notch for a missed day,
    never vanishing. Seven notches brings out the rays.
-   Optional extras: habit chains (one habit leads to the next), an evening check-in card, and a Home widget.
-   Data: S.habits [{id,name,e,space,days:[0-6],done:{'YYYY-MM-DD':1},created,chain?}], S.hchains [{id,name,when,space}].
-   Both sync, back up and undo like tasks. */
-var rhOn=false,ciOn=false,hbEditing=false; // var: read by other files
-const HB_MAX=10,CHAIN_MAX=6;
+   Optional extras: an evening check-in card and a Home widget. The page views and the widget are drawn in 08n-pages.js.
+   Data: S.habits [{id,name,e,space,days:[0-6],done:{'YYYY-MM-DD':1},created}]; syncs, backs up and undoes like tasks.
+   (S.hchains and a habit's chain field are left from the removed habit chains; they are only carried along, never shown.) */
+var rhOn=false,ciOn=false; // var: read by other files
+const HB_MAX=10;
 const HB_ICONS=['💧','🏃','🚶','📖','🧘','📵','🛏️','🥗','🍎','✍️','📝','🧠','🎸','🎨','🌿','☀️','🌙','☕','🧹','💰','📞','🙏','🦷','💪'];
 const HB_WORDS=[[/water|drink|hydrat/,'💧'],[/run|jog|workout|gym|train|exercise|sport|swim|bike|cycl/,'🏃'],[/walk|steps/,'🚶'],[/read|book|pages/,'📖'],
   [/meditat|breath|yoga|stretch|calm|mindful/,'🧘'],[/phone|screen|social|scroll/,'📵'],[/sleep|bed|nap/,'🛏️'],[/eat|salad|veg|meal|food|cook/,'🥗'],[/fruit|apple/,'🍎'],
@@ -5718,16 +5562,11 @@ const UP_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 const DN_S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 
 function habitsOn(){return !!(S.cfg&&S.cfg.habits)}
-function modePage(){return false} // habits and goals each have their own page now
-function chainsOn(){return habitsOn()&&!!C().hbChains}
 /* habits whose space still exists (a deleted or archived space hides its habits; restoring the space brings them back) */
 function hbAll(){return (S.habits||[]).filter(h=>h&&spaceOf(h.space))}
-function hbIn(sp){return hbAll().filter(h=>h.space===sp)}
 const hbById=id=>(S.habits||[]).find(h=>String(h.id)===String(id));
-const chById=id=>(S.hchains||[]).find(c=>String(c.id)===String(id));
 const hbNoon=d=>{const x=new Date(d);x.setHours(12,0,0,0);return x};
 const hbDue=(h,d)=>!Array.isArray(h.days)||h.days.length>=7||h.days.includes(d.getDay());
-const hbChainOf=h=>chainsOn()&&h.chain?chById(h.chain):null;
 const hbDays=n=>{const d=hbNoon(new Date());d.setDate(d.getDate()-n);return d};
 
 /* lvl: the sun's height 0–7 (up one for a kept day, down one for a missed one, over the last two weeks);
@@ -5741,14 +5580,9 @@ function hbStats(h){
   return {lvl,st,dt,due:hbDue(h,t0)};
 }
 const hbText=s=>!s.due&&!s.dt?'Rest day':s.st?`${s.st}-day streak${s.lvl>=7?' · sun is up':''}`:'Start today';
-function hbBest(hs){let best=0;hs.forEach(h=>{const born=hbNoon(h.created||Date.now());let run=0;
-  for(let i=365;i>=0;i--){const d=hbDays(i);if(d<born||!hbDue(h,d))continue;if(h.done[dkey(d)]){run++;if(run>best)best=run}else if(i>0)run=0}});return best}
 function hbOpenToday(hs){return (hs||hbAll()).filter(h=>{const s=hbStats(h);return s.due&&!s.dt})}
-function hbCount(hs){const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt});return {total:due.length,done:due.filter(h=>hbStats(h).dt).length}}
 const daysLabel=d=>{d=Array.isArray(d)?d:[0,1,2,3,4,5,6];if(d.length>=7)return 'Every day';const k=[...d].sort().join('');
   if(k==='12345')return 'Weekdays';if(k==='06')return 'Weekends';return [1,2,3,4,5,6,0].filter(n=>d.includes(n)).map(n=>['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][n]).join(', ')};
-function chainRun(hs){let run=0;for(let i=0;i<400;i++){const d=hbDays(i),due=hs.filter(h=>hbDue(h,d)&&d>=hbNoon(h.created||Date.now()));
-  if(!due.length){if(i>60)break;continue}const all=due.every(h=>h.done[dkey(d)]);if(all)run++;else if(i>0)break}return run}
 
 /* ---------- pieces ---------- */
 let hbUid=0;
@@ -5757,87 +5591,30 @@ function hbSun(lvl,on,cls=''){const id='hbc'+(++hbUid);
   <g class="rays" style="opacity:${lvl>=7?1:0}"><path d="M24 3.5v5M12 8.5l3.4 3.4M36 8.5l-3.4 3.4"/></g>
   <g clip-path="url(#${id})"><g class="dg" style="transform:translateY(${(-lvl*12/7).toFixed(2)}px)"><circle class="disc" cx="24" cy="38" r="10"/></g></g><path class="hz" d="M5 30h38"/></svg>`}
 const hbName=h=>`${h.e?esc(h.e)+' ':''}${esc(h.name)}`;
-function hbRow(h){const s=hbStats(h);
-  return `<button class="hb-row${s.dt?' on':''}${s.due||s.dt?'':' rest'}" ${hbEditing?`data-hbe="${h.id}"`:`data-hbt="${h.id}" aria-pressed="${s.dt}"`}>${hbSun(s.lvl,s.dt)}
-    <span class="hb-tx"><b>${hbName(h)}</b><small data-hbs>${hbEditing?daysLabel(h.days):hbText(s)}</small></span><span class="hb-ok">${hbEditing?CHEV:ICK}</span></button>`}
-function hbChainCard(c,hs){const run=chainRun(hs);let nx=false;
-  return `<div class="hc-card">${hbEditing?`<button class="hc-head" data-hce="${c.id}">`:'<div class="hc-head">'}<span class="hc-tx"><b>${esc(c.name||'Chain')}</b>${c.when?`<small>When ${esc(c.when)}</small>`:''}</span>
-    ${hbEditing?CHEV.replace('<svg','<svg class="hc-chev"'):`<span class="hc-run">${run?`${run} ${run===1?'day':'days'} in a row`:'Not finished yet'}</span>`}${hbEditing?'</button>':'</div>'}
-    <div class="hc-nodes">${hs.map(h=>{const s=hbStats(h),next=!hbEditing&&!s.dt&&(s.due)&&!nx&&(nx=true);
-      return `<button class="hc-node${s.dt?' on':''}" ${hbEditing?`data-hbe="${h.id}"`:`data-hbt="${h.id}" aria-pressed="${s.dt}"`}><span class="hc-dot">${ICK}</span><span class="hb-tx"><b>${hbName(h)}</b><small data-hbs>${hbEditing?daysLabel(h.days):hbText(s)}</small></span>${next?'<span class="hc-next">next</span>':''}${hbEditing?CHEV:''}</button>`}).join('')}</div></div>`}
-/* habits in chains first (when chains are on), then the rest as sunrise rows */
-function hbBlock(hs){
-  if(!chainsOn())return hs.length?`<div class="hb-card${hbEditing?' hb-editing':''}">${hs.map(hbRow).join('')}</div>`:'';
-  const order=[],by=new Map(),solo=[];
-  hs.forEach(h=>{const c=hbChainOf(h);if(c){if(!by.has(c.id)){by.set(c.id,[]);order.push(c)}by.get(c.id).push(h)}else solo.push(h)});
-  return order.map(c=>hbChainCard(c,by.get(c.id))).join('')+(solo.length?`<div class="hb-card${hbEditing?' hb-editing':''}">${solo.map(hbRow).join('')}</div>`:'');
-}
-function hbAdd(sp){return hbAll().length<HB_MAX?`<button class="hb-add" data-hbnew="${sp||''}">${PLUS_S}New habit</button>`:`<p class="hb-note">${HB_MAX} habits is the most. Fewer habits, kept every day, beat many.</p>`}
-/* one list for a set of habits; grouped by space when they come from more than one */
-function hbList(hs,grouped,sp){
-  const sps=[...new Set(hs.map(h=>h.space))];
-  const body=grouped&&sps.length>1?orderedSpaces().filter(x=>sps.includes(x.id)).map(x=>`<div class="hb-grp"><span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>${esc(x.name)}</div>${hbBlock(hs.filter(h=>h.space===x.id))}`).join(''):hbBlock(hs);
-  return body+hbAdd(sp);
-}
-function hbActs(hs){const left=hbOpenToday(hs).length;
-  return `<div class="hb-acts">${left&&!hbEditing?`<button class="hb-ci" data-ciopen>${RH_ICON}Check in</button>`:''}<button class="txt-btn hb-edit" data-hbedit>${hbEditing?'Done':'Edit'}</button></div>`}
-function hbSubLine(hs){const c=hbCount(hs),best=hbBest(hs);
-  return `${c.total?`<b>${c.done} of ${c.total}</b> done today`:'Nothing due today'}${best>1?` · best run <b>${best}</b> days`:''}`}
-function hbHeadBig(hs,eye,title){
-  return `<div class="hb-head"><span class="eye">${eye}</span><h1 class="hb-h">${title}</h1>${hs.length?`<div class="hb-sub">${hbSubLine(hs)}</div>${hbActs(hs)}`:''}</div>`}
-/* the "year fabric": one square per week for the last 26 weeks, greener = more of that week's days kept */
-function hbFabric(hs){
-  const W=26,t0=hbNoon(new Date()),mon=new Date(t0);mon.setDate(mon.getDate()-((mon.getDay()+6)%7));
-  const first=new Date(mon);first.setDate(first.getDate()-(W-1)*7);
-  const mo=d=>d.toLocaleDateString(undefined,{month:'short'});
-  const rows=hs.map(h=>{const born=hbNoon(h.created||Date.now());let cells='';
-    for(let w=W-1;w>=0;w--){let due=0,dn=0;for(let k=0;k<7;k++){const d=new Date(mon);d.setDate(d.getDate()-w*7+k);if(d>t0||d<born||!hbDue(h,d))continue;due++;if(h.done[dkey(d)])dn++}
-      cells+=`<i class="${!due?'x':!dn?'':dn/due<.34?'a':dn/due<.67?'b':'c'}"></i>`}
-    return `<div class="fab-row"><span>${hbName(h)}</span><div class="fab-g">${cells}</div></div>`}).join('');
-  return `<div class="hbw-card"><div class="hbw-cap"><span>Last 6 months</span><span>${mo(first)} → ${mo(t0)}</span></div><div class="fab-rows">${rows}</div>
-    <div class="fab-leg"><span>Each square is a week. Greener means more days kept.</span><span>Less<i></i><i class="a"></i><i class="b"></i><i class="c"></i>More</span></div></div>`}
-function hbKpis(hs){
-  const t0=hbNoon(new Date()),mon=new Date(t0);mon.setDate(mon.getDate()-((mon.getDay()+6)%7));let due=0,dn=0;
-  hs.forEach(h=>{const born=hbNoon(h.created||Date.now());for(let d=new Date(mon);d<=t0;d.setDate(d.getDate()+1)){if(d<born||!hbDue(h,d))continue;due++;if(h.done[dkey(d)])dn++}});
-  const up=hs.filter(h=>hbStats(h).lvl>=7).length;
-  let steady=null,bestR=-1;hs.forEach(h=>{let a=0,b=0;for(let i=0;i<30;i++){const d=hbDays(i);if(d<hbNoon(h.created||Date.now())||!hbDue(h,d))continue;a++;if(h.done[dkey(d)])b++}const r=a?b/a:0;if(a&&r>bestR){bestR=r;steady=h}});
-  const k=(l,v)=>`<div class="hbw-kpi"><small>${l}</small><b>${v}</b></div>`;
-  return `<div class="hbw-kpis">${k('This week',`${dn} / ${due}`)}${k('Best run',`${hbBest(hs)} days`)}${k('Suns fully up',`${up} of ${hs.length}`)}${k('Most steady',steady?hbName(steady):'—')}</div>`}
-
 /* ---------- where habits live: one dedicated page (like Inbox), opened from Home or the sidebar ---------- */
-function modesAny(){return habitsOn()||goalsOn()}
-function rhythmAvail(){return habitsOn()}
-const weekday=()=>new Date().toLocaleDateString(undefined,{weekday:'long'});
 const longDate=()=>new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
 function modesRender(){
   if(rhOn&&!habitsOn())closeRhythm();
   if(ciOn&&!habitsOn())closeCheckin(true);
-  delete root.dataset.lens;
   if(rhOn)drawRhythm();
 }
 
-/* ---------- Home: evening check-in card, habits widget, Inbox/Habits/Goals rows, sidebar ---------- */
+/* ---------- Home: evening check-in card, Inbox/Habits/Goals rows, sidebar ---------- */
 function ciCard(){
   if(!habitsOn()||C().hbCi===false||S.ciSkip===today())return '';
   const at=+C().hbCiAt;if(new Date().getHours()<(Number.isFinite(at)?at:19))return '';
   const n=hbOpenToday().length;if(!n)return '';
   return `<div class="ci-home"><span class="ci-hi">${hbSun(3,false)}</span><span class="ci-ht"><b>Evening check-in</b><small>${n} ${n===1?'habit':'habits'} left today</small></span>
     <button class="rv-skip" data-cilater>Later</button><button class="rv-go" data-ciopen>Start</button></div>`}
-function hbWidget(){
-  if(!habitsOn()||!C().wHabits)return '';const hs=hbAll();if(!hs.length)return '';
-  const left=hbOpenToday(hs).length;
-  return `<div class="hbwid"><button class="hbwid-h" data-hbopen><span class="eye">Habits</span><span class="hbwid-n">${left?`${left} left today`:'All done today'}</span>${CHEV}</button>
-    <div class="hbwid-suns">${hs.map(h=>{const s=hbStats(h);return `<button class="hbwid-s${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}" title="${esc(h.name)}" aria-label="${esc(h.name)}">${hbSun(s.lvl,s.dt)}<span>${h.e?esc(h.e):esc((h.name[0]||'•').toUpperCase())}</span></button>`}).join('')}</div></div>`}
 function homeNav(){const rows=[],r=(id,ic,t,sub)=>`<button class="ib-entry" id="${id}"><span class="ib-entry-i">${ic}</span><span class="ib-entry-t"><b>${t}</b><small>${sub}</small></span>${CHEV}</button>`;
   if(inboxOn()){const n=inboxItems().length;rows.push(r('ibEntry',IB_ICON,'Inbox',n?`${n} ${n===1?'idea':'ideas'} waiting`:'Drop ideas here'))}
-  if(habitsOn()){const n=hbOpenToday().length,has=hbAll().length;rows.push(r('rhEntry',RH_ICON,'Habits',!has?'Small daily wins':n?`${n} left today`:'All done today'))}
-  if(goalsOn()){const n=gAll().length;rows.push(r('glEntry',G_FLAG,'Goals',n?`${n} in progress`:'Big outcomes, step by step'))}
+  if(habitsOn()&&!hbWidget()){const n=hbOpenToday().length,has=hbAll().length;rows.push(r('rhEntry',RH_ICON,'Habits',!has?'Small daily wins':n?`${n} left today`:'All done today'))}
+  if(goalsOn()&&!(nsCard()&&gAll().length<2)){const n=gAll().length;rows.push(r('glEntry',G_FLAG,'Goals',n?`${n} in progress`:'Big outcomes, step by step'))}
   return rows.length?`<div class="hn">${rows.join('')}</div>`:''}
 function rhythmSide(){let h='';
   if(habitsOn()){const n=hbOpenToday().length;h+=`<button class="s-list s-home s-inbox ${rhOn?'on':''}" id="sRhythm" title="Habits">${RH_ICON}<span class="s-name">Habits</span>${n?`<span class="n">${n}</span>`:''}</button>`}
   if(goalsOn()){const n=gAll().length;h+=`<button class="s-list s-home s-inbox ${typeof glOn!=='undefined'&&glOn?'on':''}" id="sGoals" title="Goals">${G_FLAG}<span class="s-name">Goals</span>${n?`<span class="n">${n}</span>`:''}</button>`}
   return h}
-function hbPopItem(){return ''}
 function hbOpenHabits(){openRhythm()}
 
 /* ---------- Habits page ---------- */
@@ -5845,20 +5622,13 @@ document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg" id="rh
 function openRhythm(){
   if(!habitsOn())return;
   if(ibOn)closeInbox();if(typeof closeGoals==='function')closeGoals();if(typeof closeSearch==='function')closeSearch();
-  rhOn=true;hbEditing=false;drawRhythm();$('rhythmPg').classList.add('on');document.body.classList.add('ib-open');
+  rhOn=true;drawRhythm();$('rhythmPg').classList.add('on');document.body.classList.add('ib-open');
   $('rhythmPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
 }
 function closeRhythm(){
-  if(!rhOn)return;rhOn=false;hbEditing=false;$('rhythmPg').classList.remove('on');if(!ibOn)document.body.classList.remove('ib-open');
+  if(!rhOn)return;rhOn=false;$('rhythmPg').classList.remove('on');if(!ibOn)document.body.classList.remove('ib-open');
   const a=document.activeElement;if(a&&a.closest&&a.closest('#rhythmPg'))a.blur();
   if(typeof renderDesk==='function')renderDesk();
-}
-function drawRhythm(){
-  const y=$('rhythmPg').scrollTop,hs=hbAll();
-  const body=hs.length?`<div class="hbw"><div class="hbw-l">${hbList(hs,true,'')}</div><div class="hbw-r">${hbFabric(hs)}${hbKpis(hs)}</div></div>`
-      :`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`;
-  $('rhIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>${hbHeadBig(hs,longDate(),'Habits')}${body}`;
-  $('rhythmPg').scrollTop=y;
 }
 $('rhythmPg').addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('.sheet.on')){e.stopPropagation();closeRhythm()}});
 
@@ -5909,22 +5679,14 @@ document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="hbSheet"><d
   <div class="le-card sp-opts" id="hbOpts"></div>
   <button class="primary" id="hbSave" disabled>Add habit</button>
   <div class="le-acts" id="hbDelW" hidden><button class="le-btn warn hb-del" id="hbDel" type="button">Delete habit</button></div>
-</div></div>
-<div class="sheet" id="hcSheet"><div class="sheet-in">
-  <div class="grab"></div><h2>Edit chain</h2>
-  <div class="lbl">Name</div><input class="field hc-in" id="hcName" maxlength="30" autocomplete="off" placeholder="Morning">
-  <div class="lbl">It starts when</div><input class="field hc-in" id="hcWhen" maxlength="40" autocomplete="off" placeholder="I finish my coffee">
-  <div class="lbl">Order</div><div class="hc-ord" id="hcOrd"></div>
-  <button class="primary" id="hcSave">Save</button>
-  <div class="le-acts"><button class="le-btn warn hb-del" id="hcDel" type="button">Remove chain</button></div>
 </div></div>`);
-let hbDraft=null,hbSub=null,hcDraft=null;
+let hbDraft=null,hbSub=null;
 function openHabit(id,sp){
   const h=id?hbById(id):null;
   if(!h&&hbAll().length>=HB_MAX){toast(`Up to ${HB_MAX} habits. Fewer, kept daily, beat many.`);return}
   const sps=orderedSpaces();
-  hbDraft=h?{...h,days:[...(h.days||[0,1,2,3,4,5,6])],chain:h.chain||null,newChain:null}
-    :{id:null,name:'',e:'',space:(sp&&spaceOf(sp)?sp:inSpaceMode()?S.space:(sps[0]||{}).id),days:[0,1,2,3,4,5,6],chain:null,newChain:null};
+  hbDraft=h?{...h,days:[...(h.days||[0,1,2,3,4,5,6])]}
+    :{id:null,name:'',e:'',space:(sp&&spaceOf(sp)?sp:inSpaceMode()?S.space:(sps[0]||{}).id),days:[0,1,2,3,4,5,6]};
   hbDraft.touched=!!(h&&h.e);hbSub=null;
   $('hbTitle').textContent=h?'Edit habit':'New habit';$('hbName').value=hbDraft.name;$('hbDelW').hidden=!h;
   drawHabitSheet();openSheet('hbSheet');setTimeout(()=>{if($('hbSheet').classList.contains('on')&&!h)$('hbName').focus()},300);
@@ -5933,69 +5695,39 @@ function drawHabitSheet(){
   const d=hbDraft,sp=spaceOf(d.space)||{};
   $('hbSave').textContent=d.id?'Save':'Add habit';$('hbSave').disabled=!d.name.trim();
   $('hbPrev').innerHTML=d.e?esc(d.e):hbSun(3,true);
-  const chs=(S.hchains||[]).filter(c=>c.space===d.space);
-  const chName=d.newChain?d.newChain:d.chain?(chById(d.chain)||{}).name:'';
   $('hbOpts').innerHTML=
     lxRow('i','Icon',`<span class="lx-ico">${d.e?esc(d.e):'Auto'}</span>`,`<div class="ico-grid" id="hbIcons"><button data-hbico="" class="ico-none ${!d.e?'on':''}" aria-label="No icon">–</button>${HB_ICONS.map(i=>`<button data-hbico="${i}" class="${d.e===i?'on':''}" aria-label="Icon ${i}">${i}</button>`).join('')}</div>`,hbSub==='i')+
     lxRow('d','Days',`<span class="lx-t">${daysLabel(d.days)}</span>`,`<div class="hb-days">${[1,2,3,4,5,6,0].map(n=>`<button data-hday="${n}" class="${d.days.includes(n)?'on':''}" aria-pressed="${d.days.includes(n)}" aria-label="${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][n]}">${'SMTWTFS'[n]}</button>`).join('')}</div>
       <div class="hb-pre"><button data-hdp="all">Every day</button><button data-hdp="wk">Weekdays</button><button data-hdp="we">Weekends</button></div>`,hbSub==='d')+
-    (S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name||'')}</span>`,`<div class="lx-list">${orderedSpaces().map(x=>`<button class="lx-opt${d.space===x.id?' on':''}" data-hbsp="${x.id}">${spMini(x)}<span>${esc(x.name)}</span>${d.space===x.id?tick():''}</button>`).join('')}</div>`,hbSub==='s'):'')+
-    (chainsOn()?lxRow('c','Chain',`<span class="lx-t">${chName?esc(chName):'None'}</span>`,`<div class="lx-list"><button class="lx-opt${!d.chain&&!d.newChain?' on':''}" data-hbch=""><span>None</span>${!d.chain&&!d.newChain?tick():''}</button>
-      ${chs.map(c=>{const on=d.chain===c.id&&!d.newChain,n=(S.habits||[]).filter(x=>x.chain===c.id&&x.id!==d.id).length;return `<button class="lx-opt${on?' on':''}" data-hbch="${c.id}"><span>${esc(c.name)}<small> · ${n} ${n===1?'habit':'habits'}</small></span>${on?tick():''}</button>`}).join('')}
-      ${d.newChain?`<button class="lx-opt on" data-hbch="__new"><span>${esc(d.newChain)}<small> · new</small></span>${tick()}</button>`:''}</div>
-      <div class="hb-newch"><input id="hbChName" placeholder="New chain, e.g. Morning" maxlength="30" autocomplete="off" enterkeyhint="done"><button id="hbChAdd" type="button">Add</button></div>`,hbSub==='c'):'');
+    (S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name||'')}</span>`,`<div class="lx-list">${orderedSpaces().map(x=>`<button class="lx-opt${d.space===x.id?' on':''}" data-hbsp="${x.id}">${spMini(x)}<span>${esc(x.name)}</span>${d.space===x.id?tick():''}</button>`).join('')}</div>`,hbSub==='s'):'');
 }
-function hbNewChain(){const i=$('hbChName'),v=(i&&i.value||'').trim();if(!v)return;hbDraft.newChain=v;hbDraft.chain=null;haptic(5);drawHabitSheet()}
 $('hbOpts').addEventListener('click',e=>{
   const t=e.target.closest('[data-lxt]');if(t){lxToggle(t,v=>hbSub=v);return}
   const d=hbDraft;if(!d)return;
   const ic=e.target.closest('[data-hbico]');if(ic){d.e=ic.dataset.hbico;d.touched=true;haptic(5);return drawHabitSheet()}
   const dy=e.target.closest('[data-hday]');if(dy){const n=+dy.dataset.hday;if(d.days.includes(n)){if(d.days.length>1)d.days=d.days.filter(x=>x!==n);else toast('A habit needs at least one day')}else d.days.push(n);haptic(4);return drawHabitSheet()}
   const dp=e.target.closest('[data-hdp]');if(dp){d.days={all:[0,1,2,3,4,5,6],wk:[1,2,3,4,5],we:[0,6]}[dp.dataset.hdp].slice();haptic(4);return drawHabitSheet()}
-  const sp=e.target.closest('[data-hbsp]');if(sp){if(d.space!==sp.dataset.hbsp){d.space=sp.dataset.hbsp;d.chain=null;d.newChain=null}haptic(5);return drawHabitSheet()}
-  const ch=e.target.closest('[data-hbch]');if(ch){const v=ch.dataset.hbch;if(v!=='__new'){d.chain=v||null;d.newChain=null}haptic(5);return drawHabitSheet()}
-  if(e.target.closest('#hbChAdd'))return hbNewChain();
+  const sp=e.target.closest('[data-hbsp]');if(sp){d.space=sp.dataset.hbsp;haptic(5);return drawHabitSheet()}
 });
-$('hbOpts').addEventListener('keydown',e=>{if(e.target.id==='hbChName'&&e.key==='Enter'){e.preventDefault();hbNewChain()}});
 $('hbPrev').onclick=()=>{const t=$('hbOpts').querySelector('[data-lxt="i"]');if(t&&hbSub!=='i')lxToggle(t,v=>hbSub=v)};
 $('hbName').oninput=e=>{hbDraft.name=e.target.value;if(!hbDraft.touched)hbDraft.e=hbIcon(hbDraft.name);drawHabitSheet()};
 $('hbName').onkeydown=e=>{if(e.key==='Enter'&&hbDraft.name.trim())$('hbSave').click()};
-function cleanChains(){S.hchains=(S.hchains||[]).filter(c=>(S.habits||[]).some(h=>h.chain===c.id))}
 $('hbSave').onclick=()=>{
   const d=hbDraft;if(!d||!d.name.trim()||!spaceOf(d.space))return;
   const name=d.name.trim(),wasNew=!d.id,inSet=settingsOpen();
-  let cid=d.newChain?null:d.chain;
-  if(cid&&(S.habits||[]).filter(x=>x.chain===cid&&x.id!==d.id).length>=CHAIN_MAX){toast(`A chain holds up to ${CHAIN_MAX} habits`);return}
   closeSheets();
   commit(()=>{
-    S.habits=S.habits||[];S.hchains=S.hchains||[];
-    if(d.newChain){const c={id:'c'+newId(),name:d.newChain,when:'',space:d.space};S.hchains.push(c);cid=c.id}
+    S.habits=S.habits||[];
     const days=d.days.length?[...d.days].sort():[0,1,2,3,4,5,6];
-    if(d.id){const h=hbById(d.id);if(!h)return;Object.assign(h,{name,e:d.e,space:d.space,days});if(cid)h.chain=cid;else delete h.chain}
-    else S.habits.push({id:'h'+newId(),name,e:d.e,space:d.space,days,done:{},created:Date.now(),...(cid?{chain:cid}:{})});
-    cleanChains();
+    if(d.id){const h=hbById(d.id);if(!h)return;Object.assign(h,{name,e:d.e,space:d.space,days})}
+    else S.habits.push({id:'h'+newId(),name,e:d.e,space:d.space,days,done:{},created:Date.now()});
   },wasNew?`${name} added`:'Habit saved');
   if(inSet)drawSettings();
   else if(wasNew&&!rhOn)openRhythm();
 };
 $('hbDel').onclick=()=>{const d=hbDraft;if(!d||!d.id)return;const h=hbById(d.id);if(!h)return;
   confirmAsk({title:`Delete ${h.name}?`,text:'Its streak history goes too. This can’t be undone after you leave.',yes:'Yes, delete',no:'No',
-    onYes:()=>{closeSheets();const inSet=settingsOpen();commit(()=>{S.habits=S.habits.filter(x=>x!==h);cleanChains()},`${h.name} deleted`);if(inSet)drawSettings()}})};
-/* chain sheet: name, when, order */
-function openChain(id){const c=chById(id);if(!c)return;hcDraft={id:c.id,name:c.name||'',when:c.when||'',order:(S.habits||[]).filter(h=>h.chain===c.id).map(h=>h.id)};
-  $('hcName').value=hcDraft.name;$('hcWhen').value=hcDraft.when;drawChainOrder();openSheet('hcSheet')}
-function drawChainOrder(){const o=hcDraft.order;
-  $('hcOrd').innerHTML=o.map((id,i)=>{const h=hbById(id);return h?`<div><span class="hc-i">${i+1}</span><span class="hc-n">${hbName(h)}</span><button data-hcup="${i}" ${i?'':'disabled'} aria-label="Move up">${UP_S}</button><button data-hcdn="${i}" ${i<o.length-1?'':'disabled'} aria-label="Move down">${DN_S}</button></div>`:''}).join('')}
-$('hcOrd').onclick=e=>{const u=e.target.closest('[data-hcup]'),d=e.target.closest('[data-hcdn]');if(!u&&!d)return;const i=+(u?u.dataset.hcup:d.dataset.hcdn),j=u?i-1:i+1,o=hcDraft.order;
-  if(j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];haptic(4);drawChainOrder()};
-$('hcSave').onclick=()=>{const d=hcDraft;if(!d)return;const name=$('hcName').value.trim()||'Chain',when=$('hcWhen').value.trim().replace(/^when\s+/i,'');closeSheets();
-  commit(()=>{const c=chById(d.id);if(!c)return;c.name=name;c.when=when;
-    // put the chain's habits in the chosen order, where the first of them sat
-    const ids=d.order.map(String),firstAt=S.habits.findIndex(h=>ids.includes(String(h.id)));if(firstAt<0)return;
-    const picked=d.order.map(id=>hbById(id)).filter(Boolean),rest=S.habits.filter(h=>!ids.includes(String(h.id)));
-    rest.splice(Math.min(firstAt,rest.length),0,...picked);S.habits=rest},'Chain saved');if(settingsOpen())drawSettings()};
-$('hcDel').onclick=()=>{const d=hcDraft;if(!d)return;closeSheets();commit(()=>{S.habits.forEach(h=>{if(h.chain===d.id)delete h.chain});cleanChains()},'Chain removed. The habits stay.');if(settingsOpen())drawSettings()};
-$('hcSheet').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.hc-in')){e.preventDefault();$('hcSave').click()}});
+    onYes:()=>{closeSheets();const inSet=settingsOpen();commit(()=>{S.habits=S.habits.filter(x=>x!==h)},`${h.name} deleted`);if(inSet)drawSettings()}})};
 
 /* ---------- Settings → Modes ---------- */
 function modesSummary(){const on=[habitsOn()&&'Habits',goalsOn()&&'Goals'].filter(Boolean);return on.length?`${on.join(' and ')} on`:'All off'}
@@ -6003,26 +5735,21 @@ function habitsSetPage(){
   const hs=hbAll();
   const groups=orderedSpaces().map(sp=>{const g=hs.filter(h=>h.space===sp.id);if(!g.length)return '';
     return `<div class="set-sec"><h3>${sp.e?esc(sp.e)+' ':''}${esc(sp.name)}</h3>${g.map(h=>`<button class="link-row" data-hbe="${h.id}"><span class="hs-n">${hbName(h)}</span><span class="hint">${daysLabel(h.days)}${CHEV}</span></button>`).join('')}</div>`}).join('');
-  const chs=chainsOn()?(S.hchains||[]).filter(c=>hs.some(h=>h.chain===c.id)):[];
   return `<p class="sub-p">Up to ${HB_MAX} habits, so each one gets real attention. Tap one to change it.</p>${groups||'<p class="sub-p hs-none">No habits yet.</p>'}
-    ${chs.length?`<div class="set-sec"><h3>Chains</h3>${chs.map(c=>{const n=hs.filter(h=>h.chain===c.id).length;return `<button class="link-row" data-hce="${c.id}">${esc(c.name)}<span class="hint">${n} ${n===1?'habit':'habits'}${CHEV}</span></button>`}).join('')}</div>`:''}
     ${hs.length<HB_MAX?`<button class="primary hs-new" data-hbnew="">New habit</button>`:''}`;
 }
 
 /* ---------- taps (capture, so a habit inside a space card or settings row never also opens something else) ---------- */
 document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-hbt],[data-hbe],[data-hce],[data-hbnew],[data-hbedit],[data-ciopen],[data-cilater],[data-hbadd],[data-hbopen],#rhEntry,#rhBack,#ciBack,[data-ciyes],[data-cino],[data-ciclose]');
+  const el=e.target.closest('[data-hbt],[data-hbe],[data-hbnew],[data-ciopen],[data-cilater],[data-hbopen],#rhEntry,#rhBack,#ciBack,[data-ciyes],[data-cino],[data-ciclose]');
   if(!el)return;
-  if(el.closest('.sheet')&&!el.closest('#hbSheet,#hcSheet'))return;
+  if(el.closest('.sheet')&&!el.closest('#hbSheet'))return;
   e.stopPropagation();e.preventDefault();
   if(el.matches('[data-hbt]'))return hbToggle(el.dataset.hbt);
   if(el.matches('[data-hbe]'))return openHabit(el.dataset.hbe);
-  if(el.matches('[data-hce]'))return openChain(el.dataset.hce);
   if(el.matches('[data-hbnew]'))return openHabit(null,el.dataset.hbnew||null);
-  if(el.matches('[data-hbedit]')){hbEditing=!hbEditing;haptic(5);return render()}
   if(el.matches('[data-ciopen]'))return openCheckin();
   if(el.matches('[data-cilater]')){S.ciSkip=today();save();render();toast('Okay. It’ll be back tomorrow evening.');return}
-  if(el.matches('[data-hbadd]')){closePops();return openHabit(null,el.dataset.hbadd)}
   if(el.matches('[data-hbopen]'))return hbOpenHabits();
   if(el.matches('#rhEntry'))return openRhythm();
   if(el.matches('#rhBack'))return closeRhythm();
@@ -6032,22 +5759,19 @@ document.addEventListener('click',e=>{
 },true);
 
 /* the habits page and cards follow every redraw */
-const _hbOpenSpace=openSpace;openSpace=function(id){S.lens={};hbEditing=false;return _hbOpenSpace(id)};
 const _hbRender=render;render=function(d){_hbRender(d);try{modesRender()}catch(err){console.error(err)}};
 /* ---------- Modes → Goals (optional; Settings → Modes, off by default) ----------
    Off means every goal screen, card, pill, star and menu item disappears. Goals are kept, so turning
    the mode back on brings everything back.
    • North star: one starred goal sits on Home under the Today card. Any task can be linked to a goal
      (★ Goal in its details) and wears a small star; finishing it shows up as "moved it this week".
-   • Goal page: two views, switchable per goal (default in Settings → Modes → Goal view):
-       The climb  — milestones as a trail up a hill; the sun rises behind the summit as you climb.
-       Why ladder — the goal, broken down: by the due date → this quarter → this week → today's task.
+   • Goal page: The climb (default), Path or Poster, switchable per goal under ⋯ → View; drawn in 08n-pages.js.
    • 30-second setup: what, by when, first milestones.
-   Data: S.goals [{id,name,e,space,why,due:'YYYY-MM-DD',created,star,view,lq,lqAt,lw,lwAt,done,doneAt,
+   Data: S.goals [{id,name,e,space,why,due:'YYYY-MM-DD',created,star,view,done,doneAt,
      ms:[{id,t,done,doneAt,task}]}]. A milestone can be turned into a task (ms.task); finishing that task
    ticks the milestone. Goals sync, back up and undo like tasks.
    Constants are var (not const) because other files may draw before this one runs. */
-var gdOn=false,gsOn=false,gdId=null,gdEdit=false,gdAnim=false,gdWin=false,gTodayIn=false;
+var gdOn=false,gsOn=false,gdId=null,gdEdit=false,gdAnim=false;
 var G_MAX=3,MS_MAX=12;
 var G_STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"/></svg>';
 var G_FLAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
@@ -6064,15 +5788,12 @@ function gList(){if(!Array.isArray(S.goals))S.goals=[];return S.goals}
 function gById(id){return gList().find(g=>g&&String(g.id)===String(id))}
 /* active goals whose space still exists (an archived or deleted space hides its goals) */
 function gAll(){return gList().filter(g=>g&&!g.done&&spaceOf(g.space))}
-function gIn(sp){return gAll().filter(g=>g.space===sp)}
 function gWon(sp){return gList().filter(g=>g&&g.done&&spaceOf(g.space)&&(!sp||g.space===sp)).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0))}
 function gStarred(){return gAll().find(g=>g.star)||null}
 function gNoon(d){const x=new Date(d);x.setHours(12,0,0,0);return x}
 function gDate(k){const p=String(k||'').split('-').map(Number);return p[0]?new Date(p[0],p[1]-1,p[2],12):null}
 function gPlus(months){const d=gNoon(new Date());d.setMonth(d.getMonth()+months);return dkey(d)}
 function gMon(){const d=gNoon(new Date());d.setDate(d.getDate()-((d.getDay()+6)%7));d.setHours(0,0,0,0);return d.getTime()}
-function gQStart(){const d=new Date();return new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3,1).getTime()}
-function gQEnd(){const d=new Date();return new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3+3,0,12)}
 function gShort(k){const d=typeof k==='string'?gDate(k):new Date(k);if(!d||isNaN(d))return '';const y=d.getFullYear()!==new Date().getFullYear();
   return d.toLocaleDateString(undefined,y?{month:'short',day:'numeric',year:'numeric'}:{month:'short',day:'numeric'})}
 function gLong(k){const d=gDate(k);if(!d)return '';const y=d.getFullYear()!==new Date().getFullYear();return d.toLocaleDateString(undefined,y?{month:'long',day:'numeric',year:'numeric'}:{month:'long',day:'numeric'})}
@@ -6094,7 +5815,6 @@ function gPace(g){
 const gName=g=>`${g.e?esc(g.e)+' ':''}${esc(g.name)}`;
 function gTasks(g){return S.tasks.filter(t=>t.goal!=null&&String(t.goal)===String(g.id)&&!t.inbox&&!t.archived)}
 function gMoved(g){const m=gMon();return gTasks(g).filter(t=>t.stage==='done'&&(t.doneAt||0)>=m)}
-function gToday(g){return gTasks(g).filter(t=>t.stage==='today'&&shown(t))}
 function gNext(g){return g.ms.find(m=>!m.done)||null}
 const gTaskOf=m=>m&&m.task!=null?S.tasks.find(t=>t.id===m.task&&!t.archived):null;
 function gSubLine(gs){
@@ -6122,29 +5842,12 @@ function gClimb(g,cls){
     <path class="g-flag" d="M226 40V21"/><path class="g-flagf" d="M226 21l12 4.5-12 4.5z"/></svg>`;
 }
 
-/* ---------- the why ladder: big → quarter → week → today ---------- */
-function gLadder(g){
-  const pr=gProg(g),td=gToday(g)[0],qe=gQEnd();
-  const lq=(g.lqAt||0)>=gQStart()?g.lq||'':'',lw=(g.lwAt||0)>=gMon()?g.lw||'':'';
-  const old=(v,cur)=>v&&!cur?`Last time: ${v}`:'';
-  const rung=(lbl,body,sub,now)=>`<div class="g-rung${now?' now':''}"><span class="g-ln"><i></i><b></b></span><div class="g-bx"><small>${lbl}</small>${body}${sub?`<span class="g-rs">${sub}</span>`:''}</div></div>`;
-  return `<div class="g-ladder">
-    ${rung(g.due?`By ${gLong(g.due)}`:'The goal',`<span class="g-rt">${gName(g)}</span>`,pr.of?`${pr.n} of ${pr.of} milestones`:'')}
-    ${rung('This quarter',`<input class="g-lin" data-gl="lq" value="${esc(lq)}" maxlength="80" placeholder="What has to be true by ${esc(qe.toLocaleDateString(undefined,{month:'long',day:'numeric'}))}?" enterkeyhint="done" autocomplete="off" aria-label="This quarter">`,old(g.lq,lq))}
-    ${rung('This week',`<input class="g-lin" data-gl="lw" value="${esc(lw)}" maxlength="80" placeholder="One step you can take this week" enterkeyhint="done" autocomplete="off" aria-label="This week">`,old(g.lw,lw))}
-    ${rung('Today',td?`<button class="g-rt g-rtask" data-gtask="${td.id}">${esc(td.title)}</button>`
-      :gTodayIn?`<input class="g-lin" id="gTodayIn" maxlength="120" placeholder="What will you do today?" enterkeyhint="done" autocomplete="off" aria-label="Today’s task">`
-      :`<button class="g-rtoday" data-gtoday>${PLUS_S}Add a task for today</button>`,td?`${esc(listOf(td.list).name)} · Today`:'',true)}
-  </div>`;
-}
-
-/* ---------- pieces shared by Home, the Goals lens and the Rhythm page ---------- */
+/* ---------- pieces shared by Home and the Goals page ---------- */
 function nsCard(){
   if(!goalsOn()||C().wStar===false)return '';const g=gStarred();if(!g)return '';
-  const pr=gProg(g),mv=gMoved(g).length;
+  const pr=gProg(g),left=gLeft(g,true);
   return `<button class="ns-card" data-gopen="${g.id}" aria-label="North star: ${esc(g.name)}"><span class="ns-i">${G_STAR}</span><span class="ns-t">
-    <span class="ns-top"><b>${gName(g)}</b><small>${gLeft(g,true)}</small></span><span class="ns-bar"><i style="width:${Math.round(pr.p*100)}%"></i></span>
-    <small class="ns-sub">${pr.of?`${pr.n} of ${pr.of} milestones`:'Add milestones to start climbing'}${mv?` · ${mv} ${mv===1?'task':'tasks'} moved it this week`:''}</small></span></button>`}
+    <span class="ns-top"><b>${gName(g)}</b><small>${pr.of?`${pr.n} of ${pr.of}`:'No milestones yet'}${left?` · ${left}`:''}</small></span><span class="ns-bar"><i style="width:${Math.round(pr.p*100)}%"></i></span></span></button>`}
 function gCard(g,wide){const pr=gProg(g),pc=gPace(g);
   return `<button class="g-card${g.star?' is-star':''}" data-gopen="${g.id}">${wide?`<span class="g-cmini">${gClimb(g,'mini')}</span>`:''}
     <span class="g-ctop"><span class="g-ce">${g.e?esc(g.e):G_FLAG}</span><span class="g-tx"><b>${esc(g.name)}</b><small>By ${gShort(g.due)} · ${gLeft(g)}</small></span>${g.star?`<span class="g-cstar" title="North star">${G_STAR}</span>`:''}</span>
@@ -6183,56 +5886,18 @@ document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg gd-pg" id="gd
 function openGoal(id){
   if(!goalsOn()||!gById(id))return;
   if(typeof closeSearch==='function')closeSearch();
-  gdId=id;gdEdit=false;gTodayIn=false;gdOn=true;gdAnim=true;drawGoal();gdAnim=false;
+  gdId=id;gdEdit=false;gdOn=true;gdAnim=true;drawGoal();gdAnim=false;
   $('gdPg').classList.add('on');$('gdPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
 }
 function closeGoal(){
-  if(!gdOn)return;gdOn=false;gdEdit=false;gTodayIn=false;$('gdPg').classList.remove('on');
+  if(!gdOn)return;gdOn=false;gdEdit=false;$('gdPg').classList.remove('on');
   const a=document.activeElement;if(a&&a.closest&&a.closest('#gdPg'))a.blur();
   if(typeof renderDesk==='function')renderDesk();
 }
-function gMsRows(g,view){
-  const nx=gNext(g);
-  return g.ms.map((m,i)=>{const tk=gTaskOf(m);
-    if(gdEdit)return `<div class="g-ms ed"><input class="g-msin" data-msren="${m.id}" value="${esc(m.t)}" maxlength="80" aria-label="Milestone name" autocomplete="off" enterkeyhint="done">
-      <button data-msup="${i}" ${i?'':'disabled'} aria-label="Move up">${UP_S}</button><button data-msdn="${i}" ${i<g.ms.length-1?'':'disabled'} aria-label="Move down">${DN_S}</button><button class="g-msx" data-msdel="${m.id}" aria-label="Delete milestone">${X}</button></div>`;
-    return `<div class="g-ms${m.done?' on':''}"><button class="g-msc" data-gms="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}"><span class="hc-dot">${ICK}</span></button>
-      <span class="g-mst"><span>${esc(m.t)}</span>${tk?`<button class="g-mstk" data-gtask="${tk.id}">${G_STAR}${tk.stage==='done'?'Task done':`Task in ${esc(STAGES[idx(tk.stage)].name)}`}</button>`:''}</span>
-      ${m===nx&&!tk&&!g.done&&view==='ladder'?`<button class="g-mk" data-gmk="${m.id}">Make it a task</button>`:''}</div>`}).join('');
-}
-function drawGoal(){
-  const g=gById(gdId);if(!g){closeGoal();return}
-  const pr=gProg(g),pc=gPace(g),view=g.view||C().gView||'climb',sp=spaceOf(g.space)||{name:'',c:'#888'};
-  const wide=matchMedia('(min-width:1100px)').matches,y=$('gdPg').scrollTop,nx=gNext(g),ntk=gTaskOf(nx);
-  const moved=gMoved(g),open=gTasks(g).filter(t=>t.stage!=='done'&&shown(t));
-  const top=pr.of>0&&pr.n>=pr.of&&!g.done;
-  const menu=`<div class="lh-wrap gd-mw"><button class="lh-more" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS3}</button>
-    <div class="sp-pop lh-pop" id="gdPop" role="menu">
-      <button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
-      ${g.done?'':`<button data-gm="star" role="menuitem"><span class="lpm-i">${G_STAR}</span>${g.star?'Remove north star':'Make it my north star'}</button>`}
-      <button data-gm="win" role="menuitem"><span class="lpm-i">${G_FLAG}</span>${g.done?'Back in progress':'Mark as achieved'}</button>
-      <button data-gm="del" class="warn" role="menuitem"><span class="lpm-i">${BIN_S}</span>Delete goal</button></div></div>`;
-  const head=`<div class="gd-head"><span class="eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:g.due?`Goal · by ${gLong(g.due)}`:'Goal'}${g.star&&!g.done?`<span class="gd-ns">${G_STAR}North star</span>`:''}</span>
-    <h1 class="gd-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1><span class="gd-sp">${spMini(sp)}${esc(sp.name)}</span></div>`;
-  const why=g.why?`<button class="gd-why" data-gwhy><small>Why it matters</small><span>${esc(g.why)}</span></button>`:`<button class="gd-why add" data-gwhy>${PLUS_S}Add why it matters</button>`;
-  const sw=`<div class="lens-sw gd-sw" role="tablist" aria-label="Goal view">${[['climb','The climb'],['ladder','Why ladder']].map(([k,l])=>`<button role="tab" data-gview="${k}" class="${view===k?'on':''}" aria-selected="${view===k}">${l}</button>`).join('')}</div>`;
-  const k=(l,v,c)=>`<div class="hbw-kpi"><small>${l}</small><b${c?` class="${c}"`:''}>${v}</b></div>`;
-  const nextCard=g.done?`<div class="gd-next won"><span class="gd-pin">🏆</span><span class="g-tx"><b>You made it.</b><small>Achieved on ${gShort(g.doneAt)}${pr.of?` · ${pr.of} milestones`:''}</small></span></div>`
-    :top?`<div class="gd-next sum"><span class="gd-pin">⛰️</span><span class="g-tx"><b>Summit reached</b><small>Every milestone is done.</small></span><button class="gd-mk dark" data-gwin>Mark achieved</button></div>`
-    :nx?`<div class="gd-next"><span class="gd-pin">📍</span><span class="g-tx"><b>Next: ${esc(nx.t)}</b><small>${ntk?`Linked to “${esc(ntk.title)}”`:'Not a task yet'}</small></span>${ntk?`<span class="gd-of">${pr.n}/${pr.of}</span>`:`<button class="gd-mk" data-gmk="${nx.id}">Make it a task</button>`}</div>`
-    :`<div class="gd-next"><span class="gd-pin">📍</span><span class="g-tx"><b>Add your first milestone</b><small>Big goals are climbed one checkpoint at a time.</small></span></div>`;
-  const panel=view==='ladder'?gLadder(g)
-    :`<div class="gd-climb">${gClimb(g,`${gdAnim?'anim':''}${gdWin?' rise':''}`)}</div>${nextCard}
-      <div class="hbw-kpis gd-kpis">${k('Pace',pc.t,'pc pc-'+pc.k)}${k(g.done?'Finished':'Days left',g.done?gShort(g.doneAt):gDaysLeft(g)===null?'—':Math.max(0,gDaysLeft(g)))}${wide?k('Milestones',`${pr.n} / ${pr.of}`)+k('This week',`${moved.length} ${moved.length===1?'task':'tasks'}`):''}</div>`;
-  const ms=`<div class="gd-sec"><h2>Milestones</h2><span>${pr.of?`${pr.n} of ${pr.of}`:''}</span>${g.ms.length?`<button class="txt-btn gd-ed" data-gedit>${gdEdit?'Done':'Edit'}</button>`:''}</div>
-    <div class="g-mslist${gdEdit?' editing':''}">${gMsRows(g,view)}${!gdEdit&&g.ms.length<MS_MAX&&!g.done?`<div class="g-msadd"><span class="g-msp">${PLUS_S}</span><input id="gMsIn" placeholder="${g.ms.length?'Add a milestone':'Add your first milestone'}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone"></div>`:''}</div>`;
-  const trow=t=>`<button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>`;
-  const tasks=`<div class="gd-sec"><h2>Tasks</h2><span>${moved.length?`${moved.length} moved it this week`:''}</span></div>
-    ${open.length||moved.length?`<div class="g-tasks">${open.slice(0,8).map(trow).join('')}${moved.slice(0,5).map(trow).join('')}</div>`:''}
-    <p class="gd-hint">${open.length||moved.length?'':'No tasks linked yet. '}Link any task from its details: tap <span class="g-pst">${G_STAR}</span><b>Goal</b>.</p>`;
-  $('gdIn').innerHTML=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${menu}</div>${head}
-    <div class="gd-cols"><div class="gd-l">${wide?'':why}${sw}<div class="gd-view">${panel}</div></div><div class="gd-r">${wide?why:''}${ms}${tasks}</div></div>`;
-  $('gdPg').scrollTop=y;gdWin=false;
+/* the milestone editor under the goal: rename, reorder, delete */
+function gMsRows(g){
+  return g.ms.map((m,i)=>`<div class="g-ms ed"><input class="g-msin" data-msren="${m.id}" value="${esc(m.t)}" maxlength="80" aria-label="Milestone name" autocomplete="off" enterkeyhint="done">
+      <button data-msup="${i}" ${i?'':'disabled'} aria-label="Move up">${UP_S}</button><button data-msdn="${i}" ${i<g.ms.length-1?'':'disabled'} aria-label="Move down">${DN_S}</button><button class="g-msx" data-msdel="${m.id}" aria-label="Delete milestone">${X}</button></div>`).join('');
 }
 
 /* ---------- actions ---------- */
@@ -6241,12 +5906,6 @@ function gMakeTask(g,m){
   const l=gSpaceList(g,'week');if(!l){toast('Add a list to this space first');return}
   if(!canPut(l.id,'week'))return;
   commit(()=>{const t={id:newId(),title:m.t,stage:'week',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id};addTask(t);m.task=t.id},`Added to ${l.name} · My week`);
-}
-function gAddToday(g,title){
-  const l=gSpaceList(g,'today');if(!l){toast('Add a list to this space first');return}
-  if(!canPut(l.id,'today'))return;
-  gTodayIn=false;commit(()=>addTask({id:newId(),title,stage:'today',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id}),`Added to ${l.name} · Today`);
-  const a=document.activeElement;if(a&&a.blur)a.blur();if(gdOn)drawGoal();
 }
 function gMsToggle(g,m){
   const on=!m.done,pr=gProg(g),all=on&&pr.n+1>=pr.of;
@@ -6262,7 +5921,6 @@ function gMsAdd(g){
 }
 function gSetWin(g,on){
   if(!on&&gAll().length>=G_MAX){toast(`${G_MAX} goals are already in progress. Finish one first.`);return}
-  if(on)gdWin=true;
   commit(()=>{if(on){g.done=true;g.doneAt=Date.now();g.star=false}else{g.done=false;delete g.doneAt}},on?`🏆 ${g.name}: achieved`:'Back in progress');
   if(on){haptic([10,40,10,40,20]);try{sfx('done')}catch(e){}}
 }
@@ -6279,34 +5937,29 @@ $('gdPg').addEventListener('click',e=>{
   if(e.target.closest('#gdMore')){e.stopPropagation();const was=pop.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);pop.classList.add('on')}return}
   const m=e.target.closest('[data-gm]');if(m){pop.classList.remove('on');const a=m.dataset.gm;
     if(a==='edit')return openGoalSheet(g.id);if(a==='star')return gToggleStar(g);if(a==='win')return gSetWin(g,!g.done);if(a==='del')return gDelete(g);return}
-  const v=e.target.closest('[data-gview]');if(v){if((g.view||C().gView)!==v.dataset.gview){g.view=v.dataset.gview;gTodayIn=false;haptic(5);save();gdAnim=true;drawGoal();gdAnim=false}return}
+  const v=e.target.closest('[data-gview]');if(v){if((g.view||C().gView)!==v.dataset.gview){g.view=v.dataset.gview;haptic(5);save();gdAnim=true;drawGoal();gdAnim=false}return}
   if(e.target.closest('[data-gwhy]')){openGoalSheet(g.id,true);return}
   const tk=e.target.closest('[data-gtask]');if(tk){haptic(5);return openDetail(+tk.dataset.gtask)}
   const mk=e.target.closest('[data-gmk]');if(mk){const ms=g.ms.find(x=>x.id===mk.dataset.gmk);if(ms)gMakeTask(g,ms);return}
-  if(e.target.closest('[data-gtoday]')){gTodayIn=true;drawGoal();setTimeout(()=>$('gTodayIn')&&$('gTodayIn').focus(),30);return}
   if(e.target.closest('[data-gwin]'))return gSetWin(g,true);
   if(e.target.closest('[data-gedit]')){gdEdit=!gdEdit;haptic(5);return drawGoal()}
-  const c=e.target.closest('[data-gms]');if(c){const ms=g.ms.find(x=>x.id===c.dataset.gms);if(!ms)return;c.closest('.g-ms').classList.toggle('on',!ms.done);setTimeout(()=>gMsToggle(g,ms),170);return}
   const up=e.target.closest('[data-msup]'),dn=e.target.closest('[data-msdn]');
   if(up||dn){const i=+(up?up.dataset.msup:dn.dataset.msdn),j=up?i-1:i+1;if(j<0||j>=g.ms.length)return;[g.ms[i],g.ms[j]]=[g.ms[j],g.ms[i]];haptic(4);save();drawGoal();return}
   const dl=e.target.closest('[data-msdel]');if(dl){const ms=g.ms.find(x=>x.id===dl.dataset.msdel);if(!ms)return;commit(()=>{g.ms=g.ms.filter(x=>x!==ms)},'Milestone removed');if(!g.ms.length)gdEdit=false;return}
 });
 $('gdPg').addEventListener('change',e=>{
   const g=gById(gdId);if(!g)return;
-  const k=e.target.dataset.gl;if(k){g[k]=e.target.value.trim();g[k+'At']=Date.now();save();return}
   const r=e.target.dataset.msren;if(r){const ms=g.ms.find(x=>x.id===r),v=e.target.value.trim();if(ms&&v){ms.t=v;save();render()}else if(ms)e.target.value=ms.t}
 });
 $('gdPg').addEventListener('keydown',e=>{
   const g=gById(gdId);
   if(e.key==='Enter'&&g){
     if(e.target.id==='gMsIn'){e.preventDefault();return gMsAdd(g)}
-    if(e.target.id==='gTodayIn'){e.preventDefault();const v=e.target.value.trim();if(v)gAddToday(g,v);return}
-    if(e.target.matches('.g-lin,.g-msin')){e.preventDefault();e.target.blur();haptic(5);return}
+    if(e.target.matches('.g-msin')){e.preventDefault();e.target.blur();haptic(5);return}
   }
   if(e.key==='Escape'){
     if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on'))return;
     const pop=$('gdPop');if(pop&&pop.classList.contains('on')){pop.classList.remove('on');e.stopPropagation();return}
-    if(e.target.id==='gTodayIn'){gTodayIn=false;drawGoal();e.stopPropagation();return}
     if(e.target.matches('input')&&e.target.value&&e.target.id==='gMsIn'){e.target.value='';return}
     e.stopPropagation();closeGoal();
   }
@@ -6524,6 +6177,8 @@ function cdCard(){
     <button class="rv-skip" data-cdlater>Later</button><button class="rv-go" data-cdopen>Start</button></div>`}
 /* the evening card: Close the day takes the place of the habits check-in when it's on */
 const _cdCi=ciCard;ciCard=function(){return C().closeDay?cdCard():_cdCi()};
+/* Home shows one nudge at a time, the most timely first: tonight's check-in, then the weekly review, then the backup reminder */
+function homeNudge(){return ciCard()||reviewCard()||backupCard()}
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg review-pg cd-pg" id="cdPg" role="dialog" aria-label="Close the day"><div class="ib-in" id="cdIn"></div></div>');
 let cdPick=null;
 function cdCands(){const sh=t=>shown(t)&&t.stage!=='done';return [...bySpaceOrder(S.tasks.filter(t=>sh(t)&&t.stage==='today')),...bySpaceOrder(S.tasks.filter(t=>sh(t)&&t.stage==='week'))].slice(0,6)}
@@ -6627,7 +6282,7 @@ modesPage=function(){
    Habits: Week grid (default) or Sunrise, picked under ⋯ → View (Settings → Modes too).
    Goal:   The climb (default), Path or Poster, picked under ⋯ → View (per goal; default in Settings → Modes).
    Completed things use the brand colour (--today); green stays for switches in Settings.
-   These replace the older drawRhythm / drawGoal bodies; data, sheets and actions are shared. */
+   Data, sheets and actions live in 08j-habits.js and 08k-goals.js. */
 var hpWeek=0,hpMenu=false,hgT=null,gbPrev=null;
 const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const DOTS_V='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
@@ -6674,7 +6329,7 @@ function hpMenuHTML(){const v=hpView(),left=hbOpenToday().length;
   return `<div class="lh-wrap hp-mw"><button class="pm-btn" id="hpMore" type="button" aria-label="Habits options" aria-haspopup="menu" aria-expanded="${hpMenu}">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop${hpMenu?' on':''}" id="hpPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-hpv="grid"','Week grid',v==='grid')}${mItem('data-hpv="sun"','Sunrise',v==='sun')}
     <span class="pm-sep"></span><button data-hbnew="" role="menuitem"><span class="lpm-i">${PLUS_S}</span>New habit</button>${left?`<button data-ciopen role="menuitem"><span class="lpm-i">${RH_ICON}</span>Evening check-in</button>`:''}</div></div>`}
-drawRhythm=function(){
+function drawRhythm(){
   const y=$('rhythmPg').scrollTop,hs=hbAll(),v=hpView(),anim=!$('rhIn').dataset.v||$('rhIn').dataset.v!==v||$('rhIn').dataset.fresh==='1';
   let head,body;
   if(!hs.length){head=`<span class="hp-eye">Habits</span><h1 class="hp-h">Habits</h1>`;
@@ -6688,7 +6343,7 @@ drawRhythm=function(){
   $('rhIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>
     <div class="hp-head"><div class="hp-tt">${head}</div><div class="hp-acts">${nav}${hpMenuHTML()}</div></div><div class="hp-body${anim?' anim':''}">${body}</div>`;
   $('rhIn').dataset.v=v;$('rhIn').dataset.fresh='';$('rhythmPg').scrollTop=y;
-};
+}
 const _hpOpen=openRhythm;openRhythm=function(){hpWeek=0;hpMenu=false;$('rhIn').dataset.fresh='1';_hpOpen()};
 function hpRefreshSoon(){clearTimeout(hgT);hgT=setTimeout(()=>{if(!document.querySelector('.sheet.on'))render()},1100)}
 function hpSetDay(id,k){
@@ -6757,7 +6412,7 @@ function gbScene(g,anim){
 function gTasksSec(g){const moved=gMoved(g),open=gTasks(g).filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
   const row=t=>`<button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>`;
   return `<div class="gv-sec"><h2>Linked tasks</h2><span>${moved.length?`${moved.length} moved it this week`:''}</span></div><div class="g-tasks">${open.slice(0,8).map(row).join('')}${moved.slice(0,5).map(row).join('')}</div>`}
-function gEditSec(g){return gdEdit?`<div class="gv-sec"><h2>Milestones</h2><button class="txt-btn gd-ed" data-gedit>Done</button></div><div class="g-mslist editing">${gMsRows(g,'ladder')}</div>`:''}
+function gEditSec(g){return gdEdit?`<div class="gv-sec"><h2>Milestones</h2><button class="txt-btn gd-ed" data-gedit>Done</button></div><div class="g-mslist editing">${gMsRows(g)}</div>`:''}
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
 function gNextAct(g,m){const tk=gTaskOf(m);return tk?`<button class="gv-link" data-gtask="${tk.id}">Linked to “${esc(tk.title)}”</button>`:`<button class="gv-link" data-gmk="${m.id}">Make it a task</button>`}
 function gClimbView(g,anim){
@@ -6790,24 +6445,26 @@ function gPosterView(g){
     <div class="gpo-r">${nx&&!g.done?`<div class="gpo-next"><span>Next step</span><b>${esc(nx.t)}</b>${gTaskOf(nx)?`<button class="gpo-btn" data-gtask="${gTaskOf(nx).id}">Open the task</button>`:`<button class="gpo-btn" data-gmk="${nx.id}">Make it a task</button>`}</div>`
       :pr.of&&!g.done?`<div class="gpo-next"><span>Summit reached</span><b>Every milestone is done.</b><button class="gpo-btn" data-gwin>Mark achieved</button></div>`:''}
       <div class="gpo-list">${g.ms.map(m=>`<button class="gpo-m${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}"><span class="gpo-k">${CK}</span>${esc(m.t)}</button>`).join('')}${g.ms.length<MS_MAX&&!g.done?gAddInput(g.ms.length?'Add a milestone':'Add your first milestone'):''}</div></div></div>`}
-drawGoal=function(){
+function drawGoal(){
   const g=gById(gdId);if(!g){closeGoal();return}
   const y=$('gdPg').scrollTop,v=gView(g),anim=gdAnim;
   const body=v==='path'?gPathView(g):v==='poster'?gPosterView(g):gClimbView(g,anim);
   $('gdIn').innerHTML=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${gMenuHTML(g)}</div>
     <div class="gv gv-${v}${anim?' anim':''}">${body}${gEditSec(g)}${gTasksSec(g)}</div>`;
-  $('gdPg').scrollTop=y;gdWin=false;if(anim)countUp($('gdIn'));
+  $('gdPg').scrollTop=y;if(anim)countUp($('gdIn'));
   const row=$('gdIn').querySelector('.gs-row'),now=row&&row.querySelector('.gs-step.now');if(now&&now.offsetLeft+now.offsetWidth>row.clientWidth)row.scrollLeft=now.offsetLeft-row.offsetLeft-4;
-};
+}
 $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
   const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m)return;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);setTimeout(()=>gMsToggle(g,m),200);return}
 });
 
 /* ================= Home habits widget: One at a time · Big tiles · Tap pills ================= */
-/* Default: One at a time on phones, Big tiles on computers. Settings → Modes → Habits → Widget style. */
+/* Default: One at a time on phones, Big tiles on computers. Settings → Modes → Habits → Widget style.
+   Tiles and pills show up to HW_MAX habits in your order; a ticked one stays in place (in coral) and the rest fold into "+N more". */
+const HW_MAX=6;
 function hwStyle(){const v=C().hwStyle;if(v==='one'||v==='tiles'||v==='pills')return v;return matchMedia('(min-width:1100px)').matches?'tiles':'one'}
-hbWidget=function(){
+function hbWidget(){
   if(!habitsOn()||!C().wHabits)return '';const hs=hbAll();if(!hs.length)return '';
   const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt}),dn=due.filter(h=>hbStats(h).dt),open=due.filter(h=>!hbStats(h).dt),st=hwStyle();
   const head=`<button class="hw-head" data-hbopen><b>Habits</b><span>${due.length?`<em>${dn.length}</em> of ${due.length} today`:'Rest day'}</span>${CHEV}</button>`;
@@ -6816,10 +6473,11 @@ hbWidget=function(){
       <button class="hw-tx" data-hbopen>${nx?`<small>Next habit</small><b>${nx.e?esc(nx.e)+' ':''}${esc(nx.name)}</b><span>${open.length>1?`+${open.length-1} more today`:'Last one today'}</span>`:`<small>Habits</small><b>${due.length?'All done today':'Rest day'}</b><span>${due.length?'Nice. See you tomorrow.':'Nothing due today'}</span>`}</button>
       ${nx?`<button class="hw-done" data-hbt="${nx.id}" aria-pressed="false">Done</button>`:''}</div>`}
   const ck='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-  const list=[...open,...dn];
-  if(st==='pills')return `<div class="hw hw-pills">${head}<div class="hw-pl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-pill${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span>${h.e?esc(h.e)+' ':''}${esc(h.name)}</button>`}).join('')}</div></div>`;
-  return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></span></button>`}).join('')}</div></div>`;
-};
+  const list=due.slice(0,HW_MAX),more=due.length-list.length;
+  const mr=more?`<button class="hw-more" data-hbopen>+${more} more</button>`:'';
+  if(st==='pills')return `<div class="hw hw-pills">${head}<div class="hw-pl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-pill${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span>${h.e?esc(h.e)+' ':''}${esc(h.name)}</button>`}).join('')}${mr}</div></div>`;
+  return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></span></button>`}).join('')}</div>${mr}</div>`;
+}
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}

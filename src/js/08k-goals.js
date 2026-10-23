@@ -3,15 +3,13 @@
    the mode back on brings everything back.
    • North star: one starred goal sits on Home under the Today card. Any task can be linked to a goal
      (★ Goal in its details) and wears a small star; finishing it shows up as "moved it this week".
-   • Goal page: two views, switchable per goal (default in Settings → Modes → Goal view):
-       The climb  — milestones as a trail up a hill; the sun rises behind the summit as you climb.
-       Why ladder — the goal, broken down: by the due date → this quarter → this week → today's task.
+   • Goal page: The climb (default), Path or Poster, switchable per goal under ⋯ → View; drawn in 08n-pages.js.
    • 30-second setup: what, by when, first milestones.
-   Data: S.goals [{id,name,e,space,why,due:'YYYY-MM-DD',created,star,view,lq,lqAt,lw,lwAt,done,doneAt,
+   Data: S.goals [{id,name,e,space,why,due:'YYYY-MM-DD',created,star,view,done,doneAt,
      ms:[{id,t,done,doneAt,task}]}]. A milestone can be turned into a task (ms.task); finishing that task
    ticks the milestone. Goals sync, back up and undo like tasks.
    Constants are var (not const) because other files may draw before this one runs. */
-var gdOn=false,gsOn=false,gdId=null,gdEdit=false,gdAnim=false,gdWin=false,gTodayIn=false;
+var gdOn=false,gsOn=false,gdId=null,gdEdit=false,gdAnim=false;
 var G_MAX=3,MS_MAX=12;
 var G_STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"/></svg>';
 var G_FLAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
@@ -28,15 +26,12 @@ function gList(){if(!Array.isArray(S.goals))S.goals=[];return S.goals}
 function gById(id){return gList().find(g=>g&&String(g.id)===String(id))}
 /* active goals whose space still exists (an archived or deleted space hides its goals) */
 function gAll(){return gList().filter(g=>g&&!g.done&&spaceOf(g.space))}
-function gIn(sp){return gAll().filter(g=>g.space===sp)}
 function gWon(sp){return gList().filter(g=>g&&g.done&&spaceOf(g.space)&&(!sp||g.space===sp)).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0))}
 function gStarred(){return gAll().find(g=>g.star)||null}
 function gNoon(d){const x=new Date(d);x.setHours(12,0,0,0);return x}
 function gDate(k){const p=String(k||'').split('-').map(Number);return p[0]?new Date(p[0],p[1]-1,p[2],12):null}
 function gPlus(months){const d=gNoon(new Date());d.setMonth(d.getMonth()+months);return dkey(d)}
 function gMon(){const d=gNoon(new Date());d.setDate(d.getDate()-((d.getDay()+6)%7));d.setHours(0,0,0,0);return d.getTime()}
-function gQStart(){const d=new Date();return new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3,1).getTime()}
-function gQEnd(){const d=new Date();return new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3+3,0,12)}
 function gShort(k){const d=typeof k==='string'?gDate(k):new Date(k);if(!d||isNaN(d))return '';const y=d.getFullYear()!==new Date().getFullYear();
   return d.toLocaleDateString(undefined,y?{month:'short',day:'numeric',year:'numeric'}:{month:'short',day:'numeric'})}
 function gLong(k){const d=gDate(k);if(!d)return '';const y=d.getFullYear()!==new Date().getFullYear();return d.toLocaleDateString(undefined,y?{month:'long',day:'numeric',year:'numeric'}:{month:'long',day:'numeric'})}
@@ -58,7 +53,6 @@ function gPace(g){
 const gName=g=>`${g.e?esc(g.e)+' ':''}${esc(g.name)}`;
 function gTasks(g){return S.tasks.filter(t=>t.goal!=null&&String(t.goal)===String(g.id)&&!t.inbox&&!t.archived)}
 function gMoved(g){const m=gMon();return gTasks(g).filter(t=>t.stage==='done'&&(t.doneAt||0)>=m)}
-function gToday(g){return gTasks(g).filter(t=>t.stage==='today'&&shown(t))}
 function gNext(g){return g.ms.find(m=>!m.done)||null}
 const gTaskOf=m=>m&&m.task!=null?S.tasks.find(t=>t.id===m.task&&!t.archived):null;
 function gSubLine(gs){
@@ -86,29 +80,12 @@ function gClimb(g,cls){
     <path class="g-flag" d="M226 40V21"/><path class="g-flagf" d="M226 21l12 4.5-12 4.5z"/></svg>`;
 }
 
-/* ---------- the why ladder: big → quarter → week → today ---------- */
-function gLadder(g){
-  const pr=gProg(g),td=gToday(g)[0],qe=gQEnd();
-  const lq=(g.lqAt||0)>=gQStart()?g.lq||'':'',lw=(g.lwAt||0)>=gMon()?g.lw||'':'';
-  const old=(v,cur)=>v&&!cur?`Last time: ${v}`:'';
-  const rung=(lbl,body,sub,now)=>`<div class="g-rung${now?' now':''}"><span class="g-ln"><i></i><b></b></span><div class="g-bx"><small>${lbl}</small>${body}${sub?`<span class="g-rs">${sub}</span>`:''}</div></div>`;
-  return `<div class="g-ladder">
-    ${rung(g.due?`By ${gLong(g.due)}`:'The goal',`<span class="g-rt">${gName(g)}</span>`,pr.of?`${pr.n} of ${pr.of} milestones`:'')}
-    ${rung('This quarter',`<input class="g-lin" data-gl="lq" value="${esc(lq)}" maxlength="80" placeholder="What has to be true by ${esc(qe.toLocaleDateString(undefined,{month:'long',day:'numeric'}))}?" enterkeyhint="done" autocomplete="off" aria-label="This quarter">`,old(g.lq,lq))}
-    ${rung('This week',`<input class="g-lin" data-gl="lw" value="${esc(lw)}" maxlength="80" placeholder="One step you can take this week" enterkeyhint="done" autocomplete="off" aria-label="This week">`,old(g.lw,lw))}
-    ${rung('Today',td?`<button class="g-rt g-rtask" data-gtask="${td.id}">${esc(td.title)}</button>`
-      :gTodayIn?`<input class="g-lin" id="gTodayIn" maxlength="120" placeholder="What will you do today?" enterkeyhint="done" autocomplete="off" aria-label="Today’s task">`
-      :`<button class="g-rtoday" data-gtoday>${PLUS_S}Add a task for today</button>`,td?`${esc(listOf(td.list).name)} · Today`:'',true)}
-  </div>`;
-}
-
-/* ---------- pieces shared by Home, the Goals lens and the Rhythm page ---------- */
+/* ---------- pieces shared by Home and the Goals page ---------- */
 function nsCard(){
   if(!goalsOn()||C().wStar===false)return '';const g=gStarred();if(!g)return '';
-  const pr=gProg(g),mv=gMoved(g).length;
+  const pr=gProg(g),left=gLeft(g,true);
   return `<button class="ns-card" data-gopen="${g.id}" aria-label="North star: ${esc(g.name)}"><span class="ns-i">${G_STAR}</span><span class="ns-t">
-    <span class="ns-top"><b>${gName(g)}</b><small>${gLeft(g,true)}</small></span><span class="ns-bar"><i style="width:${Math.round(pr.p*100)}%"></i></span>
-    <small class="ns-sub">${pr.of?`${pr.n} of ${pr.of} milestones`:'Add milestones to start climbing'}${mv?` · ${mv} ${mv===1?'task':'tasks'} moved it this week`:''}</small></span></button>`}
+    <span class="ns-top"><b>${gName(g)}</b><small>${pr.of?`${pr.n} of ${pr.of}`:'No milestones yet'}${left?` · ${left}`:''}</small></span><span class="ns-bar"><i style="width:${Math.round(pr.p*100)}%"></i></span></span></button>`}
 function gCard(g,wide){const pr=gProg(g),pc=gPace(g);
   return `<button class="g-card${g.star?' is-star':''}" data-gopen="${g.id}">${wide?`<span class="g-cmini">${gClimb(g,'mini')}</span>`:''}
     <span class="g-ctop"><span class="g-ce">${g.e?esc(g.e):G_FLAG}</span><span class="g-tx"><b>${esc(g.name)}</b><small>By ${gShort(g.due)} · ${gLeft(g)}</small></span>${g.star?`<span class="g-cstar" title="North star">${G_STAR}</span>`:''}</span>
@@ -147,56 +124,18 @@ document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg gd-pg" id="gd
 function openGoal(id){
   if(!goalsOn()||!gById(id))return;
   if(typeof closeSearch==='function')closeSearch();
-  gdId=id;gdEdit=false;gTodayIn=false;gdOn=true;gdAnim=true;drawGoal();gdAnim=false;
+  gdId=id;gdEdit=false;gdOn=true;gdAnim=true;drawGoal();gdAnim=false;
   $('gdPg').classList.add('on');$('gdPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
 }
 function closeGoal(){
-  if(!gdOn)return;gdOn=false;gdEdit=false;gTodayIn=false;$('gdPg').classList.remove('on');
+  if(!gdOn)return;gdOn=false;gdEdit=false;$('gdPg').classList.remove('on');
   const a=document.activeElement;if(a&&a.closest&&a.closest('#gdPg'))a.blur();
   if(typeof renderDesk==='function')renderDesk();
 }
-function gMsRows(g,view){
-  const nx=gNext(g);
-  return g.ms.map((m,i)=>{const tk=gTaskOf(m);
-    if(gdEdit)return `<div class="g-ms ed"><input class="g-msin" data-msren="${m.id}" value="${esc(m.t)}" maxlength="80" aria-label="Milestone name" autocomplete="off" enterkeyhint="done">
-      <button data-msup="${i}" ${i?'':'disabled'} aria-label="Move up">${UP_S}</button><button data-msdn="${i}" ${i<g.ms.length-1?'':'disabled'} aria-label="Move down">${DN_S}</button><button class="g-msx" data-msdel="${m.id}" aria-label="Delete milestone">${X}</button></div>`;
-    return `<div class="g-ms${m.done?' on':''}"><button class="g-msc" data-gms="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}"><span class="hc-dot">${ICK}</span></button>
-      <span class="g-mst"><span>${esc(m.t)}</span>${tk?`<button class="g-mstk" data-gtask="${tk.id}">${G_STAR}${tk.stage==='done'?'Task done':`Task in ${esc(STAGES[idx(tk.stage)].name)}`}</button>`:''}</span>
-      ${m===nx&&!tk&&!g.done&&view==='ladder'?`<button class="g-mk" data-gmk="${m.id}">Make it a task</button>`:''}</div>`}).join('');
-}
-function drawGoal(){
-  const g=gById(gdId);if(!g){closeGoal();return}
-  const pr=gProg(g),pc=gPace(g),view=g.view||C().gView||'climb',sp=spaceOf(g.space)||{name:'',c:'#888'};
-  const wide=matchMedia('(min-width:1100px)').matches,y=$('gdPg').scrollTop,nx=gNext(g),ntk=gTaskOf(nx);
-  const moved=gMoved(g),open=gTasks(g).filter(t=>t.stage!=='done'&&shown(t));
-  const top=pr.of>0&&pr.n>=pr.of&&!g.done;
-  const menu=`<div class="lh-wrap gd-mw"><button class="lh-more" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS3}</button>
-    <div class="sp-pop lh-pop" id="gdPop" role="menu">
-      <button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
-      ${g.done?'':`<button data-gm="star" role="menuitem"><span class="lpm-i">${G_STAR}</span>${g.star?'Remove north star':'Make it my north star'}</button>`}
-      <button data-gm="win" role="menuitem"><span class="lpm-i">${G_FLAG}</span>${g.done?'Back in progress':'Mark as achieved'}</button>
-      <button data-gm="del" class="warn" role="menuitem"><span class="lpm-i">${BIN_S}</span>Delete goal</button></div></div>`;
-  const head=`<div class="gd-head"><span class="eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:g.due?`Goal · by ${gLong(g.due)}`:'Goal'}${g.star&&!g.done?`<span class="gd-ns">${G_STAR}North star</span>`:''}</span>
-    <h1 class="gd-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1><span class="gd-sp">${spMini(sp)}${esc(sp.name)}</span></div>`;
-  const why=g.why?`<button class="gd-why" data-gwhy><small>Why it matters</small><span>${esc(g.why)}</span></button>`:`<button class="gd-why add" data-gwhy>${PLUS_S}Add why it matters</button>`;
-  const sw=`<div class="lens-sw gd-sw" role="tablist" aria-label="Goal view">${[['climb','The climb'],['ladder','Why ladder']].map(([k,l])=>`<button role="tab" data-gview="${k}" class="${view===k?'on':''}" aria-selected="${view===k}">${l}</button>`).join('')}</div>`;
-  const k=(l,v,c)=>`<div class="hbw-kpi"><small>${l}</small><b${c?` class="${c}"`:''}>${v}</b></div>`;
-  const nextCard=g.done?`<div class="gd-next won"><span class="gd-pin">🏆</span><span class="g-tx"><b>You made it.</b><small>Achieved on ${gShort(g.doneAt)}${pr.of?` · ${pr.of} milestones`:''}</small></span></div>`
-    :top?`<div class="gd-next sum"><span class="gd-pin">⛰️</span><span class="g-tx"><b>Summit reached</b><small>Every milestone is done.</small></span><button class="gd-mk dark" data-gwin>Mark achieved</button></div>`
-    :nx?`<div class="gd-next"><span class="gd-pin">📍</span><span class="g-tx"><b>Next: ${esc(nx.t)}</b><small>${ntk?`Linked to “${esc(ntk.title)}”`:'Not a task yet'}</small></span>${ntk?`<span class="gd-of">${pr.n}/${pr.of}</span>`:`<button class="gd-mk" data-gmk="${nx.id}">Make it a task</button>`}</div>`
-    :`<div class="gd-next"><span class="gd-pin">📍</span><span class="g-tx"><b>Add your first milestone</b><small>Big goals are climbed one checkpoint at a time.</small></span></div>`;
-  const panel=view==='ladder'?gLadder(g)
-    :`<div class="gd-climb">${gClimb(g,`${gdAnim?'anim':''}${gdWin?' rise':''}`)}</div>${nextCard}
-      <div class="hbw-kpis gd-kpis">${k('Pace',pc.t,'pc pc-'+pc.k)}${k(g.done?'Finished':'Days left',g.done?gShort(g.doneAt):gDaysLeft(g)===null?'—':Math.max(0,gDaysLeft(g)))}${wide?k('Milestones',`${pr.n} / ${pr.of}`)+k('This week',`${moved.length} ${moved.length===1?'task':'tasks'}`):''}</div>`;
-  const ms=`<div class="gd-sec"><h2>Milestones</h2><span>${pr.of?`${pr.n} of ${pr.of}`:''}</span>${g.ms.length?`<button class="txt-btn gd-ed" data-gedit>${gdEdit?'Done':'Edit'}</button>`:''}</div>
-    <div class="g-mslist${gdEdit?' editing':''}">${gMsRows(g,view)}${!gdEdit&&g.ms.length<MS_MAX&&!g.done?`<div class="g-msadd"><span class="g-msp">${PLUS_S}</span><input id="gMsIn" placeholder="${g.ms.length?'Add a milestone':'Add your first milestone'}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone"></div>`:''}</div>`;
-  const trow=t=>`<button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>`;
-  const tasks=`<div class="gd-sec"><h2>Tasks</h2><span>${moved.length?`${moved.length} moved it this week`:''}</span></div>
-    ${open.length||moved.length?`<div class="g-tasks">${open.slice(0,8).map(trow).join('')}${moved.slice(0,5).map(trow).join('')}</div>`:''}
-    <p class="gd-hint">${open.length||moved.length?'':'No tasks linked yet. '}Link any task from its details: tap <span class="g-pst">${G_STAR}</span><b>Goal</b>.</p>`;
-  $('gdIn').innerHTML=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${menu}</div>${head}
-    <div class="gd-cols"><div class="gd-l">${wide?'':why}${sw}<div class="gd-view">${panel}</div></div><div class="gd-r">${wide?why:''}${ms}${tasks}</div></div>`;
-  $('gdPg').scrollTop=y;gdWin=false;
+/* the milestone editor under the goal: rename, reorder, delete */
+function gMsRows(g){
+  return g.ms.map((m,i)=>`<div class="g-ms ed"><input class="g-msin" data-msren="${m.id}" value="${esc(m.t)}" maxlength="80" aria-label="Milestone name" autocomplete="off" enterkeyhint="done">
+      <button data-msup="${i}" ${i?'':'disabled'} aria-label="Move up">${UP_S}</button><button data-msdn="${i}" ${i<g.ms.length-1?'':'disabled'} aria-label="Move down">${DN_S}</button><button class="g-msx" data-msdel="${m.id}" aria-label="Delete milestone">${X}</button></div>`).join('');
 }
 
 /* ---------- actions ---------- */
@@ -205,12 +144,6 @@ function gMakeTask(g,m){
   const l=gSpaceList(g,'week');if(!l){toast('Add a list to this space first');return}
   if(!canPut(l.id,'week'))return;
   commit(()=>{const t={id:newId(),title:m.t,stage:'week',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id};addTask(t);m.task=t.id},`Added to ${l.name} · My week`);
-}
-function gAddToday(g,title){
-  const l=gSpaceList(g,'today');if(!l){toast('Add a list to this space first');return}
-  if(!canPut(l.id,'today'))return;
-  gTodayIn=false;commit(()=>addTask({id:newId(),title,stage:'today',list:l.id,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',goal:g.id}),`Added to ${l.name} · Today`);
-  const a=document.activeElement;if(a&&a.blur)a.blur();if(gdOn)drawGoal();
 }
 function gMsToggle(g,m){
   const on=!m.done,pr=gProg(g),all=on&&pr.n+1>=pr.of;
@@ -226,7 +159,6 @@ function gMsAdd(g){
 }
 function gSetWin(g,on){
   if(!on&&gAll().length>=G_MAX){toast(`${G_MAX} goals are already in progress. Finish one first.`);return}
-  if(on)gdWin=true;
   commit(()=>{if(on){g.done=true;g.doneAt=Date.now();g.star=false}else{g.done=false;delete g.doneAt}},on?`🏆 ${g.name}: achieved`:'Back in progress');
   if(on){haptic([10,40,10,40,20]);try{sfx('done')}catch(e){}}
 }
@@ -243,34 +175,29 @@ $('gdPg').addEventListener('click',e=>{
   if(e.target.closest('#gdMore')){e.stopPropagation();const was=pop.classList.contains('on');document.querySelectorAll('.sp-pop.on').forEach(x=>x.classList.remove('on'));if(!was){haptic(5);pop.classList.add('on')}return}
   const m=e.target.closest('[data-gm]');if(m){pop.classList.remove('on');const a=m.dataset.gm;
     if(a==='edit')return openGoalSheet(g.id);if(a==='star')return gToggleStar(g);if(a==='win')return gSetWin(g,!g.done);if(a==='del')return gDelete(g);return}
-  const v=e.target.closest('[data-gview]');if(v){if((g.view||C().gView)!==v.dataset.gview){g.view=v.dataset.gview;gTodayIn=false;haptic(5);save();gdAnim=true;drawGoal();gdAnim=false}return}
+  const v=e.target.closest('[data-gview]');if(v){if((g.view||C().gView)!==v.dataset.gview){g.view=v.dataset.gview;haptic(5);save();gdAnim=true;drawGoal();gdAnim=false}return}
   if(e.target.closest('[data-gwhy]')){openGoalSheet(g.id,true);return}
   const tk=e.target.closest('[data-gtask]');if(tk){haptic(5);return openDetail(+tk.dataset.gtask)}
   const mk=e.target.closest('[data-gmk]');if(mk){const ms=g.ms.find(x=>x.id===mk.dataset.gmk);if(ms)gMakeTask(g,ms);return}
-  if(e.target.closest('[data-gtoday]')){gTodayIn=true;drawGoal();setTimeout(()=>$('gTodayIn')&&$('gTodayIn').focus(),30);return}
   if(e.target.closest('[data-gwin]'))return gSetWin(g,true);
   if(e.target.closest('[data-gedit]')){gdEdit=!gdEdit;haptic(5);return drawGoal()}
-  const c=e.target.closest('[data-gms]');if(c){const ms=g.ms.find(x=>x.id===c.dataset.gms);if(!ms)return;c.closest('.g-ms').classList.toggle('on',!ms.done);setTimeout(()=>gMsToggle(g,ms),170);return}
   const up=e.target.closest('[data-msup]'),dn=e.target.closest('[data-msdn]');
   if(up||dn){const i=+(up?up.dataset.msup:dn.dataset.msdn),j=up?i-1:i+1;if(j<0||j>=g.ms.length)return;[g.ms[i],g.ms[j]]=[g.ms[j],g.ms[i]];haptic(4);save();drawGoal();return}
   const dl=e.target.closest('[data-msdel]');if(dl){const ms=g.ms.find(x=>x.id===dl.dataset.msdel);if(!ms)return;commit(()=>{g.ms=g.ms.filter(x=>x!==ms)},'Milestone removed');if(!g.ms.length)gdEdit=false;return}
 });
 $('gdPg').addEventListener('change',e=>{
   const g=gById(gdId);if(!g)return;
-  const k=e.target.dataset.gl;if(k){g[k]=e.target.value.trim();g[k+'At']=Date.now();save();return}
   const r=e.target.dataset.msren;if(r){const ms=g.ms.find(x=>x.id===r),v=e.target.value.trim();if(ms&&v){ms.t=v;save();render()}else if(ms)e.target.value=ms.t}
 });
 $('gdPg').addEventListener('keydown',e=>{
   const g=gById(gdId);
   if(e.key==='Enter'&&g){
     if(e.target.id==='gMsIn'){e.preventDefault();return gMsAdd(g)}
-    if(e.target.id==='gTodayIn'){e.preventDefault();const v=e.target.value.trim();if(v)gAddToday(g,v);return}
-    if(e.target.matches('.g-lin,.g-msin')){e.preventDefault();e.target.blur();haptic(5);return}
+    if(e.target.matches('.g-msin')){e.preventDefault();e.target.blur();haptic(5);return}
   }
   if(e.key==='Escape'){
     if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on'))return;
     const pop=$('gdPop');if(pop&&pop.classList.contains('on')){pop.classList.remove('on');e.stopPropagation();return}
-    if(e.target.id==='gTodayIn'){gTodayIn=false;drawGoal();e.stopPropagation();return}
     if(e.target.matches('input')&&e.target.value&&e.target.id==='gMsIn'){e.target.value='';return}
     e.stopPropagation();closeGoal();
   }

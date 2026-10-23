@@ -295,7 +295,7 @@ button.hg-c:active{transform:scale(.88)}
 .hw-done.on{opacity:.5;pointer-events:none}
 /* big tiles */
 .hw-tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-@media (min-width:1100px){.hw-tl{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}.hw{margin-bottom:16px;padding:18px}}
+@media (min-width:1100px){.hw-tl{grid-template-columns:repeat(6,minmax(0,1fr))}.hw{margin-bottom:16px;padding:18px}}
 .hw-tile{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:14px;min-height:98px;padding:12px;border-radius:18px;background:var(--surface2);text-align:left;transition:background .35s var(--ease),color .3s,transform .15s}
 .hw-tile:active{transform:scale(.96)}
 .hw-tt{display:flex;flex-direction:column;gap:3px;min-width:0;width:100%}
@@ -311,4 +311,9 @@ button.hg-c:active{transform:scale(.88)}
 .hw-pill.on{background:transparent;box-shadow:inset 0 0 0 1px var(--line);color:var(--muted)}
 .hw-pill.on .hw-k{background:var(--today);box-shadow:none;color:#fff}
 .hw-tx b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2;font-size:17px}
-@media (max-width:699px){.hw-pill{height:40px;padding:0 13px 0 8px;font-size:13.5px;gap:7px}.hw-pill .hw-k{width:20px;height:20px}.hw-pl{gap:6px}}
+/* "+N more": the rest fold away; tapping opens Habits */
+.hw-more{font-size:13.5px;font-weight:700;color:var(--muted);border-radius:999px;transition:color .2s,background .2s}
+.hw-more:hover{color:var(--text)}
+.hw-pl .hw-more{height:44px;padding:0 14px;box-shadow:inset 0 0 0 1px var(--line)}
+.hw-tiles .hw-more{display:block;margin:10px 0 -4px auto;padding:6px 10px}
+@media (max-width:699px){.hw-pill{height:40px;padding:0 13px 0 8px;font-size:13.5px;gap:7px}.hw-pill .hw-k{width:20px;height:20px}.hw-pl{gap:6px}.hw-pl .hw-more{height:40px}}

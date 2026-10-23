@@ -121,3 +121,44 @@ test('habits sync, back up and undo like tasks', async ({ page }) => {
   expect(await page.evaluate(() => S.habits.length)).toBe(1);
   noErrors(errors);
 });
+
+test('habits on Home: one spot, widget shows up to 6, one nudge at a time', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => {
+    S.cfg.habits = true; S.cfg.wHabits = true; S.cfg.hwStyle = 'tiles'; S.cfg.hbCiAt = 0; S.cfg.review = true; S.cfg.reviewedAt = 0;
+    const sp = S.spaces[0].id;
+    S.habits = Array.from({ length: 8 }, (_, i) => ({ id: 'h' + i, name: 'Habit ' + i, e: '', space: sp, days: [0,1,2,3,4,5,6], done: i < 2 ? { [today()]: 1 } : {}, created: Date.now() - 5 * DAY }));
+    save(); applySettings(); goHome();
+  });
+  // the widget opens Habits, so Home has no Habits row
+  await expect(page.locator('.app .hw-tiles')).toHaveCount(1);
+  await expect(page.locator('#rhEntry')).toHaveCount(0);
+  // 6 tiles in your order; done ones stay visible (coral) and the rest fold into "+2 more"
+  await expect(page.locator('.app .hw-tile')).toHaveCount(6);
+  await expect(page.locator('.app .hw-tile.on')).toHaveCount(2);
+  await expect(page.locator('.app .hw-more')).toHaveText('+2 more');
+  await page.evaluate(() => { setCfg('hwStyle', 'pills'); goHome(); });
+  await expect(page.locator('.app .hw-pill')).toHaveCount(6);
+  await expect(page.locator('.app .hw-more')).toHaveText('+2 more');
+  await page.evaluate(() => { S.habits.forEach(h => h.done[today()] = 1); save(); render(); });
+  await expect(page.locator('.app .hw-pill.on')).toHaveCount(6);
+  await page.evaluate(() => { S.habits.forEach(h => delete h.done[today()]); save(); render(); });
+  // one at a time keeps its own look
+  await page.evaluate(() => { setCfg('hwStyle', 'one'); goHome(); });
+  await expect(page.locator('.app .hw-one')).toHaveCount(1);
+  await expect(page.locator('.app .hw-more')).toHaveCount(0);
+  // never more than one nudge card: the check-in wins over the weekly review
+  await page.evaluate(() => { reviewCard = () => '<div class="rv-card">Weekly review</div>'; backupCard = () => '<div class="bk-card">Backup</div>'; render(); });
+  await expect(page.locator('.app .ci-home')).toHaveCount(1);
+  await expect(page.locator('.app .rv-card, .app .bk-card')).toHaveCount(0);
+  // after "Later" on the check-in, the review takes its turn
+  await page.locator('.app [data-cilater]').click();
+  await expect(page.locator('.app .ci-home')).toHaveCount(0);
+  await expect(page.locator('.app .rv-card')).toHaveCount(1);
+  await expect(page.locator('.app .bk-card')).toHaveCount(0);
+  // without the widget, the Habits row comes back
+  await page.evaluate(() => { setCfg('wHabits', false); goHome(); });
+  await expect(page.locator('#rhEntry')).toHaveCount(1);
+  noErrors(errors);
+});
