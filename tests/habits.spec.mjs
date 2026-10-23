@@ -210,27 +210,27 @@ test('habits: reorder by dragging or arrow keys, past-day toast with Undo, strea
     save(); applySettings(); goHome(); });
   // streak on the One at a time card
   await expect(page.locator('.app .hw-one .hw-st')).toHaveText('12 days in a row');
-  // reorder from ⋯ → Reorder habits
+  // reorder from ⋯ → Edit habits
   await page.evaluate(() => openRhythm());
   await page.locator('#hpMore').click();
   await page.locator('#hpPop [data-hbord]').click();
-  await expect(page.locator('#hoSheet')).toHaveClass(/on/);
-  await page.waitForTimeout(500); // let the sheet finish sliding in before measuring rows
+  await expect(page.locator('#hbEd')).toHaveClass(/on/);
+  await page.waitForTimeout(400); // let the popup finish opening before measuring rows
   const names = () => page.evaluate(() => S.habits.map(h => h.name));
   // drag Walk (3rd) above Water (1st)
-  const g = await page.locator('#hoList .ho-row').nth(2).locator('.ho-grip').boundingBox();
-  const top = await page.locator('#hoList .ho-row').nth(0).boundingBox();
+  const g = await page.locator('#hbeList .gme-r').nth(2).locator('.ho-grip').boundingBox();
+  const top = await page.locator('#hbeList .gme-r').nth(0).boundingBox();
   await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2);
   await page.mouse.down();
   for (let i = 1; i <= 10; i++) await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2 - (g.y - top.y + 10) * i / 10);
   await page.mouse.up();
   expect(await names()).toEqual(['Walk', 'Water', 'Read']);
   // arrow keys: move Walk back down one
-  await page.locator('#hoList .ho-row').nth(0).locator('.ho-grip').focus();
+  await page.locator('#hbeList .gme-r').nth(0).locator('.ho-grip').focus();
   await page.keyboard.press('ArrowDown');
   expect(await names()).toEqual(['Water', 'Walk', 'Read']);
-  await expect(page.locator('#hoList .ho-row').nth(1).locator('.ho-grip')).toBeFocused();
-  await page.locator('#hoDone').click();
+  await expect(page.locator('#hbeList .gme-r').nth(1).locator('.ho-grip')).toBeFocused();
+  await page.locator('#hbeDone').click();
   await expect(page.locator('#rhythmPg .hg-n')).toContainText(['Water', 'Walk', 'Read']);
   // ticking a past day says so, and Undo clears it
   await page.locator('#rhythmPg .hg-row').nth(2).locator('.hg-c.miss').first().click();
@@ -238,5 +238,29 @@ test('habits: reorder by dragging or arrow keys, past-day toast with Undo, strea
   expect(await page.evaluate(() => Object.keys(S.habits[2].done).length)).toBe(1);
   await page.locator('#undoBtn').click();
   expect(await page.evaluate(() => Object.keys(S.habits[2].done).length)).toBe(0);
+  noErrors(errors);
+});
+
+test('habits: Edit habits popup adds, renames, opens settings and deletes', async ({ page }) => {
+  await page.setViewportSize({ width: 1300, height: 860 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.habits = true; const sp = S.spaces[0].id;
+    S.habits = [{ id: 'h1', name: 'Water', e: '', space: sp, days: [0,1,2,3,4,5,6], done: {}, created: Date.now() }]; save(); applySettings(); openRhythm(); });
+  await page.locator('#hpMore').click();
+  await page.locator('#hpPop [data-hbord]').click();
+  await expect(page.locator('#hbEd')).toHaveClass(/on/);
+  await page.fill('#hbeAdd', 'Read 10 pages');
+  await page.locator('#hbeAddB').click();
+  await expect(page.locator('#hbEd .gme-r')).toHaveCount(2);
+  expect(await page.evaluate(() => S.habits[1].e)).toBe('📖');
+  await page.locator('#hbEd [data-hren="h1"]').fill('Drink water');
+  await page.keyboard.press('Enter');
+  expect(await page.evaluate(() => S.habits[0].name)).toBe('Drink water');
+  await page.locator('#hbEd [data-hdel="h1"]').click();
+  await page.locator('#dlgYes').click();
+  await expect(page.locator('#hbEd .gme-r')).toHaveCount(1);
+  await page.locator('#hbEd [data-hopen]').click();
+  await expect(page.locator('#hbEd')).not.toHaveClass(/on/);
+  await expect(page.locator('#hbSheet')).toHaveClass(/on/);
   noErrors(errors);
 });

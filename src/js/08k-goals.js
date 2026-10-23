@@ -92,11 +92,11 @@ function nsCard(){
   return `<button class="ns-card" data-gopen="${g.id}" aria-label="North star: ${esc(g.name)}"><span class="ns-i">${G_STAR}</span><span class="ns-t">
     <span class="ns-top"><b>${gName(g)}</b><small>${pr.of?`${pr.n} of ${pr.of}`:'No milestones yet'}${left?` · ${left}`:''}</small></span><span class="ns-bar"><i style="width:${Math.round(pr.p*100)}%"></i></span></span></button>`}
 function gCard(g,wide){const pr=gProg(g),pc=gPace(g);
-  return `<button class="g-card${g.star?' is-star':''}" data-gopen="${g.id}">${wide?`<span class="g-cmini">${gClimb(g,'mini')}</span>`:''}
-    <span class="g-ctop"><span class="g-ce">${g.e?esc(g.e):G_FLAG}</span><span class="g-tx"><b>${esc(g.name)}</b><small>By ${gShort(g.due)} · ${gLeft(g)}</small></span>${g.star?`<span class="g-cstar" title="North star">${G_STAR}</span>`:''}</span>
+  return `<div class="g-cw"><button class="g-card${g.star?' is-star':''}" data-gopen="${g.id}">${wide?`<span class="g-cmini">${gClimb(g,'mini')}</span>`:''}
+    <span class="g-ctop"><span class="g-ce">${g.e?esc(g.e):G_FLAG}</span><span class="g-tx"><b>${esc(g.name)}</b><small>${g.due?`By ${gShort(g.due)} · ${gLeft(g)}`:'No date set'}</small></span>${g.star?`<span class="g-cstar" title="North star">${G_STAR}</span>`:''}</span>
     <span class="ns-bar"><i style="width:${Math.round(pr.p*100)}%"></i></span>
-    <span class="g-cmeta"><span>${pr.of?`${pr.n} of ${pr.of} milestones`:'No milestones yet'}</span><span class="pc pc-${pc.k}">${pc.t}</span></span></button>`}
-function gWonList(ws){return ws.length?`<div class="g-won"><span class="eye">Achieved</span>${ws.slice(0,6).map(g=>`<button class="g-wrow" data-gopen="${g.id}"><span class="g-wi">🏆</span><span class="g-tx"><b>${gName(g)}</b><small>${gShort(g.doneAt)}</small></span>${CHEV}</button>`).join('')}</div>`:''}
+    <span class="g-cmeta"><span>${pr.of?`${pr.n} of ${pr.of} milestones`:'No milestones yet'}</span><span class="pc pc-${pc.k}">${pc.t}</span></span></button>${MORE(`data-gcm="${g.id}"`,`Options for ${esc(g.name)}`)}</div>`}
+function gWonList(ws){return ws.length?`<div class="g-won"><span class="eye">Achieved</span>${ws.slice(0,6).map(g=>`<div class="g-tr2"><button class="g-wrow" data-gopen="${g.id}"><span class="g-wi">🏆</span><span class="g-tx"><b>${gName(g)}</b><small>${gShort(g.doneAt)}</small></span>${CHEV}</button>${MORE(`data-gcm="${g.id}"`,`Options for ${esc(g.name)}`)}</div>`).join('')}</div>`:''}
 function goalsBlock(gs,sp,wide){
   const add=gAll().length<G_MAX?`<button class="hb-add" data-gnew="${sp||''}">${PLUS_S}New goal</button>`:`<p class="hb-note">${G_MAX} goals at once is the most. Finish one to start another.</p>`;
   if(!gs.length&&!sp)return `<div class="ib-empty rh-empty g-empty"><span class="g-emi">${gClimb({ms:[{done:1},{},{}],due:'',done:false},'mini')}</span><b>No goals yet</b><span>Pick one big outcome. Break it into milestones and climb, one step at a time.</span><button class="primary" data-gnew="">Set a goal</button></div>${gWonList(gWon())}`;

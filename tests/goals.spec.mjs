@@ -338,3 +338,67 @@ test('goal page: a milestone takes many tasks (My week first, then Later), newes
   expect(await page.evaluate(() => { const el = document.querySelector('#gdPg .gm-ts'); return el.scrollHeight > el.clientHeight; })).toBe(true);
   noErrors(errors);
 });
+
+test('goal page and Goals page: ⋯ menus to rename, move, add subtasks, delete; cards have menus', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true; const sp = S.spaces[0].id, l = S.lists.find(x => x.space === sp);
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: sp, why: '', due: '', created: Date.now(), star: false, ms: [{ id: 'm0', t: 'A', done: false }, { id: 'm1', t: 'B', done: false }] }];
+    S.tasks.push({ id: 9001, title: 'Old name', stage: 'week', list: l.id, est: 30, subs: [], notes: '', repeat: 'none', goal: 'g1', ms: 'm0' });
+    save(); applySettings(); openGoal('g1'); });
+  const menu = async (sel, item) => { await page.locator(sel).click(); await page.locator('#cxPop button', { hasText: item }).first().click(); };
+  // rename inline
+  await menu('#gdPg [data-gtm="9001"]', 'Rename');
+  await expect(page.locator('#gdPg [data-gren="9001"]')).toBeFocused();
+  await page.keyboard.press('Control+a'); await page.keyboard.type('New name'); await page.keyboard.press('Enter');
+  expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).title)).toBe('New name');
+  // add subtasks inline, then delete one
+  await menu('#gdPg [data-gtm="9001"]', 'Add a subtask');
+  await expect(page.locator('#gdPg [data-gsadd="9001"]')).toBeFocused();
+  await page.keyboard.type('one'); await page.keyboard.press('Enter');
+  await page.keyboard.type('two'); await page.keyboard.press('Enter');
+  await expect(page.locator('#gdPg .gm-sub')).toHaveText('0/2');
+  await page.locator('#gdPg .gm-sx').first().click();
+  expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).subs.map(s => s.t))).toEqual(['two']);
+  // Escape in the add field leaves the page open
+  await page.locator('#gdPg [data-gsadd="9001"]').focus(); await page.keyboard.press('Escape');
+  await expect(page.locator('#gdPg')).toHaveClass(/on/);
+  // move to another milestone, then to Other tasks
+  await page.locator('#gdPg [data-gtm="9001"]').click();
+  await page.locator('#cxPop button', { hasText: 'Move to' }).click();
+  await page.locator('#cxPop button', { hasText: 'B' }).click();
+  expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).ms)).toBe('m1');
+  await page.locator('#gdPg .gm-n[data-gsel="m1"]').click();
+  await page.locator('#gdPg [data-gtm="9001"]').click();
+  await page.locator('#cxPop button', { hasText: 'Move to' }).click();
+  await page.locator('#cxPop button', { hasText: 'Other tasks' }).click();
+  expect(await page.evaluate(() => S.tasks.find(x => x.id === 9001).ms)).toBeUndefined();
+  await expect(page.locator('#gdPg .g-tr2 [data-gtm="9001"]')).toHaveCount(1);
+  // delete asks first
+  await menu('#gdPg .g-tr2 [data-gtm="9001"]', 'Delete task');
+  await page.locator('#dlgYes').click();
+  expect(await page.evaluate(() => S.tasks.some(x => x.id === 9001))).toBe(false);
+  // milestone menu: rename opens the popup on that name; the popup adds with its Add button
+  await menu('#gdPg .gm-card [data-gmm]', 'Rename');
+  await expect(page.locator('#gmEd')).toHaveClass(/on/);
+  await expect(page.locator('#gmEd [data-mren="m1"]')).toBeFocused(); // the card shows B, so B's name is ready to edit
+  await page.fill('#gmeAdd', 'C'); await page.locator('#gmeAddB').click();
+  expect(await page.evaluate(() => S.goals[0].ms.map(m => m.t))).toEqual(['A', 'B', 'C']);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#gmEd')).not.toHaveClass(/on/);
+  // Escape closes an open ⋯ menu without leaving the page
+  await page.locator('#gdPg .gm-card [data-gmm]').click();
+  await expect(page.locator('#cxPop')).toHaveClass(/on/);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#cxPop')).not.toHaveClass(/on/);
+  await expect(page.locator('#gdPg')).toHaveClass(/on/);
+  // Goals page: each card has a ⋯ (north star, achieved, delete)
+  await page.evaluate(() => { closeGoal(); openGoals(); });
+  await menu('#goalsPg [data-gcm="g1"]', 'Make it my north star');
+  expect(await page.evaluate(() => S.goals[0].star)).toBe(true);
+  await expect(page.locator('#goalsPg .g-card small').first()).toHaveText('No date set');
+  await menu('#goalsPg [data-gcm="g1"]', 'Delete goal');
+  await page.locator('#dlgYes').click();
+  expect(await page.evaluate(() => S.goals.length)).toBe(0);
+  noErrors(errors);
+});

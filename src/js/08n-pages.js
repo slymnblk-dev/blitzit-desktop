@@ -3,13 +3,37 @@
    Goal:   The climb (default), Path or Poster, picked under ⋯ → View (per goal; default in Settings → Modes).
    Completed things use the brand colour (--today); green stays for switches in Settings.
    Data, sheets and actions live in 08j-habits.js and 08k-goals.js. */
-var hpWeek=0,hpMenu=false,hgT=null,hpHtml='',hpTapAt={},gbPrev=null,gdHtml='',gTickBusy=false,gSelId=null,gAddMs=false,gmeOn=false,gSubOpen=new Set();
+var gRen=null,gSubAdd=null,hpWeek=0,hpMenu=false,hgT=null,hpHtml='',hpTapAt={},gbPrev=null,gdHtml='',gTickBusy=false,gSelId=null,gAddMs=false,gmeOn=false,gSubOpen=new Set();
 const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const DOTS_V='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
 const ARR_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
 const ARR_R='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 const hpView=()=>C().hbView==='sun'?'sun':'grid';
 const mItem=(attr,label,on)=>`<button ${attr} role="menuitemradio" aria-checked="${!!on}" class="pm-opt${on?' on':''}"><span class="pm-ck">${on?CK:''}</span>${label}</button>`;
+/* ---------- one small ⋯ menu for any row or card: cxOpen(button, [{t,ic,act,warn,sub:()=>items}, {sep:1}, {lbl}]) ---------- */
+document.body.insertAdjacentHTML('beforeend','<div class="cx-pop" id="cxPop" role="menu"></div>');
+let cxIt=null,cxAt=null;
+function cxOpen(at,items){
+  if(cxAt&&cxAt!==at)cxAt.setAttribute('aria-expanded','false');cxAt=at;cxIt=items;const p=$('cxPop');
+  p.innerHTML=items.map((it,i)=>it.sep?'<span class="pm-sep"></span>':it.lbl?`<span class="pm-lbl">${esc(it.lbl)}</span>`
+    :`<button role="menuitem" data-cx="${i}"${it.warn?' class="warn"':''}${it.dis?' disabled':''}><span class="lpm-i">${it.ic||''}</span><span class="cx-t">${esc(it.t)}</span>${it.sub?'<span class="cx-go">›</span>':''}</button>`).join('');
+  p.classList.add('on');at.setAttribute('aria-expanded','true');cxPlace();
+  haptic(5);const b=p.querySelector('button:not([disabled])');if(b)b.focus({preventScroll:true});
+}
+/* sit under the button (or above it near the bottom of the screen) and follow it when the page scrolls */
+function cxPlace(){const p=$('cxPop'),at=cxAt;if(!at||!at.isConnected)return cxClose();const r=at.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return cxClose();
+  const w=p.offsetWidth,h=p.offsetHeight;p.style.left=Math.max(8,Math.min(innerWidth-w-8,r.right-w))+'px';p.style.top=(r.bottom+6+h>innerHeight-8?Math.max(8,r.top-h-6):r.bottom+6)+'px'}
+function cxClose(){if(!cxIt)return;$('cxPop').classList.remove('on');if(cxAt)cxAt.setAttribute('aria-expanded','false');cxIt=null;cxAt=null}
+$('cxPop').addEventListener('click',e=>{const b=e.target.closest('[data-cx]');if(!b||!cxIt)return;e.stopPropagation();const it=cxIt[+b.dataset.cx];
+  if(it.sub){const at=cxAt;cxOpen(at,it.sub());return}const at=cxAt;cxClose();if(at&&at.isConnected)at.focus({preventScroll:true});it.act()});
+document.addEventListener('pointerdown',e=>{if(cxIt&&!e.target.closest('#cxPop')&&e.target.closest('[aria-haspopup]')!==cxAt)cxClose()},true);
+document.addEventListener('keydown',e=>{if(!cxIt)return;
+  if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();const at=cxAt;cxClose();if(at&&at.isConnected)at.focus({preventScroll:true});return}
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){const bs=[...$('cxPop').querySelectorAll('button:not([disabled])')],i=bs.indexOf(document.activeElement);e.preventDefault();
+    const n=bs[(i+(e.key==='ArrowDown'?1:-1)+bs.length)%bs.length];if(n)n.focus()}},true);
+addEventListener('resize',cxClose);document.addEventListener('scroll',e=>{if(cxIt&&!(e.target.closest&&e.target.closest('#cxPop')))cxPlace()},true);
+const MORE=(attr,lbl)=>`<button class="gm-more" ${attr} aria-label="${lbl}" aria-haspopup="menu" aria-expanded="false">${DOTS_V}</button>`;
+
 /* count numbers up when a view opens: small, quick, feels alive */
 function countUp(root){root.querySelectorAll('[data-cnt]').forEach(el=>{const to=+el.dataset.cnt;if(!(to>1)||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const t0=performance.now(),d=Math.min(900,300+to*12);
   const step=t=>{const k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e);if(k<1)requestAnimationFrame(step)};el.textContent='0';requestAnimationFrame(step)})}
@@ -48,7 +72,7 @@ function hpSun(hs){
 function hpMenuHTML(){const v=hpView(),left=hbOpenToday().length;
   return `<div class="lh-wrap hp-mw"><button class="pm-btn" id="hpMore" type="button" aria-label="Habits options" aria-haspopup="menu" aria-expanded="${hpMenu}">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop${hpMenu?' on':''}" id="hpPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-hpv="grid"','Week grid',v==='grid')}${mItem('data-hpv="sun"','Sunrise',v==='sun')}
-    <span class="pm-sep"></span><button data-hbnew="" role="menuitem"><span class="lpm-i">${PLUS_S}</span>New habit</button>${hbAll().length>1?`<button data-hbord role="menuitem"><span class="lpm-i">${GRIP}</span>Reorder habits</button>`:''}${left?`<button data-ciopen role="menuitem"><span class="lpm-i">${RH_ICON}</span>Evening check-in</button>`:''}</div></div>`}
+    <span class="pm-sep"></span><button data-hbnew="" role="menuitem"><span class="lpm-i">${PLUS_S}</span>New habit</button>${hbAll().length?`<button data-hbord role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit habits</button>`:''}${left?`<button data-ciopen role="menuitem"><span class="lpm-i">${RH_ICON}</span>Evening check-in</button>`:''}</div></div>`}
 function drawRhythm(){
   const y=$('rhythmPg').scrollTop,hs=hbAll(),v=hpView(),anim=!$('rhIn').dataset.v||$('rhIn').dataset.v!==v||$('rhIn').dataset.fresh==='1';
   let head,body;
@@ -93,7 +117,7 @@ $('rhythmPg').addEventListener('click',e=>{
   const w=e.target.closest('[data-hpw]');if(w&&!w.disabled){hpWeek=Math.min(0,hpWeek+(+w.dataset.hpw));haptic(4);$('rhIn').dataset.fresh='1';drawRhythm();return}
   const c=e.target.closest('[data-hgd]');if(c){const [id,k]=c.dataset.hgd.split('|');return hpSetDay(id,k)}
   const s=e.target.closest('[data-hst]');if(s)return hpSunTick(s.dataset.hst);
-  if(e.target.closest('#hpPop [data-hbord]')){hpMenu=false;return openReorder()}
+  if(e.target.closest('#hpPop [data-hbord]')){hpMenu=false;const p=$('hpPop');if(p)p.classList.remove('on');return openReorder()}
   if(e.target.closest('#hpPop [data-hbnew],#hpPop [data-ciopen]')){hpMenu=false}
 });
 
@@ -118,52 +142,80 @@ function sortable(list,rowSel,idOf,onOrder){let d=null;const ids=()=>[...list.qu
 document.body.insertAdjacentHTML('beforeend',`<div class="dlg gme" id="gmEd" role="dialog" aria-modal="true" aria-labelledby="gmeT"><div class="dlg-in gme-in">
   <div class="gme-h"><h3 id="gmeT">Milestones</h3><button class="icon-btn gme-x0" id="gmeClose" aria-label="Close">${X}</button></div>
   <p class="gme-tip">Drag to reorder. Click a name to rename it.</p><div class="gme-list" id="gmeList"></div>
-  <label class="gme-add" id="gmeAddW"><span class="gm-plus">${PLUS_S}</span><input id="gmeAdd" placeholder="Add a milestone" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
+  <div class="gme-add" id="gmeAddW"><span class="gm-plus">${PLUS_S}</span><input id="gmeAdd" placeholder="New milestone" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="New milestone"><button class="gme-addb" id="gmeAddB" type="button">Add</button></div>
   <button class="primary" id="gmeDone">Done</button></div></div>`);
-function openMsEdit(){const g=gById(gdId);if(!g)return;gmeOn=true;drawMsEdit();$('gmEd').classList.add('on');haptic(5);setTimeout(()=>{if(gmeOn&&!g.ms.length)$('gmeAdd').focus()},60)}
+function openMsEdit(focus){const g=gById(gdId);if(!g)return;gmeOn=true;drawMsEdit();$('gmEd').classList.add('on');haptic(5);
+  setTimeout(()=>{if(!gmeOn)return;const i=focus&&$('gmeList').querySelector(`[data-mren="${focus}"]`);if(i){i.focus();i.select()}else if(!g.ms.length)$('gmeAdd').focus()},60)}
+function gmeAddNow(){const g=gById(gdId),i=$('gmeAdd'),v=i.value.trim();if(!g||!v){i.focus();return}if(g.ms.length>=MS_MAX){toast(`Up to ${MS_MAX} milestones. Keep them big.`);return}
+  g.ms.push({id:'m'+newId(),t:v,done:false});save();try{sfx('add')}catch(err){}haptic(8);render();drawMsEdit();i.value='';i.focus();const l=$('gmeList');l.scrollTop=l.scrollHeight}
 function closeMsEdit(){if(!gmeOn)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#gmEd'))a.blur();gmeOn=false;$('gmEd').classList.remove('on');if(gdOn)drawGoal()}
 function drawMsEdit(focus){const g=gById(gdId);if(!g)return closeMsEdit();
   $('gmeList').innerHTML=g.ms.map((m,i)=>{const ts=gMsTasks(m),dn=ts.filter(t=>t.stage==='done').length;
     return `<div class="gme-r${m.done?' done':''}" data-mid="${m.id}"><button class="ho-grip" type="button" aria-label="Move ${esc(m.t)}, number ${i+1} of ${g.ms.length}. Arrow keys move it.">${GRIP}</button>
       <span class="gme-i">${m.done?CK:i+1}</span><input class="gme-n" data-mren="${m.id}" value="${esc(m.t)}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Milestone ${i+1} name">
       ${ts.length?`<small>${dn}/${ts.length}</small>`:''}<button class="gme-del" data-mdel="${m.id}" aria-label="Delete ${esc(m.t)}">${BIN_S}</button></div>`}).join('')||'<p class="gme-none">No milestones yet. Add the first one below.</p>';
-  $('gmeAddW').hidden=g.ms.length>=MS_MAX||g.done;
+  $('gmeAddW').style.display=g.ms.length>=MS_MAX||g.done?'none':'';
   if(focus!=null){const b=$('gmeList').querySelector(`[data-mid="${focus}"] .ho-grip`);if(b)b.focus()}}
 sortable($('gmeList'),'.gme-r',r=>r.dataset.mid,(ids,focus)=>{const g=gById(gdId);if(!g)return;const by=new Map(g.ms.map(m=>[m.id,m]));
   const next=ids.map(id=>by.get(id)).filter(Boolean);if(next.map(m=>m.id).join()===g.ms.map(m=>m.id).join())return;g.ms=next;save();render();drawMsEdit(focus)});
 $('gmEd').addEventListener('click',e=>{
   if(e.target===$('gmEd')||e.target.closest('#gmeDone,#gmeClose'))return closeMsEdit();
+  if(e.target.closest('#gmeAddB'))return gmeAddNow();
   const dl=e.target.closest('[data-mdel]');if(dl){const g=gById(gdId),m=g&&g.ms.find(x=>x.id===dl.dataset.mdel);if(m){gMsDelete(g,m);drawMsEdit()}}
 });
 $('gmEd').addEventListener('change',e=>{const id=e.target.dataset.mren;if(!id)return;const g=gById(gdId),m=g&&g.ms.find(x=>x.id===id),v=e.target.value.trim();if(!m)return;
   if(v&&v!==m.t){m.t=v;save();render()}else e.target.value=m.t});
 $('gmEd').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.matches('.gme-n')){e.preventDefault();e.target.blur();return}
-  if(e.key==='Enter'&&e.target.id==='gmeAdd'){e.preventDefault();const g=gById(gdId),v=e.target.value.trim();if(!g||!v)return;if(g.ms.length>=MS_MAX){toast(`Up to ${MS_MAX} milestones. Keep them big.`);return}
-    g.ms.push({id:'m'+newId(),t:v,done:false});save();try{sfx('add')}catch(err){}haptic(8);render();drawMsEdit();$('gmeAdd').value='';$('gmeAdd').focus();return}
-  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();if(e.target.matches('input')&&e.target.value&&e.target.id==='gmeAdd'){e.target.value='';return}closeMsEdit()}
+  if(e.key==='Enter'&&e.target.id==='gmeAdd'){e.preventDefault();return gmeAddNow()}
+  if(e.key==='Escape'){if($('dlg').classList.contains('on'))return;e.preventDefault();e.stopPropagation();if(e.target.matches('input')&&e.target.value&&e.target.id==='gmeAdd'){e.target.value='';return}closeMsEdit()}
 });
 /* undo, sync and edits elsewhere keep the popup current (but never while you type in it) */
 const _gmeRender=render;render=function(d){_gmeRender(d);try{if(gmeOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#gmEd')&&a.matches('input')))drawMsEdit()}}catch(err){console.error(err)}};
 
-/* ---------- reorder habits: drag a row by its handle (or focus the handle and use the arrow keys) ---------- */
 var GRIP='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.7"/><circle cx="15" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/><circle cx="9" cy="18" r="1.7"/><circle cx="15" cy="18" r="1.7"/></svg>';
-document.body.insertAdjacentHTML('beforeend',`<div class="sheet" id="hoSheet"><div class="sheet-in"><div class="grab"></div><h2>Reorder habits</h2>
-  <p class="ho-tip">Drag to set the order. The first ones show on Home.</p><div class="ho-list" id="hoList"></div><button class="primary" id="hoDone">Done</button></div></div>`);
-function openReorder(){if(hbAll().length<2)return;drawReorder(hbAll().map(h=>h.id));openSheet('hoSheet')}
-function drawReorder(ids,focus){
-  $('hoList').innerHTML=ids.map((id,i)=>{const h=hbById(id);return h?`<div class="ho-row" data-hoid="${h.id}"><span class="ho-i">${i+1}</span><span class="ho-n">${hbName(h)}</span><button class="ho-grip" type="button" aria-label="Move ${esc(h.name)}, number ${i+1} of ${ids.length}. Arrow keys move it.">${GRIP}</button></div>`:''}).join('');
-  if(focus!=null){const b=$('hoList').querySelector(`[data-hoid="${focus}"] .ho-grip`);if(b)b.focus()}}
+/* ---------- edit habits: a calm popup like the milestone editor. Add, rename, drag to reorder, delete; ✎ opens a habit's full settings ---------- */
+let hbeOn=false;
+document.body.insertAdjacentHTML('beforeend',`<div class="dlg gme" id="hbEd" role="dialog" aria-modal="true" aria-labelledby="hbeT"><div class="dlg-in gme-in">
+  <div class="gme-h"><h3 id="hbeT">Habits</h3><button class="icon-btn gme-x0" id="hbeClose" aria-label="Close">${X}</button></div>
+  <p class="gme-tip">Drag to reorder: the first ones show on Home. Click a name to rename it.</p><div class="gme-list" id="hbeList"></div>
+  <div class="gme-add" id="hbeAddW"><span class="gm-plus">${PLUS_S}</span><input id="hbeAdd" placeholder="New habit, e.g. Read 10 pages" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="New habit"><button class="gme-addb" id="hbeAddB" type="button">Add</button></div>
+  <button class="primary" id="hbeDone">Done</button></div></div>`);
+function openReorder(){if(!habitsOn())return;hbeOn=true;drawHbEdit();$('hbEd').classList.add('on');haptic(5);setTimeout(()=>{if(hbeOn&&!hbAll().length)$('hbeAdd').focus()},60)}
+function closeHbEdit(){if(!hbeOn)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#hbEd'))a.blur();hbeOn=false;$('hbEd').classList.remove('on');render()}
+function drawHbEdit(focus){const hs=hbAll();
+  $('hbeList').innerHTML=hs.map((h,i)=>`<div class="gme-r" data-hoid="${h.id}"><button class="ho-grip" type="button" aria-label="Move ${esc(h.name)}, number ${i+1} of ${hs.length}. Arrow keys move it.">${GRIP}</button>
+    <span class="gme-i hbe-e">${h.e?esc(h.e):i+1}</span><input class="gme-n" data-hren="${h.id}" value="${esc(h.name)}" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Habit ${i+1} name">
+    <button class="gme-days" data-hopen="${h.id}" aria-label="All settings for ${esc(h.name)}">${daysLabel(h.days)}${PEN_S}</button><button class="gme-del" data-hdel="${h.id}" aria-label="Delete ${esc(h.name)}">${BIN_S}</button></div>`).join('')||'<p class="gme-none">No habits yet. Add the first one below.</p>';
+  $('hbeAddW').style.display=hs.length>=HB_MAX?'none':'';
+  if(focus!=null){const b=$('hbeList').querySelector(`[data-hoid="${focus}"] .ho-grip`);if(b)b.focus()}}
 /* the visible habits take the new order; hidden ones (in archived spaces) keep their places */
 function hoApply(ids){const cur=hbAll().map(h=>String(h.id));if(ids.join()===cur.join())return;
   const slots=[];S.habits.forEach((h,i)=>{if(cur.includes(String(h.id)))slots.push(i)});
   const moved=ids.map(id=>hbById(id)).filter(Boolean),out=S.habits.slice();slots.forEach((s,i)=>out[s]=moved[i]);S.habits=out;save();render()}
-sortable($('hoList'),'.ho-row',r=>r.dataset.hoid,(ids,focus)=>{drawReorder(ids,focus);hoApply(ids)});
-$('hoDone').onclick=()=>closeSheets();
+sortable($('hbeList'),'.gme-r',r=>r.dataset.hoid,(ids,focus)=>{hoApply(ids);drawHbEdit(focus)});
+function hbeAddNow(){const i=$('hbeAdd'),v=i.value.trim();if(!v){i.focus();return}if(hbAll().length>=HB_MAX){toast(`Up to ${HB_MAX} habits. Fewer, kept daily, beat many.`);return}
+  const sp=inSpaceMode()&&spaceOf(S.space)?S.space:(orderedSpaces()[0]||{}).id;if(!sp)return;
+  S.habits=S.habits||[];S.habits.push({id:'h'+newId(),name:v,e:hbIcon(v),space:sp,days:[0,1,2,3,4,5,6],done:{},created:Date.now()});save();try{sfx('add')}catch(err){}haptic(8);render();drawHbEdit();i.value='';i.focus();const l=$('hbeList');l.scrollTop=l.scrollHeight}
+$('hbEd').addEventListener('click',e=>{
+  if(e.target===$('hbEd')||e.target.closest('#hbeDone,#hbeClose'))return closeHbEdit();
+  if(e.target.closest('#hbeAddB'))return hbeAddNow();
+  const o=e.target.closest('[data-hopen]');if(o){e.stopPropagation();const id=o.dataset.hopen;closeHbEdit();return openHabit(id)}
+  const d=e.target.closest('[data-hdel]');if(d){e.stopPropagation();const h=hbById(d.dataset.hdel);if(!h)return;
+    confirmAsk({title:`Delete ${h.name}?`,text:'Its streak history goes too.',yes:'Yes, delete',no:'No',onYes:()=>{commit(()=>{S.habits=S.habits.filter(x=>x!==h)},`${h.name} deleted`);drawHbEdit()}})}
+},true);
+$('hbEd').addEventListener('change',e=>{const id=e.target.dataset.hren;if(!id)return;const h=hbById(id),v=e.target.value.trim();if(!h)return;if(v&&v!==h.name){h.name=v;save();render()}else e.target.value=h.name});
+$('hbEd').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.matches('.gme-n')){e.preventDefault();e.target.blur();return}
+  if(e.key==='Enter'&&e.target.id==='hbeAdd'){e.preventDefault();return hbeAddNow()}
+  if(e.key==='Escape'){if($('dlg').classList.contains('on'))return;e.preventDefault();e.stopPropagation();if(e.target.id==='hbeAdd'&&e.target.value){e.target.value='';return}closeHbEdit()}
+});
+const _hbeRender=render;render=function(d){_hbeRender(d);try{if(hbeOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#hbEd')&&a.matches('input')))drawHbEdit()}}catch(err){console.error(err)}};
 
 /* Escape on the Habits page: closes the ⋯ menu first, then the check-in, then the page, wherever focus is */
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape'||e.defaultPrevented||!(rhOn||ciOn))return;
+  if(hbeOn){if($('dlg').classList.contains('on'))return;e.stopPropagation();return closeHbEdit()}
   if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on')||moOn||cdOn||gdOn||(typeof srchOpen!=='undefined'&&srchOpen))return;
   e.stopPropagation();
   if(rhOn&&hpMenu){hpMenu=false;const p=$('hpPop');if(p)p.classList.remove('on');const b=$('hpMore');if(b){b.setAttribute('aria-expanded','false');b.focus()}return}
@@ -177,7 +229,7 @@ function gMenuHTML(g){const v=gView(g);
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"','Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
     <span class="pm-sep"></span><button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
-    ${g.ms.length?`<button data-gedit role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit milestones</button>`:''}
+    ${g.done&&!g.ms.length?'':`<button data-gedit role="menuitem"><span class="lpm-i">${PEN_S}</span>${g.ms.length?'Edit milestones':'Add milestones'}</button>`}
     ${g.done?'':`<button data-gm="star" role="menuitem"><span class="lpm-i">${G_STAR}</span>${g.star?'Remove north star':'Make it my north star'}</button>`}
     <button data-gm="win" role="menuitem"><span class="lpm-i">${G_FLAG}</span>${g.done?'Back in progress':'Mark as achieved'}</button>
     <button data-gm="del" class="warn" role="menuitem"><span class="lpm-i">${BIN_S}</span>Delete goal</button></div></div>`}
@@ -213,23 +265,27 @@ function gbScene(g,anim){
     <g class="gb-me"><circle class="gb-halo" r="22"/><circle class="gb-dot" r="10"/></g></svg>`}
 /* tasks linked to the goal but to no milestone */
 function gTasksSec(g){const lo=gLoose(g),wk=gMon(),moved=lo.filter(t=>t.stage==='done'&&(t.doneAt||0)>=wk),open=lo.filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
-  const row=t=>`<button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>`;
+  const row=t=>`<div class="g-tr2"><button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>${MORE(`data-gtm="${t.id}"`,`Options for ${esc(t.title)}`)}</div>`;
   return `<div class="gv-sec"><h2>Other tasks</h2><span>${moved.length?`${moved.length} done this week`:''}</span></div><div class="g-tasks" data-sk="other">${open.map(row).join('')}${moved.map(row).join('')}</div>`}
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
 const gSmooth=()=>matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
 /* the selected milestone (tap one on the track, the hill or the path); by default the next one */
 function gSel(g){return g.ms.find(m=>m.id===gSelId)||gNext(g)||g.ms[g.ms.length-1]||null}
 const gRing=p=>`<svg viewBox="0 0 20 20" aria-hidden="true"><circle class="r0" cx="10" cy="10" r="7.5"/><circle class="r1" cx="10" cy="10" r="7.5" pathLength="100" style="stroke-dasharray:${(p*100).toFixed(1)} 100"/></svg>`;
-function gTaskRow(t){const on=t.stage==='done',subs=t.subs||[],n=subs.length,d=subs.filter(s=>s.done).length,open=n&&gSubOpen.has(String(t.id));
-  return `<div class="gm-t${on?' on':''}${open?' open':''}"><button class="gm-k" data-gmt="${t.id}" aria-pressed="${on}" aria-label="${on?'Reopen':'Done'}: ${esc(t.title)}">${CK}</button><button class="gm-tt" data-gtask="${t.id}"><b>${esc(t.title)}</b><small>${on?'Done':esc(STAGES[idx(t.stage)].name)}</small></button>
+function gTaskRow(t){const on=t.stage==='done',subs=t.subs||[],n=subs.length,d=subs.filter(s=>s.done).length,k=String(t.id),open=gSubOpen.has(k)&&(n||gSubAdd===k),ren=gRen===k;
+  return `<div class="gm-t${on?' on':''}${open?' open':''}"><button class="gm-k" data-gmt="${t.id}" aria-pressed="${on}" aria-label="${on?'Reopen':'Done'}: ${esc(t.title)}">${CK}</button>
+    ${ren?`<input class="gm-ren" data-gren="${t.id}" value="${esc(t.title)}" maxlength="200" autocomplete="off" enterkeyhint="done" aria-label="Task name">`
+      :`<button class="gm-tt" data-gtask="${t.id}"><b>${esc(t.title)}</b><small>${on?'Done':esc(STAGES[idx(t.stage)].name)}</small></button>`}
     ${n?`<button class="gm-sub${d===n?' all':''}" data-gsubs="${t.id}" aria-expanded="${!!open}" aria-label="${d} of ${n} subtasks done. ${open?'Hide':'Show'} subtasks">${gRing(d/n)}<span>${d}/${n}</span></button>`:''}
-    ${open?`<div class="gm-subs">${subs.map(s=>`<button class="gm-s${s.done?' on':''}" data-gsub="${t.id}|${s.id}" aria-pressed="${!!s.done}"><span class="gm-sk">${CK}</span><span class="gm-st">${esc(s.t||'')}</span></button>`).join('')}</div>`:''}</div>`}
+    ${MORE(`data-gtm="${t.id}"`,`Options for ${esc(t.title)}`)}
+    ${open?`<div class="gm-subs">${subs.map(s=>`<div class="gm-sr"><button class="gm-s${s.done?' on':''}" data-gsub="${t.id}|${s.id}" aria-pressed="${!!s.done}"><span class="gm-sk">${CK}</span><span class="gm-st">${esc(s.t||'')}</span></button><button class="gm-sx" data-gsdel="${t.id}|${s.id}" aria-label="Delete subtask ${esc(s.t||'')}">${X}</button></div>`).join('')}
+      ${n<SUB_MAX?`<label class="gm-sadd"><span class="gm-plus">${PLUS_S}</span><input data-gsadd="${t.id}" placeholder="Add a subtask" maxlength="200" autocomplete="off" enterkeyhint="done" aria-label="Add a subtask to ${esc(t.title)}"></label>`:''}</div>`:''}</div>`}
 /* a milestone's card: its tasks (in the order you added them), add a task, mark it done */
 function gMsCard(g,m,cls){if(!m)return '';
   const i=g.ms.indexOf(m),ts=gMsTasks(m).sort((a,b)=>a.id-b.id),dn=ts.filter(t=>t.stage==='done').length,nx=gNext(g),live=!m.done&&!g.done;
   return `<div class="gm-card${cls?' '+cls:''}" data-gcard="${m.id}"><div class="gm-h"><div class="gm-hx"><span class="gm-tag">${m.done?(m.doneAt?`Done · ${gShort(m.doneAt)}`:'Done'):m===nx?'Next':`Milestone ${i+1}`}</span><b>${esc(m.t)}</b>
       <small>${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'} done`:'No tasks yet'}</small></div>
-    ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':'Mark done'}</button>`}</div>
+    ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':'Mark done'}</button>`}${MORE(`data-gmm="${m.id}"`,`Options for milestone ${esc(m.t)}`)}</div>
     ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts" data-sk="ms-${m.id}">${ts.map(gTaskRow).join('')}</div>`
       :live?`<p class="gm-empty">Break it into a few tasks. They land in My week, and finishing the last one completes this milestone.</p>`:''}
     ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
@@ -239,6 +295,43 @@ function gTrack(g){const sel=gSel(g),nx=gNext(g),N=g.ms.length,last=g.ms.map(m=>
     <div class="gm-tw"><div class="gm-track${N>6?' many':''}" style="--n:${N};--f:${f.toFixed(4)}"><i class="gm-fill"></i>${g.ms.map((m,i)=>{const ts=gMsTasks(m),dn=ts.filter(t=>t.stage==='done').length;
     return `<button class="gm-n${m.done?' done':''}${m===nx&&!g.done?' now':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}" style="--i:${i}"><span class="gm-nk">${m.done?CK:i+1}</span><span class="gm-nl">${esc(m.t)}</span>${ts.length?`<span class="gm-np">${dn}/${ts.length} tasks</span>`:''}</button>`}).join('')}</div></div>`}
 function gAddMsRow(g,ph){return (gAddMs||!g.ms.length)&&g.ms.length<MS_MAX&&!g.done?`<div class="gm-addms">${gAddInput(ph||(g.ms.length?'New milestone':'Add your first milestone'))}</div>`:''}
+/* ---------- Goals page: each goal's ⋯ menu ---------- */
+function gGoalMenu(g){return [{t:'Open',ic:CHEV,act:()=>openGoal(g.id)},{t:'Edit goal',ic:PEN_S,act:()=>openGoalSheet(g.id)},
+  ...(g.done?[]:[{t:g.star?'Remove north star':'Make it my north star',ic:G_STAR,act:()=>gToggleStar(g)}]),
+  {t:g.done?'Back in progress':'Mark as achieved',ic:G_FLAG,act:()=>gSetWin(g,!g.done)},{sep:1},{t:'Delete goal',ic:BIN_S,warn:1,act:()=>gDelete(g)}]}
+$('goalsPg').addEventListener('click',e=>{const b=e.target.closest('[data-gcm]');if(!b)return;e.stopPropagation();const g=gById(b.dataset.gcm);if(g)cxOpen(b,gGoalMenu(g))});
+
+/* ---------- goal page: what the ⋯ menus do ---------- */
+function gDelTask(t){confirmAsk({title:'Delete this task?',text:`“${t.title||'Untitled'}” will be deleted for good.`,yes:'Yes, delete',no:'No',
+  onYes:()=>{try{sfx('remove')}catch(e){}commit(()=>{S.tasks=S.tasks.filter(x=>x!==t);gList().forEach(g=>g.ms.forEach(m=>{if(m.task===t.id)delete m.task}))},'Task deleted')}})}
+/* move a task to another milestone (or to Other tasks); a finished milestone that gets an open task reopens */
+function gMoveTask(g,t,to){commit(()=>{g.ms.forEach(m=>{if(m.task===t.id)delete m.task});
+  if(to){t.goal=g.id;t.ms=to.id;if(to.done&&t.stage!=='done'){to.done=false;delete to.doneAt}}else delete t.ms},to?`Moved to ${to.t}`:'Moved to Other tasks');haptic(6)}
+function gFocus(sel){const i=$('gdIn').querySelector(sel);if(i){i.focus();if(i.select&&i.value)i.select()}}
+function gTaskMenu(g,t){const m=gMsOf(g,t),dest=g.ms.filter(x=>x!==m),k=String(t.id);
+  return [{t:'Rename',ic:PEN_S,act:()=>{gRen=k;drawGoal();gFocus(`[data-gren="${k}"]`)}},
+    {t:'Add a subtask',ic:PLUS_S,dis:(t.subs||[]).length>=SUB_MAX,act:()=>{gSubOpen.add(k);gSubAdd=k;drawGoal();gFocus(`[data-gsadd="${k}"]`)}},
+    ...(dest.length||m?[{t:'Move to',ic:G_FLAG,sub:()=>[{lbl:'Move to'},...dest.map(x=>({t:x.t,act:()=>gMoveTask(g,t,x)})),...(m?[{sep:1},{t:'Other tasks (no milestone)',act:()=>gMoveTask(g,t,null)}]:[])]}]:[]),
+    {t:'Open details',ic:CHEV,act:()=>openDetail(t.id)},
+    ...(m?[]:[{t:'Remove from this goal',ic:X,act:()=>commit(()=>{delete t.goal;delete t.ms},'Removed from the goal · the task stays')}]),
+    {sep:1},{t:'Delete task',ic:BIN_S,warn:1,act:()=>gDelTask(t)}]}
+function gMsMenu(g,m){const live=!m.done&&!g.done;
+  return [{t:'Rename',ic:PEN_S,act:()=>openMsEdit(m.id)},
+    ...(live?[{t:'Add a task',ic:PLUS_S,act:()=>{gSelId=m.id;drawGoal();gFocus('#gMtIn')}}]:[]),
+    ...(g.done?[]:[{t:m.done?'Reopen milestone':'Mark milestone done',ic:CK,act:()=>gMsToggle(g,m)}]),
+    {t:'Edit all milestones',ic:GRIP,act:()=>openMsEdit()},
+    {sep:1},{t:'Delete milestone',ic:BIN_S,warn:1,act:()=>gMsDelete(g,m)}]}
+/* inline: rename a task, add a subtask (Enter saves; Escape cancels without leaving the page) */
+function gRenSave(el){const t=S.tasks.find(x=>String(x.id)===el.dataset.gren),v=el.value.trim();gRen=null;if(t&&v&&v!==t.title){t.title=v;save();render()}drawGoal()}
+$('gdPg').addEventListener('keydown',e=>{const el=e.target;
+  if(el.matches('[data-gren]')){if(e.key==='Enter'){e.preventDefault();e.stopPropagation();gRenSave(el)}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();gRen=null;drawGoal()}return}
+  if(el.matches('[data-gsadd]')){
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();if(el.value){el.value='';return}gSubAdd=null;el.blur();drawGoal();return}
+    if(e.key!=='Enter')return;e.preventDefault();e.stopPropagation();const t=S.tasks.find(x=>String(x.id)===el.dataset.gsadd),v=el.value.trim();if(!t||!v)return;
+    if(!canStep(t))return;t.subs=t.subs||[];t.subs.push({id:newId(),t:v,done:false});haptic(6);try{sfx('add')}catch(err){}save();render();gSubAdd=String(t.id);drawGoal();gFocus(`[data-gsadd="${t.id}"]`)}
+},true);
+$('gdPg').addEventListener('focusout',e=>{if(e.target.matches('[data-gren]')&&gRen!=null)setTimeout(()=>{if(gRen!=null&&!document.activeElement.matches('[data-gren]'))gRenSave(e.target)},0)});
+
 /* the milestone card and Other tasks: side by side on computers */
 function gCols(c,o){return c||o?`<div class="gm-cols${c&&o?' two':''}">${c}${o?`<div class="gm-other">${o}</div>`:''}</div>`:''}
 function gClimbView(g,anim){
@@ -288,6 +381,10 @@ $('gdPg').addEventListener('click',e=>{
   const sl=e.target.closest('[data-gsel]');if(sl){gSelId=sl.dataset.gsel;haptic(5);drawGoal();
     if(sl.closest('.gb-svg')){const c=$('gdIn').querySelector('.gm-card');if(c)c.scrollIntoView({behavior:gSmooth(),block:'nearest'})}return}
   if(e.target.closest('[data-gaddms]')){gAddMs=!gAddMs;haptic(5);drawGoal();const i=$('gMsIn');if(i&&gAddMs)i.focus();return}
+  const tm=e.target.closest('[data-gtm]');if(tm){const t=S.tasks.find(x=>String(x.id)===tm.dataset.gtm);if(t)cxOpen(tm,gTaskMenu(g,t));return}
+  const mm=e.target.closest('[data-gmm]');if(mm){const m=g.ms.find(x=>x.id===mm.dataset.gmm);if(m)cxOpen(mm,gMsMenu(g,m));return}
+  const sx=e.target.closest('[data-gsdel]');if(sx){const [tid,sid]=sx.dataset.gsdel.split('|'),t=S.tasks.find(x=>String(x.id)===tid);if(!t)return;const s=(t.subs||[]).find(x=>String(x.id)===sid);if(!s)return;
+    commit(()=>{t.subs=t.subs.filter(x=>x!==s)},'Subtask deleted');return}
   const sb=e.target.closest('[data-gsubs]');if(sb){const k=sb.dataset.gsubs;gSubOpen.has(k)?gSubOpen.delete(k):gSubOpen.add(k);haptic(5);return drawGoal()}
   const su=e.target.closest('[data-gsub]');if(su){const [tid,sid]=su.dataset.gsub.split('|'),t=S.tasks.find(x=>String(x.id)===tid),s=t&&(t.subs||[]).find(x=>String(x.id)===sid);if(!s)return;
     s.done=!s.done;haptic(s.done?[6,20,8]:5);try{sfx(s.done?'done':'undone')}catch(err){}su.classList.toggle('on',s.done);save();render();return}
@@ -304,7 +401,7 @@ $('gdPg').addEventListener('click',e=>{
    (With focus inside the goal page its own handler runs first and also clears a milestone being typed.) */
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape'||e.defaultPrevented||!(gdOn||glOn))return;
-  if(gmeOn){e.stopPropagation();return closeMsEdit()}
+  if(gmeOn){if($('dlg').classList.contains('on'))return;e.stopPropagation();return closeMsEdit()}
   if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on')||moOn||cdOn||gsOn||(typeof srchOpen!=='undefined'&&srchOpen))return;
   e.stopPropagation();
   const pop=$('gdPop');if(gdOn&&pop&&pop.classList.contains('on')){pop.classList.remove('on');const b=$('gdMore');if(b)b.focus();return}

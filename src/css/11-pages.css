@@ -456,3 +456,59 @@ button.hg-c:active{transform:scale(.88)}
 .gme-add input::placeholder{color:var(--muted)}
 .gme-in .primary{margin-top:4px}
 @media (max-width:699px){.gm-head .gs-addb span{display:none}.gm-head .gs-addb{padding:0 10px}.gm-subs{margin-left:18px}}
+
+/* ===== ⋯ menus on rows and cards (Goals, Goal page, Habits) ===== */
+.cx-pop{display:none;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 18px 40px rgba(0,0,0,.18);transform-origin:top right}
+.cx-pop.on{display:block;animation:pmIn .22s var(--ease)}
+.cx-pop>button{width:100%;text-align:left;padding:10px 12px;border-radius:10px;font-size:14.5px;font-weight:500;color:var(--text)}
+.cx-pop>button:hover{background:var(--surface2)}
+.cx-pop>.warn{color:var(--today)}
+.cx-pop{position:fixed;z-index:70;min-width:210px;max-width:min(300px,calc(100vw - 16px));max-height:min(420px,calc(100vh - 16px));overflow-y:auto;top:0;right:auto}
+.cx-pop>button{display:flex;align-items:center;gap:10px}
+.cx-pop>button:disabled{opacity:.4;pointer-events:none}
+.cx-pop>button:focus-visible{outline:none;background:var(--surface2)}
+.cx-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cx-go{color:var(--muted);font-size:17px;line-height:1}
+#dlg{z-index:60}
+.gm-more{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--muted);transition:background .2s,color .2s,opacity .2s}
+.gm-more svg{width:16px;height:16px}
+.gm-more:hover,.gm-more[aria-expanded="true"]{background:var(--surface2);color:var(--text)}
+/* on computers a row's ⋯ waits until you point at the row; on touch screens it is always there */
+@media (hover:hover){.gm-t .gm-more,.g-tr2 .gm-more{opacity:0}.gm-t:hover .gm-more,.gm-t:focus-within .gm-more,.g-tr2:hover .gm-more,.g-tr2:focus-within .gm-more,.gm-more[aria-expanded="true"]{opacity:1}}
+.gm-h .gm-more{margin:2px -6px 0 -4px}
+.gm-card.hot .gm-more{color:rgba(255,255,255,.85)}.gm-card.hot .gm-more:hover,.gm-card.hot .gm-more[aria-expanded="true"]{background:rgba(255,255,255,.16);color:#fff}
+/* inline rename and subtasks */
+.gm-ren{flex:1;min-width:0;margin:6px 0;padding:7px 10px;border:0;border-radius:10px;background:var(--surface2);color:var(--text);font:inherit;font-size:15.5px;font-weight:600;outline:none;box-shadow:inset 0 0 0 1.5px var(--gm-mid)}
+.gm-sr{display:flex;align-items:center;gap:6px}
+.gm-sr .gm-s{flex:1;min-width:0}
+.gm-sx{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:var(--muted);flex:none;opacity:0;transition:opacity .2s,background .2s,color .2s}
+.gm-sx svg{width:12px;height:12px}
+.gm-sr:hover .gm-sx,.gm-sx:focus-visible{opacity:1}
+.gm-sx:hover{color:var(--today);background:color-mix(in srgb,var(--today) 10%,transparent)}
+@media (hover:none){.gm-sx{opacity:1}}
+.gm-sadd{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:text}
+.gm-sadd .gm-plus{width:18px;height:18px}.gm-sadd .gm-plus svg{width:13px;height:13px}
+.gm-sadd input{flex:1;min-width:0;border:0;background:none;outline:none;color:var(--text);font:inherit;font-size:14px;padding:2px 0}
+.gm-sadd input::placeholder{color:var(--muted)}
+.gm-card.hot .gm-sadd input{color:#fff}.gm-card.hot .gm-sadd input::placeholder,.gm-card.hot .gm-sx{color:rgba(255,255,255,.75)}
+/* Other tasks and achieved rows with a ⋯ */
+.g-tr2{display:flex;align-items:center;border-top:1px solid var(--line)}
+.g-tr2:first-child{border-top:0}
+.g-tr2 .g-trow{flex:1;min-width:0;border-top:0}
+.g-tr2 .gm-more{margin-right:8px}
+.g-won .g-tr2{border-top:0}.g-won .g-tr2 .g-wrow{flex:1;min-width:0}
+/* Goals page cards: ⋯ in the corner */
+.g-cw{position:relative}
+.g-cw>.gm-more{position:absolute;top:10px;right:10px;background:var(--surface)}
+.g-cw>.gm-more:hover,.g-cw>.gm-more[aria-expanded="true"]{background:var(--surface2)}
+.g-cw .g-cstar{margin-right:34px}
+.g-cw .g-ctop{padding-right:30px}
+/* the popups' add row and the habit row's settings button */
+.gme-add{padding-right:6px}
+.gme-addb{flex:none;height:34px;padding:0 14px;border-radius:999px;font-size:13.5px;font-weight:700;background:var(--surface2);color:var(--text);transition:background .2s}
+.gme-addb:hover{background:color-mix(in srgb,var(--today) 14%,var(--surface2))}
+.gme-days{flex:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:999px;font-size:12.5px;color:var(--muted);transition:background .2s,color .2s}
+.gme-days svg{width:13px;height:13px}
+.gme-days:hover{background:var(--surface);color:var(--text)}
+.hbe-e{box-shadow:none;font-size:16px;width:26px}
+@media (max-width:699px){.gme-days{font-size:0;gap:0;padding:0 8px}.gme-days svg{width:15px;height:15px}}
