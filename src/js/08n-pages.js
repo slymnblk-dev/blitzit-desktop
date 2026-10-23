@@ -459,3 +459,17 @@ function hbWidget(){
   if(st==='pills')return `<div class="hw hw-pills">${head}<div class="hw-pl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-pill${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span>${h.e?esc(h.e)+' ':''}${esc(h.name)}</button>`}).join('')}${mr}</div></div>`;
   return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small>${hwWeek(h)}</span></button>`}).join('')}</div>${mr}</div>`;
 }
+
+/* Escape closes the page on top, wherever focus is. Clicking an empty spot moves focus off a page, so its own
+   Escape handler never hears the key. Runs first (capture) but only steps in then; pages and popups that already
+   listen app-wide (Habits, Goals, their popups, menus, dialogs, Settings) are left to their own handlers. */
+const ESC_PAGES={nbEd:()=>closeNote(),moPg:()=>closeMoment(),gsPg:()=>closeSetup(),cdPg:()=>closeCloseDay(),reviewPg:()=>closeReview(),inboxPg:()=>closeInbox()};
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||e.defaultPrevented||cxIt)return;
+  if($('dlg').classList.contains('on')||document.querySelector('.sheet.on')||(typeof srchOpen!=='undefined'&&srchOpen)||$('focus').classList.contains('on'))return;
+  const z=el=>parseInt(getComputedStyle(el).zIndex,10)||0;
+  const top=[...document.querySelectorAll('.inbox-pg.on,.mo-pg.on,.dlg.on,#settings.on')]
+    .sort((a,b)=>z(a)-z(b)||(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING?-1:1)).pop();
+  if(!top||!ESC_PAGES[top.id]||top.contains(e.target))return;
+  e.preventDefault();e.stopImmediatePropagation();ESC_PAGES[top.id]();
+},true);

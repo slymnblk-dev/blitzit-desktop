@@ -220,7 +220,7 @@ function settingsPage(id){
       </div>`).join('')}</div>
     <button class="ghost-btn" id="stReset">Reset to default</button>`;
   if(id==='tasks')body=`<div class="set-sec"><h3>New tasks</h3>
-    ${row('Inbox',tg('inbox'),'A calm place to drop ideas. Send them to a list’s Backlog when you’re ready.')}
+    ${row('Inbox',tg('inbox'),'A calm place for loose tasks and notes. Send a task to a list when you’re ready.')}
     ${row('Weekly review',tg('review'),'A short card on Home once a week: see what you finished and tidy My week.')}
     ${c.review!==false?row('Review day',`<div class="segc">${REVIEW_DAYS.map(([v,n])=>sOpt('reviewDay',v,n)).join('')}</div>`)+`<button class="link-row" id="rvStart">Start a review now</button>`:''}
     ${row('Default estimate',`<div class="segc">${[15,30,60,120].map(m=>sOpt('defEst',m,fmt(m))).join('')}</div>`)}

@@ -1,6 +1,6 @@
 /* ---------- Weekly review (optional, Settings → Tasks; on by default, Sundays) ----------
    Once a week a small card on Home invites a calm review: what you finished, what's still in My week
-   (keep it, send it back to Backlog, or archive it), and how many ideas wait in the Inbox.
+   (keep it, send it back to Backlog, or archive it), and how many tasks wait in the Inbox.
    Finishing or skipping marks the week as reviewed until the next review day. */
 var rvOn=false;
 const REVIEW_DAYS=[[5,'Fri'],[0,'Sun'],[1,'Mon']];
@@ -43,7 +43,7 @@ function drawReview(){
       ${wk.length?`<p class="rv-p">Keep what matters. Send the rest back, or let it go.</p><div class="rv-card2">${wk.map(t=>`<div class="rv-row" data-rvt="${t.id}"><span class="rv-tt"><b>${esc(t.title)}</b>${tag(t)}</span>
         <span class="rv-acts"><button data-rvb="${t.id}" aria-label="Move ${esc(t.title)} back to Backlog" title="Back to Backlog">${RV_BACK}</button><button data-rva="${t.id}" aria-label="Archive ${esc(t.title)}" title="Archive">${RV_ARC}</button></span></div>`).join('')}</div>`
       :`<p class="rv-p">Nothing left over. Clean slate.</p>`}</section>
-    ${inboxOn()&&ib?`<section class="rv-sec"><button class="rv-link" id="rvInbox"><span class="rv-li">${IB_ICON}</span><span class="rv-lt"><b>Inbox</b><small>${ib} ${ib===1?'idea':'ideas'} waiting</small></span>${CHEV}</button></section>`:''}
+    ${inboxOn()&&ib?`<section class="rv-sec"><button class="rv-link" id="rvInbox"><span class="rv-li">${IB_ICON}</span><span class="rv-lt"><b>Inbox</b><small>${ib} ${ib===1?'task':'tasks'} waiting</small></span>${CHEV}</button></section>`:''}
     <div class="rv-foot"><button class="primary rv-done" id="rvDone">Done for this week</button></div>`;
 }
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg review-pg" id="reviewPg" role="region" aria-label="Weekly review"><div class="ib-in" id="rvIn"></div></div>');

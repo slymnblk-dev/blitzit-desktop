@@ -1,8 +1,9 @@
 /* ---------- search & filter (optional, Settings → Tasks; on by default) ----------
-   The round search button opens into a bar. Typing finds tasks in every space (title, notes, steps).
+   The round search button opens into a bar. Typing finds everything, grouped: tasks in every space and the Inbox
+   (title, notes, steps), Inbox notes, goals (name, why, milestones) and habits, each when its feature is on.
    The filter card below narrows the board itself by priority and tags, and stays on until cleared. */
 const SF={pri:new Set(),tags:new Set()};
-let srchQ='',srchOpen=false,srchSel=0;
+let srchQ='',srchOpen=false,srchSel=0,srchKind='all';
 const srchOn=()=>S.cfg.search!==false;
 /* filters narrow a board, so they only show where there is one (a space or All tasks), not on Home */
 const srchBoard=()=>!!S.space&&!spPage;
@@ -16,11 +17,23 @@ function srchPass(t){
 const srchNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 function srchHits(){
   const q=srchNorm(srchQ.trim());if(!q&&!srchFiltering())return [];
-  const words=q.split(/\s+/).filter(Boolean);
+  const words=q.split(/\s+/).filter(Boolean),ib=typeof inboxOn==='function'&&inboxOn();
   const hay=t=>srchNorm([t.title,t.notes,...t.subs.map(s=>s.t),...tagsOf(t).map(n=>'#'+n)].join(' '));
-  return S.tasks.filter(t=>!t.archived&&shown(t)&&srchPass(t)&&words.every(w=>hay(t).includes(w)))
+  return S.tasks.filter(t=>!t.archived&&!t.note&&(shown(t)||(ib&&t.inbox))&&srchPass(t)&&words.every(w=>hay(t).includes(w)))
     .sort((a,b)=>(a.stage==='done')-(b.stage==='done')||(srchNorm(b.title).startsWith(words[0]||'~'))-(srchNorm(a.title).startsWith(words[0]||'~'))).slice(0,30);
 }
+/* everything else that matches: notes, goals, habits (not while the board filters are on: those narrow tasks) */
+function srchGroups(){
+  const q=srchNorm(srchQ.trim()),words=q.split(/\s+/).filter(Boolean),has=s=>{const h=srchNorm(s);return words.every(w=>h.includes(w))};
+  const g={task:srchHits(),note:[],goal:[],habit:[]};if(!q||srchFiltering())return g;
+  if(typeof inboxOn==='function'&&inboxOn())g.note=inboxNotes().filter(t=>has(t.notes||t.title)).slice(0,10);
+  if(typeof goalsOn==='function'&&goalsOn())g.goal=gList().filter(x=>x&&gSpaceOk(x)&&has([x.name,x.why,...(x.ms||[]).map(m=>m.t)].join(' '))).sort((a,b)=>!!a.done-!!b.done).slice(0,8);
+  if(typeof habitsOn==='function'&&habitsOn())g.habit=hbAll().filter(h=>has(h.name)).slice(0,8);
+  return g;
+}
+const SR_KINDS=[['task','Tasks'],['note','Notes'],['goal','Goals'],['habit','Habits']];
+const srchKindsOn=()=>SR_KINDS.filter(([k])=>k==='task'||(k==='note'?typeof inboxOn==='function'&&inboxOn():k==='goal'?typeof goalsOn==='function'&&goalsOn():typeof habitsOn==='function'&&habitsOn()));
+function srchPh(){const k=srchKindsOn().map(x=>x[1].toLowerCase());return k.length<2?'Search tasks':`Search ${k.slice(0,-1).join(', ')} and ${k[k.length-1]}`}
 /* tags you can filter by: the lists of the open space (or all lists) */
 function srchTagPool(){
   const ls=S.space&&S.space!=='all'?S.lists.filter(l=>l.space===S.space):S.lists,m=new Map();
@@ -30,12 +43,32 @@ function srchTagPool(){
   return [...m.entries()];
 }
 const srchMark=(s,q)=>{const w=srchNorm(q.trim()).split(/\s+/).filter(Boolean)[0];s=String(s||'');if(!w)return esc(s);const i=srchNorm(s).indexOf(w);return i<0?esc(s):esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+w.length))+'</mark>'+esc(s.slice(i+w.length))};
+/* a note's line that holds the match, so you see why it was found */
+function srchSnip(t){const w=srchNorm(srchQ.trim()).split(/\s+/).filter(Boolean)[0]||'',ls=String(t.notes||'').split('\n').slice(1).map(x=>x.trim()).filter(Boolean);
+  const l=ls.find(x=>srchNorm(x).includes(w))||ls[0]||'';if(!l)return '';const i=Math.max(0,srchNorm(l).indexOf(w)-24);return (i?'…':'')+l.slice(i,i+90)}
+const srHbDays=h=>{const d=h.days||[0,1,2,3,4,5,6],k=String(d);return d.length===7?'Every day':k==='1,2,3,4,5'?'Weekdays':k==='0,6'?'Weekends':`${d.length} days a week`};
+function srchRow(k,x,i){const sel=i===srchSel?' sel':'',q=srchQ;
+  if(k==='task'){const t=x,pr=priOf(t);
+    if(t.inbox)return `<button class="sr-item${sel}" data-srt="${t.id}" role="option"><span class="sr-ic">${IB_ICON}</span><span class="sr-tx"><b>${srchMark(t.title,q)}</b><small>Inbox</small></span></button>`;
+    const l=listOf(t.list),sp=spaceOf(l.space);
+    return `<button class="sr-item${sel} ${t.stage==='done'?'done':''}" data-srt="${t.id}" role="option"><i class="sr-st" style="background:${color(t.stage)}"></i><span class="sr-tx"><b>${srchMark(t.title,q)}</b><small>${sp?esc(sp.name)+' › ':''}${esc(l.name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${pr?`<span class="sr-pr ${pr.id}">${priIcon(pr.n)}</span>`:''}</button>`}
+  if(k==='note'){const sn=srchSnip(x);
+    return `<button class="sr-item${sel}" data-srn="${x.id}" role="option"><span class="sr-ic">${I_NOTE2}</span><span class="sr-tx"><b>${srchMark(x.title,q)}</b>${sn?`<span class="sr-sn">${srchMark(sn,q)}</span>`:''}<small>Note · ${esc(nbWhen(x))}</small></span></button>`}
+  if(k==='goal'){const ms=x.ms||[],dn=ms.filter(m=>m.done).length,w=srchNorm(q.trim()).split(/\s+/)[0]||'',hit=!srchNorm(x.name).includes(w)&&ms.find(m=>srchNorm(m.t).includes(w)),left=gDaysLeft(x);
+    const meta=x.done?'Achieved':[ms.length?`${dn} of ${ms.length} milestones`:'',left!==null&&left>=0?`${left} ${left===1?'day':'days'} left`:''].filter(Boolean).join(' · ');
+    return `<button class="sr-item${sel}" data-srg="${x.id}" role="option"><span class="sr-ic g">${G_FLAG}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>${hit?`Milestone: ${srchMark(hit.t,q)}`:`Goal${meta?' · '+meta:''}`}</small></span></button>`}
+  const st=hbStats(x).st;
+  return `<button class="sr-item${sel}" data-srh="${x.id}" role="option"><span class="sr-ic">${RH_ICON}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>Habit · ${srHbDays(x)}${st>1?` · ${st}-day streak`:''}</small></span></button>`}
 function srchResults(){
-  const hits=srchHits();
-  if(!srchQ.trim()&&!srchFiltering())return `<p class="sr-hint">Find any task in any space. Press <kbd>Enter</kbd> to open the first one.</p>`;
-  if(!hits.length)return `<p class="sr-hint">No tasks match.</p>`;
-  return `<div class="sr-list" role="listbox">${hits.map((t,i)=>{const l=listOf(t.list),sp=spaceOf(l.space),pr=priOf(t);
-    return `<button class="sr-item ${i===srchSel?'sel':''} ${t.stage==='done'?'done':''}" data-srt="${t.id}" role="option"><i class="sr-st" style="background:${color(t.stage)}"></i><span class="sr-tx"><b>${srchMark(t.title,srchQ)}</b><small>${sp?esc(sp.name)+' › ':''}${esc(l.name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${pr?`<span class="sr-pr ${pr.id}">${priIcon(pr.n)}</span>`:''}</button>`}).join('')}</div>`;
+  const ks=srchKindsOn();
+  if(!srchQ.trim()&&!srchFiltering())return `<p class="sr-hint">${ks.length<2?'Find any task in any space.':`Find ${ks.map(x=>x[1].toLowerCase()).join(', ').replace(/, ([^,]*)$/,' and $1')}.`} Press <kbd>Enter</kbd> to open the first one.</p>`;
+  const g=srchGroups(),full=SR_KINDS.filter(([k])=>g[k].length);
+  if(!full.length)return `<p class="sr-hint">Nothing matches.</p>`;
+  const kind=full.some(([k])=>k===srchKind)?srchKind:'all',show=kind==='all'?full:full.filter(([k])=>k===kind);
+  const n=full.reduce((a,[k])=>a+g[k].length,0);let i=0;
+  /* the kind chips only show when the results are of more than one kind */
+  const chips=full.length>1?`<div class="sr-kinds" role="group" aria-label="Show only">${[['all','All',n],...full.map(([k,l])=>[k,l,g[k].length])].map(([k,l,c])=>`<button class="sr-k${kind===k?' on':''}" data-srk="${k}" aria-pressed="${kind===k}">${l} <span>${c}</span></button>`).join('')}</div>`:'';
+  return chips+`<div class="sr-list" role="listbox" aria-label="Results">${show.map(([k,l])=>`${show.length>1||full.length>1?`<div class="sr-h">${l}</div>`:''}${g[k].map(x=>srchRow(k,x,i++)).join('')}`).join('')}</div>`;
 }
 function srchFilterCard(){
   const pool=srchTagPool();
@@ -65,8 +98,8 @@ function openSearch(){
   if(!$('srch')){const p=document.createElement('div');p.id='srch';p.className='srch';p.setAttribute('role','dialog');p.setAttribute('aria-label','Search and filter');
     p.innerHTML=`<div class="sr-bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><input id="srchIn" placeholder="Search tasks" autocomplete="off" spellcheck="false" enterkeyhint="search"><button class="sr-x" data-srx aria-label="Close search">${X}</button></div><div class="sr-body"></div>`;
     document.body.appendChild(p)}
-  srchOpen=true;srchSel=0;srchPlace();srchDraw();
-  const p=$('srch'),inp=$('srchIn');inp.value=srchQ;
+  srchOpen=true;srchSel=0;srchKind='all';srchPlace();srchDraw();
+  const p=$('srch'),inp=$('srchIn');inp.value=srchQ;inp.placeholder=srchPh();
   document.body.classList.add('srch-on');
   try{inp.focus({preventScroll:true})}catch(e){} // right away, so phones open the keyboard
   requestAnimationFrame(()=>p.classList.add('on'));
@@ -84,10 +117,16 @@ document.addEventListener('click',e=>{
   const p=$('srch');if(!p||!srchOpen)return;
   if(!e.target.closest('#srch')){closeSearch();return}
   if(e.target.closest('[data-srx]')){closeSearch();return}
-  const it=e.target.closest('[data-srt]');if(it){const id=+it.dataset.srt;closeSearch();setTimeout(()=>openDetail(id),120);return}
+  const k=e.target.closest('[data-srk]');if(k){srchKind=k.dataset.srk;srchSel=0;haptic(4);srchDraw();$('srchIn').focus({preventScroll:true});return}
+  const it=e.target.closest('[data-srt]');if(it){const id=+it.dataset.srt,t=S.tasks.find(x=>x.id===id);closeSearch();if(t&&t.inbox)srchToInbox();setTimeout(()=>openDetail(id),120);return}
+  const nt=e.target.closest('[data-srn]');if(nt){const id=+nt.dataset.srn;closeSearch();srchToInbox();setTimeout(()=>openNote(id),160);return}
+  const go=e.target.closest('[data-srg]');if(go){closeSearch();openGoal(go.dataset.srg);return}
+  if(e.target.closest('[data-srh]')){closeSearch();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();openRhythm();return}
   const fp=e.target.closest('[data-sfp]');if(fp){const v=fp.dataset.sfp;SF.pri.has(v)?SF.pri.delete(v):SF.pri.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
   const ft=e.target.closest('[data-sft]');if(ft){const v=ft.dataset.sft;SF.tags.has(v)?SF.tags.delete(v):SF.tags.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
 },true);
+/* notes and Inbox tasks open in the Inbox, so it comes forward first */
+function srchToInbox(){if(typeof gdOn!=='undefined'&&gdOn)closeGoal();if(typeof glOn!=='undefined'&&glOn)closeGoals();if(!ibOn)openInbox()}
 document.addEventListener('input',e=>{if(e.target.id!=='srchIn')return;srchQ=e.target.value;srchSel=0;srchDraw()});
 document.addEventListener('keydown',e=>{
   if(srchOpen&&e.target.id==='srchIn'){

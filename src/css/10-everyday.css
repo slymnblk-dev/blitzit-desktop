@@ -5,14 +5,22 @@
 .ak-row button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 0 9px;border-radius:16px;background:var(--surface2);font-size:12.5px;font-weight:700;color:var(--muted);transition:background .2s,color .2s}
 .ak-row button svg{width:19px;height:19px}
 .ak-row button.on{background:var(--text);color:var(--bg)}
-#addSheet[data-kind="idea"] #addListWrap,#addSheet[data-kind="idea"] #addSpaceWrap,
-#addSheet[data-kind="habit"] #addListWrap,
+#addSheet[data-kind="note"] #addListWrap,#addSheet[data-kind="note"] #addSpaceWrap,#addSheet[data-kind="note"] #newTitle,
+#addSheet[data-kind="habit"] #addListWrap,#addSheet[data-kind="habit"] #addSpaceWrap,
+#addSheet[data-kind="goal"] #addListWrap,#addSheet[data-kind="goal"] #addSpaceWrap,
 #addSheet[data-kind="number"] #addListWrap,#addSheet[data-kind="number"] #addSpaceWrap,
 #addSheet:not([data-kind="task"])[data-kind] #optStage,#addSheet:not([data-kind="task"])[data-kind] #optEst,
 #addSheet:not([data-kind="task"])[data-kind] #optStage+.lbl{display:none!important}
 #addSheet:not([data-kind="task"])[data-kind] .sheet-in>.lbl{display:none}
 .ak-extra .lbl{display:block!important}
 .ak-extra .opt small{font-size:12px;opacity:.6;margin-left:2px;font-weight:600}
+.ak-tip{margin:10px 2px 0;font-size:13px;line-height:1.4;color:var(--muted)}
+.ak-tip b{color:var(--text);font-weight:600}
+.ak-opt{margin-left:4px;font-weight:500;opacity:.8}
+.ak-note{display:block;width:100%;box-sizing:border-box;min-height:132px;max-height:40vh;resize:none;font:inherit;font-size:17px;line-height:1.5;padding:14px 16px;border-radius:18px;background:var(--surface2);border:0}
+.ak-nrow{margin-top:12px;align-items:center}
+.ak-nrow .opt svg{width:15px;height:15px;margin-right:2px}
+.ak-where{font-size:13px;color:var(--muted);margin-left:4px}
 
 /* close the day */
 .cd-home .cd-hi{color:var(--today)}.cd-home .cd-hi svg{width:24px;height:24px}

@@ -85,7 +85,7 @@
 .ico-grid button:hover{background:var(--surface2)}
 .ico-grid button.on{background:var(--surface2);box-shadow:0 0 0 2px var(--text);transform:scale(1.05)}
 .ico-grid .ico-none{font-size:16px;font-weight:800;color:var(--muted)}
-.dlg{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
+.dlg{position:fixed;inset:0;z-index:45;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:20px;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
 .dlg.on{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .2s}
 .dlg-in{width:100%;max-width:400px;background:var(--surface);border-radius:26px;padding:26px 24px 22px;transform:scale(.94);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
 .dlg.on .dlg-in{transform:none}
@@ -96,6 +96,16 @@
 .dlg-l{display:block;margin:18px 0 8px;font-size:14px;color:var(--muted)}
 .dlg-l b{color:var(--text)}
 .dlg-b{display:flex;gap:10px;margin-top:16px}
+/* an either/or inside the dialog (e.g. keep or delete a space's habits and goals) */
+.dlg-ch{border:0;margin:18px 0 0;padding:0;min-width:0;display:flex;flex-direction:column;gap:8px}
+.dlg-ch[hidden]{display:none}
+.dlg-ch legend{padding:0;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.dlg-op{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border-radius:16px;box-shadow:inset 0 0 0 1.5px var(--line);cursor:pointer;transition:box-shadow .2s}
+.dlg-op.on{box-shadow:inset 0 0 0 2px var(--text)}
+.dlg-op input{flex:none;width:18px;height:18px;margin:2px 0 0;accent-color:var(--text)}
+.dlg-op span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dlg-op b{font-size:15.5px;font-weight:700}
+.dlg-op small{font-size:13.5px;line-height:1.4;color:var(--muted)}
 .dlg-b button{flex:1;height:52px;border-radius:999px;font-weight:700;font-size:16px;margin:0}
 .danger{background:var(--today);color:#fff;transition:opacity .2s}
 .danger:disabled{opacity:.35}
@@ -296,7 +306,7 @@
 /* midnight focus: light tints instead of dark ones */
 :root[data-focusdark="1"] .focus .f-x,:root[data-focusdark="1"] .focus .f-btn,:root[data-focusdark="1"] .focus .mode{background:rgba(255,255,255,.1)}
 :root[data-focusdark="1"] .focus .f-bar{background:rgba(255,255,255,.14)}
-:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-step{background:rgba(255,255,255,.08)}
+:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-step,:root[data-focusdark="1"] .focus .f-steps.has,:root[data-focusdark="1"] .focus .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
 /* focus colour picker */
 .fc-sw{max-width:340px}
 .fc-prev{display:flex;align-items:center;justify-content:space-between;gap:12px;height:96px;padding:0 20px;border-radius:22px;margin:4px 0 14px;background:var(--pb);color:var(--pi);

@@ -19,7 +19,7 @@ function drawAdd(){
   $('addListWrap').hidden=ls.length<2;
   $('optList').innerHTML=ls.map(l=>opt(draft.list===l.id,l.id,l.name,l.c)).join('');
   $('optStage').innerHTML=STAGES.filter(s=>s.id!=='done').map(s=>opt(draft.stage===s.id,s.id,s.name,color(s.id))).join('');
-  $('optEst').innerHTML=[15,30,60,120].map(m=>opt(draft.est===m,m,fmt(m))).join('');
+  $('optEst').innerHTML=[...new Set([15,30,60,120,draft.est])].filter(m=>m>0).sort((a,b)=>a-b).map(m=>opt(draft.est===m,m,fmt(m))).join(''); // a typed time (e.g. 45m) shows as its own chip
   $('saveBtn').style.background=color(draft.stage);
 }
 $('addBtn').onclick=()=>{

@@ -108,14 +108,30 @@ function askDeleteSpace(id){
   const sp=spaceOf(id);if(!sp)return;
   if(S.spaces.length<2)return toast('You need at least one space');
   const ls=S.lists.filter(l=>l.space===id).map(l=>l.id),nt=S.tasks.filter(t=>ls.includes(t.list)).length;
+  const hs=(S.habits||[]).filter(h=>h.space===id),gs=(S.goals||[]).filter(g=>g.space===id),pl=(n,a,b)=>`${n} ${n===1?a:b}`;
+  const what=[hs.length&&pl(hs.length,'habit','habits'),gs.length&&pl(gs.length,'goal','goals')].filter(Boolean).join(' and ');
+  /* habits and goals don't need a space, so by default they stay (in "No space") instead of quietly going with it */
+  const choice=what?{legend:`${what[0].toUpperCase()+what.slice(1)} in this space`,val:'keep',opts:[['keep','Keep them','They move to “No space”. Streaks and progress stay.'],
+    ['drop','Delete them too',[...hs.map(h=>h.name),...gs.map(g=>g.name)].slice(0,3).join(', ')+(hs.length+gs.length>3?'…':'')]]}:null;
   confirmDanger({title:`Delete ${sp.name}?`,
-    text:`This deletes the space, its ${ls.length} ${ls.length===1?'list':'lists'} and ${nt} ${nt===1?'task':'tasks'} for good. To keep them safe, choose Archive instead.`,
-    word:sp.name,yes:'Delete space',
-    onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.habits=(S.habits||[]).filter(h=>h.space!==id);S.hchains=(S.hchains||[]).filter(c=>c.space!==id);S.goals=(S.goals||[]).filter(g=>g.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
+    text:`This deletes the space, its ${pl(ls.length,'list','lists')} and ${pl(nt,'task','tasks')} for good. To keep them safe, choose Archive instead.`,
+    word:sp.name,yes:'Delete space',choice,
+    onYes:v=>{const drop=v==='drop',dead=t=>ls.includes(t.list);commit(()=>{
+      S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.hchains=(S.hchains||[]).filter(c=>c.space!==id);
+      if(drop){S.habits=(S.habits||[]).filter(h=>h.space!==id);S.goals=(S.goals||[]).filter(g=>g.space!==id)}
+      else{(S.habits||[]).forEach(h=>{if(h.space===id)h.space=null});(S.goals||[]).forEach(g=>{if(g.space===id)g.space=null})}
+      /* a goal that stays keeps its milestone tasks from those lists: they become tasks of the milestone only */
+      (S.goals||[]).forEach(g=>S.tasks.forEach(t=>{if(!dead(t)||t.goal!==g.id)return;const m=(g.ms||[]).find(x=>String(x.id)===String(t.ms));if(!m)return;
+        m.items=m.items||[];m.items.push({id:newId(),t:t.title,done:t.stage==='done',...(t.stage==='done'?{doneAt:t.doneAt||Date.now()}:{}),subs:(t.subs||[]).map(s=>({...s}))})}));
+      S.tasks=S.tasks.filter(t=>!dead(t));if(S.space===id){S.space=null;S.list='all'}},
+      what&&!drop?`${sp.name} deleted · ${what} kept`:`${sp.name} deleted`)}});
 }
-let dlgYes=null;
-function confirmDanger({title,text,word,yes,no,onYes}){
+let dlgYes=null,dlgPick=null;
+function confirmDanger({title,text,word,yes,no,onYes,choice}){
   const typed=!!word;$('dlg').classList.toggle('simple',!typed);
+  /* an optional either/or inside the dialog, e.g. keep or delete a space's habits and goals; onYes gets the pick */
+  const ch=$('dlgCh');ch.hidden=!choice;dlgPick=choice?choice.val:null;
+  ch.innerHTML=choice?`<legend>${esc(choice.legend)}</legend>${choice.opts.map(([v,t,s])=>`<label class="dlg-op${v===choice.val?' on':''}"><input type="radio" name="dlgCh" value="${esc(v)}"${v===choice.val?' checked':''}><span><b>${esc(t)}</b><small>${esc(s)}</small></span></label>`).join('')}`:'';
   $('dlgT').textContent=title;$('dlgP').textContent=text;$('dlgW').textContent=word||'';$('dlgIn').value='';$('dlgYes').textContent=yes;$('dlgNo').textContent=no||'Cancel';$('dlgYes').disabled=typed;
   $('dlgIn').dataset.word=word||'';dlgYes=onYes;$('dlg').classList.add('on');haptic(12);setTimeout(()=>(typed?$('dlgIn'):$('dlgYes')).focus(),200);
 }
@@ -128,7 +144,8 @@ function closeDlg(){$('dlg').classList.remove('on');dlgYes=null;$('dlgIn').blur(
 $('dlgIn').oninput=e=>{$('dlgYes').disabled=e.target.value.trim().toLowerCase()!==e.target.dataset.word.trim().toLowerCase()};
 $('dlgIn').onkeydown=e=>{if(e.key==='Enter'&&!$('dlgYes').disabled)$('dlgYes').click();if(e.key==='Escape'){e.stopPropagation();closeDlg()}};
 $('dlgNo').onclick=closeDlg;$('dlg').onclick=e=>{if(e.target===$('dlg'))closeDlg()};
-$('dlgYes').onclick=()=>{const f=dlgYes;closeDlg();if(f)f()};
+$('dlgYes').onclick=()=>{const f=dlgYes,v=dlgPick;closeDlg();if(f)f(v)};
+$('dlgCh').onchange=e=>{const r=e.target.closest('input[type=radio]');if(!r)return;dlgPick=r.value;haptic(4);$('dlgCh').querySelectorAll('.dlg-op').forEach(l=>l.classList.toggle('on',l.contains(r)))};
 $('editSpace').onclick=()=>{if(inSpaceMode()){closeSheets();setTimeout(()=>openSpaceSheet(S.space),250)}};
 
 /* sidebar: click the open space again to fold / unfold its lists */

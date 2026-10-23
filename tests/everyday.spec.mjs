@@ -2,14 +2,19 @@
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
-test('one + for everything: plain by default; habit and idea kinds when Habits is on', async ({ page }) => {
+test('one + for everything: Task · Note by default; habit and goal kinds when their modes are on', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.locator('#addBtn').click();
   await expect(page.locator('#addSheet')).toHaveClass(/on/);
-  await expect(page.locator('#addKinds')).toBeHidden(); // modes off: just "Add task"
+  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(2); // Task · Note (the Inbox is on by default)
   await expect(page.locator('#saveBtn')).toHaveText('Add task');
   await page.evaluate(() => closeSheets());
+  await page.evaluate(() => { S.cfg.inbox = false; save(); render(); });
+  await page.waitForTimeout(300);
+  await page.locator('#addBtn').click();
+  await expect(page.locator('#addKinds')).toBeHidden(); // everything off: just "Add task"
+  await page.evaluate(() => { closeSheets(); S.cfg.inbox = true; save(); render(); });
 
   await page.evaluate(() => {
     S.cfg.habits = true;
@@ -17,7 +22,7 @@ test('one + for everything: plain by default; habit and idea kinds when Habits i
   });
   await page.waitForTimeout(300);
   await page.locator('#addBtn').click();
-  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(3); // Task · Idea · Habit
+  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(3); // Task · Note · Habit
   // habit
   await page.locator('[data-ak="habit"]').click();
   await expect(page.locator('#saveBtn')).toHaveText('Add habit');
@@ -25,14 +30,17 @@ test('one + for everything: plain by default; habit and idea kinds when Habits i
   await page.locator('[data-akd="wk"]').click();
   await page.locator('#saveBtn').click();
   await expect.poll(() => page.evaluate(() => (S.habits || []).map(h => [h.name, h.days.join('')]))).toEqual([['Stretch', '12345']]);
-  // idea
+  // note: several lines, pinned, saved to the Inbox
   await page.waitForTimeout(400);
   await page.locator('#addBtn').click();
   await expect(page.locator('#addKinds [data-ak="task"]')).toHaveClass(/on/); // every open starts on Task
-  await page.locator('[data-ak="idea"]').click();
-  await page.fill('#newTitle', 'Podcast idea');
+  await page.locator('[data-ak="note"]').click();
+  await expect(page.locator('#newTitle')).toBeHidden();
+  await expect(page.locator('#saveBtn')).toBeDisabled();
+  await page.fill('#akNote', 'Podcast\nAsk Sam about episode two');
+  await page.locator('[data-akpin]').click();
   await page.locator('#saveBtn').click();
-  await expect.poll(() => page.evaluate(() => S.tasks.some(t => t.inbox && t.title === 'Podcast idea'))).toBe(true);
+  await expect.poll(() => page.evaluate(() => { const t = S.tasks.find(x => x.note); return t && [t.title, t.notes, t.pin, t.inbox]; })).toEqual(['Podcast', 'Podcast\nAsk Sam about episode two', true, true]);
   noErrors(errors);
 });
 

@@ -1,6 +1,6 @@
 /* ---------- Everyday touches (work with any mode, and with none) ----------
-   A · One + for everything: the add sheet offers Task · Idea · Habit when Habits is on. Each kind appears only when its
-       feature is on, so with everything off it is just "Add task", exactly as before.
+   A · One + for everything: the add sheet offers Task · Note · Habit · Goal. Each kind appears only when its
+       feature is on (Inbox, Habits, Goals), so with everything off it is just "Add task", exactly as before.
    B · Close the day: an optional evening card (Settings → Modes → Everyday). One short page: tick the last habits,
        pick the task tomorrow starts with.
    C · Starter picks: a mode that is turned on never leaves you on an empty page; Settings → Modes offers a few
@@ -13,42 +13,82 @@ var G_STARTERS=[['🏃','Run a half marathon'],['📚','Read 12 books'],['💰',
 
 /* ---------- A · one + for everything ---------- */
 /* the kinds row only appears when a mode adds something; with modes off it is just "Add task", as before */
-function addKinds(){if(!habitsOn())return [['task','Task']];
-  const k=[['task','Task']];if(typeof inboxOn==='function'&&inboxOn())k.push(['idea','Idea']);k.push(['habit','Habit']);return k}
+function addKinds(){const k=[['task','Task']];
+  if(typeof inboxOn==='function'&&inboxOn())k.push(['note','Note']);if(habitsOn())k.push(['habit','Habit']);if(goalsOn())k.push(['goal','Goal']);return k}
 const AK_IC={task:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>',
-  idea:IB_ICON,habit:RH_ICON};
-let addHb={days:[0,1,2,3,4,5,6]};
+  note:I_NOTE2,habit:RH_ICON,goal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 4h11l-2 4 2 4H6"/></svg>'};
+let addHb={days:[0,1,2,3,4,5,6],space:null},addG={m:3,space:null},addNote={pin:false};
 document.querySelector('#addSheet .grab').insertAdjacentHTML('afterend','<div class="ak-row" id="addKinds" role="tablist" aria-label="What to add" hidden></div>');
 $('newTitle').insertAdjacentHTML('afterend','<div class="ak-extra" id="addExtra" hidden></div>');
+/* a habit or a goal can sit in a space, but doesn't have to */
+const akSpaces=(cur,attr)=>S.spaces.length?`<div class="lbl">Space <span class="ak-opt">Optional</span></div><div class="opts row-scroll"><button class="opt${!cur?' on':''}" data-${attr}="">No space</button>${orderedSpaces().map(sp=>`<button class="opt sp-opt${cur===sp.id?' on':''}" data-${attr}="${sp.id}">${spMini(sp)}${esc(sp.name)}</button>`).join('')}</div>`:'';
+/* typing "#work" or "30m" in a new task picks that space (or list) and time; the words come out of the title */
+function akTag(w){const k=srchNorm(w),n=x=>srchNorm(x.name).replace(/\s+/g,'');
+  const ls=inSpaceMode()?S.lists.filter(l=>l.space===S.space):S.lists,sps=inSpaceMode()?[]:orderedSpaces();
+  const hit=a=>a.find(x=>n(x)===k)||a.find(x=>n(x).startsWith(k));
+  const sp=hit(sps);if(sp){const l=S.lists.filter(x=>x.space===sp.id),d=S.cfg.defList;return {space:sp.id,list:(l.find(x=>x.id===d)||l[0]||{}).id}}
+  const l=hit(ls);return l?{space:l.space,list:l.id}:null}
+function akParse(v){const out={};let t=String(v||'');
+  t=t.replace(/(^|\s)(\d{1,3}(?:[.,]\d)?)\s?(m|min|mins|h|hr|hrs)(?=\s|$)/i,(all,pre,n,u)=>{const x=parseFloat(n.replace(',','.')),m=Math.round(/^h/i.test(u)?x*60:x);if(m>0&&m<=600){out.est=m;return pre}return all});
+  t=t.replace(/(^|\s)#([^\s#]+)(?=\s|$)/,(all,pre,w)=>{const h=akTag(w);if(h&&h.list){Object.assign(out,h);return pre}return all});
+  out.title=t.replace(/\s{2,}/g,' ').trim();return out}
+let akBase=null; // the picks before anything was typed, so deleting "#work" puts them back
+function akApply(){if(addKind!=='task'||!draft)return;if(!akBase)akBase={space:draft.space,list:draft.list,est:draft.est};
+  const p=akParse($('newTitle').value);Object.assign(draft,akBase,p.list?{space:p.space,list:p.list}:{},p.est?{est:p.est}:{});drawAdd();$('saveBtn').disabled=!p.title}
 function drawKinds(){
   const ks=addKinds(),row=$('addKinds');if(!ks.some(k=>k[0]===addKind))addKind='task';
   row.hidden=ks.length<2;row.innerHTML=ks.map(([k,l])=>`<button role="tab" data-ak="${k}" class="${addKind===k?'on':''}" aria-selected="${addKind===k}">${AK_IC[k]}${l}</button>`).join('');
   $('addSheet').dataset.kind=addKind;
   const t=$('newTitle'),x=$('addExtra');
-  t.placeholder={task:'What needs doing?',idea:'Drop an idea',habit:'New habit, e.g. Read 10 pages'}[addKind];
-  $('saveBtn').textContent={task:'Add task',idea:'Add idea',habit:'Add habit'}[addKind];
-  if(addKind==='habit'){x.hidden=false;const pre=[['all','Every day',[0,1,2,3,4,5,6]],['wk','Weekdays',[1,2,3,4,5]],['we','Weekends',[0,6]]];
-    x.innerHTML=`<div class="lbl">How often</div><div class="opts">${pre.map(([k,l,d])=>`<button class="opt${String(addHb.days)===String(d)?' on':''}" data-akd="${k}">${l}</button>`).join('')}</div>`}
-  else {x.hidden=true;x.innerHTML=''}
-  $('saveBtn').style.background=addKind==='task'?color(draft?draft.stage:'today'):addKind==='idea'?'var(--done)':addKind==='habit'?'var(--today)':'var(--text)';
-  $('saveBtn').disabled=!t.value.trim();
+  t.placeholder={task:'What needs doing?',note:'',habit:'New habit, e.g. Read 10 pages',goal:'What do you want to achieve?'}[addKind];
+  $('saveBtn').textContent={task:'Add task',note:'Save note',habit:'Add habit',goal:'Next: milestones'}[addKind];
+  x.hidden=false;
+  if(addKind==='task'){const multi=inSpaceMode()?S.lists.filter(l=>l.space===S.space).length>1:S.spaces.length>1;
+    x.innerHTML=`<p class="ak-tip">Tip: type ${multi?`<b>#${inSpaceMode()?'list':'space'}</b> or `:''}<b>30m</b> and it’s set for you.</p>`}
+  else if(addKind==='note'){const a=$('akNote'),keep=a?a.value:'';
+    x.innerHTML=`<textarea class="field ak-note" id="akNote" rows="5" placeholder="Write anything. The first line becomes the title." aria-label="Note"></textarea>
+      <div class="opts ak-nrow"><button class="opt${addNote.pin?' on':''}" data-akpin aria-pressed="${addNote.pin}">${I_PIN}Pin to top</button><span class="ak-where">Saved to Inbox › Notes</span></div>`;
+    $('akNote').value=keep}
+  else if(addKind==='habit'){const pre=[['all','Every day',[0,1,2,3,4,5,6]],['wk','Weekdays',[1,2,3,4,5]],['we','Weekends',[0,6]]];
+    x.innerHTML=`<div class="lbl">How often</div><div class="opts">${pre.map(([k,l,d])=>`<button class="opt${String(addHb.days)===String(d)?' on':''}" data-akd="${k}">${l}</button>`).join('')}</div>${akSpaces(addHb.space,'akhs')}`}
+  else if(addKind==='goal')x.innerHTML=`<div class="lbl">By when</div><div class="opts">${[1,3,6,12].map(m=>`<button class="opt${addG.m===m?' on':''}" data-akgm="${m}">${m===12?'1 year':`${m} ${m===1?'month':'months'}`}</button>`).join('')}</div>
+      ${akSpaces(addG.space,'akgs')}<p class="ak-tip">Next you’ll add a few milestones.</p>`;
+  const sb=$('saveBtn'),ink=addKind==='note'||addKind==='goal';
+  sb.style.background=addKind==='task'?color(draft?draft.stage:'today'):ink?'var(--text)':'var(--today)';sb.style.color=ink?'var(--bg)':'';
+  sb.disabled=!(addKind==='note'?($('akNote').value.trim()):t.value.trim());
 }
-$('addKinds').addEventListener('click',e=>{const b=e.target.closest('[data-ak]');if(!b)return;addKind=b.dataset.ak;haptic(5);
-  if(addKind==='task')drawAdd();drawKinds();$('newTitle').focus()});
+$('addKinds').addEventListener('click',e=>{const b=e.target.closest('[data-ak]');if(!b)return;const was=addKind;addKind=b.dataset.ak;haptic(5);
+  /* what's typed comes along when you switch between a one-line kind and a note */
+  const a=$('akNote'),i=$('newTitle');if(addKind==='note'&&was!=='note'&&a&&!a.value.trim()&&i.value.trim())a.value=i.value;else if(was==='note'&&addKind!=='note'&&a&&!i.value.trim()&&a.value.trim())i.value=nbTitle(a.value);
+  if(addKind==='task'){drawAdd();akApply()}drawKinds();(addKind==='note'?$('akNote'):$('newTitle')).focus()});
 $('addExtra').addEventListener('click',e=>{
-  const d=e.target.closest('[data-akd]');if(d){addHb.days={all:[0,1,2,3,4,5,6],wk:[1,2,3,4,5],we:[0,6]}[d.dataset.akd];haptic(4);return drawKinds()}});
-$('newTitle').addEventListener('input',()=>{if(addKind!=='task')drawKinds()});
+  const d=e.target.closest('[data-akd]');if(d){addHb.days={all:[0,1,2,3,4,5,6],wk:[1,2,3,4,5],we:[0,6]}[d.dataset.akd];haptic(4);return drawKinds()}
+  const hs=e.target.closest('[data-akhs]');if(hs){addHb.space=hs.dataset.akhs||null;haptic(4);return drawKinds()}
+  const gs=e.target.closest('[data-akgs]');if(gs){addG.space=gs.dataset.akgs||null;haptic(4);return drawKinds()}
+  const gm=e.target.closest('[data-akgm]');if(gm){addG.m=+gm.dataset.akgm;haptic(4);return drawKinds()}
+  if(e.target.closest('[data-akpin]')){addNote.pin=!addNote.pin;haptic(4);return drawKinds()}});
+$('addExtra').addEventListener('input',e=>{if(e.target.id==='akNote')$('saveBtn').disabled=!e.target.value.trim()});
+$('addExtra').addEventListener('keydown',e=>{if(e.target.id==='akNote'&&e.key==='Enter'&&(e.metaKey||e.ctrlKey)&&e.target.value.trim()){e.preventDefault();$('saveBtn').click()}});
+$('newTitle').addEventListener('input',()=>{if(addKind==='task')akApply();else drawKinds()});
 const _akOpen=$('addBtn').onclick;
-$('addBtn').onclick=e=>{addKind='task';addHb={days:[0,1,2,3,4,5,6]};_akOpen(e);drawKinds()};
+$('addBtn').onclick=e=>{addKind='task';akBase=null;const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null; // inside a space, a new habit or goal starts there
+  addHb={days:[0,1,2,3,4,5,6],space:sp};addG={m:3,space:sp};addNote={pin:false};const a=$('akNote');if(a)a.value='';_akOpen(e);drawKinds()};
+/* picking a space, list or time by hand makes it the new starting point for what's typed */
+['optSpace','optList','optEst'].forEach(id=>$(id).addEventListener('click',()=>{if(draft)akBase={space:draft.space,list:draft.list,est:draft.est}}));
 const _akSave=$('saveBtn').onclick;
 $('saveBtn').onclick=()=>{
-  if(addKind==='task')return _akSave();
+  if(addKind==='task'){const i=$('newTitle'),p=akParse(i.value);if(!p.title)return;i.value=p.title;return _akSave()}
+  if(addKind==='note'){const v=($('akNote').value||'').trim();if(!v)return;
+    const t={id:newId(),title:nbTitle(v),stage:'backlog',list:null,est:0,subs:[],notes:v,repeat:'none',inbox:true,note:true,created:Date.now(),...(addNote.pin?{pin:true}:{})};
+    closeSheets();commit(()=>S.tasks.push(t),'Note saved to Inbox');try{sfx('add')}catch(e){}return}
   const v=$('newTitle').value.trim();if(!v)return;
-  if(addKind==='idea'){const t={id:newId(),title:v,stage:'backlog',list:null,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',inbox:true,created:Date.now()};
-    closeSheets();commit(()=>S.tasks.push(t),'Idea saved to Inbox');try{sfx('add')}catch(e){}return}
   if(addKind==='habit'){if(hbAll().length>=HB_MAX){toast(`Up to ${HB_MAX} habits. Fewer, kept daily, beat many.`);return}
-    const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null,days=[...addHb.days]; // a habit needs no space unless you add it inside one
+    const sp=addHb.space&&spaceOf(addHb.space)?addHb.space:null,days=[...addHb.days];
     closeSheets();commit(()=>{S.habits=S.habits||[];S.habits.push({id:'h'+newId(),name:v,e:hbIcon(v),space:sp,days,done:{},created:Date.now()})},`${v} added`);try{sfx('add')}catch(e){}return}
+  if(addKind==='goal'){if(gAll().length>=G_MAX){toast(`Up to ${G_MAX} goals at once. Finish one to start another.`);return}
+    const g={...addG};closeSheets();
+    /* the rest of the goal (milestones, north star) is the usual setup, already on its last step */
+    setTimeout(()=>{openSetup(g.space);if(!gsOn)return;Object.assign(gsD,{name:v,e:gIcon(v),pick:g.m,due:gPlus(g.m)});gsStep(3)},260)}
 };
 
 /* ---------- B · close the day ---------- */

@@ -552,6 +552,28 @@ html,body{overscroll-behavior-y:contain}
 .f-step .fs-n{font-size:13px;opacity:.55;font-variant-numeric:tabular-nums}
 .f-step.tick i{background:var(--ink);transform:scale(1.15)}
 .f-step.tick .fs-t{opacity:.4;text-decoration:line-through}
+/* classic focus: every step of the task, tickable, plus "Add step" */
+.f-steps{width:100%;margin-top:22px;display:flex;flex-direction:column}
+.f-steps.has{padding:4px 6px 6px;border-radius:20px;background:rgba(0,0,0,.08)}
+.fs-h{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 2px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.fs-list{display:flex;flex-direction:column;max-height:min(30vh,240px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.fs-list::-webkit-scrollbar{display:none}
+.fs-r{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:4px 10px;border-radius:14px;text-align:left;font-size:16px;font-weight:600;color:inherit;transition:background .15s}
+.fs-r:hover{background:rgba(0,0,0,.06)}
+.fs-r i{flex:none;width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;color:var(--fbg,var(--today));transition:background .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
+.fs-r i svg{width:13px;height:13px;opacity:0;transform:scale(.5);transition:opacity .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
+.fs-r.on i{background:var(--ink);transform:scale(1.06)}
+.fs-r.on i svg{opacity:1;transform:none}
+.fs-r span{flex:1;min-width:0;overflow-wrap:anywhere;transition:opacity .3s}
+.fs-r.on span{text-decoration:line-through;font-weight:500}
+.fs-add{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:0 10px;border-radius:14px;font-size:15px;font-weight:700;color:inherit;text-align:left}
+.fs-add svg{flex:none;width:16px;height:16px;margin:0 3px}
+.f-steps:not(.has) .fs-add{width:auto;align-self:flex-start;padding:0 14px 0 8px;background:rgba(0,0,0,.08);border-radius:999px}
+.fs-add.on{cursor:text}
+.fs-add input{flex:1;min-width:0;border:0;background:none;outline:none;color:inherit;font:inherit;font-size:16px;font-weight:600}
+.fs-add input::placeholder{color:inherit;opacity:.6}
+.focus:has(.f-steps.has) .f-time{margin:30px 0 16px}
+@media (max-height:740px){.fs-list{max-height:22vh}.focus:has(.f-steps.has) .f-time{font-size:clamp(64px,20vw,96px);margin:20px 0 12px}}
 .f-time{margin:40px 0 18px}
 .f-cap{opacity:.6}
 .f-next{margin-top:28px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -737,7 +759,7 @@ html,body{overscroll-behavior-y:contain}
 .ico-grid button:hover{background:var(--surface2)}
 .ico-grid button.on{background:var(--surface2);box-shadow:0 0 0 2px var(--text);transform:scale(1.05)}
 .ico-grid .ico-none{font-size:16px;font-weight:800;color:var(--muted)}
-.dlg{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
+.dlg{position:fixed;inset:0;z-index:45;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:20px;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
 .dlg.on{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .2s}
 .dlg-in{width:100%;max-width:400px;background:var(--surface);border-radius:26px;padding:26px 24px 22px;transform:scale(.94);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
 .dlg.on .dlg-in{transform:none}
@@ -748,6 +770,16 @@ html,body{overscroll-behavior-y:contain}
 .dlg-l{display:block;margin:18px 0 8px;font-size:14px;color:var(--muted)}
 .dlg-l b{color:var(--text)}
 .dlg-b{display:flex;gap:10px;margin-top:16px}
+/* an either/or inside the dialog (e.g. keep or delete a space's habits and goals) */
+.dlg-ch{border:0;margin:18px 0 0;padding:0;min-width:0;display:flex;flex-direction:column;gap:8px}
+.dlg-ch[hidden]{display:none}
+.dlg-ch legend{padding:0;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.dlg-op{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border-radius:16px;box-shadow:inset 0 0 0 1.5px var(--line);cursor:pointer;transition:box-shadow .2s}
+.dlg-op.on{box-shadow:inset 0 0 0 2px var(--text)}
+.dlg-op input{flex:none;width:18px;height:18px;margin:2px 0 0;accent-color:var(--text)}
+.dlg-op span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dlg-op b{font-size:15.5px;font-weight:700}
+.dlg-op small{font-size:13.5px;line-height:1.4;color:var(--muted)}
 .dlg-b button{flex:1;height:52px;border-radius:999px;font-weight:700;font-size:16px;margin:0}
 .danger{background:var(--today);color:#fff;transition:opacity .2s}
 .danger:disabled{opacity:.35}
@@ -948,7 +980,7 @@ html,body{overscroll-behavior-y:contain}
 /* midnight focus: light tints instead of dark ones */
 :root[data-focusdark="1"] .focus .f-x,:root[data-focusdark="1"] .focus .f-btn,:root[data-focusdark="1"] .focus .mode{background:rgba(255,255,255,.1)}
 :root[data-focusdark="1"] .focus .f-bar{background:rgba(255,255,255,.14)}
-:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-step{background:rgba(255,255,255,.08)}
+:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-step,:root[data-focusdark="1"] .focus .f-steps.has,:root[data-focusdark="1"] .focus .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
 /* focus colour picker */
 .fc-sw{max-width:340px}
 .fc-prev{display:flex;align-items:center;justify-content:space-between;gap:12px;height:96px;padding:0 20px;border-radius:22px;margin:4px 0 14px;background:var(--pb);color:var(--pi);
@@ -1345,6 +1377,7 @@ html,body{overscroll-behavior-y:contain}
   .f-title{font-size:24px;-webkit-line-clamp:1}
   .f-time{font-size:60px!important;margin:10px 0 8px!important}
   .f-step{margin-top:8px;padding:8px 12px}
+  .f-steps{margin-top:8px}.fs-list{max-height:34vh}.fs-r{min-height:40px}
   .f-next{display:none}
   .f-btn{width:50px;height:50px}.f-done{height:50px}
   .tide .t-main .f-title{font-size:22px;-webkit-line-clamp:1}
@@ -1628,6 +1661,20 @@ body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
 .sr-pr{flex:none;display:grid}
 .sr-pr .pri-i{width:13px;height:13px}
 .sr-pr.high{color:var(--p-high)}.sr-pr.med{color:var(--p-med)}.sr-pr.low{color:var(--p-low)}
+/* grouped results: tasks, notes, goals, habits */
+.sr-kinds{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px 4px 8px}
+.sr-kinds::-webkit-scrollbar{display:none}
+.sr-k{flex:none;height:34px;padding:0 12px;border-radius:999px;background:var(--surface2);font-size:13.5px;font-weight:600;color:var(--text);transition:background .2s,color .2s}
+.sr-k span{color:var(--muted);font-weight:600;margin-left:2px}
+.sr-k.on{background:var(--text);color:var(--bg)}
+.sr-k.on span{color:inherit;opacity:.7}
+.sr-h{padding:12px 10px 4px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.sr-h:first-child{padding-top:4px}
+.sr-ic{flex:none;width:18px;height:18px;display:grid;place-items:center;color:var(--muted);margin-left:-4px}
+.sr-ic svg{width:18px;height:18px}
+.sr-ic.g{color:var(--week)}
+.sr-sn{font-size:13px;line-height:1.35;color:var(--text);opacity:.8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sr-sn mark,.sr-tx small mark{background:color-mix(in srgb,var(--week) 32%,transparent);color:inherit;border-radius:3px;padding:0 1px}
 /* the filter card: set apart with its own tinted surface */
 .sf-card{margin:4px 2px 2px;padding:14px;border-radius:18px;background:var(--surface2);display:flex;flex-direction:column;gap:12px}
 .sf-head{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -2584,14 +2631,22 @@ body.no-amb .amb-btn{display:none!important}
 .ak-row button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 0 9px;border-radius:16px;background:var(--surface2);font-size:12.5px;font-weight:700;color:var(--muted);transition:background .2s,color .2s}
 .ak-row button svg{width:19px;height:19px}
 .ak-row button.on{background:var(--text);color:var(--bg)}
-#addSheet[data-kind="idea"] #addListWrap,#addSheet[data-kind="idea"] #addSpaceWrap,
-#addSheet[data-kind="habit"] #addListWrap,
+#addSheet[data-kind="note"] #addListWrap,#addSheet[data-kind="note"] #addSpaceWrap,#addSheet[data-kind="note"] #newTitle,
+#addSheet[data-kind="habit"] #addListWrap,#addSheet[data-kind="habit"] #addSpaceWrap,
+#addSheet[data-kind="goal"] #addListWrap,#addSheet[data-kind="goal"] #addSpaceWrap,
 #addSheet[data-kind="number"] #addListWrap,#addSheet[data-kind="number"] #addSpaceWrap,
 #addSheet:not([data-kind="task"])[data-kind] #optStage,#addSheet:not([data-kind="task"])[data-kind] #optEst,
 #addSheet:not([data-kind="task"])[data-kind] #optStage+.lbl{display:none!important}
 #addSheet:not([data-kind="task"])[data-kind] .sheet-in>.lbl{display:none}
 .ak-extra .lbl{display:block!important}
 .ak-extra .opt small{font-size:12px;opacity:.6;margin-left:2px;font-weight:600}
+.ak-tip{margin:10px 2px 0;font-size:13px;line-height:1.4;color:var(--muted)}
+.ak-tip b{color:var(--text);font-weight:600}
+.ak-opt{margin-left:4px;font-weight:500;opacity:.8}
+.ak-note{display:block;width:100%;box-sizing:border-box;min-height:132px;max-height:40vh;resize:none;font:inherit;font-size:17px;line-height:1.5;padding:14px 16px;border-radius:18px;background:var(--surface2);border:0}
+.ak-nrow{margin-top:12px;align-items:center}
+.ak-nrow .opt svg{width:15px;height:15px;margin-right:2px}
+.ak-where{font-size:13px;color:var(--muted);margin-left:4px}
 
 /* close the day */
 .cd-home .cd-hi{color:var(--today)}.cd-home .cd-hi svg{width:24px;height:24px}
@@ -3407,7 +3462,7 @@ button.hg-c:active{transform:scale(.88)}
   <div class="f-main">
     <div class="f-up" id="fList"></div>
     <div class="f-title" id="fTitle"></div>
-    <button class="f-step" id="fStep"><i></i><span class="fs-t" id="fStepT"></span><span class="fs-n" id="fStepN"></span></button>
+    <div class="f-steps" id="fSteps" role="group" aria-label="Steps"></div>
     <div class="f-time" id="fTime">00:00</div>
     <div class="f-bar"><span id="fBar"></span></div>
     <div class="f-cap"><span id="fLeft"></span><span id="fEst"></span></div>
@@ -3428,6 +3483,7 @@ button.hg-c:active{transform:scale(.88)}
 <div class="dlg" id="dlg" role="dialog" aria-modal="true"><div class="dlg-in">
   <div class="dlg-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></div>
   <h3 id="dlgT"></h3><p id="dlgP"></p>
+  <fieldset class="dlg-ch" id="dlgCh" hidden></fieldset>
   <label class="dlg-l">Type <b id="dlgW"></b> to confirm</label>
   <input class="acc-in" id="dlgIn" autocomplete="off" spellcheck="false">
   <div class="dlg-b"><button class="secondary" id="dlgNo">Cancel</button><button class="danger" id="dlgYes" disabled>Delete</button></div>
@@ -3468,7 +3524,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=173; // bumped with every published update
+const APP_VERSION=174; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -4189,7 +4245,7 @@ function drawAdd(){
   $('addListWrap').hidden=ls.length<2;
   $('optList').innerHTML=ls.map(l=>opt(draft.list===l.id,l.id,l.name,l.c)).join('');
   $('optStage').innerHTML=STAGES.filter(s=>s.id!=='done').map(s=>opt(draft.stage===s.id,s.id,s.name,color(s.id))).join('');
-  $('optEst').innerHTML=[15,30,60,120].map(m=>opt(draft.est===m,m,fmt(m))).join('');
+  $('optEst').innerHTML=[...new Set([15,30,60,120,draft.est])].filter(m=>m>0).sort((a,b)=>a-b).map(m=>opt(draft.est===m,m,fmt(m))).join(''); // a typed time (e.g. 45m) shows as its own chip
   $('saveBtn').style.background=color(draft.stage);
 }
 $('addBtn').onclick=()=>{
@@ -4642,13 +4698,44 @@ function drawFocus(){
   $('fMode').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===F.mode));
   $('fList').textContent=F.q.length>1?`${l.name}, ${F.i+1} of ${F.q.length}`:l.name;
   $('fTitle').textContent=t.title;
-  const nx=t.subs.find(s=>!s.done),dn=t.subs.filter(s=>s.done).length;
-  $('fStep').hidden=!nx;$('fStep').classList.remove('tick');
-  if(nx){$('fStepT').textContent=nx.t;$('fStepN').textContent=`${dn+1} / ${t.subs.length}`;$('fStep').dataset.s=nx.id}
+  if(F.stepFor!==t.id){F.stepFor=t.id;fAddStep=false}drawSteps();
   const n=F.q[F.i+1];$('fNext').innerHTML=n?`Up next <b>${esc(n.title)}</b>`:'';
   $('fPause').innerHTML=F.run?PAUSE:PLAY;drawTime();
 }
-$('fStep').onclick=()=>{const b=$('fStep');if(b.classList.contains('tick'))return;const s=F.q[F.i].subs.find(x=>x.id===+b.dataset.s);if(!s)return;b.classList.add('tick');haptic(10);sfx('tick');setTimeout(()=>{s.done=true;save();shuffleFocus();drawFocus()},380)};
+/* the task's steps, all of them: tick (or untick) any, add one, without leaving focus */
+let fAddStep=false;
+const fCur=()=>F.on&&F.q?liveTask(F.q[F.i]):null;
+const FS_TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 12.5l3.5 3.5 7.5-8"/></svg>';
+const FS_PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+const fsLabel=s=>(s.done?'Mark not done: ':'Mark done: ')+s.t;
+function drawSteps(){
+  const t=fCur(),el=$('fSteps');if(!el)return;if(!t){el.innerHTML='';return}
+  const ss=t.subs||[],dn=ss.filter(s=>s.done).length,a=document.activeElement,typing=a&&a.id==='fsIn'?a.value:null;
+  el.classList.toggle('has',ss.length>0);
+  el.innerHTML=(ss.length?`<div class="fs-h"><span>Steps</span><span id="fsN">${dn} of ${ss.length}</span></div><div class="fs-list">${ss.map(s=>`<button class="fs-r${s.done?' on':''}" data-fst="${s.id}" aria-pressed="${!!s.done}" aria-label="${esc(fsLabel(s))}"><i>${FS_TICK}</i><span>${esc(s.t)}</span></button>`).join('')}</div>`:'')
+    +(ss.length>=SUB_MAX?'':fAddStep?`<label class="fs-add on"><span class="fs-plus">${FS_PLUS}</span><input id="fsIn" placeholder="Add a step" maxlength="200" autocomplete="off" enterkeyhint="done" aria-label="Add a step"></label>`
+      :`<button class="fs-add" data-fsadd>${FS_PLUS}<span>${ss.length?'Add step':'Add steps'}</span></button>`);
+  if(typing!==null){const i=$('fsIn');if(i){i.value=typing;i.focus({preventScroll:true})}}
+}
+function fTickStep(id){const t=fCur(),s=t&&(t.subs||[]).find(x=>x.id===id);if(!s)return;s.done=!s.done;save();
+  if(s.done){haptic(10);sfx('tick');shuffleFocus()}else haptic(5);
+  const b=$('fSteps').querySelector(`[data-fst="${id}"]`);if(!b)return drawSteps();
+  b.classList.toggle('on',s.done);b.setAttribute('aria-pressed',s.done);b.setAttribute('aria-label',fsLabel(s));
+  const n=$('fsN');if(n)n.textContent=`${t.subs.filter(x=>x.done).length} of ${t.subs.length}`}
+/* the mini timer's step button ticks the next open one */
+function fTickNext(){const t=fCur(),s=t&&(t.subs||[]).find(x=>!x.done);if(s)fTickStep(s.id)}
+$('fSteps').addEventListener('click',e=>{
+  const b=e.target.closest('[data-fst]');if(b)return fTickStep(+b.dataset.fst);
+  if(e.target.closest('[data-fsadd]')){fAddStep=true;haptic(4);drawSteps();const i=$('fsIn');if(i)i.focus()}});
+$('fSteps').addEventListener('keydown',e=>{
+  if(e.target.id==='fsIn'){e.stopPropagation(); // typing a step never pauses, finishes or closes focus
+    if(e.key==='Enter'){e.preventDefault();const v=e.target.value.trim();if(!v){fAddStep=false;return drawSteps()}
+      const t=fCur();if(!t||!canStep(t))return;t.subs=t.subs||[];t.subs.push({id:newId(),t:v,done:false});haptic(6);try{sfx('add')}catch(err){}save();
+      e.target.value='';drawSteps();const l=$('fSteps').querySelector('.fs-list');if(l)l.scrollTop=l.scrollHeight}
+    else if(e.key==='Escape'){e.preventDefault();fAddStep=false;drawSteps()}
+    return}
+  const b=e.target.closest('[data-fst]');if(b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();fTickStep(+b.dataset.fst)}});
+$('fSteps').addEventListener('focusout',e=>{if(e.target.id!=='fsIn')return;setTimeout(()=>{const a=document.activeElement,i=$('fsIn');if(fAddStep&&i&&a!==i&&!i.value.trim()){fAddStep=false;drawSteps()}},150)});
 $('fMode').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.m===F.mode)return;
   step();F.last=Date.now();F.mode=b.dataset.m;S.cfg.focusMode=F.mode;save();F.phase='work';F.left=POMO.work;F.round=1;$('focus').classList.remove('brk');haptic(6);drawFocus()};
 function nextFocus(){
@@ -5044,7 +5131,7 @@ function pipAct(a){
   if(a==='play'){if(inT)tb(T.mode==='run'?'pause':T.mode==='pick'?'go':T.mode==='end'?'more':'resume');else $('fPause').click()}
   else if(a==='done'){if(inT)tb(T.mode==='pick'?'go':'done');else $("fDone").click()}
   else if(a==='more'){if(inT)tb('more');else{F.extra=(F.extra||0)+300;F.upd=false;drawTime()}}
-  else if(a==='step'){if(inT)tb('step');else $('fStep').click()}
+  else if(a==='step'){if(inT)tb('step');else fTickNext()}
   else if(a==='size'&&PIP){S.cfg.pipMode=pipMode()==='mini'?'compact':'mini';save();syncPip();const z=PIP_SIZE[pipMode()];try{PIP.resizeTo(z.width,z.height+(PIP.outerHeight-PIP.innerHeight||0))}catch(_){}}
   else if(a==='back')closePip();
   setTimeout(drawPip,60);
@@ -5515,10 +5602,11 @@ function idleWake(){
 document.body.classList.add('fresh');setTimeout(()=>document.body.classList.remove('fresh'),2200); // the summary drifts in once, when the app opens
 setTimeout(idleWake,0); // after every script has loaded (settings are ready then)
 /* ---------- search & filter (optional, Settings → Tasks; on by default) ----------
-   The round search button opens into a bar. Typing finds tasks in every space (title, notes, steps).
+   The round search button opens into a bar. Typing finds everything, grouped: tasks in every space and the Inbox
+   (title, notes, steps), Inbox notes, goals (name, why, milestones) and habits, each when its feature is on.
    The filter card below narrows the board itself by priority and tags, and stays on until cleared. */
 const SF={pri:new Set(),tags:new Set()};
-let srchQ='',srchOpen=false,srchSel=0;
+let srchQ='',srchOpen=false,srchSel=0,srchKind='all';
 const srchOn=()=>S.cfg.search!==false;
 /* filters narrow a board, so they only show where there is one (a space or All tasks), not on Home */
 const srchBoard=()=>!!S.space&&!spPage;
@@ -5532,11 +5620,23 @@ function srchPass(t){
 const srchNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 function srchHits(){
   const q=srchNorm(srchQ.trim());if(!q&&!srchFiltering())return [];
-  const words=q.split(/\s+/).filter(Boolean);
+  const words=q.split(/\s+/).filter(Boolean),ib=typeof inboxOn==='function'&&inboxOn();
   const hay=t=>srchNorm([t.title,t.notes,...t.subs.map(s=>s.t),...tagsOf(t).map(n=>'#'+n)].join(' '));
-  return S.tasks.filter(t=>!t.archived&&shown(t)&&srchPass(t)&&words.every(w=>hay(t).includes(w)))
+  return S.tasks.filter(t=>!t.archived&&!t.note&&(shown(t)||(ib&&t.inbox))&&srchPass(t)&&words.every(w=>hay(t).includes(w)))
     .sort((a,b)=>(a.stage==='done')-(b.stage==='done')||(srchNorm(b.title).startsWith(words[0]||'~'))-(srchNorm(a.title).startsWith(words[0]||'~'))).slice(0,30);
 }
+/* everything else that matches: notes, goals, habits (not while the board filters are on: those narrow tasks) */
+function srchGroups(){
+  const q=srchNorm(srchQ.trim()),words=q.split(/\s+/).filter(Boolean),has=s=>{const h=srchNorm(s);return words.every(w=>h.includes(w))};
+  const g={task:srchHits(),note:[],goal:[],habit:[]};if(!q||srchFiltering())return g;
+  if(typeof inboxOn==='function'&&inboxOn())g.note=inboxNotes().filter(t=>has(t.notes||t.title)).slice(0,10);
+  if(typeof goalsOn==='function'&&goalsOn())g.goal=gList().filter(x=>x&&gSpaceOk(x)&&has([x.name,x.why,...(x.ms||[]).map(m=>m.t)].join(' '))).sort((a,b)=>!!a.done-!!b.done).slice(0,8);
+  if(typeof habitsOn==='function'&&habitsOn())g.habit=hbAll().filter(h=>has(h.name)).slice(0,8);
+  return g;
+}
+const SR_KINDS=[['task','Tasks'],['note','Notes'],['goal','Goals'],['habit','Habits']];
+const srchKindsOn=()=>SR_KINDS.filter(([k])=>k==='task'||(k==='note'?typeof inboxOn==='function'&&inboxOn():k==='goal'?typeof goalsOn==='function'&&goalsOn():typeof habitsOn==='function'&&habitsOn()));
+function srchPh(){const k=srchKindsOn().map(x=>x[1].toLowerCase());return k.length<2?'Search tasks':`Search ${k.slice(0,-1).join(', ')} and ${k[k.length-1]}`}
 /* tags you can filter by: the lists of the open space (or all lists) */
 function srchTagPool(){
   const ls=S.space&&S.space!=='all'?S.lists.filter(l=>l.space===S.space):S.lists,m=new Map();
@@ -5546,12 +5646,32 @@ function srchTagPool(){
   return [...m.entries()];
 }
 const srchMark=(s,q)=>{const w=srchNorm(q.trim()).split(/\s+/).filter(Boolean)[0];s=String(s||'');if(!w)return esc(s);const i=srchNorm(s).indexOf(w);return i<0?esc(s):esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+w.length))+'</mark>'+esc(s.slice(i+w.length))};
+/* a note's line that holds the match, so you see why it was found */
+function srchSnip(t){const w=srchNorm(srchQ.trim()).split(/\s+/).filter(Boolean)[0]||'',ls=String(t.notes||'').split('\n').slice(1).map(x=>x.trim()).filter(Boolean);
+  const l=ls.find(x=>srchNorm(x).includes(w))||ls[0]||'';if(!l)return '';const i=Math.max(0,srchNorm(l).indexOf(w)-24);return (i?'…':'')+l.slice(i,i+90)}
+const srHbDays=h=>{const d=h.days||[0,1,2,3,4,5,6],k=String(d);return d.length===7?'Every day':k==='1,2,3,4,5'?'Weekdays':k==='0,6'?'Weekends':`${d.length} days a week`};
+function srchRow(k,x,i){const sel=i===srchSel?' sel':'',q=srchQ;
+  if(k==='task'){const t=x,pr=priOf(t);
+    if(t.inbox)return `<button class="sr-item${sel}" data-srt="${t.id}" role="option"><span class="sr-ic">${IB_ICON}</span><span class="sr-tx"><b>${srchMark(t.title,q)}</b><small>Inbox</small></span></button>`;
+    const l=listOf(t.list),sp=spaceOf(l.space);
+    return `<button class="sr-item${sel} ${t.stage==='done'?'done':''}" data-srt="${t.id}" role="option"><i class="sr-st" style="background:${color(t.stage)}"></i><span class="sr-tx"><b>${srchMark(t.title,q)}</b><small>${sp?esc(sp.name)+' › ':''}${esc(l.name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${pr?`<span class="sr-pr ${pr.id}">${priIcon(pr.n)}</span>`:''}</button>`}
+  if(k==='note'){const sn=srchSnip(x);
+    return `<button class="sr-item${sel}" data-srn="${x.id}" role="option"><span class="sr-ic">${I_NOTE2}</span><span class="sr-tx"><b>${srchMark(x.title,q)}</b>${sn?`<span class="sr-sn">${srchMark(sn,q)}</span>`:''}<small>Note · ${esc(nbWhen(x))}</small></span></button>`}
+  if(k==='goal'){const ms=x.ms||[],dn=ms.filter(m=>m.done).length,w=srchNorm(q.trim()).split(/\s+/)[0]||'',hit=!srchNorm(x.name).includes(w)&&ms.find(m=>srchNorm(m.t).includes(w)),left=gDaysLeft(x);
+    const meta=x.done?'Achieved':[ms.length?`${dn} of ${ms.length} milestones`:'',left!==null&&left>=0?`${left} ${left===1?'day':'days'} left`:''].filter(Boolean).join(' · ');
+    return `<button class="sr-item${sel}" data-srg="${x.id}" role="option"><span class="sr-ic g">${G_FLAG}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>${hit?`Milestone: ${srchMark(hit.t,q)}`:`Goal${meta?' · '+meta:''}`}</small></span></button>`}
+  const st=hbStats(x).st;
+  return `<button class="sr-item${sel}" data-srh="${x.id}" role="option"><span class="sr-ic">${RH_ICON}</span><span class="sr-tx"><b>${x.e?esc(x.e)+' ':''}${srchMark(x.name,q)}</b><small>Habit · ${srHbDays(x)}${st>1?` · ${st}-day streak`:''}</small></span></button>`}
 function srchResults(){
-  const hits=srchHits();
-  if(!srchQ.trim()&&!srchFiltering())return `<p class="sr-hint">Find any task in any space. Press <kbd>Enter</kbd> to open the first one.</p>`;
-  if(!hits.length)return `<p class="sr-hint">No tasks match.</p>`;
-  return `<div class="sr-list" role="listbox">${hits.map((t,i)=>{const l=listOf(t.list),sp=spaceOf(l.space),pr=priOf(t);
-    return `<button class="sr-item ${i===srchSel?'sel':''} ${t.stage==='done'?'done':''}" data-srt="${t.id}" role="option"><i class="sr-st" style="background:${color(t.stage)}"></i><span class="sr-tx"><b>${srchMark(t.title,srchQ)}</b><small>${sp?esc(sp.name)+' › ':''}${esc(l.name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${pr?`<span class="sr-pr ${pr.id}">${priIcon(pr.n)}</span>`:''}</button>`}).join('')}</div>`;
+  const ks=srchKindsOn();
+  if(!srchQ.trim()&&!srchFiltering())return `<p class="sr-hint">${ks.length<2?'Find any task in any space.':`Find ${ks.map(x=>x[1].toLowerCase()).join(', ').replace(/, ([^,]*)$/,' and $1')}.`} Press <kbd>Enter</kbd> to open the first one.</p>`;
+  const g=srchGroups(),full=SR_KINDS.filter(([k])=>g[k].length);
+  if(!full.length)return `<p class="sr-hint">Nothing matches.</p>`;
+  const kind=full.some(([k])=>k===srchKind)?srchKind:'all',show=kind==='all'?full:full.filter(([k])=>k===kind);
+  const n=full.reduce((a,[k])=>a+g[k].length,0);let i=0;
+  /* the kind chips only show when the results are of more than one kind */
+  const chips=full.length>1?`<div class="sr-kinds" role="group" aria-label="Show only">${[['all','All',n],...full.map(([k,l])=>[k,l,g[k].length])].map(([k,l,c])=>`<button class="sr-k${kind===k?' on':''}" data-srk="${k}" aria-pressed="${kind===k}">${l} <span>${c}</span></button>`).join('')}</div>`:'';
+  return chips+`<div class="sr-list" role="listbox" aria-label="Results">${show.map(([k,l])=>`${show.length>1||full.length>1?`<div class="sr-h">${l}</div>`:''}${g[k].map(x=>srchRow(k,x,i++)).join('')}`).join('')}</div>`;
 }
 function srchFilterCard(){
   const pool=srchTagPool();
@@ -5581,8 +5701,8 @@ function openSearch(){
   if(!$('srch')){const p=document.createElement('div');p.id='srch';p.className='srch';p.setAttribute('role','dialog');p.setAttribute('aria-label','Search and filter');
     p.innerHTML=`<div class="sr-bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><input id="srchIn" placeholder="Search tasks" autocomplete="off" spellcheck="false" enterkeyhint="search"><button class="sr-x" data-srx aria-label="Close search">${X}</button></div><div class="sr-body"></div>`;
     document.body.appendChild(p)}
-  srchOpen=true;srchSel=0;srchPlace();srchDraw();
-  const p=$('srch'),inp=$('srchIn');inp.value=srchQ;
+  srchOpen=true;srchSel=0;srchKind='all';srchPlace();srchDraw();
+  const p=$('srch'),inp=$('srchIn');inp.value=srchQ;inp.placeholder=srchPh();
   document.body.classList.add('srch-on');
   try{inp.focus({preventScroll:true})}catch(e){} // right away, so phones open the keyboard
   requestAnimationFrame(()=>p.classList.add('on'));
@@ -5600,10 +5720,16 @@ document.addEventListener('click',e=>{
   const p=$('srch');if(!p||!srchOpen)return;
   if(!e.target.closest('#srch')){closeSearch();return}
   if(e.target.closest('[data-srx]')){closeSearch();return}
-  const it=e.target.closest('[data-srt]');if(it){const id=+it.dataset.srt;closeSearch();setTimeout(()=>openDetail(id),120);return}
+  const k=e.target.closest('[data-srk]');if(k){srchKind=k.dataset.srk;srchSel=0;haptic(4);srchDraw();$('srchIn').focus({preventScroll:true});return}
+  const it=e.target.closest('[data-srt]');if(it){const id=+it.dataset.srt,t=S.tasks.find(x=>x.id===id);closeSearch();if(t&&t.inbox)srchToInbox();setTimeout(()=>openDetail(id),120);return}
+  const nt=e.target.closest('[data-srn]');if(nt){const id=+nt.dataset.srn;closeSearch();srchToInbox();setTimeout(()=>openNote(id),160);return}
+  const go=e.target.closest('[data-srg]');if(go){closeSearch();openGoal(go.dataset.srg);return}
+  if(e.target.closest('[data-srh]')){closeSearch();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();openRhythm();return}
   const fp=e.target.closest('[data-sfp]');if(fp){const v=fp.dataset.sfp;SF.pri.has(v)?SF.pri.delete(v):SF.pri.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
   const ft=e.target.closest('[data-sft]');if(ft){const v=ft.dataset.sft;SF.tags.has(v)?SF.tags.delete(v):SF.tags.add(v);haptic(5);sfx('toggle');render();srchChip();srchDraw();return}
 },true);
+/* notes and Inbox tasks open in the Inbox, so it comes forward first */
+function srchToInbox(){if(typeof gdOn!=='undefined'&&gdOn)closeGoal();if(typeof glOn!=='undefined'&&glOn)closeGoals();if(!ibOn)openInbox()}
 document.addEventListener('input',e=>{if(e.target.id!=='srchIn')return;srchQ=e.target.value;srchSel=0;srchDraw()});
 document.addEventListener('keydown',e=>{
   if(srchOpen&&e.target.id==='srchIn'){
@@ -5792,7 +5918,7 @@ function ibListPicks(){
       return `<button class="pk${full?' full':''}" data-v="${l.id}"><i style="background:${l.c}"></i>${esc(l.name)}<small>${n}/${STAGE_MAX}</small></button>`}).join('')}).join('');
 }
 function ibSendTo(t,list){
-  if(!t.title.trim()){toast('Give the idea a name first');drawDetail();return}
+  if(!t.title.trim()){toast('Give it a name first');drawDetail();return}
   if(!canPut(list,'backlog')){drawDetail();return}
   S.cfg.ibLast=list;
   const name=listOf(list).name;cur=null;onSheetClose=null;closeSheets();
@@ -5822,7 +5948,7 @@ const _ibRender=render;
 render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;ibGrow(n);n.focus()}}};
 /* ---------- Weekly review (optional, Settings → Tasks; on by default, Sundays) ----------
    Once a week a small card on Home invites a calm review: what you finished, what's still in My week
-   (keep it, send it back to Backlog, or archive it), and how many ideas wait in the Inbox.
+   (keep it, send it back to Backlog, or archive it), and how many tasks wait in the Inbox.
    Finishing or skipping marks the week as reviewed until the next review day. */
 var rvOn=false;
 const REVIEW_DAYS=[[5,'Fri'],[0,'Sun'],[1,'Mon']];
@@ -5865,7 +5991,7 @@ function drawReview(){
       ${wk.length?`<p class="rv-p">Keep what matters. Send the rest back, or let it go.</p><div class="rv-card2">${wk.map(t=>`<div class="rv-row" data-rvt="${t.id}"><span class="rv-tt"><b>${esc(t.title)}</b>${tag(t)}</span>
         <span class="rv-acts"><button data-rvb="${t.id}" aria-label="Move ${esc(t.title)} back to Backlog" title="Back to Backlog">${RV_BACK}</button><button data-rva="${t.id}" aria-label="Archive ${esc(t.title)}" title="Archive">${RV_ARC}</button></span></div>`).join('')}</div>`
       :`<p class="rv-p">Nothing left over. Clean slate.</p>`}</section>
-    ${inboxOn()&&ib?`<section class="rv-sec"><button class="rv-link" id="rvInbox"><span class="rv-li">${IB_ICON}</span><span class="rv-lt"><b>Inbox</b><small>${ib} ${ib===1?'idea':'ideas'} waiting</small></span>${CHEV}</button></section>`:''}
+    ${inboxOn()&&ib?`<section class="rv-sec"><button class="rv-link" id="rvInbox"><span class="rv-li">${IB_ICON}</span><span class="rv-lt"><b>Inbox</b><small>${ib} ${ib===1?'task':'tasks'} waiting</small></span>${CHEV}</button></section>`:''}
     <div class="rv-foot"><button class="primary rv-done" id="rvDone">Done for this week</button></div>`;
 }
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg review-pg" id="reviewPg" role="region" aria-label="Weekly review"><div class="ib-in" id="rvIn"></div></div>');
@@ -6492,8 +6618,8 @@ render=function(d){_gRender(d);try{
   if(glOn&&!goalsOn())closeGoals();if(glOn)drawGoals();
 }catch(err){console.error(err)}};
 /* ---------- Everyday touches (work with any mode, and with none) ----------
-   A · One + for everything: the add sheet offers Task · Idea · Habit when Habits is on. Each kind appears only when its
-       feature is on, so with everything off it is just "Add task", exactly as before.
+   A · One + for everything: the add sheet offers Task · Note · Habit · Goal. Each kind appears only when its
+       feature is on (Inbox, Habits, Goals), so with everything off it is just "Add task", exactly as before.
    B · Close the day: an optional evening card (Settings → Modes → Everyday). One short page: tick the last habits,
        pick the task tomorrow starts with.
    C · Starter picks: a mode that is turned on never leaves you on an empty page; Settings → Modes offers a few
@@ -6506,42 +6632,82 @@ var G_STARTERS=[['🏃','Run a half marathon'],['📚','Read 12 books'],['💰',
 
 /* ---------- A · one + for everything ---------- */
 /* the kinds row only appears when a mode adds something; with modes off it is just "Add task", as before */
-function addKinds(){if(!habitsOn())return [['task','Task']];
-  const k=[['task','Task']];if(typeof inboxOn==='function'&&inboxOn())k.push(['idea','Idea']);k.push(['habit','Habit']);return k}
+function addKinds(){const k=[['task','Task']];
+  if(typeof inboxOn==='function'&&inboxOn())k.push(['note','Note']);if(habitsOn())k.push(['habit','Habit']);if(goalsOn())k.push(['goal','Goal']);return k}
 const AK_IC={task:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>',
-  idea:IB_ICON,habit:RH_ICON};
-let addHb={days:[0,1,2,3,4,5,6]};
+  note:I_NOTE2,habit:RH_ICON,goal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 4h11l-2 4 2 4H6"/></svg>'};
+let addHb={days:[0,1,2,3,4,5,6],space:null},addG={m:3,space:null},addNote={pin:false};
 document.querySelector('#addSheet .grab').insertAdjacentHTML('afterend','<div class="ak-row" id="addKinds" role="tablist" aria-label="What to add" hidden></div>');
 $('newTitle').insertAdjacentHTML('afterend','<div class="ak-extra" id="addExtra" hidden></div>');
+/* a habit or a goal can sit in a space, but doesn't have to */
+const akSpaces=(cur,attr)=>S.spaces.length?`<div class="lbl">Space <span class="ak-opt">Optional</span></div><div class="opts row-scroll"><button class="opt${!cur?' on':''}" data-${attr}="">No space</button>${orderedSpaces().map(sp=>`<button class="opt sp-opt${cur===sp.id?' on':''}" data-${attr}="${sp.id}">${spMini(sp)}${esc(sp.name)}</button>`).join('')}</div>`:'';
+/* typing "#work" or "30m" in a new task picks that space (or list) and time; the words come out of the title */
+function akTag(w){const k=srchNorm(w),n=x=>srchNorm(x.name).replace(/\s+/g,'');
+  const ls=inSpaceMode()?S.lists.filter(l=>l.space===S.space):S.lists,sps=inSpaceMode()?[]:orderedSpaces();
+  const hit=a=>a.find(x=>n(x)===k)||a.find(x=>n(x).startsWith(k));
+  const sp=hit(sps);if(sp){const l=S.lists.filter(x=>x.space===sp.id),d=S.cfg.defList;return {space:sp.id,list:(l.find(x=>x.id===d)||l[0]||{}).id}}
+  const l=hit(ls);return l?{space:l.space,list:l.id}:null}
+function akParse(v){const out={};let t=String(v||'');
+  t=t.replace(/(^|\s)(\d{1,3}(?:[.,]\d)?)\s?(m|min|mins|h|hr|hrs)(?=\s|$)/i,(all,pre,n,u)=>{const x=parseFloat(n.replace(',','.')),m=Math.round(/^h/i.test(u)?x*60:x);if(m>0&&m<=600){out.est=m;return pre}return all});
+  t=t.replace(/(^|\s)#([^\s#]+)(?=\s|$)/,(all,pre,w)=>{const h=akTag(w);if(h&&h.list){Object.assign(out,h);return pre}return all});
+  out.title=t.replace(/\s{2,}/g,' ').trim();return out}
+let akBase=null; // the picks before anything was typed, so deleting "#work" puts them back
+function akApply(){if(addKind!=='task'||!draft)return;if(!akBase)akBase={space:draft.space,list:draft.list,est:draft.est};
+  const p=akParse($('newTitle').value);Object.assign(draft,akBase,p.list?{space:p.space,list:p.list}:{},p.est?{est:p.est}:{});drawAdd();$('saveBtn').disabled=!p.title}
 function drawKinds(){
   const ks=addKinds(),row=$('addKinds');if(!ks.some(k=>k[0]===addKind))addKind='task';
   row.hidden=ks.length<2;row.innerHTML=ks.map(([k,l])=>`<button role="tab" data-ak="${k}" class="${addKind===k?'on':''}" aria-selected="${addKind===k}">${AK_IC[k]}${l}</button>`).join('');
   $('addSheet').dataset.kind=addKind;
   const t=$('newTitle'),x=$('addExtra');
-  t.placeholder={task:'What needs doing?',idea:'Drop an idea',habit:'New habit, e.g. Read 10 pages'}[addKind];
-  $('saveBtn').textContent={task:'Add task',idea:'Add idea',habit:'Add habit'}[addKind];
-  if(addKind==='habit'){x.hidden=false;const pre=[['all','Every day',[0,1,2,3,4,5,6]],['wk','Weekdays',[1,2,3,4,5]],['we','Weekends',[0,6]]];
-    x.innerHTML=`<div class="lbl">How often</div><div class="opts">${pre.map(([k,l,d])=>`<button class="opt${String(addHb.days)===String(d)?' on':''}" data-akd="${k}">${l}</button>`).join('')}</div>`}
-  else {x.hidden=true;x.innerHTML=''}
-  $('saveBtn').style.background=addKind==='task'?color(draft?draft.stage:'today'):addKind==='idea'?'var(--done)':addKind==='habit'?'var(--today)':'var(--text)';
-  $('saveBtn').disabled=!t.value.trim();
+  t.placeholder={task:'What needs doing?',note:'',habit:'New habit, e.g. Read 10 pages',goal:'What do you want to achieve?'}[addKind];
+  $('saveBtn').textContent={task:'Add task',note:'Save note',habit:'Add habit',goal:'Next: milestones'}[addKind];
+  x.hidden=false;
+  if(addKind==='task'){const multi=inSpaceMode()?S.lists.filter(l=>l.space===S.space).length>1:S.spaces.length>1;
+    x.innerHTML=`<p class="ak-tip">Tip: type ${multi?`<b>#${inSpaceMode()?'list':'space'}</b> or `:''}<b>30m</b> and it’s set for you.</p>`}
+  else if(addKind==='note'){const a=$('akNote'),keep=a?a.value:'';
+    x.innerHTML=`<textarea class="field ak-note" id="akNote" rows="5" placeholder="Write anything. The first line becomes the title." aria-label="Note"></textarea>
+      <div class="opts ak-nrow"><button class="opt${addNote.pin?' on':''}" data-akpin aria-pressed="${addNote.pin}">${I_PIN}Pin to top</button><span class="ak-where">Saved to Inbox › Notes</span></div>`;
+    $('akNote').value=keep}
+  else if(addKind==='habit'){const pre=[['all','Every day',[0,1,2,3,4,5,6]],['wk','Weekdays',[1,2,3,4,5]],['we','Weekends',[0,6]]];
+    x.innerHTML=`<div class="lbl">How often</div><div class="opts">${pre.map(([k,l,d])=>`<button class="opt${String(addHb.days)===String(d)?' on':''}" data-akd="${k}">${l}</button>`).join('')}</div>${akSpaces(addHb.space,'akhs')}`}
+  else if(addKind==='goal')x.innerHTML=`<div class="lbl">By when</div><div class="opts">${[1,3,6,12].map(m=>`<button class="opt${addG.m===m?' on':''}" data-akgm="${m}">${m===12?'1 year':`${m} ${m===1?'month':'months'}`}</button>`).join('')}</div>
+      ${akSpaces(addG.space,'akgs')}<p class="ak-tip">Next you’ll add a few milestones.</p>`;
+  const sb=$('saveBtn'),ink=addKind==='note'||addKind==='goal';
+  sb.style.background=addKind==='task'?color(draft?draft.stage:'today'):ink?'var(--text)':'var(--today)';sb.style.color=ink?'var(--bg)':'';
+  sb.disabled=!(addKind==='note'?($('akNote').value.trim()):t.value.trim());
 }
-$('addKinds').addEventListener('click',e=>{const b=e.target.closest('[data-ak]');if(!b)return;addKind=b.dataset.ak;haptic(5);
-  if(addKind==='task')drawAdd();drawKinds();$('newTitle').focus()});
+$('addKinds').addEventListener('click',e=>{const b=e.target.closest('[data-ak]');if(!b)return;const was=addKind;addKind=b.dataset.ak;haptic(5);
+  /* what's typed comes along when you switch between a one-line kind and a note */
+  const a=$('akNote'),i=$('newTitle');if(addKind==='note'&&was!=='note'&&a&&!a.value.trim()&&i.value.trim())a.value=i.value;else if(was==='note'&&addKind!=='note'&&a&&!i.value.trim()&&a.value.trim())i.value=nbTitle(a.value);
+  if(addKind==='task'){drawAdd();akApply()}drawKinds();(addKind==='note'?$('akNote'):$('newTitle')).focus()});
 $('addExtra').addEventListener('click',e=>{
-  const d=e.target.closest('[data-akd]');if(d){addHb.days={all:[0,1,2,3,4,5,6],wk:[1,2,3,4,5],we:[0,6]}[d.dataset.akd];haptic(4);return drawKinds()}});
-$('newTitle').addEventListener('input',()=>{if(addKind!=='task')drawKinds()});
+  const d=e.target.closest('[data-akd]');if(d){addHb.days={all:[0,1,2,3,4,5,6],wk:[1,2,3,4,5],we:[0,6]}[d.dataset.akd];haptic(4);return drawKinds()}
+  const hs=e.target.closest('[data-akhs]');if(hs){addHb.space=hs.dataset.akhs||null;haptic(4);return drawKinds()}
+  const gs=e.target.closest('[data-akgs]');if(gs){addG.space=gs.dataset.akgs||null;haptic(4);return drawKinds()}
+  const gm=e.target.closest('[data-akgm]');if(gm){addG.m=+gm.dataset.akgm;haptic(4);return drawKinds()}
+  if(e.target.closest('[data-akpin]')){addNote.pin=!addNote.pin;haptic(4);return drawKinds()}});
+$('addExtra').addEventListener('input',e=>{if(e.target.id==='akNote')$('saveBtn').disabled=!e.target.value.trim()});
+$('addExtra').addEventListener('keydown',e=>{if(e.target.id==='akNote'&&e.key==='Enter'&&(e.metaKey||e.ctrlKey)&&e.target.value.trim()){e.preventDefault();$('saveBtn').click()}});
+$('newTitle').addEventListener('input',()=>{if(addKind==='task')akApply();else drawKinds()});
 const _akOpen=$('addBtn').onclick;
-$('addBtn').onclick=e=>{addKind='task';addHb={days:[0,1,2,3,4,5,6]};_akOpen(e);drawKinds()};
+$('addBtn').onclick=e=>{addKind='task';akBase=null;const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null; // inside a space, a new habit or goal starts there
+  addHb={days:[0,1,2,3,4,5,6],space:sp};addG={m:3,space:sp};addNote={pin:false};const a=$('akNote');if(a)a.value='';_akOpen(e);drawKinds()};
+/* picking a space, list or time by hand makes it the new starting point for what's typed */
+['optSpace','optList','optEst'].forEach(id=>$(id).addEventListener('click',()=>{if(draft)akBase={space:draft.space,list:draft.list,est:draft.est}}));
 const _akSave=$('saveBtn').onclick;
 $('saveBtn').onclick=()=>{
-  if(addKind==='task')return _akSave();
+  if(addKind==='task'){const i=$('newTitle'),p=akParse(i.value);if(!p.title)return;i.value=p.title;return _akSave()}
+  if(addKind==='note'){const v=($('akNote').value||'').trim();if(!v)return;
+    const t={id:newId(),title:nbTitle(v),stage:'backlog',list:null,est:0,subs:[],notes:v,repeat:'none',inbox:true,note:true,created:Date.now(),...(addNote.pin?{pin:true}:{})};
+    closeSheets();commit(()=>S.tasks.push(t),'Note saved to Inbox');try{sfx('add')}catch(e){}return}
   const v=$('newTitle').value.trim();if(!v)return;
-  if(addKind==='idea'){const t={id:newId(),title:v,stage:'backlog',list:null,est:S.cfg.defEst||30,subs:[],notes:'',repeat:'none',inbox:true,created:Date.now()};
-    closeSheets();commit(()=>S.tasks.push(t),'Idea saved to Inbox');try{sfx('add')}catch(e){}return}
   if(addKind==='habit'){if(hbAll().length>=HB_MAX){toast(`Up to ${HB_MAX} habits. Fewer, kept daily, beat many.`);return}
-    const sp=inSpaceMode()&&spaceOf(S.space)?S.space:null,days=[...addHb.days]; // a habit needs no space unless you add it inside one
+    const sp=addHb.space&&spaceOf(addHb.space)?addHb.space:null,days=[...addHb.days];
     closeSheets();commit(()=>{S.habits=S.habits||[];S.habits.push({id:'h'+newId(),name:v,e:hbIcon(v),space:sp,days,done:{},created:Date.now()})},`${v} added`);try{sfx('add')}catch(e){}return}
+  if(addKind==='goal'){if(gAll().length>=G_MAX){toast(`Up to ${G_MAX} goals at once. Finish one to start another.`);return}
+    const g={...addG};closeSheets();
+    /* the rest of the goal (milestones, north star) is the usual setup, already on its last step */
+    setTimeout(()=>{openSetup(g.space);if(!gsOn)return;Object.assign(gsD,{name:v,e:gIcon(v),pick:g.m,due:gPlus(g.m)});gsStep(3)},260)}
 };
 
 /* ---------- B · close the day ---------- */
@@ -7115,6 +7281,20 @@ function hbWidget(){
   if(st==='pills')return `<div class="hw hw-pills">${head}<div class="hw-pl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-pill${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span>${h.e?esc(h.e)+' ':''}${esc(h.name)}</button>`}).join('')}${mr}</div></div>`;
   return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small>${hwWeek(h)}</span></button>`}).join('')}</div>${mr}</div>`;
 }
+
+/* Escape closes the page on top, wherever focus is. Clicking an empty spot moves focus off a page, so its own
+   Escape handler never hears the key. Runs first (capture) but only steps in then; pages and popups that already
+   listen app-wide (Habits, Goals, their popups, menus, dialogs, Settings) are left to their own handlers. */
+const ESC_PAGES={nbEd:()=>closeNote(),moPg:()=>closeMoment(),gsPg:()=>closeSetup(),cdPg:()=>closeCloseDay(),reviewPg:()=>closeReview(),inboxPg:()=>closeInbox()};
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||e.defaultPrevented||cxIt)return;
+  if($('dlg').classList.contains('on')||document.querySelector('.sheet.on')||(typeof srchOpen!=='undefined'&&srchOpen)||$('focus').classList.contains('on'))return;
+  const z=el=>parseInt(getComputedStyle(el).zIndex,10)||0;
+  const top=[...document.querySelectorAll('.inbox-pg.on,.mo-pg.on,.dlg.on,#settings.on')]
+    .sort((a,b)=>z(a)-z(b)||(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING?-1:1)).pop();
+  if(!top||!ESC_PAGES[top.id]||top.contains(e.target))return;
+  e.preventDefault();e.stopImmediatePropagation();ESC_PAGES[top.id]();
+},true);
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -7225,14 +7405,30 @@ function askDeleteSpace(id){
   const sp=spaceOf(id);if(!sp)return;
   if(S.spaces.length<2)return toast('You need at least one space');
   const ls=S.lists.filter(l=>l.space===id).map(l=>l.id),nt=S.tasks.filter(t=>ls.includes(t.list)).length;
+  const hs=(S.habits||[]).filter(h=>h.space===id),gs=(S.goals||[]).filter(g=>g.space===id),pl=(n,a,b)=>`${n} ${n===1?a:b}`;
+  const what=[hs.length&&pl(hs.length,'habit','habits'),gs.length&&pl(gs.length,'goal','goals')].filter(Boolean).join(' and ');
+  /* habits and goals don't need a space, so by default they stay (in "No space") instead of quietly going with it */
+  const choice=what?{legend:`${what[0].toUpperCase()+what.slice(1)} in this space`,val:'keep',opts:[['keep','Keep them','They move to “No space”. Streaks and progress stay.'],
+    ['drop','Delete them too',[...hs.map(h=>h.name),...gs.map(g=>g.name)].slice(0,3).join(', ')+(hs.length+gs.length>3?'…':'')]]}:null;
   confirmDanger({title:`Delete ${sp.name}?`,
-    text:`This deletes the space, its ${ls.length} ${ls.length===1?'list':'lists'} and ${nt} ${nt===1?'task':'tasks'} for good. To keep them safe, choose Archive instead.`,
-    word:sp.name,yes:'Delete space',
-    onYes:()=>commit(()=>{S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.habits=(S.habits||[]).filter(h=>h.space!==id);S.hchains=(S.hchains||[]).filter(c=>c.space!==id);S.goals=(S.goals||[]).filter(g=>g.space!==id);S.tasks=S.tasks.filter(t=>!ls.includes(t.list));if(S.space===id){S.space=null;S.list='all'}},`${sp.name} deleted`)});
+    text:`This deletes the space, its ${pl(ls.length,'list','lists')} and ${pl(nt,'task','tasks')} for good. To keep them safe, choose Archive instead.`,
+    word:sp.name,yes:'Delete space',choice,
+    onYes:v=>{const drop=v==='drop',dead=t=>ls.includes(t.list);commit(()=>{
+      S.spaces=S.spaces.filter(x=>x.id!==id);S.lists=S.lists.filter(l=>l.space!==id);S.hchains=(S.hchains||[]).filter(c=>c.space!==id);
+      if(drop){S.habits=(S.habits||[]).filter(h=>h.space!==id);S.goals=(S.goals||[]).filter(g=>g.space!==id)}
+      else{(S.habits||[]).forEach(h=>{if(h.space===id)h.space=null});(S.goals||[]).forEach(g=>{if(g.space===id)g.space=null})}
+      /* a goal that stays keeps its milestone tasks from those lists: they become tasks of the milestone only */
+      (S.goals||[]).forEach(g=>S.tasks.forEach(t=>{if(!dead(t)||t.goal!==g.id)return;const m=(g.ms||[]).find(x=>String(x.id)===String(t.ms));if(!m)return;
+        m.items=m.items||[];m.items.push({id:newId(),t:t.title,done:t.stage==='done',...(t.stage==='done'?{doneAt:t.doneAt||Date.now()}:{}),subs:(t.subs||[]).map(s=>({...s}))})}));
+      S.tasks=S.tasks.filter(t=>!dead(t));if(S.space===id){S.space=null;S.list='all'}},
+      what&&!drop?`${sp.name} deleted · ${what} kept`:`${sp.name} deleted`)}});
 }
-let dlgYes=null;
-function confirmDanger({title,text,word,yes,no,onYes}){
+let dlgYes=null,dlgPick=null;
+function confirmDanger({title,text,word,yes,no,onYes,choice}){
   const typed=!!word;$('dlg').classList.toggle('simple',!typed);
+  /* an optional either/or inside the dialog, e.g. keep or delete a space's habits and goals; onYes gets the pick */
+  const ch=$('dlgCh');ch.hidden=!choice;dlgPick=choice?choice.val:null;
+  ch.innerHTML=choice?`<legend>${esc(choice.legend)}</legend>${choice.opts.map(([v,t,s])=>`<label class="dlg-op${v===choice.val?' on':''}"><input type="radio" name="dlgCh" value="${esc(v)}"${v===choice.val?' checked':''}><span><b>${esc(t)}</b><small>${esc(s)}</small></span></label>`).join('')}`:'';
   $('dlgT').textContent=title;$('dlgP').textContent=text;$('dlgW').textContent=word||'';$('dlgIn').value='';$('dlgYes').textContent=yes;$('dlgNo').textContent=no||'Cancel';$('dlgYes').disabled=typed;
   $('dlgIn').dataset.word=word||'';dlgYes=onYes;$('dlg').classList.add('on');haptic(12);setTimeout(()=>(typed?$('dlgIn'):$('dlgYes')).focus(),200);
 }
@@ -7245,7 +7441,8 @@ function closeDlg(){$('dlg').classList.remove('on');dlgYes=null;$('dlgIn').blur(
 $('dlgIn').oninput=e=>{$('dlgYes').disabled=e.target.value.trim().toLowerCase()!==e.target.dataset.word.trim().toLowerCase()};
 $('dlgIn').onkeydown=e=>{if(e.key==='Enter'&&!$('dlgYes').disabled)$('dlgYes').click();if(e.key==='Escape'){e.stopPropagation();closeDlg()}};
 $('dlgNo').onclick=closeDlg;$('dlg').onclick=e=>{if(e.target===$('dlg'))closeDlg()};
-$('dlgYes').onclick=()=>{const f=dlgYes;closeDlg();if(f)f()};
+$('dlgYes').onclick=()=>{const f=dlgYes,v=dlgPick;closeDlg();if(f)f(v)};
+$('dlgCh').onchange=e=>{const r=e.target.closest('input[type=radio]');if(!r)return;dlgPick=r.value;haptic(4);$('dlgCh').querySelectorAll('.dlg-op').forEach(l=>l.classList.toggle('on',l.contains(r)))};
 $('editSpace').onclick=()=>{if(inSpaceMode()){closeSheets();setTimeout(()=>openSpaceSheet(S.space),250)}};
 
 /* sidebar: click the open space again to fold / unfold its lists */
@@ -7743,7 +7940,7 @@ function settingsPage(id){
       </div>`).join('')}</div>
     <button class="ghost-btn" id="stReset">Reset to default</button>`;
   if(id==='tasks')body=`<div class="set-sec"><h3>New tasks</h3>
-    ${row('Inbox',tg('inbox'),'A calm place to drop ideas. Send them to a list’s Backlog when you’re ready.')}
+    ${row('Inbox',tg('inbox'),'A calm place for loose tasks and notes. Send a task to a list when you’re ready.')}
     ${row('Weekly review',tg('review'),'A short card on Home once a week: see what you finished and tidy My week.')}
     ${c.review!==false?row('Review day',`<div class="segc">${REVIEW_DAYS.map(([v,n])=>sOpt('reviewDay',v,n)).join('')}</div>`)+`<button class="link-row" id="rvStart">Start a review now</button>`:''}
     ${row('Default estimate',`<div class="segc">${[15,30,60,120].map(m=>sOpt('defEst',m,fmt(m))).join('')}</div>`)}

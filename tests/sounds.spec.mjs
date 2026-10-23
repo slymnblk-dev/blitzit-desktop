@@ -33,7 +33,7 @@ test('sounds: one finish sound per tick, steps in focus, style page lets you try
   for (const look of ['classic', 'tide']) {
     await page.evaluate(look => { __sfxLog.length = 0; S.cfg.focusStyle = look; const l = S.lists[0]; const t = newTask('Steps ' + look, 'today', l.id, 30); t.subs = [{ id: 901, t: 'A', done: false }, { id: 902, t: 'B', done: false }]; S.tasks.unshift(t); look === 'tide' ? startTide([t]) : startBlitz([t]); }, look);
     await page.waitForTimeout(500);
-    await page.locator(look === 'tide' ? '#tStep' : '#fStep').click();
+    await page.locator(look === 'tide' ? '#tStep' : '#fSteps [data-fst]').first().click();
     await page.waitForTimeout(200);
     expect(await page.evaluate(() => __sfxLog)).toContain('tick');
     await page.evaluate(look => { try { look === 'tide' ? tideLeave() : closeFocus(); } catch (e) {} }, look);

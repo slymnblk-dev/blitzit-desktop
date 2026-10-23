@@ -150,7 +150,7 @@
   <div class="f-main">
     <div class="f-up" id="fList"></div>
     <div class="f-title" id="fTitle"></div>
-    <button class="f-step" id="fStep"><i></i><span class="fs-t" id="fStepT"></span><span class="fs-n" id="fStepN"></span></button>
+    <div class="f-steps" id="fSteps" role="group" aria-label="Steps"></div>
     <div class="f-time" id="fTime">00:00</div>
     <div class="f-bar"><span id="fBar"></span></div>
     <div class="f-cap"><span id="fLeft"></span><span id="fEst"></span></div>
@@ -171,6 +171,7 @@
 <div class="dlg" id="dlg" role="dialog" aria-modal="true"><div class="dlg-in">
   <div class="dlg-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></div>
   <h3 id="dlgT"></h3><p id="dlgP"></p>
+  <fieldset class="dlg-ch" id="dlgCh" hidden></fieldset>
   <label class="dlg-l">Type <b id="dlgW"></b> to confirm</label>
   <input class="acc-in" id="dlgIn" autocomplete="off" spellcheck="false">
   <div class="dlg-b"><button class="secondary" id="dlgNo">Cancel</button><button class="danger" id="dlgYes" disabled>Delete</button></div>

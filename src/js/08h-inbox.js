@@ -117,7 +117,7 @@ function ibListPicks(){
       return `<button class="pk${full?' full':''}" data-v="${l.id}"><i style="background:${l.c}"></i>${esc(l.name)}<small>${n}/${STAGE_MAX}</small></button>`}).join('')}).join('');
 }
 function ibSendTo(t,list){
-  if(!t.title.trim()){toast('Give the idea a name first');drawDetail();return}
+  if(!t.title.trim()){toast('Give it a name first');drawDetail();return}
   if(!canPut(list,'backlog')){drawDetail();return}
   S.cfg.ibLast=list;
   const name=listOf(list).name;cur=null;onSheetClose=null;closeSheets();
