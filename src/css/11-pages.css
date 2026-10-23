@@ -32,7 +32,7 @@
 .hg-d{display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--muted)}
 .hg-d small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .hg-d b{font-size:13px;font-weight:600}
-.hg-d.now{color:var(--today)}
+.hg-d.now{color:var(--today-ink)}
 .hg-row{border-top:1px solid var(--line)}
 .hg-n{display:flex;align-items:center;gap:10px;min-width:0;padding:18px 10px 18px 0;font-size:17px;font-weight:600;text-align:left;color:var(--text)}
 .hg-n:hover{color:color-mix(in srgb,var(--text) 75%,var(--today))}
@@ -201,11 +201,11 @@ button.hg-c:active{transform:scale(.88)}
 .gpth.now .gpth-k i{opacity:1;animation:gbHalo 2.4s ease-in-out infinite}
 .gpth-k.ghost{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 10%,transparent);border-style:dashed}
 .gpth-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;padding:3px 0 28px}
-.gpth-nx{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--today)}
+.gpth-nx{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--today-ink)}
 .gpth-t{font-size:18px;line-height:1.35}
 .gpth.done .gpth-t{color:var(--muted)}
 .gpth.now .gpth-t{font-size:22px;font-weight:700}
-.gpth-tx small{font-size:13px;color:var(--muted);opacity:.8}
+.gpth-tx small{font-size:13px;color:var(--muted)}
 .gpth.add .gpth-tx{padding-top:0}
 .gv.anim .gpth{animation:pgIn .5s var(--ease) both;animation-delay:calc(var(--i)*70ms + .2s)}
 .gv.anim .gpv>.hp-eye,.gv.anim .gpv>.gv-h,.gv.anim .gpv>.gv-why{animation:pgIn .5s var(--ease) both}
@@ -275,7 +275,7 @@ button.hg-c:active{transform:scale(.88)}
 .hw-tx small{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .hw-tx b{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hw-tx span{font-size:13px;color:var(--muted)}
-.hw-st{font-style:normal;color:var(--today);font-weight:700}
+.hw-st{font-style:normal;color:var(--today-ink);font-weight:700}
 .hw-done{height:44px;padding:0 20px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;font-size:15px;flex:none;transition:transform .15s,opacity .3s}
 .hw-done:active{transform:scale(.94)}
 .hw-done.on{background:var(--today);color:#0F1013;pointer-events:none}
@@ -346,7 +346,7 @@ button.hg-c:active{transform:scale(.88)}
 .gm-card{background:var(--surface);border-radius:22px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
 .gm-h{display:flex;align-items:flex-start;gap:12px}
 .gm-hx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.gm-tag{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--today)}
+.gm-tag{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--today-ink)}
 .gm-card[data-gcard] .gm-hx>b{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.2;overflow-wrap:anywhere}
 .gm-hx small{font-size:13px;color:var(--muted)}
 .gm-done{flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:background .3s,color .3s,box-shadow .3s}
@@ -380,16 +380,16 @@ button.hg-c:active{transform:scale(.88)}
 .gm-card.in .gm-tag,.gm-card.in .gm-hx>b{display:none}
 .gm-card.in .gm-h{align-items:center}
 /* Poster: the coral block becomes the selected milestone's card */
-.gm-card.hot{background:var(--today);color:#fff;border-radius:26px;padding:24px 26px;animation:pgIn .6s .2s var(--ease) both}
-.gm-card.hot .gm-tag{color:#fff;opacity:.85;font-weight:800;letter-spacing:.1em}
+.gm-card.hot{background:var(--cta);color:#fff;border-radius:26px;padding:24px 26px;animation:pgIn .6s .2s var(--ease) both}
+.gm-card.hot .gm-tag{color:#fff;font-weight:800;letter-spacing:.1em}
 .gm-card.hot .gm-hx>b{font-size:26px}
-.gm-card.hot .gm-hx small,.gm-card.hot .gm-tt small,.gm-card.hot .gm-empty,.gm-card.hot .gm-plus,.gm-card.hot .gm-add input::placeholder{color:rgba(255,255,255,.78)}
+.gm-card.hot .gm-hx small,.gm-card.hot .gm-tt small,.gm-card.hot .gm-empty,.gm-card.hot .gm-plus,.gm-card.hot .gm-add input::placeholder{color:#fff}
 .gm-card.hot .gm-add input{color:#fff}
 .gm-card.hot .gm-t,.gm-card.hot .gm-add{border-color:rgba(255,255,255,.22)}
 .gm-card.hot .gm-bar{background:rgba(255,255,255,.25)}.gm-card.hot .gm-bar i{background:#fff}
 .gm-card.hot .gm-k{box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
 .gm-card.hot .gm-t.on .gm-k{background:#fff;color:var(--today)}
-.gm-card.hot .gm-t.on .gm-tt b{color:rgba(255,255,255,.7)}
+.gm-card.hot .gm-t.on .gm-tt b{color:#fff;font-weight:500}
 .gm-card.hot .gm-done{background:#0F1013;color:#F3F2EE;box-shadow:none}
 .gm-card.hot .gm-done.on{background:#fff;color:var(--today)}
 .gpo-ml{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;text-align:left;font:inherit;color:inherit;padding:0}
@@ -414,7 +414,7 @@ button.hg-c:active{transform:scale(.88)}
 .gm-sk svg{width:10px;height:10px}
 .gm-s.on .gm-sk{background:var(--gm-soft);box-shadow:none;color:var(--today)}
 .gm-s.on .gm-st{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 45%,transparent)}
-.gm-card.hot .gm-sub{color:rgba(255,255,255,.85)}.gm-card.hot .gm-sub:hover,.gm-card.hot .gm-t.open .gm-sub{background:rgba(255,255,255,.16);color:#fff}
+.gm-card.hot .gm-sub{color:#fff}.gm-card.hot .gm-sub:hover,.gm-card.hot .gm-t.open .gm-sub{background:rgba(255,255,255,.16);color:#fff}
 .gm-card.hot .gm-sub .r0{stroke:rgba(255,255,255,.3)}.gm-card.hot .gm-sub .r1{stroke:#fff}
 .gm-card.hot .gm-subs{border-color:rgba(255,255,255,.3)}.gm-card.hot .gm-sk{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6)}.gm-card.hot .gm-s.on .gm-sk{background:#fff;color:var(--today)}
 /* long lists scroll inside themselves, with a soft fade where more rows wait, so the page stays short */
@@ -481,7 +481,7 @@ button.hg-c:active{transform:scale(.88)}
 /* on computers a row's ⋯ waits until you point at the row; on touch screens it is always there */
 @media (hover:hover){.gm-t .gm-more,.g-tr2 .gm-more{opacity:0}.gm-t:hover .gm-more,.gm-t:focus-within .gm-more,.g-tr2:hover .gm-more,.g-tr2:focus-within .gm-more,.gm-more[aria-expanded="true"]{opacity:1}}
 .gm-h .gm-more{margin:2px -6px 0 -4px}
-.gm-card.hot .gm-more{color:rgba(255,255,255,.85)}.gm-card.hot .gm-more:hover,.gm-card.hot .gm-more[aria-expanded="true"]{background:rgba(255,255,255,.16);color:#fff}
+.gm-card.hot .gm-more{color:#fff}.gm-card.hot .gm-more:hover,.gm-card.hot .gm-more[aria-expanded="true"]{background:rgba(255,255,255,.16);color:#fff}
 /* inline rename and subtasks */
 .gm-ren{flex:1;min-width:0;margin:6px 0;padding:7px 10px;border:0;border-radius:10px;background:var(--surface2);color:var(--text);font:inherit;font-size:15.5px;font-weight:600;outline:none;box-shadow:inset 0 0 0 1.5px var(--gm-mid)}
 .gm-sr{display:flex;align-items:center;gap:6px}
@@ -495,7 +495,7 @@ button.hg-c:active{transform:scale(.88)}
 .gm-sadd .gm-plus{width:18px;height:18px}.gm-sadd .gm-plus svg{width:13px;height:13px}
 .gm-sadd input{flex:1;min-width:0;border:0;background:none;outline:none;color:var(--text);font:inherit;font-size:14px;padding:2px 0}
 .gm-sadd input::placeholder{color:var(--muted)}
-.gm-card.hot .gm-sadd input{color:#fff}.gm-card.hot .gm-sadd input::placeholder,.gm-card.hot .gm-sx{color:rgba(255,255,255,.75)}
+.gm-card.hot .gm-sadd input{color:#fff}.gm-card.hot .gm-sadd input::placeholder,.gm-card.hot .gm-sx{color:#fff}
 /* Other tasks and achieved rows with a ⋯ */
 .g-tr2{display:flex;align-items:center;border-top:1px solid var(--line)}
 .g-tr2:first-child{border-top:0}
@@ -522,7 +522,7 @@ button.hg-c:active{transform:scale(.88)}
 .gm-in{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap;margin-left:auto}
 .gm-in i{width:7px;height:7px;border-radius:50%;flex:none}
 .gm-tt b+.gm-in{margin-left:10px}
-.gm-card.hot .gm-in{color:rgba(255,255,255,.8)}
+.gm-card.hot .gm-in{color:#fff}
 .gs-lbl span{font-weight:500;color:var(--muted);margin-left:4px}
 
 /* Option A: one calm line of facts under the hill */
@@ -547,7 +547,7 @@ button.hg-c:active{transform:scale(.88)}
 .g-whyico button svg{width:14px;height:14px;color:var(--today)}
 .g-whyico button.on{background:var(--tick-soft);box-shadow:inset 0 0 0 1.5px var(--tick-mid)}
 .g-whyico button.none{width:auto;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;color:var(--muted)}
-.g-whyico button.none.on{color:var(--today)}
+.g-whyico button.none.on{color:var(--today-ink)}
 
 /* north star: a small gold star twinkling in the sky above the summit */
 .gb-ns{position:absolute;z-index:2;top:13%;right:31%;width:22px;height:22px;color:var(--week);pointer-events:none;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--week) 70%,transparent))}

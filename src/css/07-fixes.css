@@ -511,7 +511,7 @@ body.no-amb .amb-btn{display:none!important}
 .m-date.has-sun{display:flex;align-items:center}
 .m-date .m-sun{width:1.24em;height:1.24em;flex:none;margin:0 .12em 0 -.13em;position:relative;top:-.07em;color:var(--today);stroke-width:3.4}
 /* Win the day: white text, bigger sun */
-.ts-go,.col-go{color:#fff!important;gap:10px}
+.ts-go,.col-go{color:#fff!important;background:var(--cta)!important;gap:10px}
 .ts-go{font-size:17px}.col-go{font-size:16px}
 .ts-go .sun-ic,.col-go .sun-ic{width:27px;height:27px;stroke-width:4.2;fill:none;stroke:currentColor;margin:-3px 0 -1px}
 
@@ -522,7 +522,7 @@ body.no-amb .amb-btn{display:none!important}
 .thg:last-child{margin-bottom:4px}
 .thg-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:13px;font-weight:700}
 .thg-h small{font-size:12px;font-weight:500;color:var(--muted)}
-.thg-h em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--today);display:flex;align-items:center;gap:6px}
+.thg-h em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--today-ink);display:flex;align-items:center;gap:6px}
 .thg-h em::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .thg-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .thc{position:relative;display:flex;flex-direction:column;gap:8px;padding:6px 6px 10px;border-radius:16px;background:var(--surface);box-shadow:0 0 0 1px var(--line);text-align:left;color:var(--text);transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
@@ -665,7 +665,7 @@ body.no-amb .amb-btn{display:none!important}
 .lpm-hr{display:block;height:1px;background:var(--line);margin:6px 4px}
 .lp-ren{width:100%;background:var(--surface2);border:0;border-radius:10px;padding:2px 8px;margin-left:-8px;color:var(--text);font:inherit;font-size:22px;font-weight:700;letter-spacing:-.03em;outline:none;box-shadow:0 0 0 2px var(--text)}
 /* phone: Win the day matches the computer (white text, the sunrise mark) */
-.go{color:#fff;gap:10px}
+.go{color:var(--on-accent,#fff);background:var(--accent-btn,var(--accent));gap:10px}
 .go .sun-ic{width:26px;height:26px;margin:-3px 0 -1px}
 .d-focus .sun-ic{width:20px;height:20px;color:var(--today)}
 .in-bolt .sun-ic{color:var(--today)}
@@ -790,7 +790,7 @@ body.no-amb .amb-btn{display:none!important}
 .le-btn:active{transform:scale(.98)}
 .le-btn svg,.le-bi svg{width:17px;height:17px}
 .le-bi{display:grid;place-items:center}
-.le-btn.warn{color:var(--today);background:color-mix(in srgb,var(--today) 11%,transparent)}
+.le-btn.warn{color:var(--today-ink);background:color-mix(in srgb,var(--today) 11%,transparent)}
 .le-btn:hover{background:color-mix(in srgb,var(--text) 9%,var(--surface2))}
 .le-btn.warn:hover{background:color-mix(in srgb,var(--today) 17%,transparent)}
 .le-coll .le-note{margin:12px 4px 0;font-size:13px;color:var(--muted);line-height:1.4}
@@ -855,7 +855,7 @@ body.no-amb .amb-btn{display:none!important}
 :root[data-home="calm"] .hf-sp .sp-bars i:not(.sp-bars-0){background:color-mix(in srgb,var(--text) 22%,transparent)!important}
 /* Today strip: "Up next" instead of chips */
 .ts-up{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;font-size:15px}
-.ts-up span{color:var(--muted);flex:none}
+.ts-up span{color:color-mix(in srgb,var(--muted) 85%,var(--text));flex:none}
 .ts-up b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ---------- desktop Home, "Today first" layout ---------- */
@@ -1047,7 +1047,7 @@ body.no-amb .amb-btn{display:none!important}
 .ci-b{display:flex;gap:10px;width:100%;margin-top:16px}
 .ci-b button{flex:1;height:52px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:15px;transition:transform .15s}
 .ci-b button:active{transform:scale(.97)}
-.ci-b .yes{background:var(--today);color:#fff}
+.ci-b .yes{background:var(--cta);color:#fff}
 .ci-end{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding-top:16px}
 .ci-end .hb-sun{width:130px;height:108px;margin-bottom:6px}
 .ci-end b{font-size:22px;font-weight:800;letter-spacing:-.02em}

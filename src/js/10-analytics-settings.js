@@ -68,7 +68,7 @@ function buildShells(){
   $('gauge').innerHTML=STAGES.map(s=>`<button class="seg" data-s="${s.id}" style="--c:${color(s.id)}">
     <div class="bar"><span></span></div><div class="seg-l"><em>${esc(s.short)}</em><b class="seg-n"></b></div></button>`).join('');
   prevCounts={};
-  $('board').innerHTML=STAGES.map(s=>`<section class="col" data-s="${s.id}" style="--c:${color(s.id)}">
+  $('board').innerHTML=STAGES.map(s=>`<section class="col" data-s="${s.id}" style="--c:${color(s.id)};--c-lg:var(--${s.id}-lg)">
     <header class="col-h"><div class="col-t"><h2 title="Focus on ${esc(s.name)}">${esc(s.name)}</h2>
       <button class="col-fx" aria-label="Focus on ${esc(s.name)}"><svg class="ic-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg><svg class="ic-min" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg></button></div><span class="col-n"></span></header>
     <div class="col-sum"></div>

@@ -169,7 +169,8 @@ function render(dir){
     enterId=null;save();return;
   }
   const st=STAGES[idx(S.stage)];
-  root.style.setProperty('--accent',color(S.stage));
+  root.style.setProperty('--accent',color(S.stage));root.style.setProperty('--accent-lg',`var(--${S.stage}-lg)`);
+  root.style.setProperty('--on-accent',`var(--on-${S.stage})`);root.style.setProperty('--accent-btn',S.stage==='today'?'var(--cta)':color(S.stage));
   const h=$('stageTitle');h.textContent=st.name;
   if(dir!==undefined){h.classList.remove('in-l','in-r','in-u');void h.offsetWidth;h.classList.add(dir>0?'in-r':dir<0?'in-l':'in-u')}
 

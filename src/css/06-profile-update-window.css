@@ -52,7 +52,7 @@
   /* Home: today strip */
   .ts{display:flex;align-items:center;gap:20px;padding:16px 16px 16px 22px;margin-bottom:18px;border-radius:24px;background:color-mix(in srgb,var(--today) 12%,var(--surface));animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
   .ts-l{flex:none;display:flex;flex-direction:column}
-  .ts-k{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--today)}
+  .ts-k{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--today-ink)}
   .ts-l b{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
   .ts-t{flex:1;min-width:0;display:flex;gap:8px;flex-wrap:wrap;overflow:hidden;max-height:34px}
   .ts-t span{display:flex;align-items:center;gap:7px;max-width:240px;height:34px;padding:0 13px;border-radius:999px;background:var(--surface);font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -116,7 +116,7 @@
 .updm-top{display:flex;align-items:center;gap:10px}
 .updm-ico{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--today);color:#0F1013}
 .updm-ico svg{width:20px;height:20px}
-.updm-k{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--today)}
+.updm-k{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--today-ink)}
 .updm h2{margin:16px 0 0;font-size:30px;font-weight:800;letter-spacing:-.04em;line-height:1.05}
 .updm-sub{margin:6px 0 0;font-size:14px;color:var(--muted)}
 .updm-new{margin-top:20px;padding:16px 16px 6px;border-radius:20px;background:var(--surface2)}

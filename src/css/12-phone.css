@@ -50,3 +50,39 @@
   body.tabs-on .inbox-pg:not(.review-pg) .ib-in{padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))}
   :root[data-view="home"] body.tabs-on .dock{display:none}
 }
+
+/* ===== Phones: every tap target answers in about 44 px, with no change to how anything looks.
+   An invisible layer around small controls (ticks, ⋯, chips, switches) takes the tap. ===== */
+@media (max-width:1099px){
+  .sp-more,.gauge .seg,.row-in .check,#dMore,#dClose,#dPills .pill,.sub .sc,.sub .sx,.sr-x,#fMode button,.stg-dot,#stReset,.chips .opt,#youSet,
+  .ib-kind button,.ib-tabs button,.hg-c,.ho-grip,.gme-days,.gme-del,.gme-addb,.gm-more,.gm-done,.gm-k,.gm-sub,.gpth-t,.gpo-k,.gpo-ml,
+  #gWhyIco button,#gWhyVis button,#inSkip,.rv-go,.rv-skip,.segc button,.gm-n,.gpth-k{position:relative}
+  .sp-more::after,.gauge .seg::after,.row-in .check::after,#dMore::after,#dClose::after,#dPills .pill::after,.sub .sc::after,.sub .sx::after,
+  .sr-x::after,#fMode button::after,.stg-dot::after,#stReset::after,.chips .opt::after,#youSet::after,.ib-kind button::after,.ib-tabs button::after,
+  .hg-c::after,.ho-grip::after,.gme-days::after,.gme-del::after,.gme-addb::after,.gm-more::after,.gm-done::after,.gm-k::after,.gm-sub::after,
+  .gpth-t::after,.gpo-k::after,.gpo-ml::after,#gWhyIco button::after,#gWhyVis button::after,#inSkip::after,.rv-go::after,.rv-skip::after,
+  .segc button::after,.gm-n::after,.gpth-k::after,.tg::before{content:'';position:absolute;inset:-5px}
+  .sub .sc::after{inset:-12px}
+  .row-in .check::after{inset:-9px -14px -9px -9px}
+  .gm-k::after,.gpo-k::after{inset:-10px}
+  .sub .sx::after,.stg-dot::after,.gpth-k::after{inset:-8px}
+  .sr-x::after,.gm-more::after,.ib-kind button::after{inset:-6px}
+  #dClose::after,#gWhyVis button::after{inset:-7px -4px}
+  #dPills .pill::after,.chips .opt::after{inset:-4px -2px}
+  #gWhyIco button::after{inset:-5px -3px}
+  #fMode button::after,.gm-sub::after{inset:-8px -2px}
+  .segc button::after,.ib-tabs button::after,#stReset::after,.gme-addb::after{inset:-6px -1px}
+  #youSet::after,.gm-done::after,.gauge .seg::after,.gm-n::after,.rv-go::after,.rv-skip::after{inset:-5px 0}
+  .gme-days::after{inset:-7px}
+  .gpth-t::after{inset:-10px 0}
+  .gpo-ml::after{inset:-12px 0}
+  .tg::before{inset:-7px -2px}
+  /* lists that scroll inside themselves get a little room at the sides, so the first column of ticks isn't clipped */
+  .dsheet .subs{padding-left:12px;margin-left:-12px;padding-right:10px;margin-right:-10px}
+  .gm-ts{padding-left:10px;margin-left:-10px}
+  /* segmented switches and the Inbox Task / Note switch: a little taller on phones */
+  .segc button{min-height:38px}
+  .ib-kind button{height:38px;min-width:42px;justify-content:center}
+  /* long choices in a stacked switch wrap instead of being cut */
+  .set-row.r-stack .segc button{white-space:normal;text-overflow:clip;line-height:1.15;padding:4px 6px}
+}

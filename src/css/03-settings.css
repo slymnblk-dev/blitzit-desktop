@@ -146,10 +146,10 @@
   .d-foot2{padding-bottom:6px}
 }
 /* focus v2 */
-.f-top .mode{padding:2px;background:rgba(0,0,0,.08)}
+.f-top .mode{padding:2px;background:rgba(255,255,255,.2)}
 .f-top .mode button{height:28px;padding:0 12px;font-size:13px}
 .f-main{justify-content:center;padding:12px 0}
-.f-up{font-size:14px;font-weight:600;opacity:.6}
+.f-up{font-size:14px;font-weight:600}
 .f-title{margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .f-step{display:flex;align-items:center;gap:12px;width:100%;margin-top:22px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.08);text-align:left;font-size:16px;font-weight:600}
 .f-step[hidden]{display:none}
@@ -160,12 +160,12 @@
 .f-step.tick .fs-t{opacity:.4;text-decoration:line-through}
 /* classic focus: every step of the task, tickable, plus "Add step" */
 .f-steps{width:100%;margin-top:22px;display:flex;flex-direction:column}
-.f-steps.has{padding:4px 6px 6px;border-radius:20px;background:rgba(0,0,0,.08)}
+.f-steps.has{padding:4px 6px 6px;border-radius:20px;background:rgba(255,255,255,.2)}
 .fs-h{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 2px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
 .fs-list{display:flex;flex-direction:column;max-height:min(30vh,240px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
 .fs-list::-webkit-scrollbar{display:none}
 .fs-r{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:4px 10px;border-radius:14px;text-align:left;font-size:16px;font-weight:600;color:inherit;transition:background .15s}
-.fs-r:hover{background:rgba(0,0,0,.06)}
+.fs-r:hover{background:rgba(255,255,255,.14)}
 .fs-r i{flex:none;width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;color:var(--fbg,var(--today));transition:background .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
 .fs-r i svg{width:13px;height:13px;opacity:0;transform:scale(.5);transition:opacity .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
 .fs-r.on i{background:var(--ink);transform:scale(1.06)}
@@ -174,14 +174,14 @@
 .fs-r.on span{text-decoration:line-through;font-weight:500}
 .fs-add{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:0 10px;border-radius:14px;font-size:15px;font-weight:700;color:inherit;text-align:left}
 .fs-add svg{flex:none;width:16px;height:16px;margin:0 3px}
-.f-steps:not(.has) .fs-add{width:auto;align-self:flex-start;padding:0 14px 0 8px;background:rgba(0,0,0,.08);border-radius:999px}
+.f-steps:not(.has) .fs-add{width:auto;align-self:flex-start;padding:0 14px 0 8px;background:rgba(255,255,255,.2);border-radius:999px}
 .fs-add.on{cursor:text}
 .fs-add input{flex:1;min-width:0;border:0;background:none;outline:none;color:inherit;font:inherit;font-size:16px;font-weight:600}
 .fs-add input::placeholder{color:inherit;opacity:.6}
 .focus:has(.f-steps.has) .f-time{margin:30px 0 16px}
 @media (max-height:740px){.fs-list{max-height:22vh}.focus:has(.f-steps.has) .f-time{font-size:clamp(64px,20vw,96px);margin:20px 0 12px}}
 .f-time{margin:40px 0 18px}
-.f-cap{opacity:.6}
+.f-cap{font-weight:600}
 .f-next{margin-top:28px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .f-next:empty{display:none}
 /* account */
@@ -221,7 +221,7 @@
 .ho-go{display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:28px;background:var(--text)!important;color:var(--bg)!important}
 .acc-paste{margin-top:22px}
 .acc-paste .mail-small{margin:0 0 10px}
-.build{opacity:.6;font-variant-numeric:tabular-nums}
+.build{color:var(--muted);font-variant-numeric:tabular-nums}
 .pv-note{margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--surface2);font-size:14px;line-height:1.4;color:var(--muted)}
 .pv-note b{color:var(--text)}
 .pv-seg{margin-top:10px;display:inline-flex}

@@ -243,10 +243,10 @@
 .td-sum{font-size:14px;opacity:.75}
 .td-sum b{opacity:1;font-weight:700}
 .td-next{margin-top:18px;padding-right:92px;min-height:56px}
-.td-up{display:block;font-size:12px;font-weight:600;opacity:.6;text-transform:uppercase;letter-spacing:.06em}
+.td-up{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .td-title{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:18px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
 .td-title i{font-style:normal;font-size:16px}
-.td-more{display:block;margin-top:4px;font-size:13px;font-weight:500;opacity:.65}
+.td-more{display:block;margin-top:4px;font-size:13px;font-weight:500}
 .td-go{position:absolute;right:16px;bottom:16px;width:76px;height:76px;border-radius:50%;background:#0F1013;color:var(--today);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:800;font-size:12px;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
 .td-go svg{width:22px;height:22px}

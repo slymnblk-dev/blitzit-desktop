@@ -4,9 +4,9 @@
    One source of truth: these colours drive both the app (as CSS tokens) and the little preview cards. */
 const THEMES={
   light:[
-    {id:'default',name:'Default',sub:'Cool and neutral',v:{bg:'#F4F4F0',side:'#F4F4F0',surface:'#FFFFFF',surface2:'#ECECE7',line:'rgba(0,0,0,.08)',text:'#121316',muted:'#6C6D75',backlog:'#6B61F0',week:'#E8930C',today:'#EE3E2A',done:'#12A877'}},
-    {id:'sand',name:'Sand',sub:'Warm, like paper',v:{bg:'#F1EBE1',side:'#EAE2D5',surface:'#FCFAF6',surface2:'#E8E0D3',line:'rgba(74,52,28,.10)',text:'#1F1A15',muted:'#857A6D',backlog:'#6459DE',week:'#D4840A',today:'#E2432D',done:'#13906A'}},
-    {id:'porcelain',name:'Porcelain',sub:'Soft cream, airy',v:{bg:'#FAF7F2',side:'#F4F0E8',surface:'#FFFFFF',surface2:'#F0EBE2',line:'rgba(60,45,25,.08)',text:'#1A1815',muted:'#7E776D',backlog:'#675CE8',week:'#DC8C0B',today:'#E8402B',done:'#119A70'}},
+    {id:'default',name:'Default',sub:'Cool and neutral',v:{bg:'#F4F4F0',side:'#F4F4F0',surface:'#FFFFFF',surface2:'#ECECE7',line:'rgba(0,0,0,.08)',text:'#121316',muted:'#5F6068',backlog:'#6B61F0',week:'#E8930C',today:'#EE3E2A',done:'#12A877'}},
+    {id:'sand',name:'Sand',sub:'Warm, like paper',v:{bg:'#F1EBE1',side:'#EAE2D5',surface:'#FCFAF6',surface2:'#E8E0D3',line:'rgba(74,52,28,.10)',text:'#1F1A15',muted:'#6B6156',backlog:'#6459DE',week:'#D4840A',today:'#E2432D',done:'#13906A'}},
+    {id:'porcelain',name:'Porcelain',sub:'Soft cream, airy',v:{bg:'#FAF7F2',side:'#F4F0E8',surface:'#FFFFFF',surface2:'#F0EBE2',line:'rgba(60,45,25,.08)',text:'#1A1815',muted:'#676157',backlog:'#675CE8',week:'#DC8C0B',today:'#E8402B',done:'#119A70'}},
   ],
   dark:[
     {id:'default',name:'Default',sub:'Deep charcoal',v:{bg:'#0F1013',side:'#0F1013',surface:'#1A1B20',surface2:'#24252B',line:'rgba(255,255,255,.07)',text:'#F3F2EE',muted:'#8C8D96',backlog:'#9C95FF',week:'#FFB547',today:'#FF5B47',done:'#34D399'}},
