@@ -2732,9 +2732,9 @@ button.hg-c:active{transform:scale(.88)}
 .hg-lg{width:11px;height:11px;border-radius:50%;display:block;font-style:normal}
 .hg-lg.on{background:var(--today)}.hg-lg.miss{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 22%,transparent)}
 .hg-lg.rest{width:5px;height:5px;background:color-mix(in srgb,var(--text) 25%,transparent);margin:0 3px}
-.hp-body.anim .hg-row{animation:rowIn .5s var(--ease) both;animation-delay:calc(var(--i)*45ms + 60ms)}
-.hp-body.anim .hg-head{animation:rowIn .45s var(--ease) both}
-@keyframes rowIn{from{opacity:0;transform:translateY(10px)}}
+.hp-body.anim .hg-row{animation:pgIn .5s var(--ease) both;animation-delay:calc(var(--i)*45ms + 60ms)}
+.hp-body.anim .hg-head{animation:pgIn .45s var(--ease) both}
+@keyframes pgIn{from{opacity:0;transform:translateY(10px)}}
 @media (max-width:699px){
   .hg-card{padding:4px 14px 8px;border-radius:20px}
   .hg{grid-template-columns:repeat(7,minmax(0,1fr));row-gap:2px}
@@ -2774,7 +2774,7 @@ button.hg-c:active{transform:scale(.88)}
 .hs-chip.on{background:transparent;box-shadow:inset 0 0 0 1px var(--line);color:var(--muted)}
 .hs-chip.on .hs-k{background:var(--today);box-shadow:none;color:#fff;transform:scale(1.06)}
 .hs-rest{font-size:13px;color:var(--muted);padding:6px 4px}
-.hp-body.anim .hs-chip{animation:rowIn .5s var(--ease) both;animation-delay:calc(var(--i)*50ms + 200ms)}
+.hp-body.anim .hs-chip{animation:pgIn .5s var(--ease) both;animation-delay:calc(var(--i)*50ms + 200ms)}
 @media (max-width:899px){.hs{grid-template-columns:minmax(0,1fr);gap:26px}.hs-svg{max-width:300px}.hs-big{font-size:38px}}
 
 /* ===== Goal: shared ===== */
@@ -2833,17 +2833,17 @@ button.hg-c:active{transform:scale(.88)}
 .gb-cloth{fill:var(--text);transform-box:fill-box;transform-origin:left center;animation:gbWave 3.2s ease-in-out infinite}
 .gb-svg.won .gb-cloth{fill:var(--today)}
 @keyframes gbWave{50%{transform:skewY(-6deg) scaleX(.9)}}
-.gb-svg.anim .gb-flag{animation:rowIn .6s 1.5s var(--ease) both}
+.gb-svg.anim .gb-flag{animation:pgIn .6s 1.5s var(--ease) both}
 .gb-svg.anim .gb-mtn,.gb-svg.anim .gb-far{animation:gbRise 1s var(--ease) both}
 @keyframes gbRise{from{opacity:0;transform:translateY(24px)}}
-.gv.anim .gb-head{animation:rowIn .6s var(--ease) both}
+.gv.anim .gb-head{animation:pgIn .6s var(--ease) both}
 .gb-stats{display:flex;align-items:flex-end;flex-wrap:wrap;gap:16px 44px;margin:6px 0 30px}
 .gb-stats>span{display:flex;flex-direction:column;gap:2px}
 .gb-stats b{font-size:34px;font-weight:800;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
 .gb-stats small{font-size:13.5px;color:var(--muted)}
 .gb-pace{font-size:24px!important;line-height:34px!important}
 .gb-stats .gv-win{margin-left:auto;align-self:center}
-.gv.anim .gb-stats>*{animation:rowIn .55s var(--ease) both}
+.gv.anim .gb-stats>*{animation:pgIn .55s var(--ease) both}
 .gv.anim .gb-stats>*:nth-child(2){animation-delay:.08s}.gv.anim .gb-stats>*:nth-child(3){animation-delay:.16s}
 .gs-row{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px;scroll-snap-type:x proximity}
 .gs-row::-webkit-scrollbar{display:none}
@@ -2863,7 +2863,7 @@ button.hg-c:active{transform:scale(.88)}
 .gs-step.now .gs-lb{color:var(--today)}
 .gs-t{font-size:16.5px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
 .gs-step.done .gs-t{color:var(--muted);font-weight:500}
-.gv.anim .gs-step{animation:rowIn .55s var(--ease) both;animation-delay:calc(var(--i)*70ms + .3s)}
+.gv.anim .gs-step{animation:pgIn .55s var(--ease) both;animation-delay:calc(var(--i)*70ms + .3s)}
 @media (min-width:1100px){.gb-stage{margin:-8px -32px 0}.gb-head{padding:8px 32px 0}}
 
 /* ===== Goal · Path ===== */
@@ -2877,6 +2877,7 @@ button.hg-c:active{transform:scale(.88)}
 .gpth{display:flex;gap:20px}
 .gpth-ln{width:28px;display:flex;flex-direction:column;align-items:center;flex:none}
 .gpth-ln>b{width:2px;flex:1;min-height:18px;background:color-mix(in srgb,var(--text) 10%,transparent);margin:6px 0;border-radius:1px;transition:background .4s}
+.gpth:last-child .gpth-ln>b{display:none}
 .gpth.done .gpth-ln>b{background:color-mix(in srgb,var(--today) 50%,transparent)}
 .gpth-k{width:28px;height:28px;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 22%,transparent);display:grid;place-items:center;color:transparent;flex:none;position:relative;transition:background .3s var(--ease),box-shadow .3s,color .2s,transform .35s var(--spring)}
 .gpth-k svg{width:13px;height:13px}
@@ -2893,8 +2894,8 @@ button.hg-c:active{transform:scale(.88)}
 .gpth.now .gpth-t{font-size:22px;font-weight:700}
 .gpth-tx small{font-size:13px;color:var(--muted);opacity:.8}
 .gpth.add .gpth-tx{padding-top:0}
-.gv.anim .gpth{animation:rowIn .5s var(--ease) both;animation-delay:calc(var(--i)*70ms + .2s)}
-.gv.anim .gpv>.hp-eye,.gv.anim .gpv>.gv-h,.gv.anim .gpv>.gv-why{animation:rowIn .5s var(--ease) both}
+.gv.anim .gpth{animation:pgIn .5s var(--ease) both;animation-delay:calc(var(--i)*70ms + .2s)}
+.gv.anim .gpv>.hp-eye,.gv.anim .gpv>.gv-h,.gv.anim .gpv>.gv-why{animation:pgIn .5s var(--ease) both}
 
 /* ===== Goal · Poster ===== */
 .gpo{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:72px;align-items:end;min-height:min(620px,72vh);padding-top:10px}
@@ -2907,7 +2908,7 @@ button.hg-c:active{transform:scale(.88)}
 .gpo-segs i.on::after{content:"";position:absolute;inset:0;background:var(--today);border-radius:5px;animation:gpoSeg .6s var(--ease) both;animation-delay:calc(var(--i)*110ms + .3s);transform-origin:left}
 @keyframes gpoSeg{from{transform:scaleX(0)}}
 .gpo-r{display:flex;flex-direction:column;gap:20px}
-.gpo-next{background:var(--today);color:#fff;border-radius:26px;padding:24px 26px;display:flex;flex-direction:column;gap:6px;animation:rowIn .6s .2s var(--ease) both}
+.gpo-next{background:var(--today);color:#fff;border-radius:26px;padding:24px 26px;display:flex;flex-direction:column;gap:6px;animation:pgIn .6s .2s var(--ease) both}
 .gpo-next span{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
 .gpo-next b{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
 .gpo-btn{margin-top:12px;align-self:flex-start;height:40px;padding:0 18px;border-radius:999px;background:#0F1013;color:#F3F2EE;font-size:14px;font-weight:700;transition:transform .15s}
@@ -3183,7 +3184,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=153; // bumped with every published update
+const APP_VERSION=154; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -6283,7 +6284,7 @@ modesPage=function(){
    Goal:   The climb (default), Path or Poster, picked under ⋯ → View (per goal; default in Settings → Modes).
    Completed things use the brand colour (--today); green stays for switches in Settings.
    Data, sheets and actions live in 08j-habits.js and 08k-goals.js. */
-var hpWeek=0,hpMenu=false,hgT=null,gbPrev=null;
+var hpWeek=0,hpMenu=false,hgT=null,gbPrev=null,gdHtml='',gTickBusy=false;
 const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const DOTS_V='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
 const ARR_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
@@ -6382,6 +6383,8 @@ function gMenuHTML(g){const v=gView(g);
     ${g.done?'':`<button data-gm="star" role="menuitem"><span class="lpm-i">${G_STAR}</span>${g.star?'Remove north star':'Make it my north star'}</button>`}
     <button data-gm="win" role="menuitem"><span class="lpm-i">${G_FLAG}</span>${g.done?'Back in progress':'Mark as achieved'}</button>
     <button data-gm="del" class="warn" role="menuitem"><span class="lpm-i">${BIN_S}</span>Delete goal</button></div></div>`}
+/* days left as a number and its label; a past-due goal counts the days over instead of showing 0 */
+function gDays(g){const dl=gDaysLeft(g);return dl===null?{n:'—',t:'no date set'}:dl<0?{n:-dl,t:dl===-1?'day past due':'days past due'}:{n:dl,t:dl===1?'day left':'days left'}}
 function gPaceTxt(g){const pc=gPace(g);return `<span class="gp-${pc.k}">${pc.t}</span>`}
 /* the climb: a soft mountain, the trail drawn up to where you are, the sun rising behind the summit */
 function gbScene(g,anim){
@@ -6416,30 +6419,30 @@ function gEditSec(g){return gdEdit?`<div class="gv-sec"><h2>Milestones</h2><butt
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
 function gNextAct(g,m){const tk=gTaskOf(m);return tk?`<button class="gv-link" data-gtask="${tk.id}">Linked to “${esc(tk.title)}”</button>`:`<button class="gv-link" data-gmk="${m.id}">Make it a task</button>`}
 function gClimbView(g,anim){
-  const pr=gProg(g),dl=gDaysLeft(g),nx=gNext(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
+  const pr=gProg(g),dd=gDays(g),nx=gNext(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
   const steps=g.ms.map((m,i)=>{const k=m.done?'done':m===nx?'now':'';
     return `<div class="gs-step ${k}" style="--i:${i}"><span class="gs-bar"><i></i></span><button class="gs-tk" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}"><span class="gs-ring">${CK}</span><span class="gs-lb">${m.done?(m.doneAt?gShort(m.doneAt):'Done'):m===nx?'Next':`Step ${i+1}`}</span></button>
       <span class="gs-t">${esc(m.t)}</span>${m===nx&&!g.done?gNextAct(g,m):''}</div>`}).join('');
   return `<div class="gb-stage">${gbScene(g,anim)}<div class="gb-head"><span class="hp-eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:`Goal${g.due?` · by ${gLong(g.due)}`:''}`}${g.star&&!g.done?`<span class="gd-ns">${G_STAR}North star</span>`:''}</span>
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why" data-gwhy>${esc(g.why)}</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}</div></div>
-    <div class="gb-stats"><span><b data-cnt="${pr.n}">${pr.n}</b><small>of ${pr.of} milestones</small></span>${g.done?'':`<span><b data-cnt="${Math.max(0,dl||0)}">${dl===null?'—':Math.max(0,dl)}</b><small>days left</small></span>`}<span><b class="gb-pace">${gPaceTxt(g)}</b><small>pace</small></span>
+    <div class="gb-stats"><span><b data-cnt="${pr.n}">${pr.n}</b><small>of ${pr.of} milestones</small></span>${g.done?'':`<span><b ${typeof dd.n==='number'?`data-cnt="${dd.n}"`:''}>${dd.n}</b><small>${dd.t}</small></span>`}${top?'':`<span><b class="gb-pace">${gPaceTxt(g)}</b><small>pace</small></span>`}
       ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>
     <div class="gs-row">${steps}${g.ms.length<MS_MAX&&!g.done?`<div class="gs-step add"><span class="gs-bar"></span>${gAddInput(g.ms.length?'New milestone':'Add your first milestone')}</div>`:''}</div>`}
 function gPathView(g){
-  const pr=gProg(g),dl=gDaysLeft(g),nx=gNext(g);
+  const pr=gProg(g),dd=gDays(g),nx=gNext(g);
   const st=g.ms.map((m,i)=>{const k=m.done?'done':m===nx?'now':'';
     return `<div class="gpth ${k}" style="--i:${i}"><span class="gpth-ln"><button class="gpth-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}<i></i></button><b></b></span>
       <span class="gpth-tx">${m===nx&&!g.done?'<span class="gpth-nx">Next</span>':''}<span class="gpth-t">${esc(m.t)}</span>${m.done&&m.doneAt?`<small>Done ${gShort(m.doneAt)}</small>`:''}${m===nx&&!g.done?gNextAct(g,m):''}</span></div>`}).join('');
   return `<div class="gpv"><span class="hp-eye">${g.done?`Achieved · ${gShort(g.doneAt)}`:`${esc((spaceOf(g.space)||{}).name||'Goal')}${g.due?` · by ${gLong(g.due)}`:''}`}</span>
     <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why?`<button class="gv-why q" data-gwhy>“${esc(g.why)}”</button>`:`<button class="gv-why add" data-gwhy>Add why it matters</button>`}
     <div class="gpv-bar"><i style="--w:${(pr.p*100).toFixed(1)}%"></i></div>
-    <div class="gpv-meta"><span><b>${pr.n} of ${pr.of}</b> milestones</span><span>${gPaceTxt(g)}${g.done||dl===null?'':` · ${Math.max(0,dl)} days left`}</span></div>
+    <div class="gpv-meta"><span><b>${pr.n} of ${pr.of}</b> milestones</span><span>${gPaceTxt(g)}${g.done||dd.n==='—'?'':gDaysLeft(g)<0?` · ${dd.n} ${dd.n===1?'day':'days'} over`:` · ${dd.n} ${dd.t}`}</span></div>
     <div class="gpth-list">${st}${g.ms.length<MS_MAX&&!g.done?`<div class="gpth add"><span class="gpth-ln"><span class="gpth-k ghost"></span></span><span class="gpth-tx">${gAddInput(g.ms.length?'Add a milestone':'Add your first milestone')}</span></div>`:''}</div>
     ${pr.of&&pr.n>=pr.of&&!g.done?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
 function gPosterView(g){
-  const pr=gProg(g),dl=gDaysLeft(g),nx=gNext(g),big=g.done?'Done':dl===null?'—':Math.max(0,dl);
+  const pr=gProg(g),dl=gDaysLeft(g),nx=gNext(g),big=g.done?'Done':dl===null?'—':Math.abs(dl);
   return `<div class="gpo"><div class="gpo-l"><span class="hp-eye">${esc(g.name)}${g.due?` · ${gLong(g.due)}`:''}</span>
-      <div class="gpo-num"><b ${typeof big==='number'?`data-cnt="${big}"`:''}>${big}</b><span>${g.done?'Goal achieved.':dl===0?'Today is the day.':`${dl===1?'day':'days'} to go.`}</span></div>
+      <div class="gpo-num"><b ${typeof big==='number'?`data-cnt="${big}"`:''}>${big}</b><span>${g.done?'Goal achieved.':dl===null?'No date set.':dl===0?'Today is the day.':dl<0?`${dl===-1?'day':'days'} past due.`:`${dl===1?'day':'days'} to go.`}</span></div>
       <div class="gpo-segs">${(g.ms.length?g.ms:[{}]).map((m,i)=>`<i class="${m.done?'on':''}" style="--i:${i}"></i>`).join('')}</div>
       <div class="gpv-meta"><span><b>${pr.n} of ${pr.of}</b> milestones</span><span>${gPaceTxt(g)}</span></div></div>
     <div class="gpo-r">${nx&&!g.done?`<div class="gpo-next"><span>Next step</span><b>${esc(nx.t)}</b>${gTaskOf(nx)?`<button class="gpo-btn" data-gtask="${gTaskOf(nx).id}">Open the task</button>`:`<button class="gpo-btn" data-gmk="${nx.id}">Make it a task</button>`}</div>`
@@ -6449,14 +6452,23 @@ function drawGoal(){
   const g=gById(gdId);if(!g){closeGoal();return}
   const y=$('gdPg').scrollTop,v=gView(g),anim=gdAnim;
   const body=v==='path'?gPathView(g):v==='poster'?gPosterView(g):gClimbView(g,anim);
-  $('gdIn').innerHTML=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${gMenuHTML(g)}</div>
+  const html=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${gMenuHTML(g)}</div>
     <div class="gv gv-${v}${anim?' anim':''}">${body}${gEditSec(g)}${gTasksSec(g)}</div>`;
-  $('gdPg').scrollTop=y;if(anim)countUp($('gdIn'));
-  const row=$('gdIn').querySelector('.gs-row'),now=row&&row.querySelector('.gs-step.now');if(now&&now.offsetLeft+now.offsetWidth>row.clientWidth)row.scrollLeft=now.offsetLeft-row.offsetLeft-4;
+  if(!anim&&html===gdHtml)return;
+  const old=$('gdIn').querySelector('.gs-row'),sl=old?old.scrollLeft:0;
+  gdHtml=html;$('gdIn').innerHTML=html;$('gdPg').scrollTop=y;if(anim)countUp($('gdIn'));
+  /* the milestone row: on open, start one step before "Next" so the last win shows too;
+     on later redraws stay put, gliding only if "Next" moved out of sight */
+  const row=$('gdIn').querySelector('.gs-row'),now=row&&row.querySelector('.gs-step.now');if(!row)return;
+  if(!anim)row.scrollLeft=sl;if(!now)return;
+  const r=row.getBoundingClientRect(),n=now.getBoundingClientRect(),prev=now.previousElementSibling;
+  if(anim){row.scrollLeft=Math.max(0,(prev||now).getBoundingClientRect().left-r.left-4);return}
+  if(n.left<r.left||n.right>r.right)row.scrollTo({left:row.scrollLeft+n.left-r.left-4,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
 }
 $('gdPg').addEventListener('click',e=>{
   const g=gById(gdId);if(!g)return;
-  const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m)return;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);setTimeout(()=>gMsToggle(g,m),200);return}
+  const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m||gTickBusy)return;gTickBusy=true;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);
+    setTimeout(()=>{try{gMsToggle(g,m)}finally{setTimeout(()=>gTickBusy=false,250)}},200);return}
 });
 
 /* ================= Home habits widget: One at a time · Big tiles · Tap pills ================= */

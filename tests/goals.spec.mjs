@@ -154,3 +154,35 @@ test('goals: one north star, limit of 3, sync/backup/undo, desktop layout', asyn
   await expect(page.locator('#goalsPg .g-cmini svg').first()).toBeVisible();
   noErrors(errors);
 });
+
+test('goal page: double tap ticks once, past due reads right, summit, calm redraws', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => {
+    S.cfg.goals = true; const sp = S.spaces[0].id;
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: sp, why: '', due: dkey(new Date(Date.now() - 5 * DAY)), created: Date.now() - 20 * DAY, star: true,
+      ms: Array.from({ length: 6 }, (_, i) => ({ id: 'm' + i, t: 'Step ' + (i + 1), done: i < 3 })) }];
+    save(); applySettings(); openGoal('g1');
+  });
+  // on open the last win shows next to "Next"
+  await expect(page.locator('#gdPg .gs-step.now')).toBeInViewport();
+  await expect(page.locator('#gdPg .gs-step.done').last()).toBeInViewport();
+  // past due: counts the days over, never "0 days left"
+  await expect(page.locator('#gdPg .gb-stats')).toContainText('days past due');
+  // a quick double tap ticks one milestone, not on-then-off
+  await page.locator('#gdPg .gs-step.now [data-gtk]').dblclick();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(4);
+  // nothing changed → no redraw (motion stays calm)
+  const same = await page.evaluate(() => { render(); const a = document.querySelector('#gdIn .gb-svg'); render(); return a === document.querySelector('#gdIn .gb-svg'); });
+  expect(same).toBe(true);
+  // summit: the Mark achieved button stands in for the pace
+  await page.evaluate(() => { S.goals[0].ms.forEach(m => m.done = true); save(); render(); });
+  await expect(page.locator('#gdPg .gb-stats [data-gwin]')).toBeVisible();
+  await expect(page.locator('#gdPg .gb-pace')).toHaveCount(0);
+  // poster and path: past due wording
+  await page.evaluate(() => { S.goals[0].ms[5].done = false; S.goals[0].view = 'poster'; save(); openGoal('g1'); });
+  await expect(page.locator('#gdPg .gpo-num')).toContainText('days past due.');
+  await page.evaluate(() => { S.goals[0].view = 'path'; S.goals[0].due = ''; save(); openGoal('g1'); });
+  await expect(page.locator('#gdPg .gpv-meta')).not.toContainText('days left');
+  noErrors(errors);
+});
