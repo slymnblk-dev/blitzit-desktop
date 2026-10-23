@@ -3213,6 +3213,17 @@ button.hg-c:active{transform:scale(.88)}
 .gv.anim .gb-ns{animation:pgIn .8s 1.2s var(--ease) both}
 @media (max-width:699px){.gb-ns{top:7%;right:30%;width:18px;height:18px}.gb-ns small{top:22px;font-size:9px}}
 @media (prefers-reduced-motion:reduce){.gb-ns svg,.gb-ns small{animation:none}}
+
+/* Home habit tiles on computers: the last 7 days as tiny dots (phones stay clean) */
+.hw-wk{display:none}
+@media (min-width:1100px){
+  .hw-wk{display:flex;gap:4px;margin-top:8px}
+  .hw-wk i{width:7px;height:7px;border-radius:50%;background:color-mix(in srgb,var(--text) 10%,transparent)}
+  .hw-wk i.k{background:color-mix(in srgb,var(--today) 55%,transparent)}
+  .hw-wk i.r{width:3px;height:3px;margin:2px;background:color-mix(in srgb,var(--text) 18%,transparent)}
+  .hw-wk i.t{background:transparent;box-shadow:0 0 0 1.5px color-mix(in srgb,var(--today) 55%,transparent);transition:background .3s}
+  .hw-tile.on .hw-wk i.t{background:color-mix(in srgb,var(--today) 55%,transparent)}
+}
 </style>
 </head>
 <body>
@@ -3407,7 +3418,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=170; // bumped with every published update
+const APP_VERSION=171; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -6973,6 +6984,11 @@ document.addEventListener('keydown',e=>{
    Tiles and pills show up to HW_MAX habits in your order; a ticked one stays in place (in coral) and the rest fold into "+N more". */
 const HW_MAX=6;
 function hwStyle(){const v=C().hwStyle;if(v==='one'||v==='tiles'||v==='pills')return v;return matchMedia('(min-width:1100px)').matches?'tiles':'one'}
+/* the last 7 days as tiny dots under a tile (computers only): kept = soft coral, missed = faint, rest day = tiny, today ringed.
+   Today's dot follows the tile's tick right away (CSS), the rest catch up on the next redraw */
+function hwWeek(h){const done=h.done||{},born=dkey(new Date(h.created||0));
+  return `<span class="hw-wk" aria-hidden="true">${[6,5,4,3,2,1,0].map(i=>{const d=hbDays(i),k=dkey(d),on=!!done[k];
+    return i===0?'<i class="t"></i>':`<i class="${on?'k':k<born?'':!hbDue(h,d)?'r':''}"></i>`}).join('')}</span>`}
 function hbWidget(){
   if(!habitsOn()||!C().wHabits)return '';const hs=hbAll();if(!hs.length)return '';
   const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt}),dn=due.filter(h=>hbStats(h).dt),open=due.filter(h=>!hbStats(h).dt),st=hwStyle();
@@ -6985,7 +7001,7 @@ function hbWidget(){
   const list=due.slice(0,HW_MAX),more=due.length-list.length;
   const mr=more?`<button class="hw-more" data-hbopen>+${more} more</button>`:'';
   if(st==='pills')return `<div class="hw hw-pills">${head}<div class="hw-pl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-pill${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span>${h.e?esc(h.e)+' ':''}${esc(h.name)}</button>`}).join('')}${mr}</div></div>`;
-  return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></span></button>`}).join('')}</div>${mr}</div>`;
+  return `<div class="hw hw-tiles">${head}<div class="hw-tl">${list.map(h=>{const s=hbStats(h);return `<button class="hw-tile${s.dt?' on':''}" data-hbt="${h.id}" aria-pressed="${s.dt}"><span class="hw-k">${ck}</span><span class="hw-tt"><b>${h.e?esc(h.e)+' ':''}${esc(h.name)}</b><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small>${hwWeek(h)}</span></button>`}).join('')}</div>${mr}</div>`;
 }
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}

@@ -546,3 +546,14 @@ button.hg-c:active{transform:scale(.88)}
 .gv.anim .gb-ns{animation:pgIn .8s 1.2s var(--ease) both}
 @media (max-width:699px){.gb-ns{top:7%;right:30%;width:18px;height:18px}.gb-ns small{top:22px;font-size:9px}}
 @media (prefers-reduced-motion:reduce){.gb-ns svg,.gb-ns small{animation:none}}
+
+/* Home habit tiles on computers: the last 7 days as tiny dots (phones stay clean) */
+.hw-wk{display:none}
+@media (min-width:1100px){
+  .hw-wk{display:flex;gap:4px;margin-top:8px}
+  .hw-wk i{width:7px;height:7px;border-radius:50%;background:color-mix(in srgb,var(--text) 10%,transparent)}
+  .hw-wk i.k{background:color-mix(in srgb,var(--today) 55%,transparent)}
+  .hw-wk i.r{width:3px;height:3px;margin:2px;background:color-mix(in srgb,var(--text) 18%,transparent)}
+  .hw-wk i.t{background:transparent;box-shadow:0 0 0 1.5px color-mix(in srgb,var(--today) 55%,transparent);transition:background .3s}
+  .hw-tile.on .hw-wk i.t{background:color-mix(in srgb,var(--today) 55%,transparent)}
+}

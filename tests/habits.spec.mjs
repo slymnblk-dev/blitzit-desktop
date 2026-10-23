@@ -94,6 +94,9 @@ test('habits on a computer: sidebar Habits page, week grid, week navigation', as
   await expect(page.locator('#dHome .hw-tiles .hw-tile')).toHaveCount(1); // computer default: big tiles
   await page.locator('#dHome .hw-tile').click();
   await expect(page.locator('#dHome .hw-tile')).toHaveClass(/on/);
+  // computers: the last 7 days as tiny dots; today's fills when ticked
+  await expect(page.locator('#dHome .hw-tile .hw-wk i')).toHaveCount(7);
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#dHome .hw-tile .hw-wk i.t')).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
   await page.locator('#sRhythm').click();
   // last week is one tap away; next week can't be opened from this week
   await page.locator('[data-hpw="-1"]').click();
