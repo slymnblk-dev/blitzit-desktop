@@ -101,7 +101,7 @@ function openSearch(){
     p.innerHTML=`<div class="sr-bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><input id="srchIn" placeholder="Search tasks" autocomplete="off" spellcheck="false" enterkeyhint="search"><button class="sr-x" data-srx aria-label="Close search">${X}</button></div><div class="sr-body"></div>`;
     document.body.appendChild(p)}
   srchOpen=true;srchSel=0;srchKind='all';srchPlace();srchDraw();
-  const p=$('srch'),inp=$('srchIn');inp.value=srchQ;inp.placeholder=srchPh();
+  const p=$('srch'),inp=$('srchIn');p.inert=false;inp.value=srchQ;inp.placeholder=srchPh();
   document.body.classList.add('srch-on');
   try{inp.focus({preventScroll:true})}catch(e){} // right away, so phones open the keyboard
   requestAnimationFrame(()=>p.classList.add('on'));
@@ -109,7 +109,7 @@ function openSearch(){
 }
 function closeSearch(){
   const p=$('srch');if(!p||!srchOpen)return;srchOpen=false;
-  p.classList.remove('on');document.body.classList.remove('srch-on');
+  p.classList.remove('on');p.inert=true;document.body.classList.remove('srch-on'); // closed: out of the Tab order
   try{document.activeElement&&document.activeElement.blur()}catch(e){}
 }
 function srchClear(){SF.pri.clear();SF.tags.clear();render();srchChip();if(srchOpen)srchDraw()}

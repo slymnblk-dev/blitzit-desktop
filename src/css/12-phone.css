@@ -95,4 +95,3 @@
 /* ===== Layers that are closed can't be reached with Tab (they stay hidden until they open) ===== */
 .focus:not(.on){visibility:hidden;transition:clip-path .55s cubic-bezier(.7,0,.2,1),background .6s ease,visibility 0s .55s}
 .toast:not(.on){visibility:hidden;transition:.25s,visibility 0s .25s}
-.srch:not(.on){visibility:hidden;transition:clip-path .42s cubic-bezier(.2,.85,.2,1),opacity .2s,visibility 0s .42s}
