@@ -3210,7 +3210,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=158; // bumped with every published update
+const APP_VERSION=159; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -6550,6 +6550,17 @@ $('gdPg').addEventListener('click',e=>{
   if(e.target.closest('[data-gaddms]')){const i=$('gMsIn');if(i){haptic(5);i.closest('.gs-step').scrollIntoView({behavior:gSmooth(),block:'nearest',inline:'end'});i.focus({preventScroll:true})}return}
   const t=e.target.closest('[data-gtk]');if(t){const m=g.ms.find(x=>x.id===t.dataset.gtk);if(!m||gTickBusy)return;gTickBusy=true;const el=t.closest('.gs-step,.gpth,.gpo-m')||t;el.classList.toggle('done',!m.done);el.classList.toggle('on',!m.done);
     setTimeout(()=>{try{gMsToggle(g,m)}finally{setTimeout(()=>gTickBusy=false,250)}},200);return}
+});
+
+/* Escape on the Goal and Goals pages, wherever focus is: the ⋯ menu first, then the goal, then the Goals page.
+   (With focus inside the goal page its own handler runs first and also clears a milestone being typed.) */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||e.defaultPrevented||!(gdOn||glOn))return;
+  if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on')||moOn||cdOn||gsOn||(typeof srchOpen!=='undefined'&&srchOpen))return;
+  e.stopPropagation();
+  const pop=$('gdPop');if(gdOn&&pop&&pop.classList.contains('on')){pop.classList.remove('on');const b=$('gdMore');if(b)b.focus();return}
+  if(gdOn)return closeGoal();
+  closeGoals();
 });
 
 /* ================= Home habits widget: One at a time · Big tiles · Tap pills ================= */

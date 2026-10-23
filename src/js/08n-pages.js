@@ -244,6 +244,17 @@ $('gdPg').addEventListener('click',e=>{
     setTimeout(()=>{try{gMsToggle(g,m)}finally{setTimeout(()=>gTickBusy=false,250)}},200);return}
 });
 
+/* Escape on the Goal and Goals pages, wherever focus is: the ⋯ menu first, then the goal, then the Goals page.
+   (With focus inside the goal page its own handler runs first and also clears a milestone being typed.) */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||e.defaultPrevented||!(gdOn||glOn))return;
+  if(document.querySelector('.sheet.on')||$('dlg').classList.contains('on')||moOn||cdOn||gsOn||(typeof srchOpen!=='undefined'&&srchOpen))return;
+  e.stopPropagation();
+  const pop=$('gdPop');if(gdOn&&pop&&pop.classList.contains('on')){pop.classList.remove('on');const b=$('gdMore');if(b)b.focus();return}
+  if(gdOn)return closeGoal();
+  closeGoals();
+});
+
 /* ================= Home habits widget: One at a time · Big tiles · Tap pills ================= */
 /* Default: One at a time on phones, Big tiles on computers. Settings → Modes → Habits → Widget style.
    Tiles and pills show up to HW_MAX habits in your order; a ticked one stays in place (in coral) and the rest fold into "+N more". */

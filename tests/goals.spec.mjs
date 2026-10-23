@@ -210,3 +210,25 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await expect(page.locator('#gdPg .gpv-meta')).not.toContainText('days left');
   noErrors(errors);
 });
+
+test('goals: Escape closes the ⋯ menu, then the goal page, then the Goals page, wherever focus is', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true; const sp = S.spaces[0].id;
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: sp, why: '', due: '', created: Date.now(), star: false, ms: [{ id: 'm1', t: 'Step', done: false }] }];
+    save(); applySettings(); openGoals(); openGoal('g1'); });
+  const blur = () => page.evaluate(() => document.activeElement && document.activeElement.blur());
+  await page.locator('#gdMore').click();
+  await blur();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#gdPop')).not.toHaveClass(/on/);
+  await expect(page.locator('#gdPg')).toHaveClass(/on/);
+  await blur();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#gdPg')).not.toHaveClass(/on/);
+  await expect(page.locator('#goalsPg')).toHaveClass(/on/);
+  await blur();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#goalsPg')).not.toHaveClass(/on/);
+  noErrors(errors);
+});
