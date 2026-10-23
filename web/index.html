@@ -3416,7 +3416,7 @@ button.hg-c:active{transform:scale(.88)}
   .gpth-t::after,.gpo-k::after,.gpo-ml::after,#gWhyIco button::after,#gWhyVis button::after,#inSkip::after,.rv-go::after,.rv-skip::after,
   .segc button::after,.gm-n::after,.gpth-k::after,.gs-mi button::after,.t-ch button::after,.tg::before{content:'';position:absolute;inset:-5px}
   .sub .sc::after{inset:-12px}
-  .row-in .check::after{inset:-9px -14px -9px -9px}
+  .row-in .check::after{inset:-9px -16px -9px -9px}
   .gm-k::after,.gpo-k::after{inset:-10px}
   .sub .sx::after,.stg-dot::after,.gpth-k::after{inset:-8px}
   .sr-x::after,.gm-more::after,.ib-kind button::after,.gs-mi button::after{inset:-6px}
@@ -3639,7 +3639,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=181; // bumped with every published update
+const APP_VERSION=182; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();

@@ -67,7 +67,7 @@
   .gpth-t::after,.gpo-k::after,.gpo-ml::after,#gWhyIco button::after,#gWhyVis button::after,#inSkip::after,.rv-go::after,.rv-skip::after,
   .segc button::after,.gm-n::after,.gpth-k::after,.gs-mi button::after,.t-ch button::after,.tg::before{content:'';position:absolute;inset:-5px}
   .sub .sc::after{inset:-12px}
-  .row-in .check::after{inset:-9px -14px -9px -9px}
+  .row-in .check::after{inset:-9px -16px -9px -9px}
   .gm-k::after,.gpo-k::after{inset:-10px}
   .sub .sx::after,.stg-dot::after,.gpth-k::after{inset:-8px}
   .sr-x::after,.gm-more::after,.ib-kind button::after,.gs-mi button::after{inset:-6px}
