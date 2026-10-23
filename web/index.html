@@ -62,7 +62,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
   -webkit-font-smoothing:antialiased;min-height:100%;overflow-x:hidden;
   -webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
-button:focus-visible,input:focus-visible{outline:2px solid var(--accent,var(--today));outline-offset:3px;border-radius:10px}
+/* keyboard focus: a clear ring that follows each control's own shape */
+button:focus-visible,input:focus-visible,[role="button"]:focus-visible,a:focus-visible{outline:2px solid var(--accent,var(--today));outline-offset:3px}
 .app{max-width:460px;margin:0 auto;padding:0 22px 140px;position:relative}
 
 /* Top bar */
@@ -3439,6 +3440,11 @@ button.hg-c:active{transform:scale(.88)}
 }
 /* long choices in a stacked switch wrap instead of being cut */
 .set-row.r-stack .segc button{white-space:normal;text-overflow:clip;line-height:1.15;padding:4px 6px}
+
+/* ===== Layers that are closed can't be reached with Tab (they stay hidden until they open) ===== */
+.focus:not(.on){visibility:hidden;transition:clip-path .55s cubic-bezier(.7,0,.2,1),background .6s ease,visibility 0s .55s}
+.toast:not(.on){visibility:hidden;transition:.25s,visibility 0s .25s}
+.srch:not(.on){visibility:hidden;transition:clip-path .42s cubic-bezier(.2,.85,.2,1),opacity .2s,visibility 0s .42s}
 </style>
 </head>
 <body>
@@ -3634,7 +3640,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=179; // bumped with every published update
+const APP_VERSION=180; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
