@@ -46,7 +46,7 @@
   .tb:active{transform:scale(.94)}
   .tb-n{position:absolute;top:5px;left:calc(50% + 7px);min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;
     background:var(--text);color:var(--bg);font-size:11px;font-weight:700;font-style:normal;line-height:18px;text-align:center}
-  .tb-add{flex:none;width:52px;height:52px;margin-left:8px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;
+  .tb-add{flex:none;width:52px;height:52px;margin:0 6px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;
     box-shadow:0 10px 22px -12px rgba(0,0,0,.5);transition:transform .15s}
   .tb-add:active{transform:scale(.92)}
   .tb-add svg{width:22px;height:22px}
