@@ -192,6 +192,16 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gdPg .gr-hero')).position)).not.toBe('sticky'); // the hero scrolls away; only Back and ⋯ stay
   // past due: counts the days over, never "0 days left"
   await expect(page.locator('#gdPg .gr-f')).toContainText('days over');
+  // no Back on phones (the Goals tab is there); the facts sit top left
+  await expect(page.locator('#gdBack')).toBeHidden();
+  await expect(page.locator('#gdPg .gr-meta .gr-f')).toBeVisible();
+  // many milestones: 3 show, the rest wait under "+N more" (closed by default)
+  await page.evaluate(() => { for (let i = 0; i < 4; i++) S.goals[0].ms.push({ id: 'x' + i, t: 'More ' + i, done: false }); save(); drawGoal(); });
+  await expect(page.locator('#gdPg .gr-list > .gm-cap')).toHaveText('+4 more');
+  await page.locator('#gdPg .gr-list > .gm-cap').click();
+  await expect(page.locator('#gdPg .gr-list > .gm-cap')).toHaveText('Show less');
+  await page.locator('#gdPg .gr-list > .gm-cap').click();
+  await page.evaluate(() => { S.goals[0].ms.splice(6); save(); drawGoal(); });
   // the card opens on Next; a quick double tap on Mark done ticks it once
   await expect(page.locator('#gdPg .gr-ms.sel.nx')).toHaveCount(1); // opens on Next, its tasks right on the line (no card)
   await expect(page.locator('#gdPg .gr-ms .gm-card')).toHaveCount(0);

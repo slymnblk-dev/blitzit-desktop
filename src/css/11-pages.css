@@ -708,3 +708,16 @@ button.hg-c:active{transform:scale(.88)}
   .gr-list~.gv-win{margin-top:14px}
   .gr-list~.gv-sec{margin-top:30px}
 }
+/* phone goal page: no Back (the Goals tab is there); facts and why small, top left beside ⋯; milestones show 3, then "+N more" */
+@media (max-width:699px){
+  .gd-pg:has(.gr-hero) #gdBack{display:none}
+  .gd-pg:has(.gr-hero) .gd-top{justify-content:flex-end}
+  .gd-pg:has(.gr-hero) .ib-in{position:relative}
+  .gr-meta{position:absolute;z-index:7;top:calc(max(18px,env(safe-area-inset-top,0px)) + 12px);left:22px;right:84px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:3px;pointer-events:none}
+  .gr-meta .gr-f{font-size:13.5px;line-height:1.3}
+  .gr-why{pointer-events:auto;align-self:flex-start;max-width:100%;padding:0;font:inherit;font-size:13.5px;font-style:italic;line-height:1.3;color:var(--muted);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gr-why::before{content:"“"}.gr-why::after{content:"”"}
+  .gr-hero{margin-top:14px}
+  .gr-hx{padding-top:2px}
+  .gr-list>.gm-cap{margin:2px 0 8px 42px}
+}

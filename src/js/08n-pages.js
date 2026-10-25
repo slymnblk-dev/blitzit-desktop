@@ -392,10 +392,11 @@ function gRoadView(g,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0
       <small class="gr-os">${m.done?(m.doneAt?`Done ${gShort(m.doneAt)}`:'Done'):ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}</small>
       ${ts.length?`<div class="gm-ts">${gCap('ms-'+m.id,ts,gRow,3,r=>r.k)}</div>`:''}
       ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div></div>`};
-  const rows=(fold?`<div class="gr-ms gr-fold"><span class="gr-k done">${CK}</span><button class="gr-t" data-gfold aria-expanded="false"><b>${done.length} done</b>${CHEV}</button></div>`+g.ms.filter(m=>!m.done).map(row).join('')
+  const rows=(fold?`<div class="gr-ms gr-fold"><span class="gr-k done">${CK}</span><button class="gr-t" data-gfold aria-expanded="false"><b>${done.length} done</b>${CHEV}</button></div>`+gCap('road',g.ms.filter(m=>!m.done),row,3,m=>m.id)
     :(done.length&&gDoneOpen&&!(sel&&sel.done)?`<div class="gr-ms gr-fold open"><span class="gr-k done">${CK}</span><button class="gr-t" data-gfold aria-expanded="true"><b>Hide ${done.length} done</b>${CHEV}</button></div>`:'')+g.ms.map(row).join(''));
-  return `<div class="gr-hero">${gbScene(g,anim)}${gNsSky(g)}<div class="gr-hx"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1><div class="gr-f">${gHeroFacts(g)}</div></div></div>
-    ${gWhy(g)}
+  /* the facts and the why sit small in the top-left corner (no Back on phones: the Goals tab is there) */
+  return `<div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div>${g.why&&!g.hideWhy?`<button class="gr-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>
+    <div class="gr-hero">${gbScene(g,anim)}${gNsSky(g)}<div class="gr-hx"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1></div></div>
     <div class="gr-list">${rows}${g.ms.length<MS_MAX&&!g.done?`<div class="gr-ms add"><span class="gr-k ghost"></span>${gAddInput(g.ms.length?'Add a milestone':'Add your first milestone')}</div>`:''}</div>
     ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}
     ${gTasksSec(g)}`}

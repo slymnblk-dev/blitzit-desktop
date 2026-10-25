@@ -3436,6 +3436,19 @@ button.hg-c:active{transform:scale(.88)}
   .gr-list~.gv-win{margin-top:14px}
   .gr-list~.gv-sec{margin-top:30px}
 }
+/* phone goal page: no Back (the Goals tab is there); facts and why small, top left beside ⋯; milestones show 3, then "+N more" */
+@media (max-width:699px){
+  .gd-pg:has(.gr-hero) #gdBack{display:none}
+  .gd-pg:has(.gr-hero) .gd-top{justify-content:flex-end}
+  .gd-pg:has(.gr-hero) .ib-in{position:relative}
+  .gr-meta{position:absolute;z-index:7;top:calc(max(18px,env(safe-area-inset-top,0px)) + 12px);left:22px;right:84px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:3px;pointer-events:none}
+  .gr-meta .gr-f{font-size:13.5px;line-height:1.3}
+  .gr-why{pointer-events:auto;align-self:flex-start;max-width:100%;padding:0;font:inherit;font-size:13.5px;font-style:italic;line-height:1.3;color:var(--muted);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gr-why::before{content:"“"}.gr-why::after{content:"”"}
+  .gr-hero{margin-top:14px}
+  .gr-hx{padding-top:2px}
+  .gr-list>.gm-cap{margin:2px 0 8px 42px}
+}
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
 .also .sec-h{margin-top:20px}
@@ -3737,7 +3750,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=195; // bumped with every published update
+const APP_VERSION=196; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7428,10 +7441,11 @@ function gRoadView(g,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0
       <small class="gr-os">${m.done?(m.doneAt?`Done ${gShort(m.doneAt)}`:'Done'):ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}</small>
       ${ts.length?`<div class="gm-ts">${gCap('ms-'+m.id,ts,gRow,3,r=>r.k)}</div>`:''}
       ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div></div>`};
-  const rows=(fold?`<div class="gr-ms gr-fold"><span class="gr-k done">${CK}</span><button class="gr-t" data-gfold aria-expanded="false"><b>${done.length} done</b>${CHEV}</button></div>`+g.ms.filter(m=>!m.done).map(row).join('')
+  const rows=(fold?`<div class="gr-ms gr-fold"><span class="gr-k done">${CK}</span><button class="gr-t" data-gfold aria-expanded="false"><b>${done.length} done</b>${CHEV}</button></div>`+gCap('road',g.ms.filter(m=>!m.done),row,3,m=>m.id)
     :(done.length&&gDoneOpen&&!(sel&&sel.done)?`<div class="gr-ms gr-fold open"><span class="gr-k done">${CK}</span><button class="gr-t" data-gfold aria-expanded="true"><b>Hide ${done.length} done</b>${CHEV}</button></div>`:'')+g.ms.map(row).join(''));
-  return `<div class="gr-hero">${gbScene(g,anim)}${gNsSky(g)}<div class="gr-hx"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1><div class="gr-f">${gHeroFacts(g)}</div></div></div>
-    ${gWhy(g)}
+  /* the facts and the why sit small in the top-left corner (no Back on phones: the Goals tab is there) */
+  return `<div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div>${g.why&&!g.hideWhy?`<button class="gr-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>
+    <div class="gr-hero">${gbScene(g,anim)}${gNsSky(g)}<div class="gr-hx"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1></div></div>
     <div class="gr-list">${rows}${g.ms.length<MS_MAX&&!g.done?`<div class="gr-ms add"><span class="gr-k ghost"></span>${gAddInput(g.ms.length?'Add a milestone':'Add your first milestone')}</div>`:''}</div>
     ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}
     ${gTasksSec(g)}`}
