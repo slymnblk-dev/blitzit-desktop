@@ -660,3 +660,7 @@ button.hg-c:active{transform:scale(.88)}
   #gdBack{display:none}
   .gd-pg .gd-top{height:0;align-items:flex-start;justify-content:flex-end}
 }
+
+/* the sun and its glow may reach above the climb; only the sides are trimmed */
+.gb-stage{overflow-x:clip;overflow-y:visible}
+.gd-pg .gd-top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none} /* no strip over the sky: the round buttons carry their own backgrounds */

@@ -3388,6 +3388,10 @@ button.hg-c:active{transform:scale(.88)}
   #gdBack{display:none}
   .gd-pg .gd-top{height:0;align-items:flex-start;justify-content:flex-end}
 }
+
+/* the sun and its glow may reach above the climb; only the sides are trimmed */
+.gb-stage{overflow-x:clip;overflow-y:visible}
+.gd-pg .gd-top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none} /* no strip over the sky: the round buttons carry their own backgrounds */
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
 .also .sec-h{margin-top:20px}
@@ -3681,7 +3685,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=190; // bumped with every published update
+const APP_VERSION=191; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
