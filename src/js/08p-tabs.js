@@ -14,7 +14,7 @@ function drawTabs(){
   const ts=tabsList(),on=ts.length>0&&(!S.space||ibOn||rhOn||glOn||gdOn);
   document.body.classList.toggle('tabs-on',on);
   if(!on){tbSig='';return}
-  const cur=tabNow(),n=inboxItems().length,sig=ts.map(x=>x[0]).join()+'|'+cur+'|'+n;if(sig===tbSig)return;tbSig=sig;
+  const cur=tabNow(),n=C().ibBadge===false?0:inboxItems().length,sig=ts.map(x=>x[0]).join()+'|'+cur+'|'+n;if(sig===tbSig)return;tbSig=sig;
   const btns=ts.map(([k,l,ic])=>`<button class="tb${k===cur?' on':''}" data-tab="${k}" id="tb${l}"${k===cur?' aria-current="page"':''}>${ic}<span>${l}</span>${k==='inbox'&&n?`<i class="tb-n">${n>99?'99+':n}</i>`:''}</button>`);
   btns.splice(Math.ceil(btns.length/2),0,`<button class="tb-add" id="tbAdd" aria-label="Add">${TB_PLUS}</button>`); // the + sits in the middle
   $('tbIn').innerHTML=btns.join('');

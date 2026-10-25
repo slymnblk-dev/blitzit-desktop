@@ -3681,7 +3681,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=189; // bumped with every published update
+const APP_VERSION=190; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7493,7 +7493,7 @@ function drawTabs(){
   const ts=tabsList(),on=ts.length>0&&(!S.space||ibOn||rhOn||glOn||gdOn);
   document.body.classList.toggle('tabs-on',on);
   if(!on){tbSig='';return}
-  const cur=tabNow(),n=inboxItems().length,sig=ts.map(x=>x[0]).join()+'|'+cur+'|'+n;if(sig===tbSig)return;tbSig=sig;
+  const cur=tabNow(),n=C().ibBadge===false?0:inboxItems().length,sig=ts.map(x=>x[0]).join()+'|'+cur+'|'+n;if(sig===tbSig)return;tbSig=sig;
   const btns=ts.map(([k,l,ic])=>`<button class="tb${k===cur?' on':''}" data-tab="${k}" id="tb${l}"${k===cur?' aria-current="page"':''}>${ic}<span>${l}</span>${k==='inbox'&&n?`<i class="tb-n">${n>99?'99+':n}</i>`:''}</button>`);
   btns.splice(Math.ceil(btns.length/2),0,`<button class="tb-add" id="tbAdd" aria-label="Add">${TB_PLUS}</button>`); // the + sits in the middle
   $('tbIn').innerHTML=btns.join('');
@@ -7560,6 +7560,27 @@ const _openGoal=openGoal;
 openGoal=function(id){_openGoal(id);if(gSideWide()&&gdOn&&!S.gSideOpen){S.gSideOpen=true;save()}if(gdOn)renderDesk()};
 /* growing past the phone size while the Goals page is open: swap it for the sidebar */
 matchMedia('(min-width:1100px)').addEventListener('change',e=>{if(e.matches&&glOn){closeGoals();openGoals()}});
+/* ---------- calm redraws ----------
+   Ticking a habit, a task or a milestone redraws the screen a moment later. Before, every card replayed its
+   "slide in" animation then, so the page flashed. Now cards slide in only when you arrive on a screen; a redraw
+   of the same screen just updates what changed. */
+let calmKey='';
+const calmNow=()=>[S.space,S.list,S.stage,S.subHidden,typeof spPage!=='undefined'?spPage:'',ibOn,rhOn,glOn,gdOn,gdOn?gdId:''].join('|');
+function calmFinish(){
+  if(!document.getAnimations)return;
+  for(const a of document.getAnimations()){
+    if(typeof CSSAnimation==='undefined'||!(a instanceof CSSAnimation))continue;
+    const t=a.effect&&a.effect.getComputedTiming();if(!t||!isFinite(t.endTime))continue; // leave looping glows alone
+    if((a.currentTime||0)>40)continue; // only the ones this redraw just started
+    const el=a.effect.target;if(!el||!el.closest||el.closest('.sheet,.toast,#cxPop,.dlg,.mo-pg'))continue;
+    try{a.finish()}catch(e){}
+  }
+}
+const _calmRender=render;
+render=function(d){
+  const k=calmNow(),quiet=k===calmKey&&d===undefined&&!enterId;
+  _calmRender(d);calmKey=calmNow();
+  if(quiet)calmFinish()};
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -8031,7 +8052,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,ibBadge:true,review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -8206,6 +8227,7 @@ function settingsPage(id){
     <button class="ghost-btn" id="stReset">Reset to default</button>`;
   if(id==='tasks')body=`<div class="set-sec"><h3>New tasks</h3>
     ${row('Inbox',tg('inbox'),'A calm place for loose tasks and notes. Send a task to a list when you’re ready.')}
+    ${c.inbox!==false?row('Inbox badge',tg('ibBadge'),'Show the number of waiting items on the Inbox tab.'):''}
     ${row('Weekly review',tg('review'),'A short card on Home once a week: see what you finished and tidy My week.')}
     ${c.review!==false?row('Review day',`<div class="segc">${REVIEW_DAYS.map(([v,n])=>sOpt('reviewDay',v,n)).join('')}</div>`)+`<button class="link-row" id="rvStart">Start a review now</button>`:''}
     ${row('Default estimate',`<div class="segc">${[15,30,60,120].map(m=>sOpt('defEst',m,fmt(m))).join('')}</div>`)}
