@@ -3729,7 +3729,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=193; // bumped with every published update
+const APP_VERSION=194; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7083,7 +7083,7 @@ function hpGrid(hs){
   const head=`<div class="hg hg-head"><span></span>${days.map(d=>{const k=dkey(d);return `<span class="hg-d${k===t?' now':''}"><small>${d.toLocaleDateString(undefined,{weekday:'short'}).slice(0,3)}</small><b>${d.getDate()}</b></span>`}).join('')}<span></span></div>`;
   const rows=hs.map((h,i)=>`<div class="hg hg-row" style="--i:${i}"><button class="hg-n" data-hbe="${h.id}"><span class="hg-e">${h.e?esc(h.e):''}</span>${esc(h.name)}</button>${days.map(d=>hpCell(h,d)).join('')}<span class="hg-s" data-hgs="${h.id}">${hpStreak(h)}</span></div>`).join('');
   return `<div class="hg-card">${head}${rows}</div>
-    <div class="hg-foot"><span><i class="hg-lg on"></i>Kept</span><span><i class="hg-lg miss"></i>Missed</span><span><i class="hg-lg rest"></i>Rest day</span><span class="hg-tip">Tap a circle to tick it. Names open the habit.</span></div>`}
+    <div class="hg-foot"><span><i class="hg-lg on"></i>Kept</span><span><i class="hg-lg miss"></i>Missed</span><span><i class="hg-lg rest"></i>Rest day</span></div>`}
 function hpWeekCount(hs){const days=hpWeekDays(hpWeek),t=today();let due=0,dn=0;
   hs.forEach(h=>days.forEach(d=>{const k=dkey(d);if(k>t||k<dkey(new Date(h.created||0)))return;if(hbDue(h,d)||(h.done||{})[k]){due++;if((h.done||{})[k])dn++}}));return {due,dn}}
 function hpSunSvg(p,all,cls){const y=Math.round(96*(1-p))-26;

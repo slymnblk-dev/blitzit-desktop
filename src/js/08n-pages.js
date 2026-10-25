@@ -55,7 +55,7 @@ function hpGrid(hs){
   const head=`<div class="hg hg-head"><span></span>${days.map(d=>{const k=dkey(d);return `<span class="hg-d${k===t?' now':''}"><small>${d.toLocaleDateString(undefined,{weekday:'short'}).slice(0,3)}</small><b>${d.getDate()}</b></span>`}).join('')}<span></span></div>`;
   const rows=hs.map((h,i)=>`<div class="hg hg-row" style="--i:${i}"><button class="hg-n" data-hbe="${h.id}"><span class="hg-e">${h.e?esc(h.e):''}</span>${esc(h.name)}</button>${days.map(d=>hpCell(h,d)).join('')}<span class="hg-s" data-hgs="${h.id}">${hpStreak(h)}</span></div>`).join('');
   return `<div class="hg-card">${head}${rows}</div>
-    <div class="hg-foot"><span><i class="hg-lg on"></i>Kept</span><span><i class="hg-lg miss"></i>Missed</span><span><i class="hg-lg rest"></i>Rest day</span><span class="hg-tip">Tap a circle to tick it. Names open the habit.</span></div>`}
+    <div class="hg-foot"><span><i class="hg-lg on"></i>Kept</span><span><i class="hg-lg miss"></i>Missed</span><span><i class="hg-lg rest"></i>Rest day</span></div>`}
 function hpWeekCount(hs){const days=hpWeekDays(hpWeek),t=today();let due=0,dn=0;
   hs.forEach(h=>days.forEach(d=>{const k=dkey(d);if(k>t||k<dkey(new Date(h.created||0)))return;if(hbDue(h,d)||(h.done||{})[k]){due++;if((h.done||{})[k])dn++}}));return {due,dn}}
 function hpSunSvg(p,all,cls){const y=Math.round(96*(1-p))-26;
