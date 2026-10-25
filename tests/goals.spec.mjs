@@ -153,11 +153,21 @@ test('goals: one north star, limit of 3, sync/backup/undo, desktop layout', asyn
   await expect.poll(() => page.evaluate(() => S.goals.length)).toBe(2);
   await page.locator('#undoBtn').click();
   await expect.poll(() => page.evaluate(() => S.goals.length)).toBe(3);
-  // desktop: sidebar Goals page, cards with a small climb
-  await page.evaluate(() => { closeGoal(); goHome(); });
+  // computers: no Goals page; "Goals" in the sidebar folds open to list every goal, a goal opens its page, no back button
+  await page.evaluate(() => { closeGoal(); goHome(); S.gSideOpen = false; save(); renderDesk(); });
   await page.locator('#sGoals').click();
-  await expect(page.locator('#goalsPg .g-card')).toHaveCount(3);
-  await expect(page.locator('#goalsPg .g-cmini svg').first()).toBeVisible();
+  await expect(page.locator('#goalsPg')).not.toHaveClass(/on/);
+  await expect(page.locator('#sLists [data-sgoal]')).toHaveCount(3);
+  await page.locator('#sLists [data-sgoal="g3"]').click();
+  await expect(page.locator('#gdPg')).toHaveClass(/on/);
+  expect(await page.evaluate(() => gdId)).toBe('g3');
+  await expect(page.locator('#sLists [data-sgoal="g3"]')).toHaveClass(/on/);
+  await expect(page.locator('#gdBack')).toBeHidden();
+  await page.locator('#sGoals').click(); // folds closed again
+  await expect(page.locator('#sLists [data-sgoal]')).toHaveCount(0);
+  await page.evaluate(() => { closeGoal(); openGoals(); }); // asking for the Goals page opens the fold and a goal instead
+  await expect(page.locator('#goalsPg')).not.toHaveClass(/on/);
+  await expect(page.locator('#sLists [data-sgoal]')).toHaveCount(3);
   noErrors(errors);
 });
 
@@ -436,7 +446,8 @@ test('goal page and Goals page: ⋯ menus to rename, move, add subtasks, delete;
   await page.keyboard.press('Escape');
   await expect(page.locator('#cxPop')).not.toHaveClass(/on/);
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
-  // Goals page: each card has a ⋯ (north star, achieved, delete)
+  // Goals page (phones and tablets): each card has a ⋯ (north star, achieved, delete)
+  await page.setViewportSize({ width: 800, height: 900 });
   await page.evaluate(() => { closeGoal(); openGoals(); });
   await menu('#goalsPg [data-gcm="g1"]', 'Make it my north star');
   expect(await page.evaluate(() => S.goals[0].star)).toBe(true);

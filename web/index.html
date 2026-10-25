@@ -3377,6 +3377,17 @@ button.hg-c:active{transform:scale(.88)}
 .gm-msl .gpo-m:not(.on) .gpo-k::before{content:counter(ms);position:absolute;inset:0;display:grid;place-items:center;font-size:11.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .gm-msl .gpo-m.nx:not(.on) .gpo-k::before{color:var(--today)}
 .gm-msl .gv-add{border-top:0;margin-top:4px}
+/* computer: Goals fold open in the sidebar; the goal page has no back button, its title starts at the top */
+.s-gfold .s-chev{width:14px;height:14px;flex:none;margin-left:6px;color:var(--muted);transition:transform .25s var(--ease)}
+.s-gfold.open .s-chev{transform:rotate(90deg)}
+.s-gfold .n+.s-chev{margin-left:8px}
+.s-gsub .sg-e{width:18px;flex:none;display:grid;place-items:center;font-size:14px;line-height:1}
+.s-gsub .sg-e svg{width:13px;height:13px;color:var(--muted)}
+.s-gsub .s-list .n{font-variant-numeric:tabular-nums}
+@media (min-width:1100px){
+  #gdBack{display:none}
+  .gd-pg .gd-top{height:0;align-items:flex-start;justify-content:flex-end}
+}
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
 .also .sec-h{margin-top:20px}
@@ -3669,7 +3680,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=186; // bumped with every published update
+const APP_VERSION=187; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5431,7 +5442,7 @@ function renderDesk(){
   const sub=S.space?`<div class="s-sub"><button class="s-list ${S.list==='all'?'on':''}" data-l="all" title="All lists"><span class="stack">${listsHere().slice(0,3).map(x=>`<span style="background:${x.c};border-color:var(--bg)"></span>`).join('')}</span><span class="s-name">All lists</span><span class="n">${open('all')}</span></button>`+
     listsHere().map(l=>`<button class="s-list ${S.list===l.id?'on':''}" data-l="${l.id}" title="${esc(l.name)}"><i style="background:${l.c}"></i><span class="s-name">${esc(l.name)}</span><span class="n">${open(l.id)}</span></button>`).join('')+
     `<button class="s-list s-mini" id="sNew" title="New list">${PLUS_S}<span class="s-name">New list</span></button><button class="s-list s-mini" id="sEdit" title="Edit lists"><span class="s-name">Edit lists</span></button></div>`:'';
-  $('sLists').innerHTML=`<button class="s-list s-home ${!S.space&&!ibOn&&!rhOn&&!glOn?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
+  $('sLists').innerHTML=`<button class="s-list s-home ${!S.space&&!ibOn&&!rhOn&&!glOn&&!(typeof gdOn!=='undefined'&&gdOn)?'on':''}" id="sHome" title="Home">${HOUSE}<span class="s-name">Home</span></button>
     <button class="s-list s-home ${S.space==='all'&&!ibOn&&!rhOn&&!glOn?'on':''} ${S.space==='all'&&S.subHidden?'folded':''}" id="sAll" title="All tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="s-name">All tasks</span></button>${S.space==='all'&&!S.subHidden?sub:''}${inboxOn()?(()=>{const n=inboxItems().length;return `<button class="s-list s-home s-inbox ${ibOn?'on':''}" id="sInbox" title="Inbox">${IB_ICON}<span class="s-name">Inbox</span>${n?`<span class="n">${n}</span>`:''}</button>`})():''}${rhythmSide()}
     <div class="s-lbl2"><span class="s-name">Spaces</span></div>`+
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
@@ -7505,6 +7516,48 @@ $('tabBar').addEventListener('click',e=>{
 });
 const _tbRender=render;render=function(d){_tbRender(d);try{drawTabs()}catch(err){console.error(err)}};
 const _tbDesk=renderDesk;renderDesk=function(){_tbDesk.apply(this,arguments);try{drawTabs()}catch(err){console.error(err)}};
+/* ---------- computer: Goals live in the sidebar, like spaces ----------
+   "Goals" folds open to list every goal; a goal opens its own page. No Goals overview page and no back button on a computer.
+   Phones keep the Goals tab and its page. */
+const gSideWide=()=>matchMedia('(min-width:1100px)').matches;
+const G_CHEV='<svg class="s-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+const _rhythmSide=rhythmSide;
+rhythmSide=function(){
+  if(!gSideWide()||!goalsOn())return _rhythmSide();
+  // habits row as before, then our own Goals row
+  const keep=S.cfg.goals;S.cfg.goals=false;let h;try{h=_rhythmSide()}finally{S.cfg.goals=keep}
+  const gs=gAll(),open=!!S.gSideOpen;
+  h+=`<button class="s-list s-home s-inbox s-gfold${open?' open':''}" id="sGoals" title="Goals" aria-expanded="${open}">${G_FLAG}<span class="s-name">Goals</span>${gs.length?`<span class="n">${gs.length}</span>`:''}${G_CHEV}</button>`;
+  if(open)h+=`<div class="s-sub s-gsub">${gs.map(g=>{const p=gProg(g);
+      return `<button class="s-list${gdOn&&String(gdId)===String(g.id)?' on':''}" data-sgoal="${g.id}" title="${esc(g.name)}"><span class="sg-e">${g.e?esc(g.e):G_FLAG}</span><span class="s-name">${esc(g.name)}</span><span class="n">${p.n}/${p.of}</span></button>`}).join('')}
+    ${gs.length<G_MAX?`<button class="s-list s-mini" data-sgnew title="New goal">${PLUS_S}<span class="s-name">New goal</span></button>`:''}</div>`;
+  return h};
+
+const _sListsClick=$('sLists').onclick;
+$('sLists').onclick=e=>{
+  if(gSideWide()&&goalsOn()){
+    if(e.target.closest('#sGoals')){S.gSideOpen=!S.gSideOpen;save();haptic(4);return renderDesk()}
+    const go=e.target.closest('[data-sgoal]');
+    if(go){if(ibOn)closeInbox();if(rhOn)closeRhythm();if(glOn)closeGoals();
+      if(gdOn&&String(gdId)===go.dataset.sgoal)return;openGoal(isNaN(+go.dataset.sgoal)?go.dataset.sgoal:+go.dataset.sgoal);return}
+    if(e.target.closest('[data-sgnew]'))return openSetup(null);
+  }
+  return _sListsClick(e)};
+
+/* anything that asks for the Goals page on a computer opens the sidebar fold instead (and the first goal, if none is open) */
+const _openGoals=openGoals;
+openGoals=function(){
+  if(!gSideWide())return _openGoals();
+  if(!goalsOn())return;
+  S.gSideOpen=true;save();
+  const gs=gAll();
+  if(!gs.length)return openSetup(null);
+  if(!gdOn){if(ibOn)closeInbox();if(rhOn)closeRhythm();openGoal(gs[0].id)}else renderDesk()};
+/* the goal you're on stays lit in the sidebar */
+const _openGoal=openGoal;
+openGoal=function(id){_openGoal(id);if(gSideWide()&&gdOn&&!S.gSideOpen){S.gSideOpen=true;save()}if(gdOn)renderDesk()};
+/* growing past the phone size while the Goals page is open: swap it for the sidebar */
+matchMedia('(min-width:1100px)').addEventListener('change',e=>{if(e.matches&&glOn){closeGoals();openGoals()}});
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}

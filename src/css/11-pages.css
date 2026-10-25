@@ -649,3 +649,14 @@ button.hg-c:active{transform:scale(.88)}
 .gm-msl .gpo-m:not(.on) .gpo-k::before{content:counter(ms);position:absolute;inset:0;display:grid;place-items:center;font-size:11.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .gm-msl .gpo-m.nx:not(.on) .gpo-k::before{color:var(--today)}
 .gm-msl .gv-add{border-top:0;margin-top:4px}
+/* computer: Goals fold open in the sidebar; the goal page has no back button, its title starts at the top */
+.s-gfold .s-chev{width:14px;height:14px;flex:none;margin-left:6px;color:var(--muted);transition:transform .25s var(--ease)}
+.s-gfold.open .s-chev{transform:rotate(90deg)}
+.s-gfold .n+.s-chev{margin-left:8px}
+.s-gsub .sg-e{width:18px;flex:none;display:grid;place-items:center;font-size:14px;line-height:1}
+.s-gsub .sg-e svg{width:13px;height:13px;color:var(--muted)}
+.s-gsub .s-list .n{font-variant-numeric:tabular-nums}
+@media (min-width:1100px){
+  #gdBack{display:none}
+  .gd-pg .gd-top{height:0;align-items:flex-start;justify-content:flex-end}
+}
