@@ -381,15 +381,25 @@ const gPhone=()=>matchMedia('(max-width:699px)').matches;
 function gHeroFacts(g){const pr=gProg(g),dl=gDaysLeft(g),pc=gPace(g);
   const d=g.done?`Achieved ${gShort(g.doneAt)}`:dl===null?'No date':dl<0?`<b>${-dl}</b> ${dl===-1?'day':'days'} over`:`<b>${dl}</b> ${dl===1?'day':'days'} left`;
   return `<span><b>${pr.n} of ${pr.of}</b></span><span>${d}</span>${g.done||!pr.of||pr.n>=pr.of?'':`<span class="gp-${pc.k}">${pc.t}</span>`}`}
+var gDoneOpen=false; // phones: finished milestones fold into one line until you open them
 function gRoadView(g,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
-  const rows=g.ms.map((m,i)=>{const ts=gKids(m),dn=ts.filter(x=>x.done).length,open=m===sel;
-    return `<div class="gr-ms${m.done?' on':''}${m===nx&&!g.done?' nx':''}${open?' sel':''}"><button class="gr-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${m.done?CK:`<span>${i+1}</span>`}</button>
-      ${open?gMsCard(g,m,'rd'):`<button class="gr-t" data-gsel="${m.id}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks"><b>${esc(m.t)}</b><small>${m.done&&m.doneAt?gShort(m.doneAt):ts.length?`${dn}/${ts.length}`:''}</small></button>`}</div>`}).join('');
+  const done=g.ms.filter(m=>m.done),fold=done.length>0&&!gDoneOpen&&!(sel&&sel.done);
+  const row=m=>{const i=g.ms.indexOf(m),ts=gKids(m),dn=ts.filter(x=>x.done).length,open=m===sel,live=!m.done&&!g.done;
+    const k=`<button class="gr-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Mark done'}: ${esc(m.t)}">${m.done?CK:`<span>${i+1}</span>`}</button>`;
+    if(!open)return `<div class="gr-ms${m.done?' on':''}${m===nx&&!g.done?' nx':''}">${k}<button class="gr-t" data-gsel="${m.id}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks"><b>${esc(m.t)}</b><small>${ts.length?`${dn}/${ts.length}`:''}</small></button></div>`;
+    return `<div class="gr-ms sel${m.done?' on':''}${m===nx&&!g.done?' nx':''}" data-gcard="${m.id}">${k}<div class="gr-o">
+      <div class="gr-oh"><b>${esc(m.t)}</b>${MORE(`data-gmm="${m.id}"`,`Options for milestone ${esc(m.t)}`)}</div>
+      <small class="gr-os">${m.done?(m.doneAt?`Done ${gShort(m.doneAt)}`:'Done'):ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}</small>
+      ${ts.length?`<div class="gm-ts">${gCap('ms-'+m.id,ts,gRow,3,r=>r.k)}</div>`:''}
+      ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div></div>`};
+  const rows=(fold?`<div class="gr-ms gr-fold"><span class="gr-k done">${CK}</span><button class="gr-t" data-gfold aria-expanded="false"><b>${done.length} done</b>${CHEV}</button></div>`+g.ms.filter(m=>!m.done).map(row).join('')
+    :(done.length&&gDoneOpen&&!(sel&&sel.done)?`<div class="gr-ms gr-fold open"><span class="gr-k done">${CK}</span><button class="gr-t" data-gfold aria-expanded="true"><b>Hide ${done.length} done</b>${CHEV}</button></div>`:'')+g.ms.map(row).join(''));
   return `<div class="gr-hero">${gbScene(g,anim)}${gNsSky(g)}<div class="gr-hx"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1><div class="gr-f">${gHeroFacts(g)}</div></div></div>
     ${gWhy(g)}
     <div class="gr-list">${rows}${g.ms.length<MS_MAX&&!g.done?`<div class="gr-ms add"><span class="gr-k ghost"></span>${gAddInput(g.ms.length?'Add a milestone':'Add your first milestone')}</div>`:''}</div>
     ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}
     ${gTasksSec(g)}`}
+$('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gfold]');if(!b)return;e.stopPropagation();gDoneOpen=!gDoneOpen;haptic(4);drawGoal()});
 matchMedia('(max-width:699px)').addEventListener('change',()=>{if(gdOn)drawGoal()});
 function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);if(gPhone())return gRoadView(g,anim);
   return `<div class="gb-stage">${gNsSky(g)}${gbScene(g,anim)}<div class="gb-head">

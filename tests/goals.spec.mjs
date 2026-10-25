@@ -54,7 +54,7 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await page.locator('#gdPg [data-gtk]').first().click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
   // the card shows the next milestone; a task added there stays in the goal (no list, no stage)
-  await expect(page.locator('#gdPg .gm-card .gm-hx b')).toHaveText('Run 15 km');
+  await expect(page.locator('#gdPg .gr-oh b')).toHaveText('Run 15 km');
   await page.fill('#gMtIn', 'Long run Sunday');
   await page.keyboard.press('Enter');
   expect(await page.evaluate(() => S.tasks.some(x => x.title === 'Long run Sunday'))).toBe(false);
@@ -62,7 +62,7 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await expect(page.locator('#gMtIn')).toBeFocused(); // ready for the next one
   // finishing its last task ticks the milestone
   await page.locator('#gMtIn').blur();
-  await page.locator('#gdPg .gm-card [data-gmt]').first().click();
+  await page.locator('#gdPg .gr-o [data-gmt]').first().click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[1].done)).toBe(true);
   await expect(page.locator('#gdPg [data-gwin]')).toBeVisible(); // summit reached → offer to mark achieved
 
@@ -182,14 +182,20 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   });
   // phones: a pinned hero card, then one roadmap with every milestone; the selected one opens with its tasks
   await expect(page.locator('#gdPg .gr-hero')).toBeVisible();
-  await expect(page.locator('#gdPg .gr-ms:not(.add)')).toHaveCount(6);
+  // finished milestones fold into one line; tapping it shows them
+  await expect(page.locator('#gdPg .gr-fold')).toContainText('3 done');
+  await expect(page.locator('#gdPg .gr-ms:not(.add):not(.gr-fold)')).toHaveCount(3);
+  await page.locator('#gdPg [data-gfold]').click();
   await expect(page.locator('#gdPg .gr-ms.on')).toHaveCount(3);
-  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gdPg .gr-hero')).position)).toBe('sticky');
+  await page.locator('#gdPg [data-gfold]').click();
+  await expect(page.locator('#gdPg .gr-ms.on')).toHaveCount(0);
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gdPg .gr-hero')).position)).not.toBe('sticky'); // the hero scrolls away; only Back and ⋯ stay
   // past due: counts the days over, never "0 days left"
   await expect(page.locator('#gdPg .gr-f')).toContainText('days over');
   // the card opens on Next; a quick double tap on Mark done ticks it once
-  await expect(page.locator('#gdPg .gm-card .gm-tag')).toHaveText('Next');
-  await page.locator('#gdPg .gm-card [data-gtk]').dblclick();
+  await expect(page.locator('#gdPg .gr-ms.sel.nx')).toHaveCount(1); // opens on Next, its tasks right on the line (no card)
+  await expect(page.locator('#gdPg .gr-ms .gm-card')).toHaveCount(0);
+  await page.locator('#gdPg .gr-ms.sel [data-gtk]').dblclick();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(4);
   // adding a milestone lives in the goal's ⋯ menu → Edit milestones (no extra buttons on the page)
   await expect(page.locator('#gdPg .gm-head')).toHaveCount(0); // the stats above already count milestones
@@ -204,10 +210,11 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.evaluate(() => { S.goals[0].ms.pop(); save(); render(); });
   // tapping a milestone (track or hill dot) opens its card and never ticks it
   const before = await page.evaluate(() => S.goals[0].ms.map(m => !!m.done));
+  await page.locator("#gdPg [data-gfold]").click(); // done milestones are folded: open them
   await page.locator('#gdPg .gr-t[data-gsel="m1"]').click();
-  await expect(page.locator('#gdPg .gm-card .gm-hx b')).toHaveText('Step 2');
+  await expect(page.locator('#gdPg .gr-oh b')).toHaveText('Step 2');
   await page.evaluate(() => document.querySelector('#gdPg .gb-svg [data-gsel="m5"]').dispatchEvent(new MouseEvent('click', { bubbles: true })));
-  await expect(page.locator('#gdPg .gm-card .gm-hx b')).toHaveText('Step 6');
+  await expect(page.locator('#gdPg .gr-oh b')).toHaveText('Step 6');
   expect(await page.evaluate(() => S.goals[0].ms.map(m => !!m.done))).toEqual(before);
   // milestones are parent tasks: the last task done ticks it; reopening a task reopens it;
   // marking it done finishes its open tasks; reopening the milestone leaves its tasks as they are
@@ -215,17 +222,17 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.keyboard.press('Enter');
   await page.fill('#gMtIn', 'B');
   await page.keyboard.press('Enter');
-  await expect(page.locator('#gdPg .gm-card .gm-t')).toHaveCount(2);
+  await expect(page.locator('#gdPg .gr-o .gm-t')).toHaveCount(2);
   const st = () => page.evaluate(() => [S.goals[0].ms[5].done, ...['A', 'B'].map(n => S.goals[0].ms[5].items.find(x => x.t === n).done ? 'done' : 'week')]);
-  await expect(page.locator('#gdPg .gm-card .gm-tt b')).toHaveText(['A', 'B']); // oldest first, add field at the bottom
-  await page.locator('#gdPg .gm-card .gm-t').nth(0).locator('[data-gmt]').click();
+  await expect(page.locator('#gdPg .gr-o .gm-tt b')).toHaveText(['A', 'B']); // oldest first, add field at the bottom
+  await page.locator('#gdPg .gr-o .gm-t').nth(0).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
   await page.waitForTimeout(450);
-  await page.locator('#gdPg .gm-card .gm-t').nth(1).locator('[data-gmt]').click();
+  await page.locator('#gdPg .gr-o .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([true, 'done', 'done']);
-  await expect(page.locator('#gdPg .gm-card .gm-tag')).toContainText('Done'); // the moment shows on the same card
+  await expect(page.locator('#gdPg .gr-os')).toContainText('Done'); // the moment shows on the same milestone
   await page.waitForTimeout(450);
-  await page.locator('#gdPg .gm-card .gm-t').nth(1).locator('[data-gmt]').click();
+  await page.locator('#gdPg .gr-o .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
   await page.evaluate(() => gMsToggle(S.goals[0], S.goals[0].ms[5]));
   await expect.poll(st).toEqual([true, 'done', 'done']);
