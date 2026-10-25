@@ -3669,7 +3669,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=185; // bumped with every published update
+const APP_VERSION=186; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7265,7 +7265,7 @@ function gMsCard(g,m,cls){if(!m)return '';
       <small>${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'} done`:'No tasks yet'}</small></div>
     ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':'Mark done'}</button>`}${MORE(`data-gmm="${m.id}"`,`Options for milestone ${esc(m.t)}`)}</div>
     ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts">${gCap('ms-'+m.id,ts,gRow,3,r=>r.k)}</div>`
-      :live?`<p class="gm-empty">Break it into a few tasks. They stay with this goal (no list needed), and finishing the last one completes the milestone.</p>`:''}
+      :''}
     ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
 /* every milestone on one track that always fits: the first one is always in view, nothing scrolls sideways */
 function gTrack(g){const sel=gSel(g),nx=gNext(g),N=g.ms.length,last=g.ms.map(m=>!!m.done).lastIndexOf(true),f=N>1&&last>0?last/(N-1):0;
