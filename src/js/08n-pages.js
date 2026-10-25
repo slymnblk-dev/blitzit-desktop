@@ -247,7 +247,7 @@ function gbScene(g,anim){
   const route=sm(P),S=P[N+1];
   const seg=[0];for(let i=1;i<P.length;i++)seg.push(seg[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));
   const idx=top?N+1:pr.n,p=seg[idx]/seg[seg.length-1],me=P[idx];
-  const sunY=(top?0:(1-pr.p))*H*.22,SX=S[0]+W*.11,SY=S[1]-H*.01;
+  const sunY=(top?0:(1-pr.p))*H*.22,SX=S[0]+W*(W<1000?.05:.11),SY=S[1]-H*(W<1000?.1:.01);
   const prev=gbPrev&&gbPrev.id===g.id&&!anim?gbPrev:{p:0,x:P[0][0],y:P[0][1],s:H*.3};
   gbPrev={id:g.id,p,x:me[0],y:me[1],s:sunY};
   const far=`M0 ${H*.62} C${W*.18} ${H*.5} ${W*.3} ${H*.58} ${W*.46} ${H*.42} S${W*.72} ${H*.3} ${W*.86} ${H*.36} S${W} ${H*.44} ${W} ${H*.44} L${W} ${H} L0 ${H}Z`;
@@ -268,7 +268,7 @@ function gbScene(g,anim){
 /* tasks linked to the goal but to no milestone */
 function gTasksSec(g){const lo=gLoose(g),wk=gMon(),moved=lo.filter(t=>t.stage==='done'&&(t.doneAt||0)>=wk),open=lo.filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
   const row=t=>`<div class="g-tr2"><button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>${MORE(`data-gtm="t${t.id}"`,`Options for ${esc(t.title)}`)}</div>`;
-  return `<div class="gv-sec"><h2>Other tasks</h2><span>${moved.length?`${moved.length} done this week`:''}</span></div><div class="g-tasks">${gCap('other',[...open,...moved],row)}</div>`}
+  return `<div class="gv-sec"><h2>Other tasks</h2><span>${moved.length?`${moved.length} done this week`:''}</span></div><div class="g-tasks">${gCap('other',[...open,...moved],row,3,t=>'t'+t.id)}</div>`}
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
 const gSmooth=()=>matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
 /* the selected milestone (tap one on the track, the hill or the path); by default the next one */
@@ -287,14 +287,16 @@ function gRow(r){const on=r.done,subs=r.subs,n=subs.length,d=subs.filter(s=>s.do
 /* a milestone's card: its tasks (in the order you added them), add a task, mark it done */
 /* long lists show 3 and a "+N more" toggle, so the cards stay even */
 var gOpenLists=new Set();
-function gCap(key,items,render,n){n=n||3;if(items.length<=n+1)return items.map(render).join('');const open=gOpenLists.has(key);
+var gTouch=null; // the last task or milestone you acted on: a capped list opens if it would hide it
+function gCap(key,items,render,n,keyOf){n=n||3;if(items.length<=n+1)return items.map(render).join('');
+  if(gTouch&&keyOf&&items.findIndex(x=>keyOf(x)===gTouch)>=n)gOpenLists.add(key);const open=gOpenLists.has(key);
   return (open?items:items.slice(0,n)).map(render).join('')+`<button class="gm-cap" data-gmore="${key}" aria-expanded="${open}">${open?'Show less':`+${items.length-n} more`}</button>`}
 function gMsCard(g,m,cls){if(!m)return '';
   const i=g.ms.indexOf(m),ts=gKids(m),dn=ts.filter(x=>x.done).length,nx=gNext(g),live=!m.done&&!g.done;
   return `<div class="gm-card${cls?' '+cls:''}" data-gcard="${m.id}"><div class="gm-h"><div class="gm-hx"><span class="gm-tag">${m.done?(m.doneAt?`Done · ${gShort(m.doneAt)}`:'Done'):m===nx?'Next':`Milestone ${i+1}`}</span><b>${esc(m.t)}</b>
       <small>${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'} done`:'No tasks yet'}</small></div>
     ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':'Mark done'}</button>`}${MORE(`data-gmm="${m.id}"`,`Options for milestone ${esc(m.t)}`)}</div>
-    ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts">${gCap('ms-'+m.id,ts,gRow)}</div>`
+    ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts">${gCap('ms-'+m.id,ts,gRow,3,r=>r.k)}</div>`
       :live?`<p class="gm-empty">Break it into a few tasks. They stay with this goal (no list needed), and finishing the last one completes the milestone.</p>`:''}
     ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
 /* every milestone on one track that always fits: the first one is always in view, nothing scrolls sideways */
@@ -371,7 +373,7 @@ const gNsSky=g=>g.star&&!g.done&&!g.hideNs?`<span class="gb-ns" role="img" aria-
 const gWide=()=>matchMedia('(min-width:1100px)').matches;
 function gMsList(g){if(!g.ms.length)return '';const sel=gSel(g),nx=gNext(g),pr=gProg(g);
   return `<div class="gm-msl"><div class="gv-sec"><h2>Milestones</h2><span>${pr.n} of ${pr.of} done</span></div><div class="gpo-list">${gCap('msl',g.ms,(m,i)=>{const n=gKids(m).length;
-    return `<div class="gpo-m${m.done?' on':''}${m===sel?' sel':''}${m===nx&&!g.done?' nx':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks">${esc(m.t)}${n?`<small>${gKids(m).filter(x=>x.done).length}/${n}</small>`:''}</button></div>`})}
+    return `<div class="gpo-m${m.done?' on':''}${m===sel?' sel':''}${m===nx&&!g.done?' nx':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks">${esc(m.t)}${n?`<small>${gKids(m).filter(x=>x.done).length}/${n}</small>`:''}</button></div>`},3,m=>m.id)}
     ${g.ms.length<MS_MAX&&!g.done?gAddInput('Add a milestone'):''}</div></div>`}
 function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);
   return `<div class="gb-stage">${gNsSky(g)}${gbScene(g,anim)}<div class="gb-head">
@@ -488,5 +490,10 @@ document.addEventListener('keydown',e=>{
   e.preventDefault();e.stopImmediatePropagation();ESC_PAGES[top.id]();
 },true);
 
-$('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmore]');if(!b)return;e.stopPropagation();const k=b.dataset.gmore;
+$('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmore]');if(!b)return;e.stopPropagation();const k=b.dataset.gmore;gTouch=null;
   if(gOpenLists.has(k))gOpenLists.delete(k);else gOpenLists.add(k);haptic(4);drawGoal()});
+
+/* remember what you touch, and open a capped list when you add to it, so nothing you act on hides under "+N more" */
+$('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmt],[data-gtm],[data-gedt],[data-gsubs],[data-gtk],[data-gsel],[data-gtask]');if(!b)return;
+  const d=b.dataset;gTouch=d.gmt||d.gtm||d.gedt||d.gsubs||d.gtk||d.gsel||(d.gtask?'t'+d.gtask:null)},true);
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gMtIn'&&e.target.value.trim())gOpenLists.add('ms-'+e.target.dataset.gms)},true);

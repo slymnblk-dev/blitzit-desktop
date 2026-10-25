@@ -632,3 +632,8 @@ button.hg-c:active{transform:scale(.88)}
   .gb-svg{height:auto;aspect-ratio:1200/440}
 }
 @media (max-width:699px){.gb-line{font-size:13.5px}.gb-line>*+*::before{margin:0 6px}}
+/* "why it matters" reads as a quote, not an input box */
+.gv-why.note,.gv-why.note.plain{background:none;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:inset 3px 0 0 var(--today);border-radius:0;padding:2px 0 2px 16px;margin-top:6px;color:color-mix(in srgb,var(--text) 78%,var(--bg))}
+.gv-why.note:hover{background:none;color:var(--text)}
+.gv-why.note>span{font-size:16px;font-style:italic;padding-top:0}
+.gv-why.note>span::before{content:"“"}.gv-why.note>span::after{content:"”"}

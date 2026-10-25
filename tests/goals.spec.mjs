@@ -345,8 +345,7 @@ test('goal page: milestone tasks need no space or list; add one to a list and ba
   for (let i = 0; i < 14; i++) { await page.fill('#gMtIn', 'T' + i); await page.keyboard.press('Enter'); }
   expect(await page.evaluate(() => [S.goals[0].ms[0].items.length, S.tasks.filter(x => x.goal === 'g1').length])).toEqual([14, 0]);
   await expect(page.locator('#gdPg .gm-t').last()).toBeInViewport();
-  await expect(page.locator('#gdPg .gm-ts .gm-cap')).toBeVisible();
-  await page.locator('#gdPg .gm-ts .gm-cap').click(); // show all 14
+  await expect(page.locator('#gdPg .gm-ts .gm-t')).toHaveCount(14); // adding opens the list, so new tasks never hide under "+N more"
   await expect(page.locator('#gdPg .gm-t .gm-in')).toHaveCount(0); // goal-only tasks show no list
   // ⋯ → Add to a list…: it becomes a real task in that list (My week), still in the milestone
   await page.locator('#gMtIn').blur();
