@@ -3485,6 +3485,15 @@ button.hg-c:active{transform:scale(.88)}
   .gpp~.gv-sec{margin-top:30px}
   .gpp .gv-win{margin-top:16px}
 }
+/* phone Path: completing a milestone is always one clear row (with or without tasks) */
+@media (max-width:699px){
+  .gpp-done{width:100%;display:flex;align-items:center;gap:14px;min-height:52px;padding:0;border-top:1px solid var(--line);font:inherit;font-size:16px;font-weight:600;color:var(--text);text-align:left}
+  .gpp-dk{width:24px;height:24px;flex:none;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 2px var(--today);color:var(--today);transition:background .25s,color .25s}
+  .gpp-dk svg{width:12px;height:12px}
+  .gpp-done:active .gpp-dk{background:var(--today);color:#fff}
+  .gpp-done.on{color:var(--muted);font-weight:500}
+  .gpp-done.on .gpp-dk{background:var(--gm-soft);box-shadow:none}
+}
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
 .also .sec-h{margin-top:20px}
@@ -3786,7 +3795,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=197; // bumped with every published update
+const APP_VERSION=198; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7514,7 +7523,8 @@ function gPathPhone(g){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr
           <span class="gpp-sub">${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}${MORE(`data-gmm="${sel.id}"`,`Options for milestone ${esc(sel.t)}`)}</span></div>
         <button class="gpp-ar nx" ${nxm?`data-gsel="${nxm.id}"`:'disabled'} aria-label="Next milestone">${BACK_SVG}</button></div>
       <div class="gpp-ts" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
-        ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}</div>`}
+        ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}
+        ${g.done?'':`<button class="gpp-done${sel.done?' on':''}" data-gtk="${sel.id}" aria-pressed="${!!sel.done}"><span class="gpp-dk">${CK}</span>${sel.done?'Milestone done · tap to reopen':'Mark milestone done'}</button>`}</div>`}
   return `<div class="gpp"><div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div></div>
     ${gSunrise(g)}
     <div class="gpp-hd"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why&&!g.hideWhy?`<button class="gpp-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>

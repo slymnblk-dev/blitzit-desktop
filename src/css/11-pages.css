@@ -757,3 +757,12 @@ button.hg-c:active{transform:scale(.88)}
   .gpp~.gv-sec{margin-top:30px}
   .gpp .gv-win{margin-top:16px}
 }
+/* phone Path: completing a milestone is always one clear row (with or without tasks) */
+@media (max-width:699px){
+  .gpp-done{width:100%;display:flex;align-items:center;gap:14px;min-height:52px;padding:0;border-top:1px solid var(--line);font:inherit;font-size:16px;font-weight:600;color:var(--text);text-align:left}
+  .gpp-dk{width:24px;height:24px;flex:none;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 2px var(--today);color:var(--today);transition:background .25s,color .25s}
+  .gpp-dk svg{width:12px;height:12px}
+  .gpp-done:active .gpp-dk{background:var(--today);color:#fff}
+  .gpp-done.on{color:var(--muted);font-weight:500}
+  .gpp-done.on .gpp-dk{background:var(--gm-soft);box-shadow:none}
+}

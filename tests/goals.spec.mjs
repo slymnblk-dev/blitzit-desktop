@@ -520,3 +520,17 @@ test('goal page: one calm facts line; why as a quote that can be hidden from the
   expect(await page.evaluate(() => S.goals[0].whyE)).toBeUndefined();
   noErrors(errors);
 });
+
+test('phone Path: a milestone with no tasks can be marked done (and reopened) from one clear row', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true;
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: S.spaces[0].id, why: '', due: '', created: Date.now(), star: false, view: 'path', ms: [{ id: 'm0', t: 'A', done: false }, { id: 'm1', t: 'B', done: false }] }];
+    save(); applySettings(); openGoal('g1'); });
+  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Mark milestone done');
+  await page.locator('#gdPg .gpp-done').click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
+  await page.evaluate(() => { gSelId = 'm0'; drawGoal(); });
+  await expect(page.locator('#gdPg .gpp-done')).toContainText('reopen');
+  noErrors(errors);
+});

@@ -429,7 +429,8 @@ function gPathPhone(g){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr
           <span class="gpp-sub">${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}${MORE(`data-gmm="${sel.id}"`,`Options for milestone ${esc(sel.t)}`)}</span></div>
         <button class="gpp-ar nx" ${nxm?`data-gsel="${nxm.id}"`:'disabled'} aria-label="Next milestone">${BACK_SVG}</button></div>
       <div class="gpp-ts" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
-        ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}</div>`}
+        ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}
+        ${g.done?'':`<button class="gpp-done${sel.done?' on':''}" data-gtk="${sel.id}" aria-pressed="${!!sel.done}"><span class="gpp-dk">${CK}</span>${sel.done?'Milestone done · tap to reopen':'Mark milestone done'}</button>`}</div>`}
   return `<div class="gpp"><div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div></div>
     ${gSunrise(g)}
     <div class="gpp-hd"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why&&!g.hideWhy?`<button class="gpp-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>
