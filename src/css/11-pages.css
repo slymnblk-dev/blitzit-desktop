@@ -666,7 +666,7 @@ button.hg-c:active{transform:scale(.88)}
 .gd-pg .gd-top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none} /* no strip over the sky: the round buttons carry their own backgrounds */
 /* ===== phone goal page: hero, then one calm roadmap ===== */
 @media (max-width:699px){
-  .gd-pg:has(.gr-hero) .gd-top{position:sticky;top:0}
+  .gd-pg:has(.gr-hero,.gpp) .gd-top{position:sticky;top:0}
   .gr-hero{position:relative;display:flex;flex-direction:column;margin:-6px -22px 0}
   .gr-hero .gb-svg{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:680/440;margin:0;flex:none}
   .gr-hero .gb-ns{top:11%;right:31%}
@@ -710,9 +710,9 @@ button.hg-c:active{transform:scale(.88)}
 }
 /* phone goal page: no Back (the Goals tab is there); facts and why small, top left beside ⋯; milestones show 3, then "+N more" */
 @media (max-width:699px){
-  .gd-pg:has(.gr-hero) #gdBack{display:none}
-  .gd-pg:has(.gr-hero) .gd-top{justify-content:flex-end}
-  .gd-pg:has(.gr-hero) .ib-in{position:relative}
+  .gd-pg:has(.gr-hero,.gpp) #gdBack{display:none}
+  .gd-pg:has(.gr-hero,.gpp) .gd-top{justify-content:flex-end}
+  .gd-pg:has(.gr-hero,.gpp) .ib-in{position:relative}
   .gr-meta{position:absolute;z-index:7;top:calc(max(18px,env(safe-area-inset-top,0px)) + 12px);left:22px;right:84px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:3px;pointer-events:none}
   .gr-meta .gr-f{font-size:13.5px;line-height:1.3}
   .gr-why{pointer-events:auto;align-self:flex-start;max-width:100%;padding:0;font:inherit;font-size:13.5px;font-style:italic;line-height:1.3;color:var(--muted);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -720,4 +720,40 @@ button.hg-c:active{transform:scale(.88)}
   .gr-hero{margin-top:14px}
   .gr-hx{padding-top:2px}
   .gr-list>.gm-cap{margin:2px 0 8px 42px}
+}
+/* ===== phone Path view: a calm sunrise, then one milestone at a time on a step bar ===== */
+@media (max-width:699px){
+  .gpp-sun{display:block;width:calc(100% + 44px);height:auto;margin:-12px -22px 0;aspect-ratio:390/230}
+  .gpp-disc{fill:var(--week)}
+  .gpp-a0,.gpp-a1{fill:none;stroke-width:3;stroke-linecap:round}
+  .gpp-a0{stroke:color-mix(in srgb,var(--text) 12%,transparent)}
+  .gpp-a1{stroke:var(--today)}
+  .gpp-me{fill:var(--today)}
+  .gpp-hz{stroke:color-mix(in srgb,var(--text) 14%,transparent);stroke-width:1}
+  .gpp-hd{margin-top:24px}
+  .gpp-hd .gv-h{font-size:34px;letter-spacing:-.045em;line-height:1.02}
+  .gpp-why{display:block;margin-top:10px;padding:0;font:inherit;font-size:15px;font-style:italic;line-height:1.4;color:var(--muted);text-align:left}
+  .gpp-why::before{content:"“"}.gpp-why::after{content:"”"}
+  .gpp-bar{display:flex;gap:5px;margin-top:22px}
+  .gpp-st{flex:1;min-width:0;height:40px;padding:0;display:flex;align-items:center}
+  .gpp-st i{display:block;width:100%;height:6px;border-radius:3px;background:color-mix(in srgb,var(--text) 10%,transparent);transition:background .3s,height .2s}
+  .gpp-st.on i{background:var(--today)}
+  .gpp-st.sel i{height:10px;border-radius:5px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 60%,transparent)}
+  .gpp-st.nx i{box-shadow:inset 0 0 0 2px var(--today);background:var(--gm-soft)}
+  .gpp-st.sel.on i{box-shadow:inset 0 0 0 2px var(--text)}
+  .gpp-sw{display:flex;align-items:center;gap:6px;margin-top:14px}
+  .gpp-ar{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:50%;color:var(--muted)}
+  .gpp-ar:first-child{margin-left:-12px}.gpp-ar.nx{margin-right:-12px}
+  .gpp-ar.nx svg{transform:scaleX(-1)}
+  .gpp-ar svg{width:18px;height:18px}
+  .gpp-ar:disabled{opacity:.25}
+  .gpp-nm{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+  .gpp-eye{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--today)}
+  .gpp-eye.done{color:var(--muted)}
+  .gpp-nm b{font-size:24px;font-weight:800;letter-spacing:-.025em;line-height:1.15;overflow-wrap:anywhere}
+  .gpp-sub{display:flex;align-items:center;gap:2px;font-size:13.5px;color:var(--muted)}
+  .gpp-sub .gm-more{width:30px;height:30px;opacity:1}
+  .gpp-ts{margin-top:12px}
+  .gpp~.gv-sec{margin-top:30px}
+  .gpp .gv-win{margin-top:16px}
 }

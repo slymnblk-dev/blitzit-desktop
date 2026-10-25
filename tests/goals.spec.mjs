@@ -69,8 +69,11 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   // other views under ⋯ → View: Path and Poster; add a milestone from the Path
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gview="path"]').click();
-  await expect(page.locator('#gdPg .gpth-list')).toBeVisible();
+  await expect(page.locator('#gdPg .gpp-bar')).toBeVisible(); // phones: sunrise + step bar, one milestone at a time
+  await expect(page.locator('#gdPg .gpp-st')).toHaveCount(2);
+  await expect(page.locator('#gdBack')).toBeHidden();
   expect(await page.evaluate(() => S.goals[0].view)).toBe('path');
+  await page.evaluate(() => { gAddMs = true; drawGoal(); });
   await page.fill('#gMsIn', 'Race day');
   await page.keyboard.press('Enter');
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.length)).toBe(3);
@@ -266,7 +269,8 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.evaluate(() => { S.goals[0].ms[5].done = false; S.goals[0].view = 'poster'; save(); openGoal('g1'); });
   await expect(page.locator('#gdPg .gpo-num')).toContainText('days past due.');
   await page.evaluate(() => { S.goals[0].view = 'path'; S.goals[0].due = ''; save(); openGoal('g1'); });
-  await expect(page.locator('#gdPg .gpv-meta')).not.toContainText('days left');
+  await expect(page.locator('#gdPg .gr-f')).not.toContainText('days left');
+  await expect(page.locator('#gdPg .gr-f')).not.toContainText('On track'); // no pace words on phones
   noErrors(errors);
 });
 

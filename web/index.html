@@ -3394,7 +3394,7 @@ button.hg-c:active{transform:scale(.88)}
 .gd-pg .gd-top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none} /* no strip over the sky: the round buttons carry their own backgrounds */
 /* ===== phone goal page: hero, then one calm roadmap ===== */
 @media (max-width:699px){
-  .gd-pg:has(.gr-hero) .gd-top{position:sticky;top:0}
+  .gd-pg:has(.gr-hero,.gpp) .gd-top{position:sticky;top:0}
   .gr-hero{position:relative;display:flex;flex-direction:column;margin:-6px -22px 0}
   .gr-hero .gb-svg{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:680/440;margin:0;flex:none}
   .gr-hero .gb-ns{top:11%;right:31%}
@@ -3438,9 +3438,9 @@ button.hg-c:active{transform:scale(.88)}
 }
 /* phone goal page: no Back (the Goals tab is there); facts and why small, top left beside ⋯; milestones show 3, then "+N more" */
 @media (max-width:699px){
-  .gd-pg:has(.gr-hero) #gdBack{display:none}
-  .gd-pg:has(.gr-hero) .gd-top{justify-content:flex-end}
-  .gd-pg:has(.gr-hero) .ib-in{position:relative}
+  .gd-pg:has(.gr-hero,.gpp) #gdBack{display:none}
+  .gd-pg:has(.gr-hero,.gpp) .gd-top{justify-content:flex-end}
+  .gd-pg:has(.gr-hero,.gpp) .ib-in{position:relative}
   .gr-meta{position:absolute;z-index:7;top:calc(max(18px,env(safe-area-inset-top,0px)) + 12px);left:22px;right:84px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:3px;pointer-events:none}
   .gr-meta .gr-f{font-size:13.5px;line-height:1.3}
   .gr-why{pointer-events:auto;align-self:flex-start;max-width:100%;padding:0;font:inherit;font-size:13.5px;font-style:italic;line-height:1.3;color:var(--muted);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -3448,6 +3448,42 @@ button.hg-c:active{transform:scale(.88)}
   .gr-hero{margin-top:14px}
   .gr-hx{padding-top:2px}
   .gr-list>.gm-cap{margin:2px 0 8px 42px}
+}
+/* ===== phone Path view: a calm sunrise, then one milestone at a time on a step bar ===== */
+@media (max-width:699px){
+  .gpp-sun{display:block;width:calc(100% + 44px);height:auto;margin:-12px -22px 0;aspect-ratio:390/230}
+  .gpp-disc{fill:var(--week)}
+  .gpp-a0,.gpp-a1{fill:none;stroke-width:3;stroke-linecap:round}
+  .gpp-a0{stroke:color-mix(in srgb,var(--text) 12%,transparent)}
+  .gpp-a1{stroke:var(--today)}
+  .gpp-me{fill:var(--today)}
+  .gpp-hz{stroke:color-mix(in srgb,var(--text) 14%,transparent);stroke-width:1}
+  .gpp-hd{margin-top:24px}
+  .gpp-hd .gv-h{font-size:34px;letter-spacing:-.045em;line-height:1.02}
+  .gpp-why{display:block;margin-top:10px;padding:0;font:inherit;font-size:15px;font-style:italic;line-height:1.4;color:var(--muted);text-align:left}
+  .gpp-why::before{content:"“"}.gpp-why::after{content:"”"}
+  .gpp-bar{display:flex;gap:5px;margin-top:22px}
+  .gpp-st{flex:1;min-width:0;height:40px;padding:0;display:flex;align-items:center}
+  .gpp-st i{display:block;width:100%;height:6px;border-radius:3px;background:color-mix(in srgb,var(--text) 10%,transparent);transition:background .3s,height .2s}
+  .gpp-st.on i{background:var(--today)}
+  .gpp-st.sel i{height:10px;border-radius:5px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 60%,transparent)}
+  .gpp-st.nx i{box-shadow:inset 0 0 0 2px var(--today);background:var(--gm-soft)}
+  .gpp-st.sel.on i{box-shadow:inset 0 0 0 2px var(--text)}
+  .gpp-sw{display:flex;align-items:center;gap:6px;margin-top:14px}
+  .gpp-ar{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:50%;color:var(--muted)}
+  .gpp-ar:first-child{margin-left:-12px}.gpp-ar.nx{margin-right:-12px}
+  .gpp-ar.nx svg{transform:scaleX(-1)}
+  .gpp-ar svg{width:18px;height:18px}
+  .gpp-ar:disabled{opacity:.25}
+  .gpp-nm{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+  .gpp-eye{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--today)}
+  .gpp-eye.done{color:var(--muted)}
+  .gpp-nm b{font-size:24px;font-weight:800;letter-spacing:-.025em;line-height:1.15;overflow-wrap:anywhere}
+  .gpp-sub{display:flex;align-items:center;gap:2px;font-size:13.5px;color:var(--muted)}
+  .gpp-sub .gm-more{width:30px;height:30px;opacity:1}
+  .gpp-ts{margin-top:12px}
+  .gpp~.gv-sec{margin-top:30px}
+  .gpp .gv-win{margin-top:16px}
 }
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
@@ -3750,7 +3786,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=196; // bumped with every published update
+const APP_VERSION=197; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7429,7 +7465,7 @@ function gMsList(g){if(!g.ms.length)return '';const sel=gSel(g),nx=gNext(g),pr=g
 const gPhone=()=>matchMedia('(max-width:699px)').matches;
 function gHeroFacts(g){const pr=gProg(g),dl=gDaysLeft(g),pc=gPace(g);
   const d=g.done?`Achieved ${gShort(g.doneAt)}`:dl===null?'No date':dl<0?`<b>${-dl}</b> ${dl===-1?'day':'days'} over`:`<b>${dl}</b> ${dl===1?'day':'days'} left`;
-  return `<span><b>${pr.n} of ${pr.of}</b></span><span>${d}</span>${g.done||!pr.of||pr.n>=pr.of?'':`<span class="gp-${pc.k}">${pc.t}</span>`}`}
+  return `<span><b>${pr.n} of ${pr.of}</b></span><span>${d}</span>`}
 var gDoneOpen=false; // phones: finished milestones fold into one line until you open them
 function gRoadView(g,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
   const done=g.ms.filter(m=>m.done),fold=done.length>0&&!gDoneOpen&&!(sel&&sel.done);
@@ -7459,7 +7495,34 @@ function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);if(gPhone())return gR
       :`${g.ms.length?gTrack(g):''}${gAddMsRow(g)}${gCols(gMsCard(g,sel),gTasksSec(g))}`}`}
 /* crossing between phone and computer layouts redraws the open goal */
 matchMedia('(min-width:1100px)').addEventListener('change',()=>{if(gdOn)drawGoal()});
-function gPathView(g){
+/* phones, Path: a calm sunrise (the arc fills as you go), then one milestone at a time on a step bar */
+function gSunrise(g){const p=gProg(g).p,a=Math.PI*p,x=195-120*Math.cos(a),y=229-120*Math.sin(a),sy=262-p*44;
+  return `<svg class="gpp-sun" viewBox="0 0 390 230" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs><radialGradient id="gppG" cx="50%" cy="100%" r="70%"><stop offset="0" style="stop-color:var(--week);stop-opacity:.26"/><stop offset="1" style="stop-color:var(--week);stop-opacity:0"/></radialGradient>
+      <clipPath id="gppC"><rect width="390" height="229.5"/></clipPath></defs>
+    <rect width="390" height="230" fill="url(#gppG)"/>
+    <circle class="gpp-disc" cx="195" cy="${sy.toFixed(1)}" r="46" clip-path="url(#gppC)"/>
+    <path class="gpp-a0" d="M75 229 A120 120 0 0 1 315 229"/>
+    ${p>0?`<path class="gpp-a1" d="M75 229 A120 120 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}"/><circle class="gpp-me" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7"/>`:''}
+    <path class="gpp-hz" d="M0 229.5H390"/></svg>`}
+function gPathPhone(g){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,i=sel?g.ms.indexOf(sel):-1,pv=g.ms[i-1],nxm=g.ms[i+1];
+  const steps=g.ms.map((m,k)=>`<button class="gpp-st${m.done?' on':''}${m===nx&&!g.done?' nx':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${k+1}: ${esc(m.t)}${m.done?', done':''}"><i></i></button>`).join('');
+  let body='';
+  if(sel){const ts=gKids(sel),dn=ts.filter(x=>x.done).length,live=!sel.done&&!g.done;
+    body=`<div class="gpp-sw"><button class="gpp-ar" ${pv?`data-gsel="${pv.id}"`:'disabled'} aria-label="Previous milestone">${BACK_SVG}</button>
+        <div class="gpp-nm"><span class="gpp-eye${sel.done?' done':''}">Milestone ${i+1} · ${sel.done?'done':sel===nx?'now':'later'}</span><b>${esc(sel.t)}</b>
+          <span class="gpp-sub">${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}${MORE(`data-gmm="${sel.id}"`,`Options for milestone ${esc(sel.t)}`)}</span></div>
+        <button class="gpp-ar nx" ${nxm?`data-gsel="${nxm.id}"`:'disabled'} aria-label="Next milestone">${BACK_SVG}</button></div>
+      <div class="gpp-ts" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
+        ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}</div>`}
+  return `<div class="gpp"><div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div></div>
+    ${gSunrise(g)}
+    <div class="gpp-hd"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why&&!g.hideWhy?`<button class="gpp-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>
+    ${g.ms.length?`<div class="gpp-bar" role="group" aria-label="Milestones">${steps}</div>`:''}
+    ${body}
+    ${!g.ms.length||(gAddMs&&g.ms.length<MS_MAX)?gAddMsRow(g):''}
+    ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
+function gPathView(g){if(gPhone())return gPathPhone(g);
   const pr=gProg(g),dd=gDays(g),nx=gNext(g),sel=gSel(g);
   const st=g.ms.map((m,i)=>{const k=`${m.done?'done':m===nx?'now':''}${m===sel?' sel':''}`;
     return `<div class="gpth ${k}" style="--i:${i}"><span class="gpth-ln"><button class="gpth-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}<i></i></button><b></b></span>
