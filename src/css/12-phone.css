@@ -96,3 +96,11 @@
 /* ===== Layers that are closed can't be reached with Tab (they stay hidden until they open) ===== */
 .focus:not(.on){visibility:hidden;transition:clip-path .55s cubic-bezier(.7,0,.2,1),background .6s ease,visibility 0s .55s}
 .toast:not(.on){visibility:hidden;transition:.25s,visibility 0s .25s}
+/* tab bar: icons only, one family with the +; the page you're on sits in a soft circle */
+@media (max-width:1099px){
+  .tb{display:grid;place-items:center;gap:0}
+  .tb svg{width:25px;height:25px;position:relative;z-index:1}
+  .tb::before{content:"";position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:color-mix(in srgb,var(--text) 9%,transparent);transform:scale(.6);opacity:0;transition:transform .25s var(--ease),opacity .2s}
+  .tb.on::before{transform:none;opacity:1}
+  .tb-n{top:6px;z-index:2}
+}

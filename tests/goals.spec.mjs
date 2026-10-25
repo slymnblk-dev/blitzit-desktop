@@ -180,13 +180,13 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
       ms: Array.from({ length: 6 }, (_, i) => ({ id: 'm' + i, t: 'Step ' + (i + 1), done: i < 3 })) }];
     save(); applySettings(); openGoal('g1');
   });
-  // every milestone sits on one track that fits: the first one is in view, nothing scrolls sideways
-  await expect(page.locator('#gdPg .gm-n')).toHaveCount(6);
-  await expect(page.locator('#gdPg .gm-n').first()).toBeInViewport();
-  await expect(page.locator('#gdPg .gm-n').last()).toBeInViewport();
-  expect(await page.evaluate(() => { const r = document.querySelector('#gdPg .gm-track'); return r.scrollWidth <= r.clientWidth + 1; })).toBe(true);
+  // phones: a pinned hero card, then one roadmap with every milestone; the selected one opens with its tasks
+  await expect(page.locator('#gdPg .gr-hero')).toBeVisible();
+  await expect(page.locator('#gdPg .gr-ms:not(.add)')).toHaveCount(6);
+  await expect(page.locator('#gdPg .gr-ms.on')).toHaveCount(3);
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gdPg .gr-hero')).position)).toBe('sticky');
   // past due: counts the days over, never "0 days left"
-  await expect(page.locator('#gdPg .gb-facts')).toContainText('days past due');
+  await expect(page.locator('#gdPg .gr-f')).toContainText('days over');
   // the card opens on Next; a quick double tap on Mark done ticks it once
   await expect(page.locator('#gdPg .gm-card .gm-tag')).toHaveText('Next');
   await page.locator('#gdPg .gm-card [data-gtk]').dblclick();
@@ -204,7 +204,7 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.evaluate(() => { S.goals[0].ms.pop(); save(); render(); });
   // tapping a milestone (track or hill dot) opens its card and never ticks it
   const before = await page.evaluate(() => S.goals[0].ms.map(m => !!m.done));
-  await page.locator('#gdPg .gm-n[data-gsel="m1"]').click();
+  await page.locator('#gdPg .gr-t[data-gsel="m1"]').click();
   await expect(page.locator('#gdPg .gm-card .gm-hx b')).toHaveText('Step 2');
   await page.evaluate(() => document.querySelector('#gdPg .gb-svg [data-gsel="m5"]').dispatchEvent(new MouseEvent('click', { bubbles: true })));
   await expect(page.locator('#gdPg .gm-card .gm-hx b')).toHaveText('Step 6');
@@ -243,8 +243,8 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   expect(same).toBe(true);
   // summit: the Mark achieved button stands in for the pace
   await page.evaluate(() => { S.goals[0].ms.forEach(m => m.done = true); save(); render(); });
-  await expect(page.locator('#gdPg .gb-facts [data-gwin]')).toBeVisible();
-  await expect(page.locator('#gdPg .gb-pace')).toHaveCount(0);
+  await expect(page.locator('#gdPg [data-gwin]')).toBeVisible();
+  await expect(page.locator('#gdPg .gr-f .gp-ahead, #gdPg .gr-f .gp-on, #gdPg .gr-f .gp-behind')).toHaveCount(0);
   // poster and path: past due wording
   await page.evaluate(() => { S.goals[0].ms[5].done = false; S.goals[0].view = 'poster'; save(); openGoal('g1'); });
   await expect(page.locator('#gdPg .gpo-num')).toContainText('days past due.');
@@ -276,7 +276,7 @@ test('goals: Escape closes the ⋯ menu, then the goal page, then the Goals page
 });
 
 test('goal page: subtask rings, lists capped at 3, even track, milestone editor popup', async ({ page }) => {
-  await page.setViewportSize({ width: 600, height: 900 }); // the track is the phone and tablet layout
+  await page.setViewportSize({ width: 800, height: 900 }); // the track is the tablet layout (phones have the roadmap)
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.goals = true; const sp = S.spaces[0].id, l = S.lists.find(x => x.space === sp);
     S.goals = [{ id: 'g1', name: 'Run', e: '', space: sp, why: '', due: '', created: Date.now(), star: false, ms: ['A', 'B', 'C', 'D'].map((t, i) => ({ id: 'm' + i, t, done: i === 0 })) }];

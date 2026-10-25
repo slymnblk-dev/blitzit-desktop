@@ -3,6 +3,10 @@
    for them and the big Add task button. Inside a space the space's own bar (Win the day, +) stays.
    Computers have the sidebar instead. The + opens the add sheet on what fits the page: a habit on Habits, a goal on Goals. */
 const TB_HOME='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg>';
+/* one icon family for the bar: same 24px grid, same 2.2 line, round ends, like the + */
+const TBI=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const TB_I={home:TBI('<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/>'),inbox:TBI('<path d="M4 13.5 6.6 6h10.8l2.6 7.5V19H4z"/><path d="M4 13.5h4.6l1.4 2.5h4l1.4-2.5H20"/>'),
+  habits:TBI('<path d="M3.5 18.5h17"/><path d="M7.5 18.5a4.5 4.5 0 0 1 9 0"/><path d="M12 6.5V9M6.2 9.6l1.7 1.7M17.8 9.6l-1.7 1.7"/>'),goals:TBI('<path d="M6 21V4"/><path d="M6 4.5h11l-2.2 4.2L17 13H6"/>')};
 const TB_PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 document.body.insertAdjacentHTML('beforeend','<nav class="tabbar" id="tabBar" aria-label="Main"><div class="tb-in" id="tbIn"></div></nav>');
 function tabsList(){const t=[['home','Home',TB_HOME]];
@@ -15,7 +19,7 @@ function drawTabs(){
   document.body.classList.toggle('tabs-on',on);
   if(!on){tbSig='';return}
   const cur=tabNow(),n=C().ibBadge===false?0:inboxItems().length,sig=ts.map(x=>x[0]).join()+'|'+cur+'|'+n;if(sig===tbSig)return;tbSig=sig;
-  const btns=ts.map(([k,l,ic])=>`<button class="tb${k===cur?' on':''}" data-tab="${k}" id="tb${l}"${k===cur?' aria-current="page"':''}>${ic}<span>${l}</span>${k==='inbox'&&n?`<i class="tb-n">${n>99?'99+':n}</i>`:''}</button>`);
+  const btns=ts.map(([k,l,ic])=>`<button class="tb${k===cur?' on':''}" data-tab="${k}" id="tb${l}" aria-label="${l}"${k===cur?' aria-current="page"':''}>${TB_I[k]||ic}${k==='inbox'&&n?`<i class="tb-n">${n>99?'99+':n}</i>`:''}</button>`);
   btns.splice(Math.ceil(btns.length/2),0,`<button class="tb-add" id="tbAdd" aria-label="Add">${TB_PLUS}</button>`); // the + sits in the middle
   $('tbIn').innerHTML=btns.join('');
 }

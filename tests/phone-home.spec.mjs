@@ -18,7 +18,11 @@ test('phone Home: Also today card, Spaces, tab bar that moves between pages', as
   await expect(page.locator('.app .also .hw-one')).toContainText('Drink water');
   await expect(page.locator('.app .sec-h')).toHaveText(['Also today', 'Spaces']);
   await expect(page.locator('#addBtn')).toBeHidden();
-  await expect(page.locator('#tabBar .tb')).toHaveText(['Home', 'Inbox1', 'Habits', 'Goals']);
+  // icons only, named for screen readers; the + sits in the middle
+  expect(await page.locator('#tabBar .tb').evaluateAll(b => b.map(x => x.getAttribute('aria-label')))).toEqual(['Home', 'Inbox', 'Habits', 'Goals']);
+  await expect(page.locator('#tabBar .tb').first()).toHaveText('');
+  await expect(page.locator('#tbInbox .tb-n')).toHaveText('1');
+  expect(await page.locator('#tbIn > button').evaluateAll(b => b.map(x => x.id))).toEqual(['tbHome', 'tbInbox', 'tbAdd', 'tbHabits', 'tbGoals']);
   await expect(page.locator('#tbHome')).toHaveAttribute('aria-current', 'page');
   // Done on the habit row ticks it (and turns coral)
   await page.locator('.app .also .hw-done').click();

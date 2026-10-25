@@ -375,7 +375,23 @@ function gMsList(g){if(!g.ms.length)return '';const sel=gSel(g),nx=gNext(g),pr=g
   return `<div class="gm-msl"><div class="gv-sec"><h2>Milestones</h2><span>${pr.n} of ${pr.of} done</span></div><div class="gpo-list">${gCap('msl',g.ms,(m,i)=>{const n=gKids(m).length;
     return `<div class="gpo-m${m.done?' on':''}${m===sel?' sel':''}${m===nx&&!g.done?' nx':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks">${esc(m.t)}${n?`<small>${gKids(m).filter(x=>x.done).length}/${n}</small>`:''}</button></div>`},3,m=>m.id)}
     ${g.ms.length<MS_MAX&&!g.done?gAddInput('Add a milestone'):''}</div></div>`}
-function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);
+/* phones: a hero card that stays pinned while you scroll (its sky slides under the top bar, the name and facts stay),
+   then one roadmap: every milestone on a line, the selected one open with its tasks */
+const gPhone=()=>matchMedia('(max-width:699px)').matches;
+function gHeroFacts(g){const pr=gProg(g),dl=gDaysLeft(g),pc=gPace(g);
+  const d=g.done?`Achieved ${gShort(g.doneAt)}`:dl===null?'No date':dl<0?`<b>${-dl}</b> ${dl===-1?'day':'days'} over`:`<b>${dl}</b> ${dl===1?'day':'days'} left`;
+  return `<span><b>${pr.n} of ${pr.of}</b></span><span>${d}</span>${g.done||!pr.of||pr.n>=pr.of?'':`<span class="gp-${pc.k}">${pc.t}</span>`}`}
+function gRoadView(g,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
+  const rows=g.ms.map((m,i)=>{const ts=gKids(m),dn=ts.filter(x=>x.done).length,open=m===sel;
+    return `<div class="gr-ms${m.done?' on':''}${m===nx&&!g.done?' nx':''}${open?' sel':''}"><button class="gr-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${m.done?CK:`<span>${i+1}</span>`}</button>
+      ${open?gMsCard(g,m,'rd'):`<button class="gr-t" data-gsel="${m.id}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks"><b>${esc(m.t)}</b><small>${m.done&&m.doneAt?gShort(m.doneAt):ts.length?`${dn}/${ts.length}`:''}</small></button>`}</div>`}).join('');
+  return `<div class="gr-hero">${gbScene(g,anim)}${gNsSky(g)}<div class="gr-hx"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1><div class="gr-f">${gHeroFacts(g)}</div></div></div>
+    ${gWhy(g)}
+    <div class="gr-list">${rows}${g.ms.length<MS_MAX&&!g.done?`<div class="gr-ms add"><span class="gr-k ghost"></span>${gAddInput(g.ms.length?'Add a milestone':'Add your first milestone')}</div>`:''}</div>
+    ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}
+    ${gTasksSec(g)}`}
+matchMedia('(max-width:699px)').addEventListener('change',()=>{if(gdOn)drawGoal()});
+function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);if(gPhone())return gRoadView(g,anim);
   return `<div class="gb-stage">${gNsSky(g)}${gbScene(g,anim)}<div class="gb-head">
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${gWhy(g)}</div></div>
     ${gFacts(g)}
