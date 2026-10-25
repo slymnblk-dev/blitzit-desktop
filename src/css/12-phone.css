@@ -4,6 +4,7 @@
 .also-in{background:var(--surface);border-radius:22px;overflow:hidden;animation:cardIn .45s var(--ease) both}
 .also-in>*{margin:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;animation:none!important;min-height:72px}
 .also-in>*+*{border-top:1px solid var(--line)}
+.also+.hw{margin-top:12px} /* a habits widget shown under "Also today" keeps its breathing room */
 /* the north star: the whole name on its own line, then progress and what's left */
 .also .ns-card{padding:14px 16px 14px 14px}
 .also .ns-card:hover{background:color-mix(in srgb,var(--text) 3%,transparent)!important}
