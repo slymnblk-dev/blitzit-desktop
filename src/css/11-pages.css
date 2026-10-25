@@ -637,3 +637,15 @@ button.hg-c:active{transform:scale(.88)}
 .gv-why.note:hover{background:none;color:var(--text)}
 .gv-why.note>span{font-size:16px;font-style:italic;padding-top:0}
 .gv-why.note>span::before{content:"“"}.gv-why.note>span::after{content:"”"}
+/* milestones panel reads as a roadmap, not another task card: outlined, numbered steps joined by a line */
+.gm-msl{background:transparent;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 10%,transparent);padding:6px 18px 8px}
+.gm-msl .gpo-list{counter-reset:ms}
+.gm-msl .gpo-m{counter-increment:ms;position:relative;border-top:0;margin:0 -10px;padding:11px 10px;border-radius:14px;transition:background .2s}
+.gm-msl .gpo-m:hover{background:color-mix(in srgb,var(--text) 4%,transparent)}
+.gm-msl .gpo-m.sel{background:color-mix(in srgb,var(--today) 10%,transparent)}
+.gm-msl .gpo-m+.gpo-m::before{content:"";position:absolute;left:21px;top:calc(-50% + 14px);height:calc(100% - 28px);width:2px;border-radius:2px;background:color-mix(in srgb,var(--text) 12%,transparent)}
+.gm-msl .gpo-m.on+.gpo-m::before,.gm-msl .gpo-m.on+.gpo-m.on::before{background:color-mix(in srgb,var(--today) 55%,transparent)}
+.gm-msl .gpo-k{position:relative}
+.gm-msl .gpo-m:not(.on) .gpo-k::before{content:counter(ms);position:absolute;inset:0;display:grid;place-items:center;font-size:11.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.gm-msl .gpo-m.nx:not(.on) .gpo-k::before{color:var(--today)}
+.gm-msl .gv-add{border-top:0;margin-top:4px}

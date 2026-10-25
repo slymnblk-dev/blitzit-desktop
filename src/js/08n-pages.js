@@ -247,7 +247,7 @@ function gbScene(g,anim){
   const route=sm(P),S=P[N+1];
   const seg=[0];for(let i=1;i<P.length;i++)seg.push(seg[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));
   const idx=top?N+1:pr.n,p=seg[idx]/seg[seg.length-1],me=P[idx];
-  const sunY=(top?0:(1-pr.p))*H*.22,SX=S[0]+W*(W<1000?.05:.11),SY=S[1]-H*(W<1000?.1:.01);
+  const SY0=S[1]-H*(W<1000?.1:.01),sunY=Math.max((top?0:(1-pr.p))*H*.22,H*.22-SY0), /* the sun never rises past the frame, so its glow and rays are never clipped */SX=Math.min(S[0]+W*(W<1000?.05:.11),W-H*.21),SY=SY0;
   const prev=gbPrev&&gbPrev.id===g.id&&!anim?gbPrev:{p:0,x:P[0][0],y:P[0][1],s:H*.3};
   gbPrev={id:g.id,p,x:me[0],y:me[1],s:sunY};
   const far=`M0 ${H*.62} C${W*.18} ${H*.5} ${W*.3} ${H*.58} ${W*.46} ${H*.42} S${W*.72} ${H*.3} ${W*.86} ${H*.36} S${W} ${H*.44} ${W} ${H*.44} L${W} ${H} L0 ${H}Z`;
@@ -256,7 +256,7 @@ function gbScene(g,anim){
     <defs><linearGradient id="gbM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--gb-m1)"/><stop offset="1" style="stop-color:var(--bg)"/></linearGradient>
       <radialGradient id="gbG"><stop offset=".35" style="stop-color:var(--week);stop-opacity:.22"/><stop offset="1" style="stop-color:var(--week);stop-opacity:0"/></radialGradient>
       <linearGradient id="gbF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--gb-f1)"/><stop offset="1" style="stop-color:var(--bg)"/></linearGradient></defs>
-    <g class="gb-sun"><circle class="gb-glow" cx="${SX.toFixed(1)}" cy="${SY.toFixed(1)}" r="${(H*.26).toFixed(1)}" fill="url(#gbG)"/><circle class="gb-disc" cx="${SX.toFixed(1)}" cy="${SY.toFixed(1)}" r="${(H*.1).toFixed(1)}"/>
+    <g class="gb-sun"><circle class="gb-glow" cx="${SX.toFixed(1)}" cy="${SY.toFixed(1)}" r="${(H*.2).toFixed(1)}" fill="url(#gbG)"/><circle class="gb-disc" cx="${SX.toFixed(1)}" cy="${SY.toFixed(1)}" r="${(H*.1).toFixed(1)}"/>
       <g class="gb-rays" transform="translate(${SX.toFixed(1)} ${SY.toFixed(1)})">${[0,1,2,3,4].map(i=>{const a=(-160+i*35)*Math.PI/180,r1=H*.14,r2=H*.19;return `<path d="M${(Math.cos(a)*r1).toFixed(1)} ${(Math.sin(a)*r1).toFixed(1)}L${(Math.cos(a)*r2).toFixed(1)} ${(Math.sin(a)*r2).toFixed(1)}"/>`}).join('')}</g></g>
     <path class="gb-far" d="${far}" fill="url(#gbF)"/>
     <path class="gb-mtn" d="${route} L${(S[0]+W*.06).toFixed(1)} ${(S[1]+H*.14).toFixed(1)} L${W} ${(H*.7).toFixed(1)} L${W} ${H} L0 ${H} L0 ${P[0][1].toFixed(1)}Z" fill="url(#gbM)"/>
