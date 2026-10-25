@@ -227,7 +227,7 @@ document.addEventListener('keydown',e=>{
 const gView=g=>{const v=g.view||C().gView;return ['climb','path','poster'].includes(v)?v:'climb'};
 function gMenuHTML(g){const v=gView(g);
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS_V}</button>
-    <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"','Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
+    <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"',gPhone()?'Sunrise':'Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
     <span class="pm-sep"></span><button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
     ${g.star&&!g.done&&gView(g)==='climb'?`<button data-gm="nsky" role="menuitem"><span class="lpm-i">${G_SPARK}</span>${g.hideNs?'Show the star in the sky':'Hide the star in the sky'}</button>`:''}
     ${g.why?`<button data-gm="why" role="menuitem"><span class="lpm-i">${g.hideWhy?CK:X}</span>${g.hideWhy?'Show why on the page':'Hide why on the page'}</button>`:''}
@@ -411,14 +411,20 @@ function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);if(gPhone())return gR
 /* crossing between phone and computer layouts redraws the open goal */
 matchMedia('(min-width:1100px)').addEventListener('change',()=>{if(gdOn)drawGoal()});
 /* phones, Path: a calm sunrise (the arc fills as you go), then one milestone at a time on a step bar */
-function gSunrise(g){const p=gProg(g).p,a=Math.PI*p,x=195-120*Math.cos(a),y=229-120*Math.sin(a),sy=262-p*44;
-  return `<svg class="gpp-sun" viewBox="0 0 390 230" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+var gppPrev=null; // where the sunrise was last drawn, so progress glides from there
+function gSunrise(g){const p=gProg(g).p,same=gppPrev&&gppPrev.id===g.id;
+  /* redraws with no change keep the same "from", so the page doesn't redraw (or replay) for nothing */
+  let prev;if(same&&Math.abs(gppPrev.p-p)<.0001)prev=gppPrev.from;else{prev=same?gppPrev.p:0;if(same&&p>prev+.001)setTimeout(()=>sfx('rise',true),180);gppPrev={id:g.id,p,from:prev}}
+  const sy=q=>(262-q*44).toFixed(1);
+  return `<svg class="gpp-sun" viewBox="0 0 390 230" preserveAspectRatio="xMidYMax meet" aria-hidden="true"
+      style="--da:${(100-prev*100).toFixed(2)};--db:${(100-p*100).toFixed(2)};--ra:${(prev*180).toFixed(2)}deg;--rb:${(p*180).toFixed(2)}deg;--sa:${(sy(prev)-262).toFixed(1)}px;--sb:${(sy(p)-262).toFixed(1)}px">
     <defs><radialGradient id="gppG" cx="50%" cy="100%" r="70%"><stop offset="0" style="stop-color:var(--week);stop-opacity:.26"/><stop offset="1" style="stop-color:var(--week);stop-opacity:0"/></radialGradient>
       <clipPath id="gppC"><rect width="390" height="229.5"/></clipPath></defs>
-    <rect width="390" height="230" fill="url(#gppG)"/>
-    <circle class="gpp-disc" cx="195" cy="${sy.toFixed(1)}" r="46" clip-path="url(#gppC)"/>
+    <rect class="gpp-glow" width="390" height="230" fill="url(#gppG)"/>
+    <g clip-path="url(#gppC)"><g class="gpp-sg"><circle class="gpp-disc" cx="195" cy="262" r="46"/></g></g>
     <path class="gpp-a0" d="M75 229 A120 120 0 0 1 315 229"/>
-    ${p>0?`<path class="gpp-a1" d="M75 229 A120 120 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}"/><circle class="gpp-me" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7"/>`:''}
+    <path class="gpp-a1" pathLength="100" d="M75 229 A120 120 0 0 1 315 229"/>
+    ${p>0||prev>0?`<g class="gpp-mg"><circle class="gpp-me" cx="75" cy="229" r="7"/></g>`:''}
     <path class="gpp-hz" d="M0 229.5H390"/></svg>`}
 function gPathPhone(g){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,i=sel?g.ms.indexOf(sel):-1,pv=g.ms[i-1],nxm=g.ms[i+1];
   const steps=g.ms.map((m,k)=>`<button class="gpp-st${m.done?' on':''}${m===nx&&!g.done?' nx':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${k+1}: ${esc(m.t)}${m.done?', done':''}"><i></i></button>`).join('');

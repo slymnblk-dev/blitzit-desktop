@@ -161,6 +161,7 @@ function gMsToggle(g,m){
   commit(()=>{m.done=on;if(on){m.doneAt=Date.now();(m.items||[]).forEach(it=>{if(!it.done){it.done=true;it.doneAt=Date.now()}});gMsTasks(m).forEach(t=>{if(t.stage!=='done')setStage(t,'done')})}else delete m.doneAt},
     on?(all?'Summit reached. Every milestone is done.':`Milestone done · ${pr.n+1} of ${pr.of}`):'Milestone reopened');
   if(on)haptic([8,30,12]);
+  sfx(on?'milestone':'undone',true);
 }
 /* a new task for a milestone lands in My week, in the goal's space */
 /* a new task for a milestone lives in the goal itself: no space, list or stage needed */

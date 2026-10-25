@@ -10,7 +10,7 @@ function calmFinish(){
     if(typeof CSSAnimation==='undefined'||!(a instanceof CSSAnimation))continue;
     const t=a.effect&&a.effect.getComputedTiming();if(!t||!isFinite(t.endTime))continue; // leave looping glows alone
     if((a.currentTime||0)>40)continue; // only the ones this redraw just started
-    const el=a.effect.target;if(!el||!el.closest||el.closest('.sheet,.toast,#cxPop,.dlg,.mo-pg'))continue;
+    const el=a.effect.target;if(!el||!el.closest||el.closest('.sheet,.toast,#cxPop,.dlg,.mo-pg,.gpp-sun,.gb-svg'))continue;
     try{a.finish()}catch(e){}
   }
 }

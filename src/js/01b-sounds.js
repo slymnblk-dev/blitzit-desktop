@@ -66,6 +66,8 @@ const SFX_MEL={
   fold:[[1320,0,.06,.04]],                                                // open / close a section
   toggle:[[1480,0,.05,.035]],                                             // a switch in Settings
   start:[[523.25,0,.42,.09],[659.25,.07,.42,.09],[784,.14,.5,.09]],       // focus begins
+  milestone:[[783.99,0,.5,.12],[987.77,.09,.55,.11],[1174.66,.18,.9,.11]], // a milestone reached: three warm rising notes
+  rise:[[392,0,1.5,.045,587.33]],                                       // the sun climbs a little: one slow soft glide up
   win:[[523.25,0,.9,.1],[659.25,.09,.9,.1],[784,.18,.9,.1],[1046.5,.27,1.1,.1]] // the day's run is complete
 };
 function sfxPlay(name,style){

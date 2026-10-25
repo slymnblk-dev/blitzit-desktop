@@ -766,3 +766,15 @@ button.hg-c:active{transform:scale(.88)}
   .gpp-done.on{color:var(--muted);font-weight:500}
   .gpp-done.on .gpp-dk{background:var(--gm-soft);box-shadow:none}
 }
+/* the sunrise glides: the arc fills, the dot travels round it and the sun lifts, all eased together */
+@media (max-width:699px){
+  .gpp-a1{stroke-dasharray:100 100;stroke-dashoffset:var(--db);animation:gppArc 1.6s .15s cubic-bezier(.45,0,.2,1) both}
+  .gpp-mg{transform-box:view-box;transform-origin:195px 229px;transform:rotate(var(--rb));animation:gppRot 1.6s .15s cubic-bezier(.45,0,.2,1) both}
+  .gpp-sg{transform:translateY(var(--sb));animation:gppSun 1.9s .1s cubic-bezier(.4,0,.2,1) both}
+  .gpp-glow{animation:gppGlow 6s ease-in-out infinite}
+}
+@keyframes gppArc{from{stroke-dashoffset:var(--da)}to{stroke-dashoffset:var(--db)}}
+@keyframes gppRot{from{transform:rotate(var(--ra))}to{transform:rotate(var(--rb))}}
+@keyframes gppSun{from{transform:translateY(var(--sa))}to{transform:translateY(var(--sb))}}
+@keyframes gppGlow{50%{opacity:.75}}
+@media (prefers-reduced-motion:reduce){.gpp-a1,.gpp-mg,.gpp-sg,.gpp-glow{animation:none}}
