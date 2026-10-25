@@ -241,6 +241,8 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   expect(await page.evaluate(() => gMsTasks(S.goals[0].ms[0]).map(x => x.title))).toEqual(['Old link']);
   // goal tasks in no milestone show under Other tasks
   await page.evaluate(() => { const g = S.goals[0], l = S.lists.find(x => x.space === g.space); S.tasks.push({ id: 8888, title: 'Loose one', stage: 'week', list: l.id, est: 30, subs: [], notes: '', repeat: 'none', goal: g.id }); save(); render(); });
+  await page.locator('#gdMore').click(); // phones: Other tasks live in ⋯
+  await page.locator('#gdPop [data-gm="other"]').click();
   await expect(page.locator('#gdPg .gv-sec h2')).toContainText(['Other tasks']);
   await expect(page.locator('#gdPg .g-trow')).toContainText(['Loose one']);
   // nothing changed → no redraw (motion stays calm)
@@ -539,6 +541,13 @@ test('phone Path: a milestone with no tasks can be marked done (and reopened) fr
   await expect(page.locator('#gdPg .gpp-done')).toHaveText('Reset milestone');
   await page.locator('#gdPg .gpp-done').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(false);
+  // phones: one ⋯ menu in two parts (this milestone, then the goal); no milestone ⋯ on the page; no why / north star here
+  await expect(page.locator('#gdPg .gpp [data-gmm]')).toHaveCount(0);
+  await page.locator('#gdMore').click();
+  await expect(page.locator('#gdPop .pm-lbl')).toHaveText([/Milestone/, 'Goal']);
+  await expect(page.locator('#gdPop [data-gm="why"], #gdPop [data-gm="star"]')).toHaveCount(0);
+  await page.locator('#gdPop [data-gmx="tk"]').click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(1);
   // phones: whatever view was saved, it's Sunrise
   for (const v of ['climb', 'poster', 'path']) {
     await page.evaluate(v => { S.goals[0].view = v; save(); drawGoal(); }, v);

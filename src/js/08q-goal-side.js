@@ -37,6 +37,6 @@ openGoals=function(){
   if(!gdOn){if(ibOn)closeInbox();if(rhOn)closeRhythm();openGoal(gs[0].id)}else renderDesk()};
 /* the goal you're on stays lit in the sidebar */
 const _openGoal=openGoal;
-openGoal=function(id){if(typeof gDoneOpen!=="undefined"&&String(id)!==String(gdId))gDoneOpen=false;_openGoal(id);if(gSideWide()&&gdOn&&!S.gSideOpen){S.gSideOpen=true;save()}if(gdOn)renderDesk()};
+openGoal=function(id){if(String(id)!==String(gdId)){gDoneOpen=false;gOtherOpen=false}_openGoal(id);if(gSideWide()&&gdOn&&!S.gSideOpen){S.gSideOpen=true;save()}if(gdOn)renderDesk()};
 /* growing past the phone size while the Goals page is open: swap it for the sidebar */
 matchMedia('(min-width:1100px)').addEventListener('change',e=>{if(e.matches&&glOn){closeGoals();openGoals()}});

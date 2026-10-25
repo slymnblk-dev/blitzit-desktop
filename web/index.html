@@ -3533,6 +3533,22 @@ button.hg-c:active{transform:scale(.88)}
   .gpp-done:not(.on) .gpp-dk{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 28%,transparent);color:transparent;background:none}
   .gpp-done:not(.on):active .gpp-dk{box-shadow:inset 0 0 0 2px var(--today);background:var(--gm-soft)}
 }
+/* phone goal page: milestones slide in from the side you swiped to; Mark goal achieved is a quiet row */
+@media (max-width:699px){
+  .gpp-sw{margin-top:16px}
+  .gpp-sw.sl-r,.gpp-ts.sl-r{animation:gppInR .32s var(--ease) both}
+  .gpp-sw.sl-l,.gpp-ts.sl-l{animation:gppInL .32s var(--ease) both}
+  .gpp-sw,.gpp-ts{touch-action:pan-y}
+  .gpp-win{border-top:1px solid var(--line)}
+  .gpp-win .gpp-dk{box-shadow:inset 0 0 0 2px var(--today)!important;color:var(--today)!important;background:none!important}
+  .gpp-win .gpp-dk svg{width:12px;height:12px}
+}
+@keyframes gppInR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes gppInL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.gpp-sw,.gpp-ts{animation:none!important}}
+/* phone ⋯ menu: two named parts (Milestone · name, Goal) */
+.gd-pop2 .pm-lbl{max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gd-pop2 .pm-lbl+button{margin-top:2px}
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
 .also .sec-h{margin-top:20px}
@@ -3834,7 +3850,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=201; // bumped with every published update
+const APP_VERSION=203; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7364,10 +7380,26 @@ document.addEventListener('keydown',e=>{
 
 /* ================= Goal ================= */
 const gView=g=>{if(matchMedia('(max-width:699px)').matches)return 'path'; /* phones: Sunrise only */const v=g.view||C().gView;return ['climb','path','poster'].includes(v)?v:'climb'};
-function gMenuHTML(g){const v=gView(g);
+/* phones: one ⋯ menu, in two clearly named parts — the milestone you're looking at, then the goal */
+function gMenuPhone(g){const m=gSel(g),it=(a,ic,t,w)=>`<button ${a} role="menuitem"${w?' class="warn"':''}><span class="lpm-i">${ic}</span>${t}</button>`;
+  return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Milestone and goal options" aria-haspopup="menu">${DOTS_V}</button>
+    <div class="sp-pop lh-pop pm-pop gd-pop2" id="gdPop" role="menu">
+    ${m?`<span class="pm-lbl">Milestone · ${esc(m.t)}</span>
+      ${g.done?'':it('data-gmx="tk"',m.done?G_REOPEN:CK,m.done?'Reset milestone':'Mark milestone done')}
+      ${it('data-gmx="ren"',PEN_S,'Rename milestone')}
+      ${it('data-gmx="del"',BIN_S,'Delete milestone',1)}
+      <span class="pm-sep"></span>`:''}
+    <span class="pm-lbl">Goal</span>
+    ${it('data-gm="edit"',PEN_S,'Edit goal')}
+    ${g.done&&!g.ms.length?'':it('data-gedit',GRIP,g.ms.length?'Edit milestones':'Add milestones')}
+    ${gLoose(g).length?it('data-gm="other"',gOtherOpen?X:CHEV,gOtherOpen?'Hide other tasks':`Other tasks (${gLoose(g).length})`):''}
+    ${it('data-gm="win"',G_FLAG,g.done?'Back in progress':'Mark goal achieved')}
+    ${it('data-gm="del"',BIN_S,'Delete goal',1)}</div></div>`}
+function gMenuHTML(g){const v=gView(g);if(gPhone())return gMenuPhone(g);
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu">${gPhone()?'':`<span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"','Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
     <span class="pm-sep"></span>`}<button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
+    ${gPhone()&&gLoose(g).length?`<button data-gm="other" role="menuitem"><span class="lpm-i">${gOtherOpen?X:CHEV}</span>${gOtherOpen?'Hide other tasks':`Other tasks (${gLoose(g).length})`}</button>`:''}
     ${g.star&&!g.done&&gView(g)==='climb'?`<button data-gm="nsky" role="menuitem"><span class="lpm-i">${G_SPARK}</span>${g.hideNs?'Show the star in the sky':'Hide the star in the sky'}</button>`:''}
     ${g.why?`<button data-gm="why" role="menuitem"><span class="lpm-i">${g.hideWhy?CK:X}</span>${g.hideWhy?'Show why on the page':'Hide why on the page'}</button>`:''}
     ${g.done&&!g.ms.length?'':`<button data-gedit role="menuitem"><span class="lpm-i">${PEN_S}</span>${g.ms.length?'Edit milestones':'Add milestones'}</button>`}
@@ -7446,6 +7478,7 @@ function gAddMsRow(g,ph){return (gAddMs||!g.ms.length)&&g.ms.length<MS_MAX&&!g.d
 /* ---------- Goals page: each goal's ⋯ menu ---------- */
 function gGoalMenu(g){return [{t:'Open',ic:CHEV,act:()=>openGoal(g.id)},{t:'Edit goal',ic:PEN_S,act:()=>openGoalSheet(g.id)},
   ...(g.done?[]:[{t:g.star?'Remove north star':'Make it my north star',ic:G_STAR,act:()=>gToggleStar(g)}]),
+  ...(g.why?[{t:g.hideWhy?'Show why on its page':'Hide why on its page',ic:g.hideWhy?CK:X,act:()=>{g.hideWhy=!g.hideWhy;if(!g.hideWhy)delete g.hideWhy;save();render();toast(g.hideWhy?'Why hidden from the goal page':'Why shows on the goal page again')}}]:[]),
   {t:g.done?'Back in progress':'Mark as achieved',ic:G_FLAG,act:()=>gSetWin(g,!g.done)},{sep:1},{t:'Delete goal',ic:BIN_S,warn:1,act:()=>gDelete(g)}]}
 $('goalsPg').addEventListener('click',e=>{const b=e.target.closest('[data-gcm]');if(!b)return;e.stopPropagation();const g=gById(b.dataset.gcm);if(g)cxOpen(b,gGoalMenu(g))});
 
@@ -7519,7 +7552,7 @@ function gMsList(g){if(!g.ms.length)return '';const sel=gSel(g),nx=gNext(g),pr=g
 const gPhone=()=>matchMedia('(max-width:699px)').matches;
 function gHeroFacts(g){const pr=gProg(g),dl=gDaysLeft(g),pc=gPace(g);
   const d=g.done?`Achieved ${gShort(g.doneAt)}`:dl===null?'No date':dl<0?`<b>${-dl}</b> ${dl===-1?'day':'days'} over`:`<b>${dl}</b> ${dl===1?'day':'days'} left`;
-  return `<span><b>${pr.n} of ${pr.of}</b></span><span>${d}</span>`}
+  return `<span>${d}</span>`} // phones: the step bar and the sun already show progress
 var gDoneOpen=false; // phones: finished milestones fold into one line until you open them
 function gRoadView(g,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done;
   const done=g.ms.filter(m=>m.done),fold=done.length>0&&!gDoneOpen&&!(sel&&sel.done);
@@ -7577,25 +7610,26 @@ function gPhoneHero(g,kind,anim){
     const lbl=g.done?'Goal achieved':dl===null?'No date set':dl===0?'Today is the day':dl<0?`${dl===-1?'day':'days'} past due`:`${dl===1?'day':'days'} to go`;
     return `<div class="gph gph-num"><span class="gph-glow"></span>${g.done?`<span class="gph-flag">${G_FLAG}</span>`:`<b ${typeof big==='number'?`data-cnt="${big}"`:''}>${big}</b>`}<small>${lbl}</small><i class="gph-hz"></i></div>`}
   return `<div class="gph">${gSunrise(g)}</div>`}
+var gppDir=0,gOtherOpen=false; // swipe direction for the slide-in; Other tasks shown from ⋯
 function gPhoneView(g,kind,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,i=sel?g.ms.indexOf(sel):-1,pv=g.ms[i-1],nxm=g.ms[i+1];
   const steps=g.ms.map((m,k)=>`<button class="gpp-st${m.done?' on':''}${m===nx&&!g.done?' nx':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${k+1}: ${esc(m.t)}${m.done?', done':''}"><i></i></button>`).join('');
   let body='';
   if(sel){const ts=gKids(sel),dn=ts.filter(x=>x.done).length,live=!sel.done&&!g.done;
-    body=`<div class="gpp-sw"><button class="gpp-ar" ${pv?`data-gsel="${pv.id}"`:'disabled'} aria-label="Previous milestone">${BACK_SVG}</button>
-        <div class="gpp-nm"><span class="gpp-eye${sel.done?' done':''}">Milestone ${i+1} · ${sel.done?'done':sel===nx?'now':'later'}</span><b>${esc(sel.t)}</b>
-          <span class="gpp-sub">${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}${MORE(`data-gmm="${sel.id}"`,`Options for milestone ${esc(sel.t)}`)}</span></div>
-        <button class="gpp-ar nx" ${nxm?`data-gsel="${nxm.id}"`:'disabled'} aria-label="Next milestone">${BACK_SVG}</button></div>
-      <div class="gpp-ts" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
+    const dir=gppDir;gppDir=0;const sl=dir>0?' sl-r':dir<0?' sl-l':'';
+    body=`<div class="gpp-sw${sl}"><div class="gpp-nm"><span class="gpp-eye${sel.done?' done':''}">Milestone ${i+1} · ${sel.done?'done':sel===nx?'now':'later'}</span><b>${esc(sel.t)}</b>
+          <span class="gpp-sub">${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}</span></div></div>
+      <div class="gpp-ts${sl}" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
         ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}
         ${g.done?'':sel.done?`<button class="gpp-done on" data-gtk="${sel.id}" aria-pressed="true"><span class="gpp-dk">${G_REOPEN}</span>Reset milestone</button>`
           :`<button class="gpp-done" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk"></span>Mark milestone done</button>`}</div>`}
   return `<div class="gpp gpk-${kind}"><div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div></div>
     ${gPhoneHero(g,kind,anim)}
-    <div class="gpp-hd"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why&&!g.hideWhy?`<button class="gpp-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>
+    <div class="gpp-hd"><h1 class="gv-h">${esc(g.name)}</h1>${g.why&&!g.hideWhy?`<button class="gpp-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>
     ${g.ms.length?`<div class="gpp-bar" role="group" aria-label="Milestones">${steps}</div>`:''}
     ${body}
     ${gAddMsRow(g)}
-    ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
+    ${top?`<button class="gpp-done gpp-win" data-gwin><span class="gpp-dk">${G_FLAG}</span>Mark goal achieved</button>`:''}</div>
+    ${gOtherOpen?gTasksSec(g):''}`}
 function gPathView(g){if(gPhone())return gPhoneView(g,'sun');
   const pr=gProg(g),dd=gDays(g),nx=gNext(g),sel=gSel(g);
   const st=g.ms.map((m,i)=>{const k=`${m.done?'done':m===nx?'now':''}${m===sel?' sel':''}`;
@@ -7621,7 +7655,7 @@ function drawGoal(){
   const y=$('gdPg').scrollTop,v=gView(g),anim=gdAnim;
   const body=v==='path'?gPathView(g):v==='poster'?gPosterView(g):gClimbView(g,anim);
   const html=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${gMenuHTML(g)}</div>
-    <div class="gv gv-${v}${anim?' anim':''}">${body}${v==='climb'?'':gTasksSec(g)}</div>`;
+    <div class="gv gv-${v}${anim?' anim':''}">${body}${v==='climb'||gPhone()?'':gTasksSec(g)}</div>`;
   if(!anim&&html===gdHtml)return;
   // the task lists scroll inside themselves: keep where you were in them across redraws
   const keep=[...$('gdIn').querySelectorAll('[data-sk]')].map(el=>[el.dataset.sk,el.scrollTop]);
@@ -7715,6 +7749,25 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gMtIn
 const _gMsToggleNext=gMsToggle;
 gMsToggle=function(g,m){const was=!!m.done;_gMsToggleNext(g,m);
   if(!was&&m.done&&gdOn&&gPhone()&&!gmeOn){const n=gNext(g);if(n&&n!==m){gSelId=n.id;drawGoal()}}};
+
+/* phones: swipe the milestone left or right to move between milestones */
+(()=>{let x0=null,y0=0;const pg=$('gdPg');
+  pg.addEventListener('touchstart',e=>{const t=e.target.closest('.gpp-sw,.gpp-ts');if(!t||e.target.closest('input')||e.touches.length>1){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+  pg.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;
+    if(Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.5)return;gSwipeMs(dx<0?1:-1)},{passive:true});
+  pg.addEventListener('click',e=>{const b=e.target.closest('[data-gm="other"]');if(!b)return;e.stopPropagation();const p=$('gdPop');if(p)p.classList.remove('on');gOtherOpen=!gOtherOpen;haptic(4);drawGoal();
+    if(gOtherOpen)setTimeout(()=>{const s=$('gdIn').querySelector('.gpp~.gv-sec');if(s)s.scrollIntoView({behavior:gSmooth(),block:'start'})},60)},true);
+})();
+function gSwipeMs(step){const g=gById(gdId);if(!g)return;const sel=gSel(g),i=g.ms.indexOf(sel),to=g.ms[i+step];if(!to){haptic(3);return}
+  gSelId=to.id;gppDir=step;haptic(5);drawGoal()}
+/* step bar taps slide the milestone in from the side it came from */
+$('gdPg').addEventListener('click',e=>{const st=e.target.closest('.gpp-st[data-gsel]');if(!st)return;const g=gById(gdId);if(!g)return;
+  const a=g.ms.indexOf(gSel(g)),b=g.ms.findIndex(m=>m.id===st.dataset.gsel);gppDir=b>a?1:b<a?-1:0},true);
+
+/* the phone menu's milestone part acts on the milestone on screen */
+$('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmx]');if(!b)return;e.stopPropagation();const p=$('gdPop');if(p)p.classList.remove('on');
+  const g=gById(gdId),m=g&&gSel(g);if(!m)return;const a=b.dataset.gmx;
+  if(a==='tk')return gMsToggle(g,m);if(a==='ren')return openMsEdit(m.id);if(a==='del')return gMsDelete(g,m)},true);
 /* ---------- Phones: bottom tab bar (Home · Inbox · Habits · Goals, and +) ----------
    Shows on phones and tablets once Inbox, Habits or Goals is on, on Home and on those pages. It replaces Home's rows
    for them and the big Add task button. Inside a space the space's own bar (Win the day, +) stays.
@@ -7799,7 +7852,7 @@ openGoals=function(){
   if(!gdOn){if(ibOn)closeInbox();if(rhOn)closeRhythm();openGoal(gs[0].id)}else renderDesk()};
 /* the goal you're on stays lit in the sidebar */
 const _openGoal=openGoal;
-openGoal=function(id){if(typeof gDoneOpen!=="undefined"&&String(id)!==String(gdId))gDoneOpen=false;_openGoal(id);if(gSideWide()&&gdOn&&!S.gSideOpen){S.gSideOpen=true;save()}if(gdOn)renderDesk()};
+openGoal=function(id){if(String(id)!==String(gdId)){gDoneOpen=false;gOtherOpen=false}_openGoal(id);if(gSideWide()&&gdOn&&!S.gSideOpen){S.gSideOpen=true;save()}if(gdOn)renderDesk()};
 /* growing past the phone size while the Goals page is open: swap it for the sidebar */
 matchMedia('(min-width:1100px)').addEventListener('change',e=>{if(e.matches&&glOn){closeGoals();openGoals()}});
 /* ---------- calm redraws ----------

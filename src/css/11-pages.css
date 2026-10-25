@@ -805,3 +805,19 @@ button.hg-c:active{transform:scale(.88)}
   .gpp-done:not(.on) .gpp-dk{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 28%,transparent);color:transparent;background:none}
   .gpp-done:not(.on):active .gpp-dk{box-shadow:inset 0 0 0 2px var(--today);background:var(--gm-soft)}
 }
+/* phone goal page: milestones slide in from the side you swiped to; Mark goal achieved is a quiet row */
+@media (max-width:699px){
+  .gpp-sw{margin-top:16px}
+  .gpp-sw.sl-r,.gpp-ts.sl-r{animation:gppInR .32s var(--ease) both}
+  .gpp-sw.sl-l,.gpp-ts.sl-l{animation:gppInL .32s var(--ease) both}
+  .gpp-sw,.gpp-ts{touch-action:pan-y}
+  .gpp-win{border-top:1px solid var(--line)}
+  .gpp-win .gpp-dk{box-shadow:inset 0 0 0 2px var(--today)!important;color:var(--today)!important;background:none!important}
+  .gpp-win .gpp-dk svg{width:12px;height:12px}
+}
+@keyframes gppInR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes gppInL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.gpp-sw,.gpp-ts{animation:none!important}}
+/* phone ⋯ menu: two named parts (Milestone · name, Goal) */
+.gd-pop2 .pm-lbl{max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gd-pop2 .pm-lbl+button{margin-top:2px}
