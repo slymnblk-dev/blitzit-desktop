@@ -778,3 +778,20 @@ button.hg-c:active{transform:scale(.88)}
 @keyframes gppSun{from{transform:translateY(var(--sa))}to{transform:translateY(var(--sb))}}
 @keyframes gppGlow{50%{opacity:.75}}
 @media (prefers-reduced-motion:reduce){.gpp-a1,.gpp-mg,.gpp-sg,.gpp-glow{animation:none}}
+/* ===== phones: one shared goal page; the hero box is the same size in all three views ===== */
+@media (max-width:699px){
+  .gph{position:relative;width:calc(100% + 44px);margin:-12px -22px 0;aspect-ratio:390/230;overflow:hidden}
+  .gph .gpp-sun{width:100%;height:100%;margin:0;aspect-ratio:auto}
+  .gph-mtn .gb-svg{position:absolute;inset:0;width:100%;height:100%;margin:0}
+  .gph-mtn .gb-ns{top:9%;right:30%}
+  .gph-num{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:26px;box-sizing:border-box}
+  .gph-glow{position:absolute;inset:0;background:radial-gradient(70% 90% at 50% 100%,color-mix(in srgb,var(--week) 24%,transparent),transparent);animation:gppGlow 6s ease-in-out infinite}
+  .gph-num b{position:relative;font-size:104px;font-weight:800;letter-spacing:-.06em;line-height:.9;font-variant-numeric:tabular-nums}
+  .gph-num small{position:relative;margin-top:8px;font-size:14px;color:var(--muted)}
+  .gph-flag{position:relative;width:64px;height:64px;color:var(--week)}.gph-flag svg{width:100%;height:100%}
+  .gph-hz{position:absolute;left:0;right:0;bottom:0;height:1px;background:color-mix(in srgb,var(--text) 14%,transparent)}
+  .gph-mtn::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:color-mix(in srgb,var(--text) 8%,transparent)}
+  .gpp-done.on .gpp-dk{background:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 22%,transparent);color:var(--muted)}
+  .gpp-done.on{color:var(--muted);font-weight:600}
+  .gpp-done.on .gpp-dk svg{width:13px;height:13px}
+}

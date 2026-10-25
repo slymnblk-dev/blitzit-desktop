@@ -54,7 +54,7 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await page.locator('#gdPg [data-gtk]').first().click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
   // the card shows the next milestone; a task added there stays in the goal (no list, no stage)
-  await expect(page.locator('#gdPg .gr-oh b')).toHaveText('Run 15 km');
+  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('Run 15 km');
   await page.fill('#gMtIn', 'Long run Sunday');
   await page.keyboard.press('Enter');
   expect(await page.evaluate(() => S.tasks.some(x => x.title === 'Long run Sunday'))).toBe(false);
@@ -62,7 +62,7 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await expect(page.locator('#gMtIn')).toBeFocused(); // ready for the next one
   // finishing its last task ticks the milestone
   await page.locator('#gMtIn').blur();
-  await page.locator('#gdPg .gr-o [data-gmt]').first().click();
+  await page.locator('#gdPg .gpp-ts [data-gmt]').first().click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[1].done)).toBe(true);
   await expect(page.locator('#gdPg [data-gwin]')).toBeVisible(); // summit reached → offer to mark achieved
 
@@ -79,10 +79,10 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.length)).toBe(3);
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gview="poster"]').click();
-  await expect(page.locator('#gdPg .gpo-num')).toBeVisible();
-  await expect(page.locator('#gdPg .gm-card.hot')).toContainText('Race day'); // the coral block shows the next milestone and its tasks
+  await expect(page.locator('#gdPg .gph-num')).toBeVisible(); // phones: the countdown is the hero, the rest of the page is the same
+  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('Race day');
   const td = await page.evaluate(gid => { const l = S.lists.find(x => x.space === S.goals[0].space); const x = { id: newId(), title: 'Buy race shoes', stage: 'today', list: l.id, est: 30, subs: [], notes: '', repeat: 'none', goal: gid }; S.tasks.unshift(x); save(); return x; }, g.id);
-  await page.locator('#gdBack').click();
+  await page.locator('#tbGoals').click(); // phones have no Back: the Goals tab goes back
   await expect(page.locator('#gdPg')).not.toHaveClass(/on/);
 
   // the task wears a star; its details show the ★ goal pill and picker
@@ -114,7 +114,7 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await expect.poll(() => page.evaluate(() => S.goals[0].done)).toBe(true);
   expect(await page.evaluate(() => nsCard())).toBe('');
   await page.locator('#moGo').click().catch(() => {});
-  await page.locator('#gdBack').click();
+  await page.locator('#tbGoals').click(); // phones: the Goals tab goes back
   await expect(page.locator('#goalsPg .g-card')).toHaveCount(0);
   await expect(page.locator('#goalsPg .g-wrow')).toHaveCount(1);
   await page.locator('#glBack').click();
@@ -183,32 +183,19 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
       ms: Array.from({ length: 6 }, (_, i) => ({ id: 'm' + i, t: 'Step ' + (i + 1), done: i < 3 })) }];
     save(); applySettings(); openGoal('g1');
   });
-  // phones: a pinned hero card, then one roadmap with every milestone; the selected one opens with its tasks
-  await expect(page.locator('#gdPg .gr-hero')).toBeVisible();
-  // finished milestones fold into one line; tapping it shows them
-  await expect(page.locator('#gdPg .gr-fold')).toContainText('3 done');
-  await expect(page.locator('#gdPg .gr-ms:not(.add):not(.gr-fold)')).toHaveCount(3);
-  await page.locator('#gdPg [data-gfold]').click();
-  await expect(page.locator('#gdPg .gr-ms.on')).toHaveCount(3);
-  await page.locator('#gdPg [data-gfold]').click();
-  await expect(page.locator('#gdPg .gr-ms.on')).toHaveCount(0);
-  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gdPg .gr-hero')).position)).not.toBe('sticky'); // the hero scrolls away; only Back and ⋯ stay
+  // phones: one shared page (hero, name, step bar, one milestone at a time); the climb's hero is the mountain
+  await expect(page.locator('#gdPg .gph-mtn')).toBeVisible();
+  await expect(page.locator('#gdPg .gpp-st')).toHaveCount(6);
+  await expect(page.locator('#gdPg .gpp-st.on')).toHaveCount(3);
   // past due: counts the days over, never "0 days left"
   await expect(page.locator('#gdPg .gr-f')).toContainText('days over');
   // no Back on phones (the Goals tab is there); the facts sit top left
   await expect(page.locator('#gdBack')).toBeHidden();
   await expect(page.locator('#gdPg .gr-meta .gr-f')).toBeVisible();
-  // many milestones: 3 show, the rest wait under "+N more" (closed by default)
-  await page.evaluate(() => { for (let i = 0; i < 4; i++) S.goals[0].ms.push({ id: 'x' + i, t: 'More ' + i, done: false }); save(); drawGoal(); });
-  await expect(page.locator('#gdPg .gr-list > .gm-cap')).toHaveText('+4 more');
-  await page.locator('#gdPg .gr-list > .gm-cap').click();
-  await expect(page.locator('#gdPg .gr-list > .gm-cap')).toHaveText('Show less');
-  await page.locator('#gdPg .gr-list > .gm-cap').click();
-  await page.evaluate(() => { S.goals[0].ms.splice(6); save(); drawGoal(); });
   // the card opens on Next; a quick double tap on Mark done ticks it once
-  await expect(page.locator('#gdPg .gr-ms.sel.nx')).toHaveCount(1); // opens on Next, its tasks right on the line (no card)
-  await expect(page.locator('#gdPg .gr-ms .gm-card')).toHaveCount(0);
-  await page.locator('#gdPg .gr-ms.sel [data-gtk]').dblclick();
+  await expect(page.locator('#gdPg .gpp-st.sel.nx')).toHaveCount(1); // opens on Next, its tasks below (no card)
+  await expect(page.locator('#gdPg .gpp .gm-card')).toHaveCount(0);
+  await page.locator('#gdPg .gpp-done').dblclick();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(4);
   // adding a milestone lives in the goal's ⋯ menu → Edit milestones (no extra buttons on the page)
   await expect(page.locator('#gdPg .gm-head')).toHaveCount(0); // the stats above already count milestones
@@ -223,11 +210,10 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.evaluate(() => { S.goals[0].ms.pop(); save(); render(); });
   // tapping a milestone (track or hill dot) opens its card and never ticks it
   const before = await page.evaluate(() => S.goals[0].ms.map(m => !!m.done));
-  await page.locator("#gdPg [data-gfold]").click(); // done milestones are folded: open them
-  await page.locator('#gdPg .gr-t[data-gsel="m1"]').click();
-  await expect(page.locator('#gdPg .gr-oh b')).toHaveText('Step 2');
+  await page.locator('#gdPg .gpp-st[data-gsel="m1"]').click();
+  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('Step 2');
   await page.evaluate(() => document.querySelector('#gdPg .gb-svg [data-gsel="m5"]').dispatchEvent(new MouseEvent('click', { bubbles: true })));
-  await expect(page.locator('#gdPg .gr-oh b')).toHaveText('Step 6');
+  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('Step 6');
   expect(await page.evaluate(() => S.goals[0].ms.map(m => !!m.done))).toEqual(before);
   // milestones are parent tasks: the last task done ticks it; reopening a task reopens it;
   // marking it done finishes its open tasks; reopening the milestone leaves its tasks as they are
@@ -235,17 +221,18 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.keyboard.press('Enter');
   await page.fill('#gMtIn', 'B');
   await page.keyboard.press('Enter');
-  await expect(page.locator('#gdPg .gr-o .gm-t')).toHaveCount(2);
+  await expect(page.locator('#gdPg .gpp-ts .gm-t')).toHaveCount(2);
   const st = () => page.evaluate(() => [S.goals[0].ms[5].done, ...['A', 'B'].map(n => S.goals[0].ms[5].items.find(x => x.t === n).done ? 'done' : 'week')]);
-  await expect(page.locator('#gdPg .gr-o .gm-tt b')).toHaveText(['A', 'B']); // oldest first, add field at the bottom
-  await page.locator('#gdPg .gr-o .gm-t').nth(0).locator('[data-gmt]').click();
+  await expect(page.locator('#gdPg .gpp-ts .gm-tt b')).toHaveText(['A', 'B']); // oldest first, add field at the bottom
+  await page.locator('#gdPg .gpp-ts .gm-t').nth(0).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
   await page.waitForTimeout(450);
-  await page.locator('#gdPg .gr-o .gm-t').nth(1).locator('[data-gmt]').click();
+  await page.locator('#gdPg .gpp-ts .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([true, 'done', 'done']);
-  await expect(page.locator('#gdPg .gr-os')).toContainText('Done'); // the moment shows on the same milestone
+  await expect(page.locator('#gdPg .gpp-eye')).toContainText('done'); // the moment shows on the same milestone
+  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Reopen milestone'); // and undoing it is right there
   await page.waitForTimeout(450);
-  await page.locator('#gdPg .gr-o .gm-t').nth(1).locator('[data-gmt]').click();
+  await page.locator('#gdPg .gpp-ts .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
   await page.evaluate(() => gMsToggle(S.goals[0], S.goals[0].ms[5]));
   await expect.poll(st).toEqual([true, 'done', 'done']);
@@ -267,7 +254,7 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await expect(page.locator('#gdPg .gr-f .gp-ahead, #gdPg .gr-f .gp-on, #gdPg .gr-f .gp-behind')).toHaveCount(0);
   // poster and path: past due wording
   await page.evaluate(() => { S.goals[0].ms[5].done = false; S.goals[0].view = 'poster'; save(); openGoal('g1'); });
-  await expect(page.locator('#gdPg .gpo-num')).toContainText('days past due.');
+  await expect(page.locator('#gdPg .gph-num')).toContainText('days past due');
   await page.evaluate(() => { S.goals[0].view = 'path'; S.goals[0].due = ''; save(); openGoal('g1'); });
   await expect(page.locator('#gdPg .gr-f')).not.toContainText('days left');
   await expect(page.locator('#gdPg .gr-f')).not.toContainText('On track'); // no pace words on phones
@@ -537,6 +524,15 @@ test('phone Path: a milestone with no tasks can be marked done (and reopened) fr
   await expect(page.locator('#gdPop [data-gview="path"]')).toContainText('Sunrise');
   await page.keyboard.press('Escape');
   await page.evaluate(() => { gSelId = 'm0'; drawGoal(); });
-  await expect(page.locator('#gdPg .gpp-done')).toContainText('reopen');
+  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Reopen milestone');
+  await page.locator('#gdPg .gpp-done').click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(false);
+  // the same page in all three views; only the hero changes
+  for (const [v, hero] of [['climb', '.gph-mtn'], ['poster', '.gph-num'], ['path', '.gpp-sun']]) {
+    await page.evaluate(v => { S.goals[0].view = v; save(); drawGoal(); }, v);
+    await expect(page.locator('#gdPg ' + hero)).toBeVisible();
+    await expect(page.locator('#gdPg .gpp-bar')).toBeVisible();
+    await expect(page.locator('#gdPg .gpp-done')).toBeVisible();
+  }
   noErrors(errors);
 });

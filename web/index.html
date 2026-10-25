@@ -3506,6 +3506,23 @@ button.hg-c:active{transform:scale(.88)}
 @keyframes gppSun{from{transform:translateY(var(--sa))}to{transform:translateY(var(--sb))}}
 @keyframes gppGlow{50%{opacity:.75}}
 @media (prefers-reduced-motion:reduce){.gpp-a1,.gpp-mg,.gpp-sg,.gpp-glow{animation:none}}
+/* ===== phones: one shared goal page; the hero box is the same size in all three views ===== */
+@media (max-width:699px){
+  .gph{position:relative;width:calc(100% + 44px);margin:-12px -22px 0;aspect-ratio:390/230;overflow:hidden}
+  .gph .gpp-sun{width:100%;height:100%;margin:0;aspect-ratio:auto}
+  .gph-mtn .gb-svg{position:absolute;inset:0;width:100%;height:100%;margin:0}
+  .gph-mtn .gb-ns{top:9%;right:30%}
+  .gph-num{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:26px;box-sizing:border-box}
+  .gph-glow{position:absolute;inset:0;background:radial-gradient(70% 90% at 50% 100%,color-mix(in srgb,var(--week) 24%,transparent),transparent);animation:gppGlow 6s ease-in-out infinite}
+  .gph-num b{position:relative;font-size:104px;font-weight:800;letter-spacing:-.06em;line-height:.9;font-variant-numeric:tabular-nums}
+  .gph-num small{position:relative;margin-top:8px;font-size:14px;color:var(--muted)}
+  .gph-flag{position:relative;width:64px;height:64px;color:var(--week)}.gph-flag svg{width:100%;height:100%}
+  .gph-hz{position:absolute;left:0;right:0;bottom:0;height:1px;background:color-mix(in srgb,var(--text) 14%,transparent)}
+  .gph-mtn::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:color-mix(in srgb,var(--text) 8%,transparent)}
+  .gpp-done.on .gpp-dk{background:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 22%,transparent);color:var(--muted)}
+  .gpp-done.on{color:var(--muted);font-weight:600}
+  .gpp-done.on .gpp-dk svg{width:13px;height:13px}
+}
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
 .also .sec-h{margin-top:20px}
@@ -3807,7 +3824,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=199; // bumped with every published update
+const APP_VERSION=200; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7511,7 +7528,7 @@ function gRoadView(g,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0
     ${gTasksSec(g)}`}
 $('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gfold]');if(!b)return;e.stopPropagation();gDoneOpen=!gDoneOpen;haptic(4);drawGoal()});
 matchMedia('(max-width:699px)').addEventListener('change',()=>{if(gdOn)drawGoal()});
-function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);if(gPhone())return gRoadView(g,anim);
+function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);if(gPhone())return gPhoneView(g,'climb',anim)+gTasksSec(g);
   return `<div class="gb-stage">${gNsSky(g)}${gbScene(g,anim)}<div class="gb-head">
       <h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${gWhy(g)}</div></div>
     ${gFacts(g)}
@@ -7523,7 +7540,9 @@ matchMedia('(min-width:1100px)').addEventListener('change',()=>{if(gdOn)drawGoal
 var gppPrev=null; // where the sunrise was last drawn, so progress glides from there
 function gSunrise(g){const p=gProg(g).p,same=gppPrev&&gppPrev.id===g.id;
   /* redraws with no change keep the same "from", so the page doesn't redraw (or replay) for nothing */
-  let prev;if(same&&Math.abs(gppPrev.p-p)<.0001)prev=gppPrev.from;else{prev=same?gppPrev.p:0;if(same&&p>prev+.001)setTimeout(()=>sfx('rise',true),180);gppPrev={id:g.id,p,from:prev}}
+  /* once the glide has played (2s), later redraws (like switching milestones) show it still, not replayed */
+  let prev;if(same&&Math.abs(gppPrev.p-p)<.0001){if(Date.now()-gppPrev.t>2000)gppPrev.from=p;prev=gppPrev.from}
+  else{prev=same?gppPrev.p:0;if(same&&p>prev+.001)setTimeout(()=>sfx('rise',true),180);gppPrev={id:g.id,p,from:prev,t:Date.now()}}
   const sy=q=>(262-q*44).toFixed(1);
   return `<svg class="gpp-sun" viewBox="0 0 390 230" preserveAspectRatio="xMidYMax meet" aria-hidden="true"
       style="--da:${(100-prev*100).toFixed(2)};--db:${(100-p*100).toFixed(2)};--ra:${(prev*180).toFixed(2)}deg;--rb:${(p*180).toFixed(2)}deg;--sa:${(sy(prev)-262).toFixed(1)}px;--sb:${(sy(p)-262).toFixed(1)}px">
@@ -7535,7 +7554,17 @@ function gSunrise(g){const p=gProg(g).p,same=gppPrev&&gppPrev.id===g.id;
     <path class="gpp-a1" pathLength="100" d="M75 229 A120 120 0 0 1 315 229"/>
     ${p>0||prev>0?`<g class="gpp-mg"><circle class="gpp-me" cx="75" cy="229" r="7"/></g>`:''}
     <path class="gpp-hz" d="M0 229.5H390"/></svg>`}
-function gPathPhone(g){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,i=sel?g.ms.indexOf(sel):-1,pv=g.ms[i-1],nxm=g.ms[i+1];
+/* ---------- phones: all three views share one page; only the hero picture changes ----------
+   facts top left · hero (mountain, sunrise or countdown) · name and why · step bar · one milestone at a time:
+   ‹ name ›, its tasks, Add a task, and one clear row to mark it done or reopen it */
+const G_REOPEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4.5v4h4"/></svg>';
+function gPhoneHero(g,kind,anim){
+  if(kind==='climb')return `<div class="gph gph-mtn">${gbScene(g,anim)}${gNsSky(g)}</div>`;
+  if(kind==='poster'){const dl=gDaysLeft(g),big=g.done?'':dl===null?'—':Math.abs(dl);
+    const lbl=g.done?'Goal achieved':dl===null?'No date set':dl===0?'Today is the day':dl<0?`${dl===-1?'day':'days'} past due`:`${dl===1?'day':'days'} to go`;
+    return `<div class="gph gph-num"><span class="gph-glow"></span>${g.done?`<span class="gph-flag">${G_FLAG}</span>`:`<b ${typeof big==='number'?`data-cnt="${big}"`:''}>${big}</b>`}<small>${lbl}</small><i class="gph-hz"></i></div>`}
+  return `<div class="gph">${gSunrise(g)}</div>`}
+function gPhoneView(g,kind,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr.n>=pr.of&&!g.done,i=sel?g.ms.indexOf(sel):-1,pv=g.ms[i-1],nxm=g.ms[i+1];
   const steps=g.ms.map((m,k)=>`<button class="gpp-st${m.done?' on':''}${m===nx&&!g.done?' nx':''}${m===sel?' sel':''}" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${k+1}: ${esc(m.t)}${m.done?', done':''}"><i></i></button>`).join('');
   let body='';
   if(sel){const ts=gKids(sel),dn=ts.filter(x=>x.done).length,live=!sel.done&&!g.done;
@@ -7545,15 +7574,16 @@ function gPathPhone(g){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=pr.of>0&&pr
         <button class="gpp-ar nx" ${nxm?`data-gsel="${nxm.id}"`:'disabled'} aria-label="Next milestone">${BACK_SVG}</button></div>
       <div class="gpp-ts" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
         ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}
-        ${g.done?'':`<button class="gpp-done${sel.done?' on':''}" data-gtk="${sel.id}" aria-pressed="${!!sel.done}"><span class="gpp-dk">${CK}</span>${sel.done?'Milestone done · tap to reopen':'Mark milestone done'}</button>`}</div>`}
-  return `<div class="gpp"><div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div></div>
-    ${gSunrise(g)}
+        ${g.done?'':sel.done?`<button class="gpp-done on" data-gtk="${sel.id}" aria-pressed="true"><span class="gpp-dk">${G_REOPEN}</span>Reopen milestone</button>`
+          :`<button class="gpp-done" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk">${CK}</span>Mark milestone done</button>`}</div>`}
+  return `<div class="gpp gpk-${kind}"><div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div></div>
+    ${gPhoneHero(g,kind,anim)}
     <div class="gpp-hd"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why&&!g.hideWhy?`<button class="gpp-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>
     ${g.ms.length?`<div class="gpp-bar" role="group" aria-label="Milestones">${steps}</div>`:''}
     ${body}
-    ${!g.ms.length||(gAddMs&&g.ms.length<MS_MAX)?gAddMsRow(g):''}
+    ${gAddMsRow(g)}
     ${top?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
-function gPathView(g){if(gPhone())return gPathPhone(g);
+function gPathView(g){if(gPhone())return gPhoneView(g,'sun');
   const pr=gProg(g),dd=gDays(g),nx=gNext(g),sel=gSel(g);
   const st=g.ms.map((m,i)=>{const k=`${m.done?'done':m===nx?'now':''}${m===sel?' sel':''}`;
     return `<div class="gpth ${k}" style="--i:${i}"><span class="gpth-ln"><button class="gpth-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}<i></i></button><b></b></span>
@@ -7564,7 +7594,7 @@ function gPathView(g){if(gPhone())return gPathPhone(g);
     <div class="gpv-meta"><span><b>${pr.n} of ${pr.of}</b> milestones</span><span>${gPaceTxt(g)}${g.done||dd.n==='—'?'':gDaysLeft(g)<0?` · ${dd.n} ${dd.n===1?'day':'days'} over`:` · ${dd.n} ${dd.t}`}</span></div>
     <div class="gpth-list">${st}${g.ms.length<MS_MAX&&!g.done?`<div class="gpth add"><span class="gpth-ln"><span class="gpth-k ghost"></span></span><span class="gpth-tx">${gAddInput(g.ms.length?'Add a milestone':'Add your first milestone')}</span></div>`:''}</div>
     ${pr.of&&pr.n>=pr.of&&!g.done?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div>`}
-function gPosterView(g){
+function gPosterView(g){if(gPhone())return gPhoneView(g,'poster');
   const pr=gProg(g),dl=gDaysLeft(g),nx=gNext(g),sel=gSel(g),big=g.done?'Done':dl===null?'—':Math.abs(dl);
   return `<div class="gpo"><div class="gpo-l"><span class="hp-eye">${esc(g.name)}${g.due?` · ${gLong(g.due)}`:''}</span>
       <div class="gpo-num"><b ${typeof big==='number'?`data-cnt="${big}"`:''}>${big}</b><span>${g.done?'Goal achieved.':dl===null?'No date set.':dl===0?'Today is the day.':dl<0?`${dl===-1?'day':'days'} past due.`:`${dl===1?'day':'days'} to go.`}</span></div>
