@@ -619,3 +619,16 @@ button.hg-c:active{transform:scale(.88)}
 .ib-nw>.gm-more{position:absolute;top:8px;right:8px}
 .ib-nw.enter{animation:pgIn .45s var(--ease) both}
 @media (hover:hover){.ib-nw>.gm-more,.ib-list .row-in .gm-more{opacity:0}.ib-nw:hover>.gm-more,.ib-nw:focus-within>.gm-more,.ib-list .row:hover .gm-more,.ib-list .row:focus-within .gm-more,.gm-more[aria-expanded="true"]{opacity:1}}
+
+/* goal page: lists cap at 3 with "+N more"; the climb is never cropped on wide screens */
+.gm-cap{align-self:flex-start;width:auto;height:auto;min-width:0;white-space:nowrap;display:inline-flex;align-items:center;margin:8px 0 2px;padding:6px 12px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:600;transition:color .2s,background .2s}
+.gm-cap:hover{color:var(--text);background:color-mix(in srgb,var(--text) 10%,var(--surface2))}
+.gm-ts .gm-cap,.g-tasks .gm-cap{margin-left:4px}
+.gpo-list .gm-cap{margin:10px 0}
+.gm-ts,.g-tasks[data-sk]{max-height:none;overflow:visible}
+.g-tasks{display:flex;flex-direction:column}
+@media (min-width:700px){
+  .gb-stage{height:auto;aspect-ratio:1200/470}
+  .gb-svg{height:auto;aspect-ratio:1200/440}
+}
+@media (max-width:699px){.gb-line{font-size:13.5px}.gb-line>*+*::before{margin:0 6px}}

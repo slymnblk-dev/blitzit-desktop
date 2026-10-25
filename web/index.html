@@ -3347,6 +3347,19 @@ button.hg-c:active{transform:scale(.88)}
 .ib-nw>.gm-more{position:absolute;top:8px;right:8px}
 .ib-nw.enter{animation:pgIn .45s var(--ease) both}
 @media (hover:hover){.ib-nw>.gm-more,.ib-list .row-in .gm-more{opacity:0}.ib-nw:hover>.gm-more,.ib-nw:focus-within>.gm-more,.ib-list .row:hover .gm-more,.ib-list .row:focus-within .gm-more,.gm-more[aria-expanded="true"]{opacity:1}}
+
+/* goal page: lists cap at 3 with "+N more"; the climb is never cropped on wide screens */
+.gm-cap{align-self:flex-start;width:auto;height:auto;min-width:0;white-space:nowrap;display:inline-flex;align-items:center;margin:8px 0 2px;padding:6px 12px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:600;transition:color .2s,background .2s}
+.gm-cap:hover{color:var(--text);background:color-mix(in srgb,var(--text) 10%,var(--surface2))}
+.gm-ts .gm-cap,.g-tasks .gm-cap{margin-left:4px}
+.gpo-list .gm-cap{margin:10px 0}
+.gm-ts,.g-tasks[data-sk]{max-height:none;overflow:visible}
+.g-tasks{display:flex;flex-direction:column}
+@media (min-width:700px){
+  .gb-stage{height:auto;aspect-ratio:1200/470}
+  .gb-svg{height:auto;aspect-ratio:1200/440}
+}
+@media (max-width:699px){.gb-line{font-size:13.5px}.gb-line>*+*::before{margin:0 6px}}
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
 .also .sec-h{margin-top:20px}
@@ -3639,7 +3652,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=182; // bumped with every published update
+const APP_VERSION=183; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -7206,7 +7219,7 @@ function gbScene(g,anim){
 /* tasks linked to the goal but to no milestone */
 function gTasksSec(g){const lo=gLoose(g),wk=gMon(),moved=lo.filter(t=>t.stage==='done'&&(t.doneAt||0)>=wk),open=lo.filter(t=>t.stage!=='done'&&shown(t));if(!open.length&&!moved.length)return '';
   const row=t=>`<div class="g-tr2"><button class="g-trow${t.stage==='done'?' on':''}" data-gtask="${t.id}"><span class="hc-dot">${ICK}</span><span class="g-tx"><b>${esc(t.title)}</b><small>${esc(listOf(t.list).name)} · ${esc(STAGES[idx(t.stage)].name)}</small></span>${CHEV}</button>${MORE(`data-gtm="t${t.id}"`,`Options for ${esc(t.title)}`)}</div>`;
-  return `<div class="gv-sec"><h2>Other tasks</h2><span>${moved.length?`${moved.length} done this week`:''}</span></div><div class="g-tasks" data-sk="other">${open.map(row).join('')}${moved.map(row).join('')}</div>`}
+  return `<div class="gv-sec"><h2>Other tasks</h2><span>${moved.length?`${moved.length} done this week`:''}</span></div><div class="g-tasks">${gCap('other',[...open,...moved],row)}</div>`}
 function gAddInput(ph){return `<input id="gMsIn" class="gv-add" placeholder="${ph}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Add a milestone">`}
 const gSmooth=()=>matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth';
 /* the selected milestone (tap one on the track, the hill or the path); by default the next one */
@@ -7223,12 +7236,16 @@ function gRow(r){const on=r.done,subs=r.subs,n=subs.length,d=subs.filter(s=>s.do
     ${open?`<div class="gm-subs">${subs.map(s=>`<div class="gm-sr"><button class="gm-s${s.done?' on':''}" data-gsub="${k}|${s.id}" aria-pressed="${!!s.done}"><span class="gm-sk">${CK}</span><span class="gm-st">${esc(s.t||'')}</span></button><button class="gm-sx" data-gsdel="${k}|${s.id}" aria-label="Delete subtask ${esc(s.t||'')}">${X}</button></div>`).join('')}
       ${n<SUB_MAX?`<label class="gm-sadd"><span class="gm-plus">${PLUS_S}</span><input data-gsadd="${k}" placeholder="Add a subtask" maxlength="200" autocomplete="off" enterkeyhint="done" aria-label="Add a subtask to ${esc(r.title)}"></label>`:''}</div>`:''}</div>`}
 /* a milestone's card: its tasks (in the order you added them), add a task, mark it done */
+/* long lists show 3 and a "+N more" toggle, so the cards stay even */
+var gOpenLists=new Set();
+function gCap(key,items,render,n){n=n||3;if(items.length<=n+1)return items.map(render).join('');const open=gOpenLists.has(key);
+  return (open?items:items.slice(0,n)).map(render).join('')+`<button class="gm-cap" data-gmore="${key}" aria-expanded="${open}">${open?'Show less':`+${items.length-n} more`}</button>`}
 function gMsCard(g,m,cls){if(!m)return '';
   const i=g.ms.indexOf(m),ts=gKids(m),dn=ts.filter(x=>x.done).length,nx=gNext(g),live=!m.done&&!g.done;
   return `<div class="gm-card${cls?' '+cls:''}" data-gcard="${m.id}"><div class="gm-h"><div class="gm-hx"><span class="gm-tag">${m.done?(m.doneAt?`Done · ${gShort(m.doneAt)}`:'Done'):m===nx?'Next':`Milestone ${i+1}`}</span><b>${esc(m.t)}</b>
       <small>${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'} done`:'No tasks yet'}</small></div>
     ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':'Mark done'}</button>`}${MORE(`data-gmm="${m.id}"`,`Options for milestone ${esc(m.t)}`)}</div>
-    ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts" data-sk="ms-${m.id}">${ts.map(gRow).join('')}</div>`
+    ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts">${gCap('ms-'+m.id,ts,gRow)}</div>`
       :live?`<p class="gm-empty">Break it into a few tasks. They stay with this goal (no list needed), and finishing the last one completes the milestone.</p>`:''}
     ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
 /* every milestone on one track that always fits: the first one is always in view, nothing scrolls sideways */
@@ -7304,8 +7321,8 @@ const gNsSky=g=>g.star&&!g.done&&!g.hideNs?`<span class="gb-ns" role="img" aria-
    so the tasks sit right under the hero and nothing scrolls sideways. Phones keep the track above the card. */
 const gWide=()=>matchMedia('(min-width:1100px)').matches;
 function gMsList(g){if(!g.ms.length)return '';const sel=gSel(g),nx=gNext(g),pr=gProg(g);
-  return `<div class="gm-msl"><div class="gv-sec"><h2>Milestones</h2><span>${pr.n} of ${pr.of} done</span></div><div class="gpo-list">${g.ms.map((m,i)=>{const n=gKids(m).length;
-    return `<div class="gpo-m${m.done?' on':''}${m===sel?' sel':''}${m===nx&&!g.done?' nx':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks">${esc(m.t)}${n?`<small>${gKids(m).filter(x=>x.done).length}/${n}</small>`:''}</button></div>`}).join('')}
+  return `<div class="gm-msl"><div class="gv-sec"><h2>Milestones</h2><span>${pr.n} of ${pr.of} done</span></div><div class="gpo-list">${gCap('msl',g.ms,(m,i)=>{const n=gKids(m).length;
+    return `<div class="gpo-m${m.done?' on':''}${m===sel?' sel':''}${m===nx&&!g.done?' nx':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks">${esc(m.t)}${n?`<small>${gKids(m).filter(x=>x.done).length}/${n}</small>`:''}</button></div>`})}
     ${g.ms.length<MS_MAX&&!g.done?gAddInput('Add a milestone'):''}</div></div>`}
 function gClimbView(g,anim){const wide=gWide(),sel=gSel(g);
   return `<div class="gb-stage">${gNsSky(g)}${gbScene(g,anim)}<div class="gb-head">
@@ -7421,6 +7438,9 @@ document.addEventListener('keydown',e=>{
   if(!top||!ESC_PAGES[top.id]||top.contains(e.target))return;
   e.preventDefault();e.stopImmediatePropagation();ESC_PAGES[top.id]();
 },true);
+
+$('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmore]');if(!b)return;e.stopPropagation();const k=b.dataset.gmore;
+  if(gOpenLists.has(k))gOpenLists.delete(k);else gOpenLists.add(k);haptic(4);drawGoal()});
 /* ---------- Phones: bottom tab bar (Home · Inbox · Habits · Goals, and +) ----------
    Shows on phones and tablets once Inbox, Habits or Goals is on, on Home and on those pages. It replaces Home's rows
    for them and the big Add task button. Inside a space the space's own bar (Win the day, +) stays.

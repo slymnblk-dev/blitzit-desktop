@@ -265,7 +265,7 @@ test('goals: Escape closes the ⋯ menu, then the goal page, then the Goals page
   noErrors(errors);
 });
 
-test('goal page: subtask rings, lists that scroll inside, even track, milestone editor popup', async ({ page }) => {
+test('goal page: subtask rings, lists capped at 3, even track, milestone editor popup', async ({ page }) => {
   await page.setViewportSize({ width: 600, height: 900 }); // the track is the phone and tablet layout
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.goals = true; const sp = S.spaces[0].id, l = S.lists.find(x => x.space === sp);
@@ -289,11 +289,15 @@ test('goal page: subtask rings, lists that scroll inside, even track, milestone 
   await page.locator('#gdPg .gm-s').nth(1).click();
   expect(await page.evaluate(() => S.tasks.find(x => x.title === 'With subs').subs.map(s => !!s.done))).toEqual([true, true, false]);
   await expect(page.locator('#gdPg .gm-sub')).toHaveText('2/3');
-  // a long task list scrolls inside the card (and keeps its place across redraws)
-  const sc = await page.evaluate(() => { const el = document.querySelector('#gdPg .gm-ts'); el.scrollTop = 120; render(); const n = document.querySelector('#gdPg .gm-ts'); return [n.scrollHeight > n.clientHeight, n.scrollTop]; });
-  expect(sc[0]).toBe(true);
-  expect(sc[1]).toBeGreaterThan(100);
-  await expect(page.locator('#gdPg .gm-ts')).toHaveClass(/fb/);
+  // a long task list shows 3 and "+N more" (cards stay even); it opens and closes
+  await expect(page.locator('#gdPg .gm-ts .gm-t')).toHaveCount(3);
+  await expect(page.locator('#gdPg .gm-ts .gm-cap')).toHaveText('+10 more');
+  await page.locator('#gdPg .gm-ts .gm-cap').click();
+  await expect(page.locator('#gdPg .gm-ts .gm-t')).toHaveCount(13);
+  await page.evaluate(() => render());
+  await expect(page.locator('#gdPg .gm-ts .gm-cap')).toHaveText('Show less'); // stays open across redraws
+  await page.locator('#gdPg .gm-ts .gm-cap').click();
+  await expect(page.locator('#gdPg .gm-ts .gm-t')).toHaveCount(3);
   // milestone editor: a popup in the middle; rename, reorder (drag and keys), add, delete; Escape closes only the popup
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gedit]').click();
@@ -341,7 +345,8 @@ test('goal page: milestone tasks need no space or list; add one to a list and ba
   for (let i = 0; i < 14; i++) { await page.fill('#gMtIn', 'T' + i); await page.keyboard.press('Enter'); }
   expect(await page.evaluate(() => [S.goals[0].ms[0].items.length, S.tasks.filter(x => x.goal === 'g1').length])).toEqual([14, 0]);
   await expect(page.locator('#gdPg .gm-t').last()).toBeInViewport();
-  expect(await page.evaluate(() => { const el = document.querySelector('#gdPg .gm-ts'); return el.scrollHeight > el.clientHeight; })).toBe(true);
+  await expect(page.locator('#gdPg .gm-ts .gm-cap')).toBeVisible();
+  await page.locator('#gdPg .gm-ts .gm-cap').click(); // show all 14
   await expect(page.locator('#gdPg .gm-t .gm-in')).toHaveCount(0); // goal-only tasks show no list
   // ⋯ → Add to a list…: it becomes a real task in that list (My week), still in the milestone
   await page.locator('#gMtIn').blur();
