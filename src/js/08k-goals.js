@@ -161,7 +161,7 @@ function gMsToggle(g,m){
   commit(()=>{m.done=on;if(on){m.doneAt=Date.now();(m.items||[]).forEach(it=>{if(!it.done){it.done=true;it.doneAt=Date.now()}});gMsTasks(m).forEach(t=>{if(t.stage!=='done')setStage(t,'done')})}else delete m.doneAt},
     on?(all?'Summit reached. Every milestone is done.':`Milestone done · ${pr.n+1} of ${pr.of}`):'Milestone reopened');
   if(on)haptic([8,30,12]);
-  sfx(on?'milestone':'undone',true);
+  sfx(on?(all?'summit':'milestone'):'undone',true);
 }
 /* a new task for a milestone lands in My week, in the goal's space */
 /* a new task for a milestone lives in the goal itself: no space, list or stage needed */
@@ -187,7 +187,7 @@ function gMsAdd(g){
 function gSetWin(g,on){
   if(!on&&gAll().length>=G_MAX){toast(`${G_MAX} goals are already in progress. Finish one first.`);return}
   commit(()=>{if(on){g.done=true;g.doneAt=Date.now();g.star=false}else{g.done=false;delete g.doneAt}},on?`🏆 ${g.name}: achieved`:'Back in progress');
-  if(on){haptic([10,40,10,40,20]);try{sfx('done')}catch(e){}}
+  if(on){haptic([10,40,10,40,20]);try{sfx('achieved',true)}catch(e){}}
 }
 function gToggleStar(g){const on=!g.star;commit(()=>{gList().forEach(x=>{if(x.star)x.star=false});g.star=on},on?'Now your north star. It sits on Home.':'North star removed')}
 function gDelete(g){

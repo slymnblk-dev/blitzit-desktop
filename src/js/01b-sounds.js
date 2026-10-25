@@ -68,6 +68,8 @@ const SFX_MEL={
   start:[[523.25,0,.42,.09],[659.25,.07,.42,.09],[784,.14,.5,.09]],       // focus begins
   milestone:[[783.99,0,.5,.12],[987.77,.09,.55,.11],[1174.66,.18,.9,.11]], // a milestone reached: three warm rising notes
   rise:[[392,0,1.5,.045,587.33]],                                       // the sun climbs a little: one slow soft glide up
+  summit:[[659.25,0,.6,.11],[783.99,.08,.6,.11],[987.77,.16,.7,.11],[1318.51,.26,1.1,.11],[1567.98,.4,1.4,.08]], // every milestone done: a bright run to the top
+  achieved:[[523.25,0,1.3,.1],[659.25,.1,1.3,.1],[783.99,.2,1.3,.1],[1046.5,.32,1.5,.11],[1318.51,.46,1.7,.09],[1567.98,.6,2,.08],[2093,.78,2.2,.05]], // goal achieved: the big one
   win:[[523.25,0,.9,.1],[659.25,.09,.9,.1],[784,.18,.9,.1],[1046.5,.27,1.1,.1]] // the day's run is complete
 };
 function sfxPlay(name,style){

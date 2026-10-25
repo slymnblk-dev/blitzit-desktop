@@ -152,7 +152,7 @@ function closeMsEdit(){if(!gmeOn)return;const a=document.activeElement;if(a&&a.c
 function drawMsEdit(focus){const g=gById(gdId);if(!g)return closeMsEdit();
   $('gmeList').innerHTML=g.ms.map((m,i)=>{const ts=gKids(m),dn=ts.filter(x=>x.done).length;
     return `<div class="gme-r${m.done?' done':''}" data-mid="${m.id}"><button class="ho-grip" type="button" aria-label="Move ${esc(m.t)}, number ${i+1} of ${g.ms.length}. Arrow keys move it.">${GRIP}</button>
-      <span class="gme-i">${m.done?CK:i+1}</span><input class="gme-n" data-mren="${m.id}" value="${esc(m.t)}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Milestone ${i+1} name">
+      <button class="gme-i" type="button" data-mtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reset':'Mark done'}: ${esc(m.t)}">${m.done?CK:i+1}</button><input class="gme-n" data-mren="${m.id}" value="${esc(m.t)}" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="Milestone ${i+1} name">
       ${ts.length?`<small>${dn}/${ts.length}</small>`:''}<button class="gme-del" data-mdel="${m.id}" aria-label="Delete ${esc(m.t)}">${BIN_S}</button></div>`}).join('')||'<p class="gme-none">No milestones yet. Add the first one below.</p>';
   $('gmeAddW').style.display=g.ms.length>=MS_MAX||g.done?'none':'';
   if(focus!=null){const b=$('gmeList').querySelector(`[data-mid="${focus}"] .ho-grip`);if(b)b.focus()}}
@@ -161,6 +161,7 @@ sortable($('gmeList'),'.gme-r',r=>r.dataset.mid,(ids,focus)=>{const g=gById(gdId
 $('gmEd').addEventListener('click',e=>{
   if(e.target===$('gmEd')||e.target.closest('#gmeDone,#gmeClose'))return closeMsEdit();
   if(e.target.closest('#gmeAddB'))return gmeAddNow();
+  const tk=e.target.closest('[data-mtk]');if(tk){const g=gById(gdId),m=g&&g.ms.find(x=>x.id===tk.dataset.mtk);if(m&&!g.done){gMsToggle(g,m);drawMsEdit()}return}
   const dl=e.target.closest('[data-mdel]');if(dl){const g=gById(gdId),m=g&&g.ms.find(x=>x.id===dl.dataset.mdel);if(m){gMsDelete(g,m);drawMsEdit()}}
 });
 $('gmEd').addEventListener('change',e=>{const id=e.target.dataset.mren;if(!id)return;const g=gById(gdId),m=g&&g.ms.find(x=>x.id===id),v=e.target.value.trim();if(!m)return;
@@ -224,11 +225,11 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ================= Goal ================= */
-const gView=g=>{const v=g.view||C().gView;return ['climb','path','poster'].includes(v)?v:'climb'};
+const gView=g=>{if(matchMedia('(max-width:699px)').matches)return 'path'; /* phones: Sunrise only */const v=g.view||C().gView;return ['climb','path','poster'].includes(v)?v:'climb'};
 function gMenuHTML(g){const v=gView(g);
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS_V}</button>
-    <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu"><span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"',gPhone()?'Sunrise':'Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
-    <span class="pm-sep"></span><button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
+    <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu">${gPhone()?'':`<span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"','Path',v==='path')}${mItem('data-gview="poster"','Poster',v==='poster')}
+    <span class="pm-sep"></span>`}<button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
     ${g.star&&!g.done&&gView(g)==='climb'?`<button data-gm="nsky" role="menuitem"><span class="lpm-i">${G_SPARK}</span>${g.hideNs?'Show the star in the sky':'Hide the star in the sky'}</button>`:''}
     ${g.why?`<button data-gm="why" role="menuitem"><span class="lpm-i">${g.hideWhy?CK:X}</span>${g.hideWhy?'Show why on the page':'Hide why on the page'}</button>`:''}
     ${g.done&&!g.ms.length?'':`<button data-gedit role="menuitem"><span class="lpm-i">${PEN_S}</span>${g.ms.length?'Edit milestones':'Add milestones'}</button>`}
@@ -448,8 +449,8 @@ function gPhoneView(g,kind,anim){const sel=gSel(g),nx=gNext(g),pr=gProg(g),top=p
         <button class="gpp-ar nx" ${nxm?`data-gsel="${nxm.id}"`:'disabled'} aria-label="Next milestone">${BACK_SVG}</button></div>
       <div class="gpp-ts" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
         ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}
-        ${g.done?'':sel.done?`<button class="gpp-done on" data-gtk="${sel.id}" aria-pressed="true"><span class="gpp-dk">${G_REOPEN}</span>Reopen milestone</button>`
-          :`<button class="gpp-done" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk">${CK}</span>Mark milestone done</button>`}</div>`}
+        ${g.done?'':sel.done?`<button class="gpp-done on" data-gtk="${sel.id}" aria-pressed="true"><span class="gpp-dk">${G_REOPEN}</span>Reset milestone</button>`
+          :`<button class="gpp-done" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk"></span>Mark milestone done</button>`}</div>`}
   return `<div class="gpp gpk-${kind}"><div class="gr-meta"><div class="gr-f">${gHeroFacts(g)}</div></div>
     ${gPhoneHero(g,kind,anim)}
     <div class="gpp-hd"><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1>${g.why&&!g.hideWhy?`<button class="gpp-why" data-gwhy aria-label="Why it matters: ${esc(g.why)}. Edit">${esc(g.why)}</button>`:''}</div>
@@ -571,3 +572,8 @@ $('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmore]');
 $('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmt],[data-gtm],[data-gedt],[data-gsubs],[data-gtk],[data-gsel],[data-gtask]');if(!b)return;
   const d=b.dataset;gTouch=d.gmt||d.gtm||d.gedt||d.gsubs||d.gtk||d.gsel||(d.gtask?'t'+d.gtask:null)},true);
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gMtIn'&&e.target.value.trim())gOpenLists.add('ms-'+e.target.dataset.gms)},true);
+
+/* marking a milestone done moves you on to the next one (phones show one at a time) */
+const _gMsToggleNext=gMsToggle;
+gMsToggle=function(g,m){const was=!!m.done;_gMsToggleNext(g,m);
+  if(!was&&m.done&&gdOn&&gPhone()&&!gmeOn){const n=gNext(g);if(n&&n!==m){gSelId=n.id;drawGoal()}}};
