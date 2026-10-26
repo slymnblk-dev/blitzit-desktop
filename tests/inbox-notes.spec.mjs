@@ -1,4 +1,4 @@
-// Inbox: tasks and notes. Capture either kind, filter All / Tasks / Notes, edit a note in a calm popup
+// Inbox: tasks and notes. Capture either kind, edit a note in a calm popup
 // (it saves as you type), pin it, turn it into a task, delete it. Notes never reach a board.
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
@@ -9,10 +9,11 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   await page.evaluate(() => { S.cfg.inbox = true; S.tasks = S.tasks.filter(t => !t.inbox); save(); openInbox(); });
   // a task, as before
   await page.fill('#ibNew', 'Call the bank');
+  await expect(page.locator('#inboxPg .ib-cap')).toHaveClass(/typed/); // the ↑ shows once there is text
   await page.keyboard.press('Enter');
   await expect(page.locator('#inboxPg .ib-list .row')).toHaveCount(1);
   // a note: Enter makes a new line, Ctrl+Enter adds it
-  await page.locator('#inboxPg [data-ibk="note"]').click();
+  await page.locator('#inboxPg [data-ibswap]').click(); // the small chip at the end switches Task ↔ Note
   await expect(page.locator('#inboxPg textarea#ibNew')).toBeFocused();
   await page.keyboard.type('Gift ideas');
   await page.keyboard.press('Enter');
@@ -22,16 +23,10 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   expect([n.title, n.notes, n.inbox, n.list]).toEqual(['Gift ideas', 'Gift ideas\nA good book', true, null]);
   await expect(page.locator('#inboxPg .ib-note b')).toHaveText('Gift ideas');
   expect(await page.evaluate(() => [inboxItems().length, inboxNotes().length, S.tasks.filter(t => t.note && shown(t)).length])).toEqual([1, 1, 0]);
-  // filters
-  await page.locator('#inboxPg [data-ibtab="notes"]').click();
-  await expect(page.locator('#inboxPg .ib-list')).toHaveCount(0);
-  await expect(page.locator('#inboxPg .ib-note')).toHaveCount(1);
-  await page.locator('#inboxPg [data-ibtab="tasks"]').click();
-  await expect(page.locator('#inboxPg .ib-note')).toHaveCount(0);
-  // the filters never overlap what is under them
-  const gap = await page.evaluate(() => document.querySelector('#inboxPg .ib-list').getBoundingClientRect().top - document.querySelector('#inboxPg .ib-tabs').getBoundingClientRect().bottom);
-  expect(gap).toBeGreaterThan(4);
-  await page.locator('#inboxPg [data-ibtab="all"]').click();
+  // no filters: Tasks and Notes each have a quiet header with a count
+  await expect(page.locator('#inboxPg .ib-tabs')).toHaveCount(0);
+  await expect(page.locator('#inboxPg .ib-count')).toHaveText(['Tasks1', 'Notes1']);
+  await expect(page.locator('#inboxPg .ib-cap')).not.toHaveClass(/typed/); // the ↑ hides while the line is empty
   // edit in the popup: it saves as you type; pin it
   await page.locator('#inboxPg .ib-note').click();
   await expect(page.locator('#nbEd')).toHaveClass(/on/);

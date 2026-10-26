@@ -853,3 +853,26 @@ button.hg-c:active{transform:scale(.88)}
   .gw-cols{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:start}
   .gw-r{padding:22px 24px 10px;border-radius:24px;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 9%,transparent)}
 }
+/* ===== Inbox (A · One line): one wide capture line, a small Task/Note chip at its end, ↑ once you type ===== */
+.ib-h{margin:6px 0 22px}
+.ib-cap{gap:8px;padding:0 7px 0 20px;height:60px;border-radius:20px;background:var(--surface);box-shadow:none;transition:box-shadow .2s}
+.ib-cap:focus-within{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--text) 30%,transparent)}
+.ib-cap input,.ib-cap textarea{font-size:17px}
+.ib-cap.note{height:auto;min-height:60px;align-items:flex-end;padding-top:9px;padding-bottom:8px}
+.ib-cap.note textarea{align-self:center;padding:9px 0}
+.ib-swap{flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 11px 0 9px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:600;transition:color .2s,background .2s}
+.ib-swap svg{width:15px;height:15px}
+.ib-swap:hover{color:var(--text)}
+.ib-cap.note .ib-swap{color:var(--week)}
+.ib-cap-go{flex:none;width:0;height:44px;padding:0;margin-left:-8px;border-radius:50%;background:var(--today);color:#fff;display:grid;place-items:center;overflow:hidden;opacity:0;transform:scale(.6);pointer-events:none;
+  transition:width .22s var(--ease),margin .22s var(--ease),opacity .18s,transform .22s var(--ease)}
+.ib-cap-go svg{width:18px;height:18px;flex:none}
+.ib-cap.typed .ib-cap-go{width:44px;margin-left:0;opacity:1;transform:none;pointer-events:auto}
+.ib-hint{margin:8px 6px 0}
+.ib-count{display:flex;align-items:baseline;gap:8px;margin:30px 0 4px;letter-spacing:.1em}
+.ib-count small{font-size:12px;font-weight:600;letter-spacing:0;color:color-mix(in srgb,var(--muted) 70%,transparent)}
+.ib-list .ib-go{color:color-mix(in srgb,var(--muted) 80%,transparent)}
+@media (min-width:1100px){.ib-h{font-size:52px;margin:4px 0 26px}.ib-cap{height:64px}.ib-cap input,.ib-cap textarea{font-size:18px}}
+/* no Back on the Inbox: the tab bar or the sidebar is always there */
+#inboxPg .ib-top{display:none}
+@media (max-width:1099px){#inboxPg .ib-h{margin-top:30px}}

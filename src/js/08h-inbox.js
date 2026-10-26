@@ -60,20 +60,24 @@ function ibDelete(t){confirmAsk({title:t.note?'Delete this note?':'Delete this t
 function ibMenu(t){return t.note?[{t:'Edit',ic:PEN_S,act:()=>openNote(t.id)},{t:t.pin?'Unpin':'Pin to the top',ic:I_PIN,act:()=>{t.pin=!t.pin;if(!t.pin)delete t.pin;save();render();toast(t.pin?'Pinned to the top':'Unpinned')}},
     {t:'Turn into a task',ic:I_TASK2,act:()=>nbToTask(t)},{sep:1},{t:'Delete note',ic:BIN_S,warn:1,act:()=>ibDelete(t)}]
   :[{t:'Open',ic:CHEV,act:()=>ibOpen(t.id)},{t:'Send to a list…',ic:I_SEND,act:()=>ibOpen(t.id,true)},{t:'Turn into a note',ic:I_NOTE2,act:()=>ibToNote(t)},{sep:1},{t:'Delete task',ic:BIN_S,warn:1,act:()=>ibDelete(t)}]}
+/* the page: one big capture line (a small chip at its end switches Task ↔ Note; ↑ appears once you type),
+   then Tasks and Notes, each with a quiet header and its count */
+var I_UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
 function drawInbox(){
-  const items=inboxItems(),notes=inboxNotes(),nT=items.length,nN=notes.length,tab=nT&&nN?ibTab:'all',note=ibKind==='note';
-  const tabs=nT&&nN?`<div class="ib-tabs" role="tablist" aria-label="Show">${[['all','All',nT+nN],['tasks','Tasks',nT],['notes','Notes',nN]].map(([k,l,n])=>`<button role="tab" data-ibtab="${k}" aria-selected="${tab===k}" class="${tab===k?'on':''}">${l}<small>${n}</small></button>`).join('')}</div>`:'';
-  const tasksSec=nT&&tab!=='notes'?`${tab==='all'?`<div class="ib-count">${nT} ${nT===1?'task':'tasks'}</div>`:''}<ul class="list ib-list">${items.map(ibRow).join('')}</ul>`:'';
-  const notesSec=nN&&tab!=='tasks'?`${tab==='all'?`<div class="ib-count">${nN} ${nN===1?'note':'notes'}</div>`:''}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div>`:'';
-  $('ibIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="ibBack" aria-label="Back">${BACK_SVG}</button></div>
-    <h1 class="ib-h">Inbox</h1><p class="ib-lede">Catch anything: a task for later, or a note to keep. Sort it out when you’re ready.</p>
-    <div class="ib-cap${note?' note':''}"><div class="ib-kind" role="tablist" aria-label="Add a"><button role="tab" data-ibk="task" aria-selected="${!note}" aria-label="Task" class="${note?'':'on'}">${I_TASK2}<span>Task</span></button><button role="tab" data-ibk="note" aria-selected="${note}" aria-label="Note" class="${note?'on':''}">${I_NOTE2}<span>Note</span></button></div>
-      ${note?`<textarea id="ibNew" rows="1" placeholder="Write a note…" maxlength="4000" aria-label="New note"></textarea>`:`<input id="ibNew" placeholder="Add a task" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="New task">`}
-      <button class="ib-cap-go" id="ibAdd" aria-label="${note?'Add note':'Add task'}">Add</button></div>
+  const items=inboxItems(),notes=inboxNotes(),nT=items.length,nN=notes.length,note=ibKind==='note';
+  const head=(l,n)=>`<div class="ib-count"><span>${l}</span><small>${n}</small></div>`;
+  const tasksSec=nT?`${head('Tasks',nT)}<ul class="list ib-list">${items.map(ibRow).join('')}</ul>`:'';
+  const notesSec=nN?`${head('Notes',nN)}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div>`:'';
+  $('ibIn').innerHTML=`<h1 class="ib-h">Inbox</h1>
+    <div class="ib-cap${note?' note':''}">
+      ${note?`<textarea id="ibNew" rows="1" placeholder="Write a note" maxlength="4000" aria-label="New note"></textarea>`:`<input id="ibNew" placeholder="Add a task" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="New task">`}
+      <button class="ib-swap" data-ibswap aria-label="${note?'Adding a note. Switch to task':'Adding a task. Switch to note'}" title="Switch to ${note?'task':'note'}">${note?I_NOTE2:I_TASK2}<span>${note?'Note':'Task'}</span></button>
+      <button class="ib-cap-go" id="ibAdd" aria-label="${note?'Add note':'Add task'}">${I_UP}</button></div>
     ${note?'<p class="ib-hint">Enter for a new line · Ctrl or ⌘ + Enter to add</p>':''}
-    ${nT||nN?`${tabs}${tasksSec}${notesSec}`:`<div class="ib-empty">${IB_ICON}<b>Your inbox is empty</b><span>Tasks and notes you add show up here.</span></div>`}`;
+    ${nT||nN?`${tasksSec}${notesSec}`:`<div class="ib-empty">${IB_ICON}<b>Your inbox is empty</b><span>Tasks and notes you add show up here.</span></div>`}`;
   enterId=null;
 }
+const ibTyped=()=>{const n=$('ibNew'),c=n&&n.closest('.ib-cap');if(c)c.classList.toggle('typed',!!n.value.trim())};
 function ibAdd(){
   const i=$('ibNew'),v=(i.value||'').trim();if(!v)return;
   const t=ibKind==='note'?{id:newId(),title:nbTitle(v),stage:'backlog',list:null,est:0,subs:[],notes:v,repeat:'none',inbox:true,note:true,created:Date.now()}
@@ -127,10 +131,8 @@ function ibOpen(id,pick){openDetail(id);if(pick){pickOpen='list';drawDetail()}}
 
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg" id="inboxPg" role="region" aria-label="Inbox"><div class="ib-in" id="ibIn"></div></div>');
 $('inboxPg').addEventListener('click',e=>{
-  if(e.target.closest('#ibBack'))return closeInbox();
   if(e.target.closest('#ibAdd'))return ibAdd();
-  const k=e.target.closest('[data-ibk]');if(k){const was=$('ibNew').value;ibKind=k.dataset.ibk;haptic(5);drawInbox();const n=$('ibNew');n.value=was;ibGrow(n);n.focus();return}
-  const tb=e.target.closest('[data-ibtab]');if(tb){ibTab=tb.dataset.ibtab;haptic(4);return drawInbox()}
+  const k=e.target.closest('[data-ibswap]');if(k){const was=$('ibNew').value;ibKind=ibKind==='note'?'task':'note';haptic(5);try{sfx('toggle')}catch(err){}drawInbox();const n=$('ibNew');n.value=was;ibGrow(n);ibTyped();n.focus();return}
   const mo=e.target.closest('[data-ibm]');if(mo){e.stopPropagation();const t=S.tasks.find(x=>x.id===+mo.dataset.ibm);if(t)cxOpen(mo,ibMenu(t));return}
   const nt=e.target.closest('[data-ibnote]');if(nt)return openNote(+nt.dataset.ibnote);
   const g=e.target.closest('[data-ibgo]');if(g){haptic(6);return ibOpen(+g.dataset.ibgo,true)}
@@ -140,7 +142,7 @@ $('inboxPg').addEventListener('keydown',e=>{
   if(e.key==='Escape'){if(e.target.id==='ibNew'&&e.target.value){e.target.value='';return}e.stopPropagation();closeInbox();return}
   if(e.key==='Enter'&&e.target.id==='ibNew'&&(ibKind!=='note'||e.metaKey||e.ctrlKey)){e.preventDefault();ibAdd()}
 });
-$('inboxPg').addEventListener('input',e=>{if(e.target.id==='ibNew')ibGrow(e.target)});
+$('inboxPg').addEventListener('input',e=>{if(e.target.id==='ibNew'){ibGrow(e.target);ibTyped()}});
 /* keep the page in step with edits, undo and sync, without stealing focus while typing */
 const _ibRender=render;
-render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;ibGrow(n);n.focus()}}};
+render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;ibGrow(n);ibTyped();n.focus()}}};
