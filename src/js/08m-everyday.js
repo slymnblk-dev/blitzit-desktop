@@ -174,7 +174,7 @@ gSetWin=function(g,on){const was=!!g.done;_moWin(g,on);try{if(on&&!was&&g.done)s
 
 /* ---------- Settings → Modes: one card per mode; turning a mode on unfolds its own options inside its card ---------- */
 var mdJust=null;
-document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','closeDay'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
+document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','mx','closeDay'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
 const MD_GOAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
 modesPage=function(){
   const c=C(),hOn=habitsOn(),gOn=goalsOn(),n=hbAll().length,gn=gAll().length;
@@ -194,6 +194,10 @@ modesPage=function(){
     `${gStarters()}${link('goals','Your goals',gn?`${gn} of ${G_MAX} active`:'None yet')}
      ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','path','Path')}${sOpt('gView','poster','Poster')}</div>`)}
      ${row('North star on Home',tg('wStar'),'Your starred goal under the Today card')}`)}
+  ${card('mx',MX_ICON,'KPIs & OKRs','Key numbers and quarterly results for each space',mxOn(),
+    `<p class="md-note">Open them from the gauge on a space’s page. In a task, “Counts toward” links it to a KPI or key result.</p>
+     ${row('On phones',`<div class="segc">${sOpt('mxPh','focus','One at a time')}${sOpt('mxPh','board','Scoreboard')}</div>`)}
+     ${row('On computers',`<div class="segc">${sOpt('mxDk','board','Scoreboard')}${sOpt('mxDk','focus','One at a time')}</div>`)}`)}
   </div>
   <div class="set-sec"><h3>Everyday</h3><div class="md-list">
   ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits and tomorrow’s first task',!!c.closeDay,'')}

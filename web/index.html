@@ -3710,6 +3710,163 @@ button.hg-c:active{transform:scale(.88)}
   .tb.on::before{transform:none;opacity:1}
   .tb-n{top:6px;z-index:2}
 }
+/* ===== KPIs & OKRs: the gauge button, the popup (a sheet on phones, a calm window on computers), the task link ===== */
+.mx-btn svg{width:19px;height:19px}
+.mx-pg{position:fixed;inset:0;z-index:44;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,5,7,.58);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility 0s .22s}
+.mx-pg.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .22s}
+.mx-card{width:100%;max-height:min(88vh,88dvh);overflow:auto;overscroll-behavior:contain;background:var(--bg);border-radius:28px 28px 0 0;box-shadow:0 -1px 0 var(--line);
+  padding:14px 22px calc(26px + env(safe-area-inset-bottom,0px));box-sizing:border-box;transform:translateY(24px);transition:transform .3s var(--ease)}
+.mx-pg.on .mx-card{transform:none}
+.mx-card::before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--surface2);margin:0 auto 14px}
+@media (min-width:700px){
+  .mx-pg{align-items:center;padding:24px}
+  .mx-card{max-width:560px;max-height:min(86vh,820px);border-radius:28px;padding:26px 30px 28px;box-shadow:0 0 0 1px var(--surface2),0 30px 80px rgba(0,0,0,.55);transform:scale(.97)}
+  .mx-card::before{display:none}
+  .mx-card[data-look="board"],.mx-card[data-look="focus"]{max-width:900px}
+}
+.mx-h{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.mx-ht{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mx-ht b{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;overflow-wrap:anywhere}
+.mx-eye{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mx-eye svg{width:13px;height:13px}
+.mx-eye.hot{color:var(--today)}
+.mx-ib{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);color:var(--muted);transition:color .2s,background .2s;position:relative}
+.mx-ib:hover{color:var(--text)}
+.mx-ib svg{width:17px;height:17px}
+.mx-ib.sm{width:30px;height:30px;background:none}.mx-ib.sm svg{width:14px;height:14px}
+.mx-ib::after{content:"";position:absolute;inset:-4px}
+.mx-back{margin-left:-6px;background:none}
+.mx-tabs{display:flex;gap:4px;padding:4px;border-radius:14px;background:var(--surface2);margin-bottom:6px}
+.mx-tabs button{flex:1;height:34px;border-radius:10px;font-size:14px;font-weight:700;color:var(--muted);transition:background .2s,color .2s}
+.mx-tabs button[aria-selected="true"]{background:var(--surface);color:var(--text)}
+.mx-sec{display:none}.mx-sec.on{display:block}
+.mx-sh{display:flex;align-items:baseline;gap:8px;margin:18px 0 4px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mx-sh small{font-size:12px;font-weight:600;letter-spacing:0;opacity:.7}
+.mx-board .mx-sh{display:none}
+@media (min-width:700px){
+  .mx-card[data-look="board"] .mx-tabs{display:none}
+  .mx-board{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;align-items:start}
+  .mx-board .mx-sec{display:block}.mx-board .mx-sh{display:flex;margin-top:0}
+}
+/* KPI rows */
+.mx-kr{width:100%;display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);text-align:left;font:inherit;color:inherit}
+.mx-kt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.mx-kt b{font-size:15.5px;font-weight:600;overflow-wrap:anywhere}
+.mx-kt small{font-size:12.5px;color:var(--muted)}
+.mx-sp{flex:none;color:var(--today)}.mx-sp.low{color:var(--week)}
+.mx-spark{display:block;overflow:visible}.mx-spark path{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.mx-spark circle{fill:currentColor}
+.mx-kv{flex:none;min-width:64px;text-align:right;white-space:nowrap}
+.mx-kv b{font-size:22px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.mx-kv small{font-size:12.5px;color:var(--muted);margin-left:2px}
+@media (max-width:380px){.mx-sp{display:none}}
+/* OKR cards */
+.mx-okr{padding:16px 18px 8px;border-radius:20px;background:var(--surface);margin-top:10px}
+.mx-okr.past{opacity:.7;padding-bottom:12px}
+.mx-oh{width:100%;display:flex;align-items:flex-start;gap:10px;text-align:left;font:inherit;color:inherit;padding:0 0 8px}
+.mx-oh b{font-size:17px}
+.mx-op{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--today);font-variant-numeric:tabular-nums}
+.mx-okr.past .mx-op{color:var(--muted)}
+.mx-krr{width:100%;display:block;padding:11px 0;border-top:1px solid var(--line);text-align:left;font:inherit;color:inherit}
+.mx-krt{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;margin-bottom:8px}
+.mx-krt b{white-space:nowrap;font-variant-numeric:tabular-nums}.mx-krt small{color:var(--muted);font-weight:500}
+.mx-bar{display:block;height:5px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.mx-bar i{display:block;height:100%;border-radius:3px;background:var(--today);transition:width .6s var(--ease)}
+.mx-bar.big{height:8px;border-radius:4px;margin-top:16px}
+.mx-close{width:100%;margin:6px 0 4px;min-height:40px;border-radius:12px;background:var(--surface2);color:var(--text);font-size:13.5px;font-weight:600}
+.mx-new{display:flex;align-items:center;gap:10px;min-height:46px;padding:0;color:var(--muted);font-size:15px;font-weight:500;transition:color .2s}
+.mx-new:hover{color:var(--text)}.mx-new svg{width:17px;height:17px}
+.mx-pastb{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;margin-top:10px;color:var(--muted);font-size:14px;font-weight:600}
+.mx-pastb small{opacity:.7}.mx-pastb svg{width:14px;height:14px;margin-left:auto;transition:transform .2s}
+.mx-pastb[aria-expanded="true"] svg{transform:rotate(90deg)}
+.mx-empty{margin:10px 0 6px;font-size:14px;line-height:1.5;color:var(--muted)}
+/* Focus */
+.mx-fc{padding:22px 20px 18px;border-radius:26px;background:radial-gradient(120% 90% at 50% 125%,color-mix(in srgb,var(--today) 16%,transparent),var(--surface) 62%);touch-action:pan-y}
+.mx-fn{display:block;font-size:18px;font-weight:700;margin-top:6px;overflow-wrap:anywhere}
+.mx-big{display:flex;align-items:flex-end;gap:8px;margin-top:12px}
+.mx-bn{font-size:80px;font-weight:800;letter-spacing:-.06em;line-height:.85;font-variant-numeric:tabular-nums}
+.mx-bt{font-size:19px;color:var(--muted);padding-bottom:6px;white-space:nowrap}
+.mx-bs{margin-left:auto;color:var(--today);padding-bottom:4px}
+.mx-fc .mx-krr{border-top-color:color-mix(in srgb,var(--text) 8%,transparent)}
+.mx-fc .mx-big+.mx-krr{margin-top:14px}
+.mx-ff{display:flex;align-items:center;gap:10px;margin-top:16px}
+.mx-ff small{flex:1;font-size:13px;color:var(--muted);line-height:1.4}
+.mx-log{flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:999px;background:var(--text);color:var(--bg);font-size:14px;font-weight:700}
+.mx-log svg{width:15px;height:15px}
+.mx-dots{display:flex;justify-content:center;gap:4px;margin-top:12px}
+.mx-dots button{width:22px;height:22px;display:grid;place-items:center;padding:0}
+.mx-dots button::before{content:"";width:6px;height:6px;border-radius:3px;background:var(--surface2);transition:width .25s var(--ease),background .25s}
+.mx-dots button.on::before{width:18px;background:var(--text)}
+.mx-ar{width:100%;display:flex;align-items:baseline;gap:8px;padding:13px 0;border-bottom:1px solid var(--line);text-align:left;font:inherit;color:inherit}
+.mx-ar span{flex:1;min-width:0;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mx-ar b{font-size:15px;font-variant-numeric:tabular-nums}.mx-ar b.hot{color:var(--today)}
+.mx-ar small{font-size:13px;color:var(--muted)}
+.mx-adds{display:flex;gap:18px;margin-top:6px}
+.mx-fe{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:26px 10px 10px;color:var(--muted)}
+.mx-fe>svg{width:40px;height:40px;color:var(--today)}
+.mx-fe b{font-size:18px;color:var(--text)}.mx-fe span{font-size:14px;line-height:1.5;max-width:320px}
+.mx-fe-b{display:flex;gap:10px;margin-top:12px}
+@media (min-width:700px){
+  .mx-focus{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:start}
+  .mx-fr .mx-sh:first-child{margin-top:4px}
+  .mx-bn{font-size:96px}
+}
+/* one item: log, history */
+.mx-item .mx-big{margin-top:2px}
+.mx-isub{display:block;margin-top:10px;font-size:13.5px;color:var(--muted)}
+.mx-logrow{display:flex;gap:8px;margin-top:20px}
+.mx-logrow input{flex:1;min-width:0;height:48px;padding:0 16px;border-radius:14px;background:var(--surface);color:var(--text);border:0;outline:none;font:inherit;font-size:16px}
+.mx-logrow input:focus{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--text) 30%,transparent)}
+.mx-logrow .primary{flex:none;width:auto;min-width:84px;height:48px;margin:0;padding:0 20px}
+.mx-hint{margin:18px 0 0;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.mx-ent{display:flex;align-items:center;gap:12px;min-height:46px;border-bottom:1px solid var(--line)}
+.mx-ev{min-width:56px;font-weight:700;font-variant-numeric:tabular-nums}
+.mx-es{flex:1;min-width:0;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mx-ent small{font-size:12.5px;color:var(--muted)}
+.mx-foot{display:flex;align-items:center;gap:10px;margin-top:22px}
+.mx-foot>span{flex:1}
+.mx-foot .primary{width:auto;margin:0;padding:0 24px;height:48px}
+.mx-foot .ghost-btn{display:inline-flex;align-items:center;gap:7px;margin:0}
+.mx-foot .ghost-btn svg{width:15px;height:15px}
+.mx-foot .ghost-btn.warn{color:var(--danger,#E5484D)}
+/* forms */
+.mx-f{display:block;margin-top:14px}
+.mx-f>span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.mx-f>small{display:block;margin-top:6px;font-size:12.5px;color:var(--muted);line-height:1.45}
+.mx-f input{width:100%;box-sizing:border-box;height:48px;padding:0 16px;border-radius:14px;background:var(--surface);color:var(--text);border:0;outline:none;font:inherit;font-size:16px}
+.mx-f input:focus{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--text) 30%,transparent)}
+.mx-f input[type=date]{color-scheme:dark}
+:root[data-theme="light"] .mx-f input[type=date]{color-scheme:light}
+.mx-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mx-seg{display:flex;width:100%}.mx-seg button{flex:1}
+.mx-krf{padding:10px 12px;border-radius:16px;background:var(--surface);margin-bottom:8px}
+.mx-krf>input{background:none;padding:0 4px;height:40px}
+.mx-krn{display:flex;align-items:center;gap:6px}
+.mx-krn input{height:38px;padding:0 10px;border-radius:10px;background:var(--surface2);font-size:15px;min-width:0}
+.mx-krn input[data-mxkr$=":unit"]{flex:1.3}
+.mx-krn span{color:var(--muted)}
+/* "Ask me" */
+.mx-ask-in{display:flex;flex-direction:column;gap:6px}
+.mx-ask-in b{font-size:20px;letter-spacing:-.02em}
+.mx-ask-in small{font-size:13.5px;color:var(--muted)}
+.mx-ask-in input{margin-top:10px;height:50px;padding:0 16px;border-radius:14px;background:var(--surface2);color:var(--text);border:0;outline:none;font:inherit;font-size:18px}
+.mx-ask-b{display:flex;gap:10px;margin-top:12px}.mx-ask-b>*{flex:1;margin:0}
+/* the link in a task */
+.mx-pkw{display:inline-flex;align-items:center;gap:4px;border-radius:999px}
+.mx-pkw.on{background:color-mix(in srgb,var(--today) 10%,transparent);padding-right:6px}
+.mx-amt{display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:700;color:var(--today)}
+.mx-amt input{width:46px;height:30px;padding:0 6px;border-radius:8px;border:0;outline:none;background:var(--surface);color:var(--text);font:inherit;font-size:13.5px;text-align:center}
+.mx-pkh{flex-basis:100%;margin:6px 2px 0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.mx-mi{color:var(--today)}
+.mx-mi svg{width:12px;height:12px}
+.pill svg+*{margin-left:0}
+.md-note{margin:4px 0 6px;font-size:13.5px;line-height:1.5;color:var(--muted)}
+
+.mx-pill{display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 18px;border-radius:999px;background:var(--surface2);color:var(--text);font-size:14.5px;font-weight:700}
+.mx-pill.on{background:var(--text);color:var(--bg)}.mx-pill svg{width:16px;height:16px}
+.mx-krn input[data-mxkr$=":from"],.mx-krn input[data-mxkr$=":target"]{flex:0 0 72px;width:72px}
+.mx-krn input[data-mxkr$=":unit"]{flex:1 1 auto;min-width:56px}
+#mxPg input[type=number],#mxAsk input[type=number],.mx-amt input{-moz-appearance:textfield;appearance:textfield}
+#mxPg input[type=number]::-webkit-inner-spin-button,#mxPg input[type=number]::-webkit-outer-spin-button,#mxAsk input::-webkit-inner-spin-button,.mx-amt input::-webkit-inner-spin-button,.mx-amt input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 </style>
 </head>
 <body>
@@ -3905,7 +4062,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=205; // bumped with every published update
+const APP_VERSION=206; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -3992,6 +4149,14 @@ function sanitize(){
   // goals (Modes → Goals): {id,name,e,space?,why,due:'YYYY-MM-DD',created,star,view,done,doneAt,ms:[{id,t,done,items:[{id,t,done,subs}],task?}]}
   S.goals=Array.isArray(S.goals)?S.goals.filter(g=>obj(g)&&g.id!=null&&typeof g.name==='string'):[];
   S.goals.forEach(g=>{if(!Array.isArray(g.ms))g.ms=[];g.ms=g.ms.filter(m=>obj(m)&&m.id!=null);g.ms.forEach(m=>{if(m.items!=null)m.items=Array.isArray(m.items)?m.items.filter(it=>obj(it)&&it.id!=null&&typeof it.t==='string'):[]})});
+  // KPIs & OKRs (Modes → KPIs & OKRs), each belongs to a space:
+  // kpi {id,space,name,unit,target,period:'week'|'month'|'quarter',better:'up'|'down',src:'tasks'|'log'|'both',kind:'sum'|'last',created,log:[{id,at,v,task?}]}
+  // okr {id,space,name,start:'YYYY-MM-DD',end:'YYYY-MM-DD',created,closed?,score?,krs:[{id,name,unit,from,target,better,kind,log:[...]}]}
+  const mxLog=a=>Array.isArray(a)?a.filter(e=>obj(e)&&e.id!=null&&Number.isFinite(+e.v)&&Number.isFinite(+e.at)):[];
+  S.kpis=Array.isArray(S.kpis)?S.kpis.filter(k=>obj(k)&&k.id!=null&&typeof k.name==='string'):[];
+  S.kpis.forEach(k=>{k.log=mxLog(k.log);if(!Number.isFinite(+k.target))k.target=0});
+  S.okrs=Array.isArray(S.okrs)?S.okrs.filter(o=>obj(o)&&o.id!=null&&typeof o.name==='string'):[];
+  S.okrs.forEach(o=>{o.krs=Array.isArray(o.krs)?o.krs.filter(r=>obj(r)&&r.id!=null&&typeof r.name==='string'):[];o.krs.forEach(r=>{r.log=mxLog(r.log)})});
   if(!obj(S.lens))S.lens={};
   if(!obj(S.cfg))delete S.cfg;
   if(!obj(S.tomb))S.tomb={};
@@ -4012,13 +4177,13 @@ let trackMap=null;
 const bareJSON=x=>{const {u,...r}=x;return JSON.stringify(r)};
 function trackChanges(){
   const now=Date.now(),m={};S.tomb=S.tomb||{};
-  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]],['g',S.goals||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
+  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]],['g',S.goals||[]],['k',S.kpis||[]],['o',S.okrs||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
   if(trackMap)Object.keys(trackMap).forEach(key=>{if(key[1]===':'&&!(key in m))S.tomb[key]=now});
   m.__ord=S.tasks.map(t=>t.id).join(',');if(trackMap&&m.__ord!==trackMap.__ord)S.orderU=now;
   m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;
   trackMap=m;
 }
-let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains,S.goals],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
+let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains,S.goals,S.kpis,S.okrs],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
 const save=()=>{try{fSave()}catch(e){};if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
 let PIP=null; // the floating focus window (desktop Chrome)
 const $=id=>document.getElementById(id);
@@ -4284,6 +4449,7 @@ function rowHTML(t){
   const extra=[
     pr&&ps==='bars'?`<span class="mi pri ${pr.id}" title="${pr.name} priority">${priIcon(pr.n)}${pr.name}</span>`:'',
     goalStar(t),
+    (typeof mxMark==='function'?mxMark(t):''),
     tagChips(t,3),
     t.repeat!=='none'?`<span class="mi">${I_REP}${REPEATS.find(r=>r.id===t.repeat).name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
@@ -4438,13 +4604,13 @@ function render(dir){
 function go(stage){if(stage===S.stage)return;const d=idx(stage)-idx(S.stage);S.stage=stage;haptic(5);render(d)}
 
 /* ---------- change + undo ---------- */
-const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],space:S.space,list:S.list,nid:S.nid});
+const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],space:S.space,list:S.list,nid:S.nid});
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
   toast(msg,()=>{
     undoHash=null;const d=JSON.parse(snap);
-    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.nid=Math.max(S.nid||0,d.nid||0);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.kpis=d.kpis||[];S.okrs=d.okrs||[];S.nid=Math.max(S.nid||0,d.nid||0);
     repairData();save();render();afterUndo();haptic(8)});
   undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
 }
@@ -4705,6 +4871,7 @@ function drawDetail(){
     P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
     P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+
     (goalPill(t,P))+
+    (typeof mxPill==='function'?mxPill(t,P):'')+
     (secOn()&&t.stage!=='done'&&secsForTask(t).length?P('sec',`${I_SEC}${secOfTask(t)?esc(secOfTask(t).name):'Section'}`,!secOfTask(t)):'')+
     P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length);
   const pk=(on,v,label,dot)=>`<button class="pk ${on?'on':''}" data-v="${v}">${dot?`<i style="background:${dot}"></i>`:''}${esc(label)}</button>`;
@@ -4717,6 +4884,7 @@ function drawDetail(){
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
       pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
       goal:()=>goalPicks(t,pk),
+      mx:()=>mxPicks(t),
       sec:()=>pk(!secOfTask(t),'','No section')+secsForTask(t).map(s=>pk((secOfTask(t)||{}).id===s.id,s.id,s.name)).join(''),
       tags:()=>{const lt=ltags(l),on=n=>tagsOf(t).some(x=>tagKey(x)===tagKey(n));
         return lt.map(n=>`<button class="pk tg-pk ${on(n)?'on':''}" data-v="${esc(n)}">#${esc(n)}</button>`).join('')+
@@ -4749,6 +4917,7 @@ $('dPicker').onclick=e=>{
     onSheetClose=()=>{if(S.tasks.includes(t))setTimeout(()=>openDetail(t.id),260)}},260);return}
   const b=e.target.closest('.pk');if(!b)return;const k=$('dPicker').dataset.k,v=b.dataset.v,t=cur;
   if(k==='tags'){toggleTaskTag(t,v);haptic(5);save();render();return drawDetail()}
+  if(k==='mx'){mxPickToggle(t,v);haptic(5);save();render();return drawDetail()}
   pickOpen=null;haptic(6);
   if(k==='stage'){if(v!==t.stage&&!canPut(t.list,v,t)){drawDetail();return}if(v!==t.stage)commit(()=>setStage(t,v),v==='done'?doneMsg(t):`Moved to ${STAGES[idx(v)].name}`)}
   else if(k==='list'&&t.inbox){ibSendTo(t,v);return}
@@ -5749,7 +5918,7 @@ $('dHome').addEventListener('click',e=>{
 $('dHome').addEventListener('keydown',e=>{const r=e.target.closest('[data-hft]');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDetail(+r.dataset.hft)}});
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;
@@ -7182,7 +7351,7 @@ gSetWin=function(g,on){const was=!!g.done;_moWin(g,on);try{if(on&&!was&&g.done)s
 
 /* ---------- Settings → Modes: one card per mode; turning a mode on unfolds its own options inside its card ---------- */
 var mdJust=null;
-document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','closeDay'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
+document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','mx','closeDay'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
 const MD_GOAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
 modesPage=function(){
   const c=C(),hOn=habitsOn(),gOn=goalsOn(),n=hbAll().length,gn=gAll().length;
@@ -7202,6 +7371,10 @@ modesPage=function(){
     `${gStarters()}${link('goals','Your goals',gn?`${gn} of ${G_MAX} active`:'None yet')}
      ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','path','Path')}${sOpt('gView','poster','Poster')}</div>`)}
      ${row('North star on Home',tg('wStar'),'Your starred goal under the Today card')}`)}
+  ${card('mx',MX_ICON,'KPIs & OKRs','Key numbers and quarterly results for each space',mxOn(),
+    `<p class="md-note">Open them from the gauge on a space’s page. In a task, “Counts toward” links it to a KPI or key result.</p>
+     ${row('On phones',`<div class="segc">${sOpt('mxPh','focus','One at a time')}${sOpt('mxPh','board','Scoreboard')}</div>`)}
+     ${row('On computers',`<div class="segc">${sOpt('mxDk','board','Scoreboard')}${sOpt('mxDk','focus','One at a time')}</div>`)}`)}
   </div>
   <div class="set-sec"><h3>Everyday</h3><div class="md-list">
   ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits and tomorrow’s first task',!!c.closeDay,'')}
@@ -7955,6 +8128,305 @@ render=function(d){
   const k=calmNow(),quiet=k===calmKey&&d===undefined&&!enterId;
   _calmRender(d);calmKey=calmNow();
   if(quiet)calmFinish()};
+/* ---------- KPIs & OKRs (Settings → Modes; off by default) ----------
+   Each KPI and OKR belongs to one space. A gauge button on the space's page opens one popup:
+   "Scoreboard" (every KPI and OKR at once) or "Focus" (one big number at a time). Phones open on Focus,
+   computers on Scoreboard; either can switch, and Settings → Modes remembers it per device size.
+   A KPI is a number per week / month / quarter (higher or lower is better). It moves with tasks (+N when a linked
+   task is done), with numbers you log, or both. "Latest" KPIs (a rate, a level) keep the last number you set.
+   An OKR is an objective with 1–5 key results and an end date. A key result that starts at 0 adds up;
+   one that starts higher keeps the latest value you set (12% → 25%). Closing an OKR keeps its score under Past.
+   Tasks link through t.mx = [{id, okr?, add}] (add: a number, or null = ask when done). Done adds an entry to the
+   target's log; reopening takes that entry back off. Everything sits in S.kpis / S.okrs, so sync, backup and undo work. */
+var mxOpen=false,mxTab='kpi',mxFocusI=0,mxView=null,mxDraft=null,mxPast=false;
+const MX_KPI_MAX=5,MX_OKR_MAX=3,MX_KR_MAX=5;
+const MX_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5a7.5 7.5 0 1 1 15 0"/><path d="M12 16.5l3.6-4.2"/><circle cx="12" cy="16.5" r="1.1" fill="currentColor"/></svg>';
+const MX_LIST='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg>';
+const MX_ONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4.5" width="14" height="15" rx="3.5"/><path d="M9 12.5h6"/></svg>';
+function mxOn(){return !!(S.cfg&&S.cfg.mx)}
+const mxKpis=sp=>(S.kpis||[]).filter(k=>k.space===sp);
+const mxOkrs=(sp,closed)=>(S.okrs||[]).filter(o=>o.space===sp&&!!o.closed===!!closed);
+const mxSpaceNow=()=>S.space&&S.space!=='all'&&spaceOf(S.space)?S.space:null;
+const mxPhone=()=>matchMedia('(max-width:699px)').matches;
+const mxLook=()=>{const v=mxPhone()?C().mxPh:C().mxDk;return v==='board'||v==='focus'?v:(mxPhone()?'focus':'board')};
+/* ---- numbers ---- */
+const mxN=v=>{if(v==null||!Number.isFinite(+v))return '—';const r=Math.round(+v*10)/10;return Math.abs(r)>=10000?Math.round(r).toLocaleString():String(r)};
+const mxFmt=(v,unit)=>{const u=(unit||'').trim();if(v==null)return '—';if(u==='%')return mxN(v)+'%';if(u==='€'||u==='$'||u==='£')return u+mxN(v);return mxN(v)};
+function mxStart(per,at){const d=new Date(at);d.setHours(0,0,0,0);
+  if(per==='week'){const ws=+C().weekStart===0?0:1;d.setDate(d.getDate()-((d.getDay()-ws+7)%7))}
+  else if(per==='month')d.setDate(1);else{d.setDate(1);d.setMonth(Math.floor(d.getMonth()/3)*3)}return d.getTime()}
+function mxShift(per,start,n){const d=new Date(start);if(per==='week')d.setDate(d.getDate()+7*n);else d.setMonth(d.getMonth()+(per==='month'?1:3)*n);return d.getTime()}
+const MX_PER={week:'this week',month:'this month',quarter:'this quarter'};
+function mxValIn(item,from,to){const es=(item.log||[]).filter(e=>e.at>=from&&e.at<to);
+  if(item.kind==='last'){const all=(item.log||[]).filter(e=>e.at<to);if(!all.length)return null;return all.reduce((a,b)=>b.at>=a.at?b:a).v}
+  return es.reduce((s,e)=>s+(+e.v||0),0)}
+function mxKpiNow(k){const s=mxStart(k.period,Date.now());return mxValIn(k,s,mxShift(k.period,s,1))}
+function mxKpiHist(k,n){const s=mxStart(k.period,Date.now());const out=[];for(let i=n-1;i>=0;i--){const a=mxShift(k.period,s,-i);out.push(mxValIn(k,a,mxShift(k.period,a,1))||0)}return out}
+function mxKpiP(k){const v=mxKpiNow(k),t=+k.target;if(v==null||!t)return 0;
+  return Math.max(0,Math.min(1,k.better==='down'?(v<=t?1:t/v):v/t))}
+const mxKrKind=r=>+r.from?'last':'sum';
+function mxKrNow(r){const from=+r.from||0,log=r.log||[];if(mxKrKind(r)==='last'){if(!log.length)return from;return log.reduce((a,b)=>b.at>=a.at?b:a).v}
+  return from+log.reduce((s,e)=>s+(+e.v||0),0)}
+function mxKrP(r){const from=+r.from||0,t=+r.target,v=mxKrNow(r);if(t===from)return v===t?1:0;return Math.max(0,Math.min(1,(v-from)/(t-from)))}
+const mxOkrP=o=>o.krs.length?o.krs.reduce((s,r)=>s+mxKrP(r),0)/o.krs.length:0;
+const mxDays=ms=>Math.ceil((ms-Date.now())/DAY);
+const mxQ=at=>{const d=new Date(at);return `Q${Math.floor(d.getMonth()/3)+1}`};
+function mxQuarterEnd(at){const d=new Date(mxShift('quarter',mxStart('quarter',at||Date.now()),1)-DAY);return dkey(d)}
+const mxEndMs=o=>new Date(o.end+'T23:59:59').getTime();
+function mxOkrWhen(o){if(o.closed)return `Closed ${new Date(o.closed).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · score ${Math.round((o.score||0)*100)}%`;
+  const d=mxDays(mxEndMs(o)),end=new Date(o.end+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  return d<0?`Ended ${end} · close it out`:d===0?'Ends today':`${mxQ(new Date(o.end+'T12:00'))} · ends ${end}`}
+function mxSpark(pts,w,h){w=w||92;h=h||26;const mx=Math.max(...pts),mn=Math.min(...pts),sx=w/(pts.length-1||1),y=p=>h-3-(mx===mn?.5:(p-mn)/(mx-mn))*(h-6);
+  const d=pts.map((p,i)=>`${i?'L':'M'}${(i*sx).toFixed(1)} ${y(p).toFixed(1)}`).join(' ');
+  return `<svg class="mx-spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><path d="${d}"/><circle cx="${((pts.length-1)*sx).toFixed(1)}" cy="${y(pts[pts.length-1]).toFixed(1)}" r="2.8"/></svg>`}
+const mxSrcTxt=k=>k.src==='log'?(k.kind==='last'?'latest value you set':'numbers you log'):k.src==='both'?'tasks and logging':'done tasks';
+/* ---- finding things ---- */
+function mxFind(link){if(link.okr!=null){const o=(S.okrs||[]).find(x=>String(x.id)===String(link.okr));const r=o&&o.krs.find(x=>String(x.id)===String(link.id));return r?{kind:'kr',item:r,okr:o,name:r.name}:null}
+  const k=(S.kpis||[]).find(x=>String(x.id)===String(link.id));return k?{kind:'kpi',item:k,name:k.name}:null}
+const mxKey=l=>l.okr!=null?`kr:${l.okr}:${l.id}`:`kpi:${l.id}`;
+function mxCands(t){const sp=(listOf(t.list)||{}).space;const out=[];
+  mxKpis(sp).filter(k=>k.src!=='log'&&k.kind!=='last').forEach(k=>out.push({id:k.id,name:k.name,kind:'kpi'}));
+  mxOkrs(sp,false).forEach(o=>o.krs.filter(r=>mxKrKind(r)==='sum').forEach(r=>out.push({id:r.id,okr:o.id,name:r.name,kind:'kr',obj:o.name})));
+  (t.mx||[]).forEach(l=>{if(!out.some(c=>mxKey(c)===mxKey(l))){const f=mxFind(l);if(f)out.push({id:l.id,okr:l.okr,name:f.name,kind:f.kind})}});
+  return out}
+/* ---- tasks move numbers ---- */
+let mxAskQ=[];
+function mxLogTask(t){(t.mx||[]).forEach(l=>{const f=mxFind(l);if(!f)return;
+  if(l.add==null||l.add===''){mxAskQ.push({task:t.id,link:{...l},name:f.name});return}
+  f.item.log.push({id:newId(),at:Date.now(),v:+l.add||0,task:t.id})});
+  if(mxAskQ.length)setTimeout(mxAskNext,420)}
+function mxUnlogTask(t){(t.mx||[]).forEach(l=>{const f=mxFind(l);if(!f)return;const mine=f.item.log.filter(e=>e.task===t.id);if(!mine.length)return;
+  const last=mine.reduce((a,b)=>b.at>=a.at?b:a);f.item.log=f.item.log.filter(e=>e!==last)})}
+const _mxSetStage=setStage;
+setStage=function(t,stage){const was=t.stage,sp=t.spawned;_mxSetStage(t,stage);
+  try{if(!mxOn()||!Array.isArray(t.mx)||!t.mx.length)return;
+    if(stage==='done'&&was!=='done'){mxLogTask(t);if(t.spawned&&t.spawned!==sp){const c=S.tasks.find(x=>x.id===t.spawned);if(c)c.mx=t.mx.map(x=>({...x}))}}
+    else if(was==='done'&&stage!=='done'){mxUnlogTask(t);mxAskQ=mxAskQ.filter(q=>q.task!==t.id)}}catch(e){console.error(e)}};
+/* "Ask me": a small calm question after the task is done */
+document.body.insertAdjacentHTML('beforeend',`<div class="dlg mx-ask" id="mxAsk" role="dialog" aria-modal="true" aria-labelledby="mxAskT"><div class="dlg-in mx-ask-in">
+  <span class="mx-eye">${MX_ICON}Counts toward</span><b id="mxAskT"></b><small id="mxAskS"></small>
+  <input id="mxAskIn" type="number" inputmode="decimal" step="any" placeholder="How many?" aria-label="Amount">
+  <div class="mx-ask-b"><button class="ghost-btn" id="mxAskSkip">Skip</button><button class="primary" id="mxAskGo">Add</button></div></div></div>`);
+let mxAskCur=null;
+function mxAskNext(){if(mxAskCur||!mxAskQ.length)return;mxAskCur=mxAskQ.shift();const t=S.tasks.find(x=>x.id===mxAskCur.task);
+  $('mxAskT').textContent=mxAskCur.name;$('mxAskS').textContent=t?`Done: ${t.title}`:'';$('mxAskIn').value='';$('mxAsk').classList.add('on');setTimeout(()=>$('mxAskIn').focus(),60)}
+function mxAskDone(add){const q=mxAskCur;mxAskCur=null;$('mxAsk').classList.remove('on');
+  if(add&&q){const v=+$('mxAskIn').value;const f=mxFind(q.link);const t=S.tasks.find(x=>x.id===q.task);
+    if(f&&Number.isFinite(v)&&v!==0&&t&&t.stage==='done'){f.item.log.push({id:newId(),at:Date.now(),v,task:q.task});save();render();try{sfx('add')}catch(e){}toast(`+${mxN(v)} · ${f.name}`)}}
+  setTimeout(mxAskNext,200)}
+$('mxAsk').addEventListener('click',e=>{if(e.target===$('mxAsk')||e.target.closest('#mxAskSkip'))return mxAskDone(false);if(e.target.closest('#mxAskGo'))return mxAskDone(true)});
+$('mxAsk').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mxAskDone(true)}if(e.key==='Escape'){e.preventDefault();e.stopPropagation();mxAskDone(false)}});
+
+/* ---------- the popup ---------- */
+document.body.insertAdjacentHTML('beforeend','<div class="mx-pg" id="mxPg" role="dialog" aria-modal="true" aria-label="KPIs and OKRs"><div class="mx-card" id="mxIn"></div></div>');
+function mxOpenPop(){const sp=mxSpaceNow();if(!sp||!mxOn())return;mxOpen=true;mxView=null;mxDraft=null;mxPast=false;
+  if(typeof closeSearch==='function')closeSearch();mxDraw();$('mxPg').classList.add('on');haptic(5);
+  setTimeout(()=>{const b=$('mxIn').querySelector('.mx-x');if(b&&!mxPhone())b.focus()},60)}
+function mxClose(){if(!mxOpen)return;mxOpen=false;mxView=null;mxDraft=null;$('mxPg').classList.remove('on');const a=document.activeElement;if(a&&a.closest&&a.closest('#mxPg'))a.blur()}
+function mxHead(eye,title,back){return `<div class="mx-h">${back?`<button class="mx-ib mx-back" data-mxback aria-label="Back">${BACK_SVG}</button>`:''}
+  <div class="mx-ht"><span class="mx-eye">${eye}</span><b>${title}</b></div>
+  ${back?'':`<button class="mx-ib" data-mxlook aria-label="${mxLook()==='board'?'Show one at a time':'Show the scoreboard'}" title="${mxLook()==='board'?'One at a time':'Scoreboard'}">${mxLook()==='board'?MX_ONE:MX_LIST}</button>`}
+  <button class="mx-ib mx-x" data-mxx aria-label="Close">${X}</button></div>`}
+function mxDraw(){if(!mxOpen)return;const sp=mxSpaceNow();if(!sp){mxClose();return}
+  const sname=esc(spaceOf(sp).name);let h;
+  if(mxDraft)h=mxDraft.kind==='kpi'?mxKpiForm(sname):mxOkrForm(sname);
+  else if(mxView)h=mxItemView(sname);
+  else h=mxLook()==='board'?mxBoard(sp,sname):mxFocusView(sp,sname);
+  $('mxIn').innerHTML=h;$('mxIn').dataset.look=mxDraft?'form':mxView?'item':mxLook()}
+/* ---- Scoreboard ---- */
+function mxKpiRow(k){const v=mxKpiNow(k),p=mxKpiP(k);
+  return `<button class="mx-kr" data-mxk="${k.id}"><span class="mx-kt"><b>${esc(k.name)}</b><small>${MX_PER[k.period]||''} · ${mxSrcTxt(k)}</small></span>
+    <span class="mx-sp${p>=.7?'':' low'}">${mxSpark(mxKpiHist(k,6))}</span><span class="mx-kv"><b>${v==null&&k.kind==='last'?'—':mxFmt(v??0,k.unit)}</b><small>/ ${mxFmt(+k.target,k.unit)}</small></span></button>`}
+function mxOkrCard(o){const p=mxOkrP(o);
+  return `<div class="mx-okr${o.closed?' past':''}"><button class="mx-oh" data-mxo="${o.id}"><span class="mx-kt"><b>${esc(o.name)}</b><small>${mxOkrWhen(o)}</small></span><span class="mx-op">${Math.round((o.closed?o.score||0:p)*100)}%</span></button>
+    ${o.closed?'':o.krs.map(r=>`<button class="mx-krr" data-mxr="${o.id}:${r.id}"><span class="mx-krt"><span>${esc(r.name)}</span><b>${mxFmt(mxKrNow(r),r.unit)}${mxKrKind(r)==='sum'?` <small>/ ${mxFmt(+r.target,r.unit)}</small>`:` <small>→ ${mxFmt(+r.target,r.unit)}</small>`}</b></span>
+      <span class="mx-bar"><i style="width:${(mxKrP(r)*100).toFixed(1)}%"></i></span></button>`).join('')}
+    ${!o.closed&&mxDays(mxEndMs(o))<0?`<button class="mx-close" data-mxcl="${o.id}">Close it out · keep the ${Math.round(p*100)}% score</button>`:''}</div>`}
+function mxBoard(sp,sname){const ks=mxKpis(sp),os=mxOkrs(sp,false),past=mxOkrs(sp,true);
+  const kpiSec=`<section class="mx-sec${mxTab==='kpi'?' on':''}" data-sec="kpi"><h3 class="mx-sh">KPIs<small>${ks.length}</small></h3>
+    ${ks.length?ks.map(mxKpiRow).join(''):`<p class="mx-empty">Numbers that show how a week is going, like messages sent or demos booked.</p>`}
+    ${ks.length<MX_KPI_MAX?`<button class="mx-new" data-mxnew="kpi">${PLUS_S}New KPI</button>`:''}</section>`;
+  const okrSec=`<section class="mx-sec${mxTab==='okr'?' on':''}" data-sec="okr"><h3 class="mx-sh">OKRs<small>${os.length}</small></h3>
+    ${os.length?os.map(mxOkrCard).join(''):`<p class="mx-empty">One objective for the quarter and the results that prove it, like “Win 3 pilots” with “Book 12 demos”.</p>`}
+    ${os.length<MX_OKR_MAX?`<button class="mx-new" data-mxnew="okr">${PLUS_S}New OKR</button>`:''}
+    ${past.length?`<button class="mx-pastb" data-mxpast aria-expanded="${mxPast}">Past<small>${past.length}</small>${CHEV}</button>${mxPast?past.map(mxOkrCard).join(''):''}`:''}</section>`;
+  return `${mxHead(sname,'Scoreboard')}<div class="mx-tabs" role="tablist">${[['kpi','KPIs'],['okr','OKRs']].map(([k,l])=>`<button role="tab" data-mxtab="${k}" aria-selected="${mxTab===k}">${l}</button>`).join('')}</div>
+    <div class="mx-body mx-board">${kpiSec}${okrSec}</div>`}
+/* ---- Focus: one big number at a time ---- */
+function mxItems(sp){return [...mxKpis(sp).map(k=>({kind:'kpi',k})),...mxOkrs(sp,false).map(o=>({kind:'okr',o}))]}
+function mxFocusView(sp,sname){const its=mxItems(sp);
+  if(!its.length)return `${mxHead(sname,'Focus')}<div class="mx-body"><div class="mx-fe">${MX_ICON}<b>Nothing to track yet</b><span>Add a KPI for a weekly number, or an OKR for a quarterly result.</span>
+    <div class="mx-fe-b"><button class="mx-pill on" data-mxnew="kpi">${PLUS_S}New KPI</button><button class="mx-pill" data-mxnew="okr">${PLUS_S}New OKR</button></div></div></div>`;
+  mxFocusI=Math.max(0,Math.min(mxFocusI,its.length-1));const it=its[mxFocusI];let card;
+  if(it.kind==='kpi'){const k=it.k,v0=mxKpiNow(k),v=v0??0,p=mxKpiP(k),s=mxStart(k.period,Date.now()),left=mxDays(mxShift(k.period,s,1)),t=+k.target;
+    const togo=k.better==='down'||k.kind==='last'?'':Math.max(0,t-v);
+    card=`<div class="mx-fc" data-mxswipe><span class="mx-eye hot">KPI · ${MX_PER[k.period]||''}</span><b class="mx-fn">${esc(k.name)}</b>
+      <div class="mx-big"><span class="mx-bn">${v0==null&&k.kind==='last'?'—':mxFmt(v,k.unit)}</span><span class="mx-bt">/ ${mxFmt(t,k.unit)}</span><span class="mx-bs">${mxSpark(mxKpiHist(k,6),118,40)}</span></div>
+      <span class="mx-bar big"><i style="width:${(p*100).toFixed(1)}%"></i></span>
+      <div class="mx-ff"><small>${togo?`${mxFmt(togo,k.unit)} to go · `:''}${left} ${left===1?'day':'days'} left · ${mxSrcTxt(k)}</small>${k.src==='tasks'?`<button class="mx-log" data-mxk="${k.id}">Open</button>`:`<button class="mx-log" data-mxk="${k.id}" data-mxlogfocus>${PLUS_S}Log</button>`}</div></div>`}
+  else{const o=it.o,p=mxOkrP(o);
+    card=`<div class="mx-fc" data-mxswipe><span class="mx-eye hot">OKR · ${mxOkrWhen(o)}</span><b class="mx-fn">${esc(o.name)}</b>
+      <div class="mx-big"><span class="mx-bn">${Math.round(p*100)}%</span></div>
+      ${o.krs.map(r=>`<button class="mx-krr" data-mxr="${o.id}:${r.id}"><span class="mx-krt"><span>${esc(r.name)}</span><b>${mxFmt(mxKrNow(r),r.unit)} <small>${mxKrKind(r)==='sum'?'/':'→'} ${mxFmt(+r.target,r.unit)}</small></b></span><span class="mx-bar"><i style="width:${(mxKrP(r)*100).toFixed(1)}%"></i></span></button>`).join('')}
+      <div class="mx-ff"><small></small><button class="mx-log" data-mxo="${o.id}">Edit</button></div></div>`}
+  const dots=its.length>1?`<div class="mx-dots">${its.map((x,i)=>`<button data-mxdot="${i}" class="${i===mxFocusI?'on':''}" aria-label="Show ${esc(x.kind==='kpi'?x.k.name:x.o.name)}"></button>`).join('')}</div>`:'';
+  const rest=its.map((x,i)=>i===mxFocusI?'':x.kind==='kpi'?`<button class="mx-ar" data-mxdot="${i}"><span>${esc(x.k.name)}</span><b>${mxKpiNow(x.k)==null&&x.k.kind==='last'?'—':mxFmt(mxKpiNow(x.k)??0,x.k.unit)}</b><small>/ ${mxFmt(+x.k.target,x.k.unit)}</small></button>`
+    :`<button class="mx-ar" data-mxdot="${i}"><span>OKR · ${esc(x.o.name)}</span><b class="hot">${Math.round(mxOkrP(x.o)*100)}%</b></button>`).join('');
+  const ks=mxKpis(sp).length,os=mxOkrs(sp,false).length;
+  return `${mxHead(sname,'Focus')}<div class="mx-body mx-focus"><div class="mx-fl">${card}${dots}</div>
+    <div class="mx-fr">${rest?`<h3 class="mx-sh">Also tracking</h3>${rest}`:''}
+    <div class="mx-adds">${ks<MX_KPI_MAX?`<button class="mx-new" data-mxnew="kpi">${PLUS_S}New KPI</button>`:''}${os<MX_OKR_MAX?`<button class="mx-new" data-mxnew="okr">${PLUS_S}New OKR</button>`:''}</div></div></div>`}
+/* ---- one KPI or key result: log a number, see what moved it ---- */
+function mxViewItem(){if(!mxView)return null;if(mxView.kind==='kpi'){const k=(S.kpis||[]).find(x=>String(x.id)===String(mxView.id));return k?{kind:'kpi',item:k}:null}
+  const o=(S.okrs||[]).find(x=>String(x.id)===String(mxView.okr)),r=o&&o.krs.find(x=>String(x.id)===String(mxView.id));return r?{kind:'kr',item:r,okr:o}:null}
+function mxItemView(sname){const f=mxViewItem();if(!f){mxView=null;return mxBoard(mxSpaceNow(),sname)}
+  const it=f.item,isK=f.kind==='kpi',last=isK?it.kind==='last':mxKrKind(it)==='last',canLog=!isK||it.src!=='tasks';
+  let v,t=+it.target,p,sub;
+  if(isK){v=mxKpiNow(it)??0;p=mxKpiP(it);const s=mxStart(it.period,Date.now()),left=mxDays(mxShift(it.period,s,1));sub=`${MX_PER[it.period]} · ${left} ${left===1?'day':'days'} left`}
+  else{v=mxKrNow(it);p=mxKrP(it);sub=`Key result · ${esc(f.okr.name)}`}
+  const ents=(it.log||[]).slice().sort((a,b)=>b.at-a.at).slice(0,12);
+  const when=at=>{const d=new Date(at);return d.toDateString()===new Date().toDateString()?d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}):d.toLocaleDateString(undefined,{month:'short',day:'numeric'})};
+  return `${mxHead(isK?'KPI':'Key result',esc(it.name),true)}<div class="mx-body mx-item">
+    <div class="mx-big"><span class="mx-bn">${mxFmt(v,it.unit)}</span><span class="mx-bt">${last&&!isK?'→':'/'} ${mxFmt(t,it.unit)}</span></div>
+    <span class="mx-bar big"><i style="width:${(p*100).toFixed(1)}%"></i></span><small class="mx-isub">${sub}</small>
+    ${canLog?`<div class="mx-logrow"><input id="mxLogIn" type="number" inputmode="decimal" step="any" placeholder="${last?'New value':'Amount, e.g. 5'}" aria-label="${last?'Set the latest value':'Add an amount'}"><button class="primary" data-mxadd>${last?'Set':'Add'}</button></div>`
+      :`<p class="mx-hint">This KPI moves with done tasks. Link a task from its details: “Counts toward”.</p>`}
+    <h3 class="mx-sh">History</h3>
+    ${ents.length?ents.map(e=>{const tk=e.task!=null?S.tasks.find(x=>x.id===e.task):null;return `<div class="mx-ent"><span class="mx-ev">${last?'=':(e.v>=0?'+':'')}${mxFmt(e.v,it.unit)}</span><span class="mx-es">${tk?esc(tk.title):e.task!=null?'A task':'Logged'}</span><small>${when(e.at)}</small><button class="mx-ib sm" data-mxdel="${e.id}" aria-label="Remove this entry">${X}</button></div>`}).join('')
+      :`<p class="mx-empty">Nothing yet.</p>`}
+    <div class="mx-foot">${isK?`<button class="ghost-btn" data-mxedit="kpi:${it.id}">${PEN_S}Edit KPI</button>`:`<button class="ghost-btn" data-mxo="${f.okr.id}">${PEN_S}Edit OKR</button>`}</div></div>`}
+/* ---- create / edit ---- */
+const mxSeg=(field,opts,val)=>`<div class="segc mx-seg">${opts.map(([v,l])=>`<button type="button" class="${String(val)===String(v)?'on':''}" data-mxset="${field}" data-v="${v}">${l}</button>`).join('')}</div>`;
+const mxField=(label,inner,hint)=>`<label class="mx-f"><span>${label}</span>${inner}${hint?`<small>${hint}</small>`:''}</label>`;
+function mxKpiForm(sname){const d=mxDraft.v;
+  return `${mxHead(sname,mxDraft.id?'Edit KPI':'New KPI',true)}<div class="mx-body mx-form">
+    ${mxField('Name',`<input data-mxf="name" value="${esc(d.name)}" maxlength="60" placeholder="e.g. Outreach messages" autocomplete="off">`)}
+    <div class="mx-two">${mxField('Target',`<input data-mxf="target" type="number" inputmode="decimal" step="any" value="${d.target===''?'':esc(String(d.target))}" placeholder="50">`)}${mxField('Unit',`<input data-mxf="unit" value="${esc(d.unit)}" maxlength="14" placeholder="messages, %, €" autocomplete="off">`)}</div>
+    ${mxField('Every',mxSeg('period',[['week','Week'],['month','Month'],['quarter','Quarter']],d.period))}
+    ${mxField('Better when',mxSeg('better',[['up','Higher'],['down','Lower']],d.better))}
+    ${mxField('Moves with',mxSeg('src',[['tasks','Tasks'],['log','Logging'],['both','Both']],d.src),d.src==='tasks'?'Link tasks from their details: “Counts toward”.':d.src==='both'?'Done tasks add up, and you can log extra.':'')}
+    ${d.src==='log'?mxField('Counts as',mxSeg('kind',[['sum','Total'],['last','Latest value']],d.kind),d.kind==='last'?'For rates and levels, like a 25% reply rate.':'Everything you log in a period adds up.'):''}
+    <div class="mx-foot">${mxDraft.id?`<button class="ghost-btn warn" data-mxrm>${BIN_S}Delete</button>`:''}<span></span><button class="primary" data-mxsave>${mxDraft.id?'Save':'Create KPI'}</button></div></div>`}
+function mxOkrForm(sname){const d=mxDraft.v;
+  return `${mxHead(sname,mxDraft.id?'Edit OKR':'New OKR',true)}<div class="mx-body mx-form">
+    ${mxField('Objective',`<input data-mxf="name" value="${esc(d.name)}" maxlength="80" placeholder="e.g. Win 3 pilot customers" autocomplete="off">`)}
+    ${mxField('Ends on',`<input data-mxf="end" type="date" value="${esc(d.end)}">`)}
+    <div class="mx-f"><span>Key results</span>
+      ${d.krs.map((r,i)=>`<div class="mx-krf"><input data-mxkr="${i}:name" value="${esc(r.name)}" maxlength="60" placeholder="e.g. Book 12 demos" aria-label="Key result ${i+1}" autocomplete="off">
+        <div class="mx-krn"><input data-mxkr="${i}:from" type="number" inputmode="decimal" step="any" value="${esc(String(r.from??0))}" aria-label="Starts at" title="Starts at"><span>→</span><input data-mxkr="${i}:target" type="number" inputmode="decimal" step="any" value="${r.target===''?'':esc(String(r.target))}" placeholder="12" aria-label="Target" title="Target"><input data-mxkr="${i}:unit" value="${esc(r.unit||'')}" maxlength="14" placeholder="unit" aria-label="Unit" autocomplete="off">
+        <button type="button" class="mx-ib sm" data-mxkrrm="${i}" aria-label="Remove key result ${i+1}">${X}</button></div></div>`).join('')}
+      ${d.krs.length<MX_KR_MAX?`<button type="button" class="mx-new" data-mxkradd>${PLUS_S}Add a key result</button>`:''}
+      <small>Starts at 0: it adds up. Starts higher: you set the latest value (12% → 25%).</small></div>
+    <div class="mx-foot">${mxDraft.id?`<button class="ghost-btn warn" data-mxrm>${BIN_S}Delete</button>`:''}${mxDraft.id&&!d.closed?`<button class="ghost-btn" data-mxcl="${mxDraft.id}">Close it out</button>`:''}${mxDraft.id&&d.closed?`<button class="ghost-btn" data-mxcopy>Copy to next quarter</button>`:''}<span></span><button class="primary" data-mxsave>${mxDraft.id?'Save':'Create OKR'}</button></div></div>`}
+function mxNew(kind){const sp=mxSpaceNow();if(!sp)return;
+  if(kind==='kpi'&&mxKpis(sp).length>=MX_KPI_MAX){toast(`${MX_KPI_MAX} KPIs per space keeps it calm`);return}
+  if(kind==='okr'&&mxOkrs(sp,false).length>=MX_OKR_MAX){toast(`${MX_OKR_MAX} OKRs at once per space keeps it calm`);return}
+  mxDraft=kind==='kpi'?{kind,id:null,v:{name:'',target:'',unit:'',period:'week',better:'up',src:'tasks',kind:'sum'}}
+    :{kind,id:null,v:{name:'',end:mxQuarterEnd(),krs:[{id:null,name:'',from:0,target:'',unit:''}]}};
+  mxDraw();setTimeout(()=>{const i=$('mxIn').querySelector('[data-mxf="name"]');if(i)i.focus()},60)}
+function mxEditOpen(kind,id){if(kind==='kpi'){const k=(S.kpis||[]).find(x=>String(x.id)===String(id));if(!k)return;
+    mxDraft={kind,id:k.id,v:{name:k.name,target:k.target,unit:k.unit||'',period:k.period,better:k.better,src:k.src,kind:k.kind||'sum'}}}
+  else{const o=(S.okrs||[]).find(x=>String(x.id)===String(id));if(!o)return;
+    mxDraft={kind,id:o.id,v:{name:o.name,end:o.end,closed:o.closed||null,krs:o.krs.map(r=>({id:r.id,name:r.name,from:r.from??0,target:r.target,unit:r.unit||''}))}}}
+  mxDraw()}
+function mxSave(){const d=mxDraft.v,sp=mxSpaceNow(),nm=String(d.name||'').trim();
+  if(!nm){toast(mxDraft.kind==='kpi'?'Give the KPI a name':'Give the objective a name');return}
+  if(mxDraft.kind==='kpi'){const tg=+d.target;if(d.target===''||!Number.isFinite(tg)||tg<=0){toast('Set a target above 0');return}
+    const kind=d.src==='log'?d.kind:'sum',vals={name:nm.slice(0,60),target:tg,unit:String(d.unit||'').trim().slice(0,14),period:d.period,better:d.better,src:d.src,kind};
+    const was=mxDraft.id;
+    commit(()=>{if(was){const k=S.kpis.find(x=>x.id===was);if(k)Object.assign(k,vals)}else{S.kpis=S.kpis||[];S.kpis.push({id:newId(),space:sp,created:Date.now(),log:[],...vals})}
+      if(kind==='last'||d.src==='log')S.tasks.forEach(t=>{if(Array.isArray(t.mx))t.mx=t.mx.filter(l=>!(l.okr==null&&String(l.id)===String(was)))})},was?'KPI saved':'KPI added');
+    mxDraft=null;if(!was)mxTab='kpi';try{sfx('add')}catch(e){};return mxDraw()}
+  const krs=d.krs.map(r=>({...r,name:String(r.name||'').trim()})).filter(r=>r.name);
+  if(!krs.length){toast('Add at least one key result');return}
+  for(const r of krs){if(r.target===''||!Number.isFinite(+r.target)){toast(`Set a target for “${r.name}”`);return}if(!Number.isFinite(+r.from)){toast(`Check the start of “${r.name}”`);return}}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d.end||'')){toast('Pick an end date');return}
+  const was=mxDraft.id;
+  commit(()=>{const old=was?S.okrs.find(x=>x.id===was):null;
+    const list=krs.map(r=>{const prev=old&&old.krs.find(x=>x.id===r.id);return {id:prev?prev.id:newId(),name:r.name.slice(0,60),from:+r.from||0,target:+r.target,unit:String(r.unit||'').trim().slice(0,14),log:prev?prev.log:[]}});
+    if(old){old.name=nm.slice(0,80);old.end=d.end;const gone=old.krs.filter(r=>!list.some(x=>x.id===r.id)).map(r=>String(r.id));old.krs=list;
+      if(gone.length)S.tasks.forEach(t=>{if(Array.isArray(t.mx))t.mx=t.mx.filter(l=>!(String(l.okr)===String(old.id)&&gone.includes(String(l.id))))})}
+    else{S.okrs=S.okrs||[];S.okrs.push({id:newId(),space:sp,name:nm.slice(0,80),start:dkey(),end:d.end,created:Date.now(),krs:list})}},was?'OKR saved':'OKR added');
+  mxDraft=null;if(!was)mxTab='okr';try{sfx('add')}catch(e){};mxDraw()}
+function mxRemove(){const dr=mxDraft;if(!dr||!dr.id)return;const isK=dr.kind==='kpi';
+  confirmAsk({title:isK?'Delete this KPI?':'Delete this OKR?',text:`“${dr.v.name}” and its history will be deleted. Linked tasks stay; they just stop counting toward it.`,yes:'Yes, delete',no:'No',
+    onYes:()=>{try{sfx('remove')}catch(e){}commit(()=>{if(isK)S.kpis=S.kpis.filter(x=>x.id!==dr.id);else S.okrs=S.okrs.filter(x=>x.id!==dr.id);
+      S.tasks.forEach(t=>{if(Array.isArray(t.mx)){t.mx=t.mx.filter(l=>isK?!(l.okr==null&&String(l.id)===String(dr.id)):String(l.okr)!==String(dr.id));if(!t.mx.length)delete t.mx}})},isK?'KPI deleted':'OKR deleted');
+      mxDraft=null;mxView=null;mxDraw()}})}
+function mxCloseOut(id){const o=(S.okrs||[]).find(x=>String(x.id)===String(id));if(!o)return;const sc=mxOkrP(o);
+  commit(()=>{o.closed=Date.now();o.score=Math.round(sc*100)/100},`Closed with ${Math.round(sc*100)}% · it’s under Past`);
+  try{sfx(sc>=.7?'summit':'milestone',true)}catch(e){}mxDraft=null;mxDraw()}
+function mxCopyNext(){const dr=mxDraft;const o=dr&&(S.okrs||[]).find(x=>x.id===dr.id);if(!o)return;const sp=o.space;
+  if(mxOkrs(sp,false).length>=MX_OKR_MAX){toast(`${MX_OKR_MAX} OKRs at once per space keeps it calm`);return}
+  const endMs=Math.max(Date.now(),mxEndMs(o));
+  commit(()=>{S.okrs.push({id:newId(),space:sp,name:o.name,start:dkey(),end:mxQuarterEnd(endMs+DAY),created:Date.now(),
+    krs:o.krs.map(r=>({id:newId(),name:r.name,from:mxKrKind(r)==='last'?mxKrNow(r):0,target:r.target,unit:r.unit,log:[]}))})},'Copied to the next quarter');
+  mxDraft=null;mxPast=false;mxTab='okr';mxDraw()}
+/* ---- clicks, typing, keys ---- */
+$('mxPg').addEventListener('click',e=>{
+  if(e.target===$('mxPg')||e.target.closest('[data-mxx]'))return mxClose();
+  const q=s=>e.target.closest(s);let b;
+  if(q('[data-mxback]')){if(mxDraft){mxDraft=null}else mxView=null;haptic(4);return mxDraw()}
+  if(q('[data-mxlook]')){const k=mxPhone()?'mxPh':'mxDk';setCfg(k,mxLook()==='board'?'focus':'board');haptic(5);return mxDraw()}
+  if((b=q('[data-mxtab]'))){mxTab=b.dataset.mxtab;haptic(4);return mxDraw()}
+  if((b=q('[data-mxnew]')))return mxNew(b.dataset.mxnew);
+  if((b=q('[data-mxdot]'))){mxFocusI=+b.dataset.mxdot;haptic(4);return mxDraw()}
+  if(q('[data-mxpast]')){mxPast=!mxPast;haptic(4);return mxDraw()}
+  if((b=q('[data-mxcl]')))return mxCloseOut(b.dataset.mxcl);
+  if(q('[data-mxcopy]'))return mxCopyNext();
+  if((b=q('[data-mxedit]'))){const [k,id]=b.dataset.mxedit.split(':');return mxEditOpen(k,id)}
+  if((b=q('[data-mxk]'))){mxView={kind:'kpi',id:b.dataset.mxk};mxDraw();if(b.hasAttribute('data-mxlogfocus'))setTimeout(()=>{const i=$('mxLogIn');if(i)i.focus()},60);return}
+  if((b=q('[data-mxr]'))){const [o,r]=b.dataset.mxr.split(':');mxView={kind:'kr',okr:o,id:r};return mxDraw()}
+  if((b=q('[data-mxo]')))return mxEditOpen('okr',b.dataset.mxo);
+  if(q('[data-mxadd]'))return mxAddLog();
+  if((b=q('[data-mxdel]'))){const f=mxViewItem();if(!f)return;const id=b.dataset.mxdel;commit(()=>{f.item.log=f.item.log.filter(x=>String(x.id)!==id)},'Entry removed');return mxDraw()}
+  if((b=q('[data-mxset]'))){mxDraft.v[b.dataset.mxset]=b.dataset.v;haptic(4);return mxDraw()}
+  if(q('[data-mxkradd]')){if(mxDraft.v.krs.length<MX_KR_MAX)mxDraft.v.krs.push({id:null,name:'',from:0,target:'',unit:''});mxDraw();const ins=$('mxIn').querySelectorAll('[data-mxkr$=":name"]');if(ins.length)ins[ins.length-1].focus();return}
+  if((b=q('[data-mxkrrm]'))){mxDraft.v.krs.splice(+b.dataset.mxkrrm,1);if(!mxDraft.v.krs.length)mxDraft.v.krs.push({id:null,name:'',from:0,target:'',unit:''});return mxDraw()}
+  if(q('[data-mxsave]'))return mxSave();
+  if(q('[data-mxrm]'))return mxRemove();
+});
+$('mxPg').addEventListener('input',e=>{if(!mxDraft)return;const f=e.target.dataset.mxf,kr=e.target.dataset.mxkr;
+  if(f)mxDraft.v[f]=e.target.value;else if(kr){const [i,k]=kr.split(':');const r=mxDraft.v.krs[+i];if(r)r[k]=e.target.value}});
+$('mxPg').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id==='mxLogIn'){e.preventDefault();return mxAddLog()}
+  if(e.key==='Enter'&&e.target.matches('.mx-form input:not([type=date])')){e.preventDefault();mxSave()}
+  if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&!e.target.matches('input')&&$('mxIn').dataset.look==='focus'){mxFocusI+=e.key==='ArrowRight'?1:-1;mxFocusI=Math.max(0,mxFocusI);mxDraw()}});
+/* Escape steps back (form or item → list → closed), wherever focus is */
+document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!mxOpen||$('dlg').classList.contains('on')||$('mxAsk').classList.contains('on'))return;
+  e.preventDefault();e.stopPropagation();if(mxDraft){mxDraft=null;return mxDraw()}if(mxView){mxView=null;return mxDraw()}mxClose()},true);
+function mxAddLog(){const f=mxViewItem(),i=$('mxLogIn');if(!f||!i)return;const v=+i.value;if(i.value===''||!Number.isFinite(v)){i.focus();return}
+  const last=f.kind==='kpi'?f.item.kind==='last':mxKrKind(f.item)==='last';
+  commit(()=>{f.item.log.push({id:newId(),at:Date.now(),v})},last?`Set to ${mxFmt(v,f.item.unit)}`:`${v>=0?'+':''}${mxFmt(v,f.item.unit)} · ${f.item.name}`);
+  try{sfx('tick')}catch(e){}haptic(8);mxDraw();setTimeout(()=>{const n=$('mxLogIn');if(n)n.focus()},40)}
+/* swipe between items in Focus */
+(()=>{let x0=null,y0=0;$('mxPg').addEventListener('touchstart',e=>{if(!e.target.closest('[data-mxswipe]')){x0=null;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+  $('mxPg').addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.5)return;
+    const n=mxItems(mxSpaceNow()).length;const to=mxFocusI+(dx<0?1:-1);if(to<0||to>=n){haptic(3);return}mxFocusI=to;haptic(5);mxDraw()},{passive:true})})();
+
+/* ---------- the gauge button on a space's page (phone header and computer header) ---------- */
+document.querySelectorAll('[data-srch]').forEach(s=>s.insertAdjacentHTML('beforebegin',`<button class="icon-btn mx-btn" data-mxopen hidden aria-label="KPIs and OKRs" title="KPIs and OKRs">${MX_ICON}</button>`));
+document.addEventListener('click',e=>{if(e.target.closest('[data-mxopen]')){e.preventDefault();mxOpenPop()}});
+function mxBtns(){const on=mxOn()&&!!mxSpaceNow();document.querySelectorAll('[data-mxopen]').forEach(b=>{b.hidden=!on})}
+const _mxRender=render;
+render=function(d){_mxRender(d);try{mxBtns();if(mxOpen){if(!mxOn()||!mxSpaceNow())return mxClose();const a=document.activeElement;if(!(a&&a.closest&&a.closest('#mxPg')&&a.matches('input')))mxDraw()}}catch(err){console.error(err)}};
+
+/* ---------- in a task: "Counts toward" (pill + picker), and a small mark on the row ---------- */
+function mxPill(t,P){if(!mxOn()||t.inbox)return '';const links=(t.mx||[]).map(mxFind).filter(Boolean);if(!links.length&&!mxCands(t).length)return '';
+  return P('mx',`${MX_ICON}${links.length?esc(links[0].name)+(links.length>1?` +${links.length-1}`:''):'Counts toward'}`,!links.length)}
+function mxPicks(t){const cs=mxCands(t);if(!cs.length)return `<p class="mx-pkh">Add a KPI or OKR from the gauge on this space’s page first.</p>`;
+  return cs.map(c=>{const l=(t.mx||[]).find(x=>mxKey(x)===mxKey(c));
+    return `<span class="mx-pkw${l?' on':''}"><button class="pk ${l?'on':''}" data-v="${mxKey(c)}">${c.kind==='kr'?'KR · ':''}${esc(c.name)}</button>${l?`<label class="mx-amt" title="Adds this much when the task is done. Empty: ask me.">+<input type="number" inputmode="decimal" step="any" min="0" data-mxamt="${mxKey(c)}" value="${l.add==null?'':esc(String(l.add))}" placeholder="ask" aria-label="Adds when done (empty: ask me)"></label>`:''}</span>`}).join('')
+    +`<p class="mx-pkh">Done adds the amount. Empty asks you. Reopening takes it back off.</p>`}
+function mxPickToggle(t,v){const [kind,a,b]=v.split(':');const link=kind==='kr'?{id:b,okr:a}:{id:a};
+  const key=mxKey(link);t.mx=Array.isArray(t.mx)?t.mx:[];const has=t.mx.find(x=>mxKey(x)===key);
+  if(has)t.mx=t.mx.filter(x=>x!==has);else{const c=mxCands(t).find(x=>mxKey(x)===key);if(c)t.mx.push(c.okr!=null?{id:c.id,okr:c.okr,add:1}:{id:c.id,add:1})}
+  if(!t.mx.length)delete t.mx}
+function mxMark(t){if(!mxOn()||!Array.isArray(t.mx)||!t.mx.length)return '';const f=mxFind(t.mx[0]);if(!f)return '';
+  const a=t.mx[0].add;return `<span class="mi mx-mi" title="Counts toward ${esc(f.name)}">${MX_ICON}${a==null?'':'+'+mxN(a)+' '}${esc(f.name.length>16?f.name.slice(0,15)+'…':f.name)}${t.mx.length>1?` +${t.mx.length-1}`:''}</span>`}
+$('dPicker').addEventListener('input',e=>{const k=e.target.dataset.mxamt;if(!k||!cur)return;const l=(cur.mx||[]).find(x=>mxKey(x)===k);if(!l)return;
+  const v=e.target.value;l.add=v===''?null:Math.max(0,+v||0);save()});
+$('dPicker').addEventListener('change',e=>{if(e.target.dataset.mxamt)render()});
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -8426,7 +8898,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,ibBadge:true,review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -8927,11 +9399,11 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
     try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
       const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
       const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.kpis=Array.isArray(d.kpis)?d.kpis:(S.kpis||[]);S.okrs=Array.isArray(d.okrs)?d.okrs:(S.okrs||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
@@ -8983,7 +9455,7 @@ function loadDemo(){
 }
 function resetAll(){
   const keep={lastBackup:S.lastBackup,syncedUser:S.syncedUser,syncV:S.syncV,tomb:S.tomb,nid:S.nid};
-  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.lens={};
+  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.kpis=[];S.okrs=[];S.lens={};
   const sp={id:'s'+newId(),name:'Personal',c:'#9C95FF',e:'🌱',autoSet:true};
   S.spaces=[sp];S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:sp.id}];
   S.cfg=JSON.parse(JSON.stringify(DEF_CFG));S.focusLog={};S.resetAt=Date.now();
@@ -9011,7 +9483,7 @@ const CID=Math.random().toString(36).slice(2);
 let sb=null,user=null,syncState='off',syncTimer=null,pendingRemote=null,channel=null,applying=false,lastHash='';
 let authStep='email',authEmail='',authBusy=false,authMsg='',resendAt=0;
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[],S.goals||[]]);
+const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[],S.goals||[],S.kpis||[],S.okrs||[]]);
 const busyUI=()=>document.querySelector('.sheet.on,.focus.on,.tide.on');
 const SYNC_LABEL={off:'Off',syncing:'Syncing…',synced:'Up to date',offline:'Offline, will sync later',error:'Couldn’t sync, will retry'};
 function setSync(s){syncState=s;const el=document.getElementById('syncStatus');if(el)el.textContent=SYNC_LABEL[s];try{drawMe()}catch(e){}
@@ -9021,8 +9493,8 @@ function cloudDirty(){
   S.dirty=true;S.editAt=Date.now();saveLocal();clearTimeout(syncTimer);syncTimer=setTimeout(push,1500);
 }
 /* ---- merge: combine two copies item by item, newest change wins, deletions respected ---- */
-const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
-const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog,d.habits||[],d.hchains||[],d.goals||[]]);
+const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
+const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog,d.habits||[],d.hchains||[],d.goals||[],d.kpis||[],d.okrs||[]]);
 function mergeDocs(L,Rm){
   const tomb={...(Rm.tomb||{})};Object.entries(L.tomb||{}).forEach(([k,v])=>{if(!tomb[k]||tomb[k]<v)tomb[k]=v});
   const cut=Date.now()-60*DAY;Object.keys(tomb).forEach(k=>{if(tomb[k]<cut)delete tomb[k]});
@@ -9038,12 +9510,12 @@ function mergeDocs(L,Rm){
   const lr=L.resetAt||0,rr=Rm.resetAt||0;
   const fl=lr!==rr?{...((lr>rr?L:Rm).focusLog||{})}:{...(Rm.focusLog||{})};if(lr===rr)Object.entries(L.focusLog||{}).forEach(([k,v])=>{fl[k]=Math.max(fl[k]||0,v)});
   const lc=(L.cfgU||0)>=(Rm.cfgU||0);
-  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),habits:mergeArr('h',L.habits,Rm.habits,true),hchains:mergeArr('c',L.hchains,Rm.hchains,true),goals:mergeArr('g',L.goals,Rm.goals,true),
+  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),habits:mergeArr('h',L.habits,Rm.habits,true),hchains:mergeArr('c',L.hchains,Rm.hchains,true),goals:mergeArr('g',L.goals,Rm.goals,true),kpis:mergeArr('k',L.kpis,Rm.kpis,true),okrs:mergeArr('o',L.okrs,Rm.okrs,true),
     cfg:lc?L.cfg:(Rm.cfg||L.cfg),cfgU:Math.max(L.cfgU||0,Rm.cfgU||0),orderU:Math.max(L.orderU||0,Rm.orderU||0),tomb,nid:Math.max(L.nid||0,Rm.nid||0),focusLog:fl,resetAt:Math.max(lr,rr)};
 }
 function applyDoc(d){
   applying=true;
-  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(Array.isArray(d.habits))S.habits=d.habits;if(Array.isArray(d.hchains))S.hchains=d.hchains;if(Array.isArray(d.goals))S.goals=d.goals;if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
+  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(Array.isArray(d.habits))S.habits=d.habits;if(Array.isArray(d.hchains))S.hchains=d.hchains;if(Array.isArray(d.goals))S.goals=d.goals;if(Array.isArray(d.kpis))S.kpis=d.kpis;if(Array.isArray(d.okrs))S.okrs=d.okrs;if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
   S.cfgU=d.cfgU||0;S.orderU=d.orderU||0;S.tomb=d.tomb||{};S.nid=Math.max(S.nid||0,d.nid||0);S.focusLog=d.focusLog||{};if(d.resetAt)S.resetAt=d.resetAt;
   if(d.cfg)S.cfg=Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors)});
   migrateSpaces();

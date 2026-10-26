@@ -86,6 +86,7 @@ function drawDetail(){
     P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
     P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+
     (goalPill(t,P))+
+    (typeof mxPill==='function'?mxPill(t,P):'')+
     (secOn()&&t.stage!=='done'&&secsForTask(t).length?P('sec',`${I_SEC}${secOfTask(t)?esc(secOfTask(t).name):'Section'}`,!secOfTask(t)):'')+
     P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length);
   const pk=(on,v,label,dot)=>`<button class="pk ${on?'on':''}" data-v="${v}">${dot?`<i style="background:${dot}"></i>`:''}${esc(label)}</button>`;
@@ -98,6 +99,7 @@ function drawDetail(){
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
       pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
       goal:()=>goalPicks(t,pk),
+      mx:()=>mxPicks(t),
       sec:()=>pk(!secOfTask(t),'','No section')+secsForTask(t).map(s=>pk((secOfTask(t)||{}).id===s.id,s.id,s.name)).join(''),
       tags:()=>{const lt=ltags(l),on=n=>tagsOf(t).some(x=>tagKey(x)===tagKey(n));
         return lt.map(n=>`<button class="pk tg-pk ${on(n)?'on':''}" data-v="${esc(n)}">#${esc(n)}</button>`).join('')+
@@ -130,6 +132,7 @@ $('dPicker').onclick=e=>{
     onSheetClose=()=>{if(S.tasks.includes(t))setTimeout(()=>openDetail(t.id),260)}},260);return}
   const b=e.target.closest('.pk');if(!b)return;const k=$('dPicker').dataset.k,v=b.dataset.v,t=cur;
   if(k==='tags'){toggleTaskTag(t,v);haptic(5);save();render();return drawDetail()}
+  if(k==='mx'){mxPickToggle(t,v);haptic(5);save();render();return drawDetail()}
   pickOpen=null;haptic(6);
   if(k==='stage'){if(v!==t.stage&&!canPut(t.list,v,t)){drawDetail();return}if(v!==t.stage)commit(()=>setStage(t,v),v==='done'?doneMsg(t):`Moved to ${STAGES[idx(v)].name}`)}
   else if(k==='list'&&t.inbox){ibSendTo(t,v);return}
