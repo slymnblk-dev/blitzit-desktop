@@ -187,7 +187,7 @@ button:focus-visible,input:focus-visible,[role="button"]:focus-visible,a:focus-v
 .f-done{flex:1;height:62px;border-radius:999px;background:var(--ink);color:var(--fbg,var(--today));font-weight:800;font-size:18px}
 
 .toast{display:flex;align-items:center;gap:16px;position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);background:var(--text);color:var(--bg);font-size:14px;font-weight:500;
-  padding:11px 18px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:40;white-space:nowrap}
+  padding:11px 18px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:65;white-space:nowrap}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 @property --accent{syntax:'<color>';inherits:true;initial-value:#FF5B47}
@@ -3982,6 +3982,19 @@ button.hg-c:active{transform:scale(.88)}
 .mxw-rt small{font-size:13px;line-height:1.35;color:var(--muted)}
 .mxw-plus{flex:none;width:44px;height:44px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;transition:transform .15s}
 .mxw-plus:active{transform:scale(.92)}.mxw-plus svg{width:18px;height:18px;stroke-width:2.6}
+
+/* simpler forms: a key result is a name and a target; start, unit and the rest live under More options */
+.mx-krf{padding:6px 6px 6px 12px}
+.mx-krm{display:flex;align-items:center;gap:6px}
+.mx-krm input[data-mxkr$=":name"]{flex:1;min-width:0;height:44px;padding:0 4px;background:none;border:0;outline:none;font:inherit;font-size:16px;color:var(--text)}
+.mx-krm input[data-mxkr$=":target"]{flex:0 0 84px;width:84px;height:40px;padding:0 12px;border-radius:12px;background:var(--surface2);border:0;outline:none;font:inherit;font-size:15px;font-weight:700;color:var(--text);text-align:center}
+.mx-krn{gap:8px;margin:4px 6px 6px 0}
+.mx-krn label{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.mx-krn label input{width:100%;box-sizing:border-box;flex:none!important}
+.mx-more{display:inline-flex;align-items:center;gap:4px;margin-top:14px;padding:6px 0;font:inherit;font-size:14px;font-weight:600;color:var(--muted)}
+.mx-more svg{width:14px;height:14px;transform:rotate(90deg);transition:transform .2s}.mx-more[aria-expanded="true"] svg{transform:rotate(-90deg)}
+.mx-bad{box-shadow:0 0 0 1.5px var(--danger,#E5484D)!important}
+.mx-errm{display:block;margin:6px 4px 2px;font-size:12.5px;font-weight:600;color:var(--danger,#E5484D)}
 </style>
 </head>
 <body>
@@ -4177,7 +4190,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=211; // bumped with every published update
+const APP_VERSION=212; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -8423,50 +8436,60 @@ function mxItemView(sname){const f=mxViewItem();if(!f){mxView=null;return mxBoar
     <div class="mx-foot">${isK?`<button class="ghost-btn" data-mxedit="kpi:${it.id}">${PEN_S}Edit KPI</button>`:`<button class="ghost-btn" data-mxo="${f.okr.id}">${PEN_S}Edit OKR</button>`}</div></div>`}
 /* ---- create / edit ---- */
 const mxSeg=(field,opts,val)=>`<div class="segc mx-seg">${opts.map(([v,l])=>`<button type="button" class="${String(val)===String(v)?'on':''}" data-mxset="${field}" data-v="${v}">${l}</button>`).join('')}</div>`;
+const mxMoreBtn=()=>`<button type="button" class="mx-more" data-mxmore aria-expanded="${!!mxDraft.more}">${mxDraft.more?'Fewer options':'More options'}${CHEV}</button>`;
+/* a problem with the form: say it right under the field and put the cursor there */
+function mxErr(sel,msg){const el=$('mxIn').querySelector(sel);$('mxIn').querySelectorAll('.mx-bad').forEach(x=>x.classList.remove('mx-bad'));$('mxIn').querySelectorAll('.mx-errm').forEach(x=>x.remove());
+  if(el){el.classList.add('mx-bad');const box=el.closest('.mx-krf')||el.closest('.mx-f')||el;box.insertAdjacentHTML('beforeend',`<small class="mx-errm" role="alert">${esc(msg)}</small>`);el.focus();try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}
+  else toast(msg);haptic([10,40,10])}
+/* "Book 12 demos" → target 12, when the target is still empty */
+function mxGuessTarget(r){if(r.target!==''&&r.target!=null)return;const m=String(r.name||'').match(/(\d+(?:[.,]\d+)?)/);if(m)r.target=m[1].replace(',','.')}
 const mxField=(label,inner,hint)=>`<label class="mx-f"><span>${label}</span>${inner}${hint?`<small>${hint}</small>`:''}</label>`;
 function mxKpiForm(sname){const d=mxDraft.v;
   return `${mxHead(sname,mxDraft.id?'Edit KPI':'New KPI',true)}<div class="mx-body mx-form">
     ${mxField('Name',`<input data-mxf="name" value="${esc(d.name)}" maxlength="60" placeholder="e.g. Outreach messages" autocomplete="off">`)}
     <div class="mx-two">${mxField('Target',`<input data-mxf="target" type="number" inputmode="decimal" step="any" value="${d.target===''?'':esc(String(d.target))}" placeholder="50">`)}${mxField('Unit',`<input data-mxf="unit" value="${esc(d.unit)}" maxlength="14" placeholder="messages, %, €" autocomplete="off">`)}</div>
     ${mxField('Every',mxSeg('period',[['week','Week'],['month','Month'],['quarter','Quarter']],d.period))}
-    ${mxField('Better when',mxSeg('better',[['up','Higher'],['down','Lower']],d.better))}
+    ${mxMoreBtn()}${mxDraft.more?`${mxField('Better when',mxSeg('better',[['up','Higher'],['down','Lower']],d.better))}
     ${mxField('Moves with',mxSeg('src',[['tasks','Tasks'],['log','Logging'],['both','Both']],d.src),d.src==='tasks'?'Link tasks from their details: “Counts toward”.':d.src==='both'?'Done tasks add up, and you can log extra.':'')}
-    ${d.src==='log'?mxField('Counts as',mxSeg('kind',[['sum','Total'],['last','Latest value']],d.kind),d.kind==='last'?'For rates and levels, like a 25% reply rate.':'Everything you log in a period adds up.'):''}
+    ${d.src==='log'?mxField('Counts as',mxSeg('kind',[['sum','Total'],['last','Latest value']],d.kind),d.kind==='last'?'For rates and levels, like a 25% reply rate.':'Everything you log in a period adds up.'):''}`:''}
     <div class="mx-foot">${mxDraft.id?`<button class="ghost-btn warn" data-mxrm>${BIN_S}Delete</button>`:''}<span></span><button class="primary" data-mxsave>${mxDraft.id?'Save':'Create KPI'}</button></div></div>`}
 function mxOkrForm(sname){const d=mxDraft.v;
   return `${mxHead(sname,mxDraft.id?'Edit OKR':'New OKR',true)}<div class="mx-body mx-form">
     ${mxField('Objective',`<input data-mxf="name" value="${esc(d.name)}" maxlength="80" placeholder="e.g. Win 3 pilot customers" autocomplete="off">`)}
-    ${mxField('Ends on',`<input data-mxf="end" type="date" value="${esc(d.end)}">`)}
     <div class="mx-f"><span>Key results</span>
-      ${d.krs.map((r,i)=>`<div class="mx-krf"><input data-mxkr="${i}:name" value="${esc(r.name)}" maxlength="60" placeholder="e.g. Book 12 demos" aria-label="Key result ${i+1}" autocomplete="off">
-        <div class="mx-krn"><input data-mxkr="${i}:from" type="number" inputmode="decimal" step="any" value="${esc(String(r.from??0))}" aria-label="Starts at" title="Starts at"><span>→</span><input data-mxkr="${i}:target" type="number" inputmode="decimal" step="any" value="${r.target===''?'':esc(String(r.target))}" placeholder="Target" aria-label="Target" title="Target"><input data-mxkr="${i}:unit" value="${esc(r.unit||'')}" maxlength="14" placeholder="unit" aria-label="Unit" autocomplete="off">
-        <button type="button" class="mx-ib sm" data-mxkrrm="${i}" aria-label="Remove key result ${i+1}">${X}</button></div></div>`).join('')}
+      ${d.krs.map((r,i)=>`<div class="mx-krf"><div class="mx-krm"><input data-mxkr="${i}:name" value="${esc(r.name)}" maxlength="60" placeholder="${i?'Another result':'e.g. Book 12 demos'}" aria-label="Key result ${i+1}" autocomplete="off"><input data-mxkr="${i}:target" type="number" inputmode="decimal" step="any" value="${r.target===''?'':esc(String(r.target))}" placeholder="Target" aria-label="Target for key result ${i+1}">
+        ${d.krs.length>1?`<button type="button" class="mx-ib sm" data-mxkrrm="${i}" aria-label="Remove key result ${i+1}">${X}</button>`:''}</div>
+        ${mxDraft.more?`<div class="mx-krn"><label>Starts at<input data-mxkr="${i}:from" type="number" inputmode="decimal" step="any" value="${esc(String(r.from??0))}"></label><label>Unit<input data-mxkr="${i}:unit" value="${esc(r.unit||'')}" maxlength="14" placeholder="demos, %" autocomplete="off"></label></div>`:''}</div>`).join('')}
       ${d.krs.length<MX_KR_MAX?`<button type="button" class="mx-new" data-mxkradd>${PLUS_S}Add a key result</button>`:''}
-      <small>Starts at 0: it adds up. Starts higher: you set the latest value (12% → 25%).</small></div>
+      ${mxDraft.more?`<small>Starts at 0: it adds up. Starts higher: you set the latest value (12% → 25%).</small>`:''}</div>
+    ${mxField('Ends on',`<input data-mxf="end" type="date" value="${esc(d.end)}">`)}
+    ${mxMoreBtn()}
     <div class="mx-foot">${mxDraft.id?`<button class="ghost-btn warn" data-mxrm>${BIN_S}Delete</button>`:''}${mxDraft.id&&!d.closed?`<button class="ghost-btn" data-mxcl="${mxDraft.id}">Close it out</button>`:''}${mxDraft.id&&d.closed?`<button class="ghost-btn" data-mxcopy>Copy to next quarter</button>`:''}<span></span><button class="primary" data-mxsave>${mxDraft.id?'Save':'Create OKR'}</button></div></div>`}
 function mxNew(kind){const sp=mxSpaceNow();if(!sp)return;
   if(kind==='kpi'&&mxKpis(sp).length>=MX_KPI_MAX){toast(`${MX_KPI_MAX} KPIs per space keeps it calm`);return}
   if(kind==='okr'&&mxOkrs(sp,false).length>=MX_OKR_MAX){toast(`${MX_OKR_MAX} OKRs at once per space keeps it calm`);return}
-  mxDraft=kind==='kpi'?{kind,id:null,v:{name:'',target:'',unit:'',period:'week',better:'up',src:'tasks',kind:'sum'}}
+  mxDraft=kind==='kpi'?{kind,id:null,v:{name:'',target:'',unit:'',period:'week',better:'up',src:'both',kind:'sum'}}
     :{kind,id:null,v:{name:'',end:mxQuarterEnd(),krs:[{id:null,name:'',from:0,target:'',unit:''}]}};
-  mxDraw();setTimeout(()=>{const i=$('mxIn').querySelector('[data-mxf="name"]');if(i)i.focus()},60)}
+  mxDraw();setTimeout(()=>{const i=$('mxIn').querySelector('[data-mxf="name"]');if(i&&!$('mxIn').contains(document.activeElement))i.focus()},60)}
 function mxEditOpen(kind,id){if(kind==='kpi'){const k=(S.kpis||[]).find(x=>String(x.id)===String(id));if(!k)return;
     mxDraft={kind,id:k.id,v:{name:k.name,target:k.target,unit:k.unit||'',period:k.period,better:k.better,src:k.src,kind:k.kind||'sum'}}}
   else{const o=(S.okrs||[]).find(x=>String(x.id)===String(id));if(!o)return;
     mxDraft={kind,id:o.id,v:{name:o.name,end:o.end,closed:o.closed||null,krs:o.krs.map(r=>({id:r.id,name:r.name,from:r.from??0,target:r.target,unit:r.unit||''}))}}}
   mxDraw()}
 function mxSave(){const d=mxDraft.v,sp=mxSpaceNow(),nm=String(d.name||'').trim();
-  if(!nm){toast(mxDraft.kind==='kpi'?'Give the KPI a name':'Give the objective a name');return}
-  if(mxDraft.kind==='kpi'){const tg=+d.target;if(d.target===''||!Number.isFinite(tg)||tg<=0){toast('Set a target above 0');return}
+  if(!nm)return mxErr('[data-mxf="name"]',mxDraft.kind==='kpi'?'Give the KPI a name':'Give the objective a name')
+  if(mxDraft.kind==='kpi'){const tg=+d.target;if(d.target===''||!Number.isFinite(tg)||tg<=0)return mxErr('[data-mxf="target"]','Set a target above 0')
     const kind=d.src==='log'?d.kind:'sum',vals={name:nm.slice(0,60),target:tg,unit:String(d.unit||'').trim().slice(0,14),period:d.period,better:d.better,src:d.src,kind};
     const was=mxDraft.id;
     commit(()=>{if(was){const k=S.kpis.find(x=>x.id===was);if(k)Object.assign(k,vals)}else{S.kpis=S.kpis||[];S.kpis.push({id:newId(),space:sp,created:Date.now(),log:[],...vals})}
       if(kind==='last'||d.src==='log')S.tasks.forEach(t=>{if(Array.isArray(t.mx))t.mx=t.mx.filter(l=>!(l.okr==null&&String(l.id)===String(was)))})},was?'KPI saved':'KPI added');
     mxDraft=null;if(!was)mxTab='kpi';try{sfx('add')}catch(e){};return mxDraw()}
-  const krs=d.krs.map(r=>({...r,name:String(r.name||'').trim()})).filter(r=>r.name);
-  if(!krs.length){toast('Add at least one key result');return}
-  for(const r of krs){if(r.target===''||!Number.isFinite(+r.target)){toast(`Set a target for “${r.name}”`);return}if(!Number.isFinite(+r.from)){toast(`Check the start of “${r.name}”`);return}}
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(d.end||'')){toast('Pick an end date');return}
+  d.krs.forEach(mxGuessTarget);
+  const krs=d.krs.map((r,i)=>({...r,i,name:String(r.name||'').trim()})).filter(r=>r.name);
+  if(!krs.length)return mxErr('[data-mxkr="0:name"]','Add at least one key result, like “Book 12 demos”');
+  for(const r of krs){if(r.target===''||r.target==null||!Number.isFinite(+r.target)){mxDraw();return mxErr(`[data-mxkr="${r.i}:target"]`,`Set a target for “${r.name}”`)}
+    if(!Number.isFinite(+r.from)){mxDraft.more=true;mxDraw();return mxErr(`[data-mxkr="${r.i}:from"]`,`Check the start of “${r.name}”`)}}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d.end||''))return mxErr('[data-mxf="end"]','Pick an end date')
   const was=mxDraft.id;
   commit(()=>{const old=was?S.okrs.find(x=>x.id===was):null;
     const list=krs.map(r=>{const prev=old&&old.krs.find(x=>x.id===r.id);return {id:prev?prev.id:newId(),name:r.name.slice(0,60),from:+r.from||0,target:+r.target,unit:String(r.unit||'').trim().slice(0,14),log:prev?prev.log:[]}});
@@ -8506,6 +8529,7 @@ $('mxPg').addEventListener('click',e=>{
   if((b=q('[data-mxo]')))return mxEditOpen('okr',b.dataset.mxo);
   if(q('[data-mxadd]'))return mxAddLog();
   if((b=q('[data-mxdel]'))){const f=mxViewItem();if(!f)return;const id=b.dataset.mxdel;commit(()=>{f.item.log=f.item.log.filter(x=>String(x.id)!==id)},'Entry removed');return mxDraw()}
+  if(q('[data-mxmore]')){mxDraft.more=!mxDraft.more;haptic(4);return mxDraw()}
   if((b=q('[data-mxset]'))){mxDraft.v[b.dataset.mxset]=b.dataset.v;haptic(4);return mxDraw()}
   if(q('[data-mxkradd]')){if(mxDraft.v.krs.length<MX_KR_MAX)mxDraft.v.krs.push({id:null,name:'',from:0,target:'',unit:''});mxDraw();const ins=$('mxIn').querySelectorAll('[data-mxkr$=":name"]');if(ins.length)ins[ins.length-1].focus();return}
   if((b=q('[data-mxkrrm]'))){mxDraft.v.krs.splice(+b.dataset.mxkrrm,1);if(!mxDraft.v.krs.length)mxDraft.v.krs.push({id:null,name:'',from:0,target:'',unit:''});return mxDraw()}
@@ -8513,7 +8537,10 @@ $('mxPg').addEventListener('click',e=>{
   if(q('[data-mxrm]'))return mxRemove();
 });
 $('mxPg').addEventListener('input',e=>{if(!mxDraft)return;const f=e.target.dataset.mxf,kr=e.target.dataset.mxkr;
-  if(f)mxDraft.v[f]=e.target.value;else if(kr){const [i,k]=kr.split(':');const r=mxDraft.v.krs[+i];if(r)r[k]=e.target.value}});
+  if(e.target.classList.contains('mx-bad')){e.target.classList.remove('mx-bad');const m=$('mxIn').querySelector('.mx-errm');if(m)m.remove()}
+  if(f)mxDraft.v[f]=e.target.value;else if(kr){const [i,k]=kr.split(':');const r=mxDraft.v.krs[+i];if(!r)return;
+    if(k==='target')r.typed=true;r[k]=e.target.value;
+    if(k==='name'&&!r.typed){const m=String(r.name).match(/(\d+(?:[.,]\d+)?)/);r.target=m?m[1].replace(',','.'):'';const t=$('mxIn').querySelector(`[data-mxkr="${i}:target"]`);if(t)t.value=r.target}}});
 $('mxPg').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.id==='mxLogIn'){e.preventDefault();return mxAddLog()}
   if(e.key==='Enter'&&e.target.matches('.mx-form input:not([type=date])')){e.preventDefault();mxSave()}

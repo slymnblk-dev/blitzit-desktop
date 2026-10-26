@@ -234,3 +234,16 @@
 .mxw-rt small{font-size:13px;line-height:1.35;color:var(--muted)}
 .mxw-plus{flex:none;width:44px;height:44px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;transition:transform .15s}
 .mxw-plus:active{transform:scale(.92)}.mxw-plus svg{width:18px;height:18px;stroke-width:2.6}
+
+/* simpler forms: a key result is a name and a target; start, unit and the rest live under More options */
+.mx-krf{padding:6px 6px 6px 12px}
+.mx-krm{display:flex;align-items:center;gap:6px}
+.mx-krm input[data-mxkr$=":name"]{flex:1;min-width:0;height:44px;padding:0 4px;background:none;border:0;outline:none;font:inherit;font-size:16px;color:var(--text)}
+.mx-krm input[data-mxkr$=":target"]{flex:0 0 84px;width:84px;height:40px;padding:0 12px;border-radius:12px;background:var(--surface2);border:0;outline:none;font:inherit;font-size:15px;font-weight:700;color:var(--text);text-align:center}
+.mx-krn{gap:8px;margin:4px 6px 6px 0}
+.mx-krn label{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.mx-krn label input{width:100%;box-sizing:border-box;flex:none!important}
+.mx-more{display:inline-flex;align-items:center;gap:4px;margin-top:14px;padding:6px 0;font:inherit;font-size:14px;font-weight:600;color:var(--muted)}
+.mx-more svg{width:14px;height:14px;transform:rotate(90deg);transition:transform .2s}.mx-more[aria-expanded="true"] svg{transform:rotate(-90deg)}
+.mx-bad{box-shadow:0 0 0 1.5px var(--danger,#E5484D)!important}
+.mx-errm{display:block;margin:6px 4px 2px;font-size:12.5px;font-weight:600;color:var(--danger,#E5484D)}

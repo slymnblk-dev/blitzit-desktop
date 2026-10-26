@@ -24,7 +24,7 @@ test('KPIs: off by default, gauge on a space, create, link a task, done adds, re
   await page.fill('#mxPg [data-mxf="name"]', 'Outreach messages');
   await page.fill('#mxPg [data-mxf="target"]', '50');
   await page.locator('#mxPg [data-mxsave]').click();
-  await expect.poll(() => page.evaluate(() => S.kpis.map(k => [k.name, k.target, k.period, k.src, k.space === S.space]))).toEqual([['Outreach messages', 50, 'week', 'tasks', true]]);
+  await expect.poll(() => page.evaluate(() => S.kpis.map(k => [k.name, k.target, k.period, k.src, k.space === S.space]))).toEqual([['Outreach messages', 50, 'week', 'both', true]]);
   await expect(page.locator('#mxPg .mx-kr')).toHaveCount(1);
   await page.keyboard.press('Escape');
   await expect(page.locator('#mxPg')).not.toHaveClass(/on/);
@@ -103,6 +103,9 @@ test('OKRs: create with key results, progress, close out to Past, copy to next q
   await page.fill('#mxPg [data-mxkr="0:target"]', '12');
   await page.locator('#mxPg [data-mxkradd]').click();
   await page.fill('#mxPg [data-mxkr="1:name"]', 'Reply rate');
+  // start and unit live under More options
+  await expect(page.locator('#mxPg [data-mxkr="1:from"]')).toHaveCount(0);
+  await page.locator('#mxPg [data-mxmore]').click();
   await page.fill('#mxPg [data-mxkr="1:from"]', '12');
   await page.fill('#mxPg [data-mxkr="1:target"]', '25');
   await page.fill('#mxPg [data-mxkr="1:unit"]', '%');
@@ -160,3 +163,24 @@ for (const [w, h, look] of [[390, 844, 'focus'], [1400, 900, 'bars']]) {
     noErrors(errors);
   });
 }
+
+test('OKR form on a phone: a missing target is shown under the field, the name fills the target', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { setCfg('mx', true); openSpaceSide(S.spaces[0].id); render(); });
+  await page.locator('[data-mxopen]:visible').click();
+  await page.locator('#mxPg [data-mxnew="okr"]').first().click();
+  await page.locator('#mxPg [data-mxsave]').click();
+  await expect(page.locator('#mxPg .mx-errm')).toHaveText('Give the objective a name');
+  await page.locator('#mxPg [data-mxf="name"]').pressSequentially('Win 3 customers');
+  await expect(page.locator('#mxPg .mx-errm')).toHaveCount(0);
+  await page.locator('#mxPg [data-mxkr="0:name"]').pressSequentially('Get referrals');
+  await page.locator('#mxPg [data-mxsave]').click();
+  await expect(page.locator('#mxPg .mx-errm')).toContainText('Set a target');
+  await page.locator('#mxPg [data-mxkr="0:name"]').fill('');
+  await page.locator('#mxPg [data-mxkr="0:name"]').pressSequentially('Book 12 demos');
+  await expect(page.locator('#mxPg [data-mxkr="0:target"]')).toHaveValue('12');
+  await page.locator('#mxPg [data-mxsave]').click();
+  await expect.poll(() => page.evaluate(() => S.okrs.map(o => o.krs.map(r => [r.name, r.target])))).toEqual([[['Book 12 demos', 12]]]);
+  noErrors(errors);
+});

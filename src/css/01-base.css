@@ -168,7 +168,7 @@ button:focus-visible,input:focus-visible,[role="button"]:focus-visible,a:focus-v
 .f-done{flex:1;height:62px;border-radius:999px;background:var(--ink);color:var(--fbg,var(--today));font-weight:800;font-size:18px}
 
 .toast{display:flex;align-items:center;gap:16px;position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);background:var(--text);color:var(--bg);font-size:14px;font-weight:500;
-  padding:11px 18px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:40;white-space:nowrap}
+  padding:11px 18px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:65;white-space:nowrap}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 @property --accent{syntax:'<color>';inherits:true;initial-value:#FF5B47}
