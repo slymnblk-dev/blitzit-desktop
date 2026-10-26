@@ -205,3 +205,12 @@
   .mxw-also button:last-child{border-bottom:0}
   .mxw-also span{flex:1;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mxw-also small{font-size:12.5px;color:var(--muted)}
 }
+/* QA: calmer, steadier popup */
+.mx-u{font-style:normal;font-size:.42em;font-weight:700;letter-spacing:0;margin-left:2px;color:var(--muted)}
+.mx-bs{flex:1 1 auto;min-width:0;display:flex;justify-content:flex-end;overflow:hidden}
+.mx-bs svg{max-width:100%;height:auto}
+.mx-fc{overflow:hidden}
+.mx-ht b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mx-card[data-look="item"] .mx-ht b,.mx-card[data-look="form"] .mx-ht b{font-size:22px}
+#mxPg .primary,#mxAsk .primary{background:var(--today);color:#fff}
+.mx-fn{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
