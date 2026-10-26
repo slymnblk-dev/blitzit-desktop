@@ -173,6 +173,7 @@ test('habits page: double tap ticks once, Escape closes menu then page, Sunrise 
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.habits = true; S.cfg.wHabits = true; S.cfg.hwStyle = 'tiles'; const sp = S.spaces[0].id;
+    S.cfg.weekStart = new Date().getDay() === 1 ? 0 : 1; // the week grid always has a past day, whatever weekday the tests run on
     S.habits = ['Water', 'Read', 'Walk'].map((n, i) => ({ id: 'h' + i, name: n, e: '', space: sp, days: [0,1,2,3,4,5,6], done: {}, created: Date.now() - 30 * DAY }));
     save(); applySettings(); openRhythm(); });
   const done = () => page.evaluate(() => S.habits.map(h => !!h.done[today()]));
@@ -211,6 +212,7 @@ test('habits: reorder by dragging or arrow keys, past-day toast with Undo, strea
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.habits = true; S.cfg.wHabits = true; S.cfg.hwStyle = 'one'; const sp = S.spaces[0].id;
+    S.cfg.weekStart = new Date().getDay() === 1 ? 0 : 1; // the week grid always has a past day, whatever weekday the tests run on
     const past = {}; for (let i = 1; i <= 12; i++) { const d = new Date(); d.setDate(d.getDate() - i); past[dkey(d)] = 1; }
     S.habits = ['Water', 'Read', 'Walk'].map((n, i) => ({ id: 'h' + i, name: n, e: '', space: sp, days: [0,1,2,3,4,5,6], done: i === 0 ? { ...past } : {}, created: Date.now() - 30 * DAY }));
     save(); applySettings(); goHome(); });
