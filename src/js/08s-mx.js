@@ -319,6 +319,7 @@ const mxIt=x=>x.kind==='kpi'?{id:`kpi:${x.k.id}:${x.sp}`,name:x.k.name,v:mxKpiNo
   :{id:`okr:${x.o.id}:${x.sp}`,name:x.o.name,v:Math.round(x.p*100)+'%',t:''};
 function mxHome(){if(!mxOn()||C().wMx===false)return '';const its=mxHomeItems();if(!its.length)return '';const look=mxHwLook(),hot=x=>x.behind>.15?' behind':'';
   const head=`<button class="mxw-h" data-mxhw="${mxIt(its[0]).id}" data-mxhwall><span class="mxw-i">${MX_ICON}</span><b>KPIs & OKRs</b><small>${its.length} tracked</small>${CHEV}</button>`;
+  if(look==='focus'&&mxPhone())return mxRingRow(its);
   if(look==='focus'){const x=its[0],it=mxIt(x),k=x.kind==='kpi'?x.k:null;
     const sub=k?(()=>{const left=mxDays(mxShift(k.period,mxStart(k.period,Date.now()),1)),tg=+k.target,v=mxKpiNow(k)??0;return `${k.kind!=='last'&&k.better!=='down'&&tg>v?`${mxFmt(tg-v,k.unit)} to go · `:''}${left} ${left===1?'day':'days'} left`})():mxOkrWhen(x.o);
     return `<div class="mxw mxw-f${hot(x)}"><button class="mxw-main" data-mxhw="${it.id}"><span class="mx-eye hot">${k?`KPI · ${MX_PER[k.period]}`:'OKR'}${its.length>1?` · ${its.length-1} more`:''}</span><b class="mxw-n">${esc(it.name)}</b>
@@ -336,3 +337,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-mxhw]');if
   if(b.hasAttribute('data-mxhwall'))return;
   if(kind==='kpi'){mxView={kind:'kpi',id};mxDraw();if(b.hasAttribute('data-mxhwlog'))setTimeout(()=>{const i=$('mxLogIn');if(i)i.focus()},80)}
   else{mxTab='okr';const its=mxItems(mxSpaceNow());const i=its.findIndex(x=>x.kind==='okr'&&String(x.o.id)===id);if(i>=0)mxFocusI=i;mxDraw()}},true);
+
+/* phones, Focus look: one calm row like the habit row: a ring with the number, the name, the goal and time left, and a round + */
+function mxRingRow(its){const x=its[0],it=mxIt(x),k=x.kind==='kpi'?x.k:null,r=22,C2=2*Math.PI*r;
+  const sub=k?(()=>{const left=mxDays(mxShift(k.period,mxStart(k.period,Date.now()),1));return `Goal ${mxFmt(+k.target,k.unit)}${mxUw(k.unit).replace(/<[^>]+>/g,'')} · ${left} ${left===1?'day':'days'} left`})():mxOkrWhen(x.o);
+  const more=its.length>1?` · +${its.length-1} more`:'';
+  return `<div class="mxw mxw-rr${x.behind>.15?' behind':''}"><button class="mxw-main" data-mxhw="${it.id}" aria-label="${esc(it.name)}: ${it.v}${it.t?' of '+it.t:''}">
+    <span class="mxw-rg"><svg viewBox="0 0 52 52" aria-hidden="true"><circle class="r0" cx="26" cy="26" r="${r}"/><circle class="r1" cx="26" cy="26" r="${r}" style="stroke-dasharray:${(C2*x.p).toFixed(1)} ${C2.toFixed(1)}"/></svg><b>${it.v}</b></span>
+    <span class="mxw-rt"><b>${esc(it.name)}</b><small>${esc(sub)}${more}</small></span></button>
+    ${k&&k.src!=='tasks'?`<button class="mxw-plus" data-mxhw="${it.id}" data-mxhwlog aria-label="Log a number for ${esc(it.name)}">${PLUS_S}</button>`:''}</div>`}

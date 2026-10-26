@@ -7,7 +7,7 @@ test('phone Home: Also today card, Spaces, tab bar that moves between pages', as
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.evaluate(() => {
-    S.cfg.habits = true; S.cfg.goals = true; S.cfg.wHabits = true; S.cfg.hwStyle = 'one';
+    S.cfg.habits = true; S.cfg.goals = true; S.cfg.wHabits = true; S.cfg.hwStyle = 'one'; S.cfg.homeAlso = 'list';
     S.habits = [{ id: 'h1', name: 'Drink water', e: '', space: null, days: [0, 1, 2, 3, 4, 5, 6], done: {}, created: Date.now() }];
     S.goals = [{ id: 'g1', name: 'Run a half marathon', e: '', space: null, why: '', due: gPlus(2), created: Date.now(), star: true, ms: [{ id: 'm1', t: '10 km', done: false }] }];
     S.tasks.push({ id: 91, title: 'Renew passport', stage: 'backlog', list: null, est: 30, subs: [], notes: '', repeat: 'none', inbox: true, created: Date.now() });
@@ -71,5 +71,37 @@ test('computers keep the sidebar: no tab bar', async ({ page }) => {
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.habits = true; save(); applySettings(); goHome(); });
   await expect(page.locator('#tabBar')).toBeHidden();
+  noErrors(errors);
+});
+
+test('phone Home: Also today as Switch (default) or Tiles; the KPI shows as a ring row', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => {
+    S.cfg.habits = true; S.cfg.goals = true; S.cfg.wHabits = true; S.cfg.hwStyle = 'one'; S.cfg.mx = true;
+    S.habits = [{ id: 'h1', name: 'Drink water', e: '', space: null, days: [0, 1, 2, 3, 4, 5, 6], done: {}, created: Date.now() }];
+    S.goals = [{ id: 'g1', name: 'Run a half marathon', e: '', space: null, why: '', due: gPlus(2), created: Date.now(), star: true, ms: [{ id: 'm1', t: '10 km', done: false }] }];
+    S.kpis = [{ id: 1, space: S.spaces[0].id, name: 'Outreach messages', target: 50, unit: '', period: 'week', better: 'up', src: 'both', kind: 'sum', created: Date.now(), log: [{ id: 9, at: Date.now(), v: 12 }] }];
+    save(); applySettings(); goHome();
+  });
+  // Switch: pills, one part at a time
+  await expect(page.locator('.app .hl-pills [data-hltab]')).toHaveText(['Habits', 'Goal', 'KPIs']);
+  await expect(page.locator('.app .hl-sw .hw-one')).toContainText('Drink water');
+  await expect(page.locator('.app .hl-sw .ns-card')).toHaveCount(0);
+  await page.locator('.app [data-hltab="goal"]').click();
+  await expect(page.locator('.app .hl-sw .ns-card')).toContainText('Run a half marathon');
+  await page.locator('.app [data-hltab="mx"]').click();
+  await expect(page.locator('.app .hl-sw .mxw-rr')).toContainText('Outreach messages');
+  await expect(page.locator('.app .hl-sw .mxw-rg b')).toHaveText('12');
+  // the round + opens the KPI ready to log
+  await page.locator('.app .hl-sw .mxw-plus').click();
+  await expect(page.locator('#mxPg')).toHaveClass(/on/);
+  await page.keyboard.press('Escape'); await page.keyboard.press('Escape');
+  // Tiles: goal and habits side by side, KPI below; Done on the habit tile ticks it
+  await page.evaluate(() => setCfg('homeAlso', 'tiles'));
+  await expect(page.locator('.app .hl-pair .hl-tile')).toHaveCount(2);
+  await expect(page.locator('.app .hl-tiles .mxw-rr')).toHaveCount(1);
+  await page.locator('.app .hl-hab .hw-done').click();
+  expect(await page.evaluate(() => !!S.habits[0].done[today()])).toBe(true);
   noErrors(errors);
 });

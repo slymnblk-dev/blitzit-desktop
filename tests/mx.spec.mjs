@@ -145,7 +145,7 @@ for (const [w, h, look] of [[390, 844, 'focus'], [1400, 900, 'bars']]) {
       save(); goHome(); render(); });
     const wd = page.locator('.mxw:visible');
     await expect(wd).toHaveCount(1);
-    await expect(wd).toHaveClass(new RegExp(look === 'focus' ? 'mxw-f' : 'mxw-b'));
+    await expect(wd).toHaveClass(new RegExp(look === 'focus' ? 'mxw-rr' : 'mxw-b'));
     await page.evaluate(() => setCfg('mxHw', 'rings'));
     await expect(page.locator('.mxw-r:visible .mxw-ring')).toHaveCount(2);
     // tap a KPI: the popup opens on it, for its own space, even from Home

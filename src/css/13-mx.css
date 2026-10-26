@@ -220,3 +220,17 @@
 .mx-fc.behind .mx-bs{color:var(--week)}
 .mx-fc.behind .mx-bar i,.mx-bar.late i{background:var(--week)}
 @media (max-width:699px){.mx-kr .mx-sp{display:none}}
+
+/* phones, Focus look on Home: the ring row */
+.mxw-rr{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px}
+.mxw-rr .mxw-main{flex-direction:row;align-items:center;gap:12px}
+.mxw-rg{position:relative;flex:none;width:48px;height:48px}
+.mxw-rg svg{width:48px;height:48px;transform:rotate(-90deg);display:block}
+.mxw-rg circle{fill:none;stroke-width:4.5}.mxw-rg .r0{stroke:var(--surface2)}.mxw-rg .r1{stroke:var(--today);stroke-linecap:round;transition:stroke-dasharray .6s var(--ease)}
+.mxw-rr.behind .mxw-rg .r1{stroke:var(--week)}
+.mxw-rg b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mxw-rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mxw-rt b{font-size:16px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mxw-rt small{font-size:13px;line-height:1.35;color:var(--muted)}
+.mxw-plus{flex:none;width:44px;height:44px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;transition:transform .15s}
+.mxw-plus:active{transform:scale(.92)}.mxw-plus svg{width:18px;height:18px;stroke-width:2.6}
