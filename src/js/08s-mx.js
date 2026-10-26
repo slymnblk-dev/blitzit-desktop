@@ -29,6 +29,10 @@ function mxStart(per,at){const d=new Date(at);d.setHours(0,0,0,0);
   else if(per==='month')d.setDate(1);else{d.setDate(1);d.setMonth(Math.floor(d.getMonth()/3)*3)}return d.getTime()}
 function mxShift(per,start,n){const d=new Date(start);if(per==='week')d.setDate(d.getDate()+7*n);else d.setMonth(d.getMonth()+(per==='month'?1:3)*n);return d.getTime()}
 const mxBig=(v,unit)=>{if(v==null)return '—';const u=(unit||'').trim();if(u==='%')return `${mxN(v)}<i class="mx-u">%</i>`;if(u==='€'||u==='$'||u==='£')return `<i class="mx-u">${u}</i>${mxN(v)}`;return mxN(v)};
+/* word units (hours, calls…) sit after the target; symbols (% € $ £) sit on the number */
+const mxUw=unit=>{const u=(unit||'').trim();return !u||u==='%'||u==='€'||u==='$'||u==='£'?'':` <i class="mx-uw">${esc(u)}</i>`};
+/* behind pace: less done than the time gone by (same rule as the Home widget) → gold instead of coral */
+function mxLate(k){const now=Date.now(),s=mxStart(k.period,now),e=mxShift(k.period,s,1);return (now-s)/(e-s)-mxKpiP(k)>.15}
 const MX_PER={week:'this week',month:'this month',quarter:'this quarter'};
 function mxValIn(item,from,to){const es=(item.log||[]).filter(e=>e.at>=from&&e.at<to);
   if(item.kind==='last'){const all=(item.log||[]).filter(e=>e.at<to);if(!all.length)return null;return all.reduce((a,b)=>b.at>=a.at?b:a).v}
@@ -109,7 +113,7 @@ function mxDraw(){if(!mxOpen)return;const sp=mxSpaceNow();if(!sp){mxClose();retu
 /* ---- Scoreboard ---- */
 function mxKpiRow(k){const v=mxKpiNow(k),p=mxKpiP(k);
   return `<button class="mx-kr" data-mxk="${k.id}"><span class="mx-kt"><b>${esc(k.name)}</b><small>${MX_PER[k.period]||''}${k.better==='down'?' · lower is better':''}</small></span>
-    <span class="mx-sp${p>=.7?'':' low'}">${mxSpark(mxKpiHist(k,6))}</span><span class="mx-kv"><b>${v==null&&k.kind==='last'?'—':mxFmt(v??0,k.unit)}</b><small>/ ${mxFmt(+k.target,k.unit)}</small></span></button>`}
+    <span class="mx-sp${mxLate(k)?' low':''}">${mxSpark(mxKpiHist(k,6))}</span><span class="mx-kv"><b>${v==null&&k.kind==='last'?'—':mxFmt(v??0,k.unit)}</b><small>/ ${mxFmt(+k.target,k.unit)}${mxUw(k.unit)}</small></span></button>`}
 function mxOkrCard(o){const p=mxOkrP(o);
   return `<div class="mx-okr${o.closed?' past':''}"><button class="mx-oh" data-mxo="${o.id}"><span class="mx-kt"><b>${esc(o.name)}</b><small>${mxOkrWhen(o)}</small></span><span class="mx-op">${Math.round((o.closed?o.score||0:p)*100)}%</span></button>
     ${o.closed?'':o.krs.map(r=>`<button class="mx-krr" data-mxr="${o.id}:${r.id}"><span class="mx-krt"><span>${esc(r.name)}</span><b>${mxFmt(mxKrNow(r),r.unit)}${mxKrKind(r)==='sum'?` <small>/ ${mxFmt(+r.target,r.unit)}</small>`:` <small>→ ${mxFmt(+r.target,r.unit)}</small>`}</b></span>
@@ -133,8 +137,8 @@ function mxFocusView(sp,sname){const its=mxItems(sp);
   mxFocusI=Math.max(0,Math.min(mxFocusI,its.length-1));const it=its[mxFocusI];let card;
   if(it.kind==='kpi'){const k=it.k,v0=mxKpiNow(k),v=v0??0,p=mxKpiP(k),s=mxStart(k.period,Date.now()),left=mxDays(mxShift(k.period,s,1)),t=+k.target;
     const togo=k.better==='down'||k.kind==='last'?'':Math.max(0,t-v);
-    card=`<div class="mx-fc" data-mxswipe><span class="mx-eye hot">KPI · ${MX_PER[k.period]||''}</span><b class="mx-fn">${esc(k.name)}</b>
-      <div class="mx-big"><span class="mx-bn">${v0==null&&k.kind==='last'?'—':mxBig(v,k.unit)}</span><span class="mx-bt">/ ${mxFmt(t,k.unit)}</span><span class="mx-bs">${mxSpark(mxKpiHist(k,6),118,40)}</span></div>
+    card=`<div class="mx-fc${mxLate(k)?' behind':''}" data-mxswipe><span class="mx-eye hot">KPI · ${MX_PER[k.period]||''}</span><b class="mx-fn">${esc(k.name)}</b>
+      <div class="mx-big"><span class="mx-bn">${v0==null&&k.kind==='last'?'—':mxBig(v,k.unit)}</span><span class="mx-bt">/ ${mxFmt(t,k.unit)}${mxUw(k.unit)}</span><span class="mx-bs">${mxSpark(mxKpiHist(k,6),118,40)}</span></div>
       <span class="mx-bar big"><i style="width:${(p*100).toFixed(1)}%"></i></span>
       <div class="mx-ff"><small>${togo?`${mxFmt(togo,k.unit)} to go · `:''}${left} ${left===1?'day':'days'} left${k.better==='down'?' · lower is better':''}</small>${k.src==='tasks'?`<button class="mx-log" data-mxk="${k.id}">Open</button>`:`<button class="mx-log" data-mxk="${k.id}" data-mxlogfocus>${PLUS_S}Log</button>`}</div></div>`}
   else{const o=it.o,p=mxOkrP(o);
@@ -143,7 +147,7 @@ function mxFocusView(sp,sname){const its=mxItems(sp);
       ${o.krs.map(r=>`<button class="mx-krr" data-mxr="${o.id}:${r.id}"><span class="mx-krt"><span>${esc(r.name)}</span><b>${mxFmt(mxKrNow(r),r.unit)} <small>${mxKrKind(r)==='sum'?'/':'→'} ${mxFmt(+r.target,r.unit)}</small></b></span><span class="mx-bar"><i style="width:${(mxKrP(r)*100).toFixed(1)}%"></i></span></button>`).join('')}
       <div class="mx-ff"><small></small><button class="mx-log" data-mxo="${o.id}">Edit</button></div></div>`}
   const dots=its.length>1?`<div class="mx-dots">${its.map((x,i)=>`<button data-mxdot="${i}" class="${i===mxFocusI?'on':''}" aria-label="Show ${esc(x.kind==='kpi'?x.k.name:x.o.name)}"></button>`).join('')}</div>`:'';
-  const rest=its.map((x,i)=>i===mxFocusI?'':x.kind==='kpi'?`<button class="mx-ar" data-mxdot="${i}"><span>${esc(x.k.name)}</span><b>${mxKpiNow(x.k)==null&&x.k.kind==='last'?'—':mxFmt(mxKpiNow(x.k)??0,x.k.unit)}</b><small>/ ${mxFmt(+x.k.target,x.k.unit)}</small></button>`
+  const rest=its.map((x,i)=>i===mxFocusI?'':x.kind==='kpi'?`<button class="mx-ar" data-mxdot="${i}"><span>${esc(x.k.name)}</span><b>${mxKpiNow(x.k)==null&&x.k.kind==='last'?'—':mxFmt(mxKpiNow(x.k)??0,x.k.unit)}</b><small>/ ${mxFmt(+x.k.target,x.k.unit)}${mxUw(x.k.unit)}</small></button>`
     :`<button class="mx-ar" data-mxdot="${i}"><span>OKR · ${esc(x.o.name)}</span><b class="hot">${Math.round(mxOkrP(x.o)*100)}%</b></button>`).join('');
   const ks=mxKpis(sp).length,os=mxOkrs(sp,false).length;
   return `${mxHead(sname,'Focus')}<div class="mx-body mx-focus"><div class="mx-fl">${card}${dots}</div>
@@ -160,8 +164,8 @@ function mxItemView(sname){const f=mxViewItem();if(!f){mxView=null;return mxBoar
   const ents=(it.log||[]).slice().sort((a,b)=>b.at-a.at).slice(0,12);
   const when=at=>{const d=new Date(at);return d.toDateString()===new Date().toDateString()?d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}):d.toLocaleDateString(undefined,{month:'short',day:'numeric'})};
   return `${mxHead(isK?'KPI':'Key result',esc(it.name),true)}<div class="mx-body mx-item">
-    <div class="mx-big"><span class="mx-bn">${mxBig(v,it.unit)}</span><span class="mx-bt">${last&&!isK?'→':'/'} ${mxFmt(t,it.unit)}</span></div>
-    <span class="mx-bar big"><i style="width:${(p*100).toFixed(1)}%"></i></span><small class="mx-isub">${sub}</small>
+    <div class="mx-big"><span class="mx-bn">${mxBig(v,it.unit)}</span><span class="mx-bt">${last&&!isK?'→':'/'} ${mxFmt(t,it.unit)}${mxUw(it.unit)}</span></div>
+    <span class="mx-bar big${isK&&mxLate(it)?' late':''}"><i style="width:${(p*100).toFixed(1)}%"></i></span><small class="mx-isub">${sub}</small>
     ${canLog?`<div class="mx-logrow"><input id="mxLogIn" type="number" inputmode="decimal" step="any" placeholder="${last?'New value':'Amount, e.g. 5'}" aria-label="${last?'Set the latest value':'Add an amount'}"><button class="primary" data-mxadd>${last?'Set':'Add'}</button></div>`
       :`<p class="mx-hint">This KPI moves with done tasks. Link a task from its details: “Counts toward”.</p>`}
     <h3 class="mx-sh">History</h3>
@@ -291,7 +295,7 @@ function mxPill(t,P){if(!mxOn()||t.inbox)return '';const links=(t.mx||[]).map(mx
 function mxPicks(t){const cs=mxCands(t);if(!cs.length)return `<p class="mx-pkh">Add a KPI or OKR from the gauge on this space’s page first.</p>`;
   return cs.map(c=>{const l=(t.mx||[]).find(x=>mxKey(x)===mxKey(c));
     return `<span class="mx-pkw${l?' on':''}"><button class="pk ${l?'on':''}" data-v="${mxKey(c)}">${c.kind==='kr'?'KR · ':''}${esc(c.name)}</button>${l?`<label class="mx-amt" title="Adds this much when the task is done. Empty: ask me.">+<input type="number" inputmode="decimal" step="any" min="0" data-mxamt="${mxKey(c)}" value="${l.add==null?'':esc(String(l.add))}" placeholder="ask" aria-label="Adds when done (empty: ask me)"></label>`:''}</span>`}).join('')
-    +`<p class="mx-pkh">Done adds the amount. Empty asks you. Reopening takes it back off.</p>`}
+    +`<p class="mx-pkh">Added when done. Leave empty to be asked.</p>`}
 function mxPickToggle(t,v){const [kind,a,b]=v.split(':');const link=kind==='kr'?{id:b,okr:a}:{id:a};
   const key=mxKey(link);t.mx=Array.isArray(t.mx)?t.mx:[];const has=t.mx.find(x=>mxKey(x)===key);
   if(has)t.mx=t.mx.filter(x=>x!==has);else{const c=mxCands(t).find(x=>mxKey(x)===key);if(c)t.mx.push(c.okr!=null?{id:c.id,okr:c.okr,add:1}:{id:c.id,add:1})}
