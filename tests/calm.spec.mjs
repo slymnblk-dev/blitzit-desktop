@@ -12,7 +12,7 @@ for (const [w, h] of [[390, 844], [1400, 900]]) {
       save(); render(); goHome(); });
     await page.waitForTimeout(1200);
     await page.locator('[data-hbt="h0"]:visible').first().click();
-    const r = await page.evaluate(() => new Promise(res => { const el = () => [...document.querySelectorAll('.hw')].find(x => x.offsetParent); const first = el(); let min = 1; const t0 = performance.now();
+    const r = await page.evaluate(() => new Promise(res => { const el = () => [...document.querySelectorAll('.hw, .bn-hab')].find(x => x.offsetParent); const first = el(); let min = 1; const t0 = performance.now();
       (function f() { const e = el(); if (e) min = Math.min(min, +getComputedStyle(e).opacity); if (performance.now() - t0 < 1500) requestAnimationFrame(f); else res([min, e !== first]); })(); }));
     expect(r[1]).toBe(true); // it did redraw
     expect(r[0]).toBe(1);    // but never faded

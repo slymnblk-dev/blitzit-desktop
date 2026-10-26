@@ -189,7 +189,7 @@ modesPage=function(){
      ${row('Page view',`<div class="segc">${sOpt('hbView','grid','Week grid')}${sOpt('hbView','sun','Sunrise')}</div>`)}
      ${row('Evening check-in',tg('hbCi'),c.closeDay?'Close the day covers this while it’s on':'A short card on Home when habits are left')}
      ${row('On Home',tg('wHabits'),'A habits card on Home. Tap to tick.')}
-     ${c.wHabits?row('Widget style',`<div class="segc">${sOpt('hwStyle','auto','Default')}${sOpt('hwStyle','one','One at a time')}${sOpt('hwStyle','tiles','Big tiles')}${sOpt('hwStyle','pills','Pills')}</div>`,'Default: one at a time on phones, big tiles on computers'):''}`)}
+     ${c.wHabits?row('Widget style',`<div class="segc">${sOpt('hwStyle','auto','Default')}${sOpt('hwStyle','one','One at a time')}${sOpt('hwStyle','tiles','Big tiles')}${sOpt('hwStyle','pills','Pills')}</div>`,'On phones. Default: one at a time'):''}`)}
   ${card('goals',MD_GOAL,'Goals','Big outcomes, broken into milestones you can climb',gOn,
     `${gStarters()}${link('goals','Your goals',gn?`${gn} of ${G_MAX} active`:'None yet')}
      ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','path','Path')}${sOpt('gView','poster','Poster')}</div>`)}
@@ -199,7 +199,7 @@ modesPage=function(){
      ${row('On phones',`<div class="segc">${sOpt('mxPh','focus','One at a time')}${sOpt('mxPh','board','Scoreboard')}</div>`)}
      ${row('On computers',`<div class="segc">${sOpt('mxDk','board','Scoreboard')}${sOpt('mxDk','focus','One at a time')}</div>`)}
      ${row('On Home',tg('wMx'),'Your KPIs and OKRs from every space, the ones furthest behind first')}
-     ${c.wMx!==false?row('Widget style',`<div class="segc">${sOpt('mxHw','auto','Default')}${sOpt('mxHw','focus','Focus')}${sOpt('mxHw','rings','Rings')}${sOpt('mxHw','bars','Bars')}</div>`,'Default: Focus on phones, Bars on computers'):''}`)}
+     ${c.wMx!==false?row('Widget style',`<div class="segc">${sOpt('mxHw','auto','Default')}${sOpt('mxHw','focus','Focus')}${sOpt('mxHw','rings','Rings')}${sOpt('mxHw','bars','Bars')}</div>`,'On phones. Default: Focus'):''}`)}
   </div>
   <div class="set-sec"><h3>Everyday</h3><div class="md-list">
   ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits and tomorrow’s first task',!!c.closeDay,'')}

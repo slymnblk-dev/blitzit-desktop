@@ -138,7 +138,7 @@ test('OKRs: create with key results, progress, close out to Past, copy to next q
   noErrors(errors);
 });
 
-for (const [w, h, look] of [[390, 844, 'focus'], [1400, 900, 'bars']]) {
+for (const [w, h, look] of [[390, 844, 'focus']]) {
   test(`Home widget: ${look} by default at ${w}px, rings by choice, tap opens the item, can be turned off`, async ({ page }) => {
     await page.setViewportSize({ width: w, height: h });
     const errors = await openApp(page);
@@ -182,5 +182,20 @@ test('OKR form on a phone: a missing target is shown under the field, the name f
   await expect(page.locator('#mxPg [data-mxkr="0:target"]')).toHaveValue('12');
   await page.locator('#mxPg [data-mxsave]').click();
   await expect.poll(() => page.evaluate(() => S.okrs.map(o => o.krs.map(r => [r.name, r.target])))).toEqual([[['Book 12 demos', 12]]]);
+  noErrors(errors);
+});
+
+test('computer Home: the KPI card opens the item, and hides with KPIs on Home off', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { setCfg('mx', true); const sp = S.spaces[0].id, now = Date.now();
+    S.kpis = [{ id: 1, space: sp, name: 'Outreach messages', target: 50, unit: '', period: 'week', better: 'up', src: 'both', kind: 'sum', created: now, log: [{ id: 9, at: now, v: 38 }] }];
+    save(); goHome(); render(); });
+  await expect(page.locator('#dHome .bn-kpi')).toContainText('Outreach messages');
+  await page.locator('#dHome .bn-kpi').click();
+  await expect(page.locator('#mxIn .mx-ht b')).toHaveText('Outreach messages');
+  await page.keyboard.press('Escape'); await page.keyboard.press('Escape');
+  await page.evaluate(() => setCfg('wMx', false));
+  await expect(page.locator('#dHome .bn-kpi')).toHaveCount(0);
   noErrors(errors);
 });

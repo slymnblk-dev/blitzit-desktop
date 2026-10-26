@@ -847,47 +847,16 @@ body.no-amb .amb-btn{display:none!important}
 .sp-bars,.sp-next{display:none}
 .sp-bars i{display:block;height:100%;border-radius:3px;min-width:6px}
 .sp-bars .sp-bars-0{flex:1;background:var(--surface2)}
-.d-grid .sp-card .sp-next{display:flex;align-items:baseline;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px;min-width:0}
 .sp-nk{color:var(--muted);flex:none}
 .sp-nt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
 /* Today first, Calm style: the space bars in quiet greys */
-:root[data-home="calm"] .hf-sp .sp-bars i:not(.sp-bars-0){background:color-mix(in srgb,var(--text) 22%,transparent)!important}
 /* Today strip: "Up next" instead of chips */
-.ts-up{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;font-size:15px}
-.ts-up span{color:color-mix(in srgb,var(--muted) 85%,var(--text));flex:none}
-.ts-up b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ---------- desktop Home, "Today first" layout ---------- */
-.hf{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start;max-width:1400px;animation:cardIn .45s cubic-bezier(.2,.8,.2,1) both}
-.hf-main{background:var(--surface);border-radius:24px;padding:22px 26px 14px;box-shadow:0 0 0 1px var(--line)}
-.hf-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px}
-.hf-head>div{display:flex;flex-direction:column}
-.hf-head b{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
-.hf-tk{display:flex;align-items:center;gap:14px;padding:13px 6px;margin:0 -6px;border-top:1px solid var(--line);border-radius:12px;cursor:pointer;transition:background .15s,opacity .25s,transform .25s}
-.hf-tk:hover{background:color-mix(in srgb,var(--text) 4%,transparent)}
-.hf-tk:focus-visible{outline:2px solid var(--text);outline-offset:-2px}
 .hf-ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--today);flex:none;transition:background .2s,transform .2s}
 .hf-ck:hover{background:color-mix(in srgb,var(--today) 18%,transparent)}
-.hf-tk.done{opacity:.35;transform:translateX(6px)}
-.hf-tk.done .hf-ck{background:var(--today)}
-.hf-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.hf-t b{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hf-t small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
-.hf-t small i{width:7px;height:7px;border-radius:2px;margin-left:4px}
-.hf-e{font-size:13px;font-weight:600;color:var(--muted)}
-.hf-empty{margin:10px 0 12px;color:var(--muted);font-size:14.5px;line-height:1.5}
-.hf-side{display:flex;flex-direction:column;gap:10px}
-.hf-cap{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:2px 4px 0}
-.hf-sp{display:flex;flex-direction:column;gap:12px;width:100%;padding:14px 16px;border-radius:18px;background:var(--surface);box-shadow:0 0 0 1px var(--line);text-align:left;transition:box-shadow .15s,transform .15s}
-.hf-sp:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 22%,transparent);transform:translateY(-1px)}
-.hf-sph{display:flex;align-items:center;gap:10px;min-width:0}
-.hf-ic{width:30px;height:30px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;font-size:15px;font-weight:800;flex:none}
-.hf-sph b{font-size:15px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hf-n{margin-left:auto;font-size:12.5px;color:var(--muted);white-space:nowrap}
-.hf-sp .sp-bars{display:flex;gap:4px;height:5px}
-.hf-new{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:18px;color:var(--muted);font-weight:600;box-shadow:inset 0 0 0 1.5px var(--line)}
-.hf-new svg{width:16px;height:16px}
-.hf-new:hover{color:var(--text)}
+[data-hft].done{opacity:.35;transform:translateX(6px)}
+[data-hft].done .hf-ck{background:var(--today)}
 
 /* ---------- Inbox page ---------- */
 .inbox-pg{position:fixed;inset:0;z-index:19;background:var(--bg);overflow-y:auto;overscroll-behavior:contain;visibility:hidden;opacity:0;transform:translateX(24px);
