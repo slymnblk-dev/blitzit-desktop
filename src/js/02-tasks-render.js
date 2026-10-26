@@ -158,7 +158,7 @@ function homeHTML(){
    Tiles or pills (a habits style you can pick) and the backup reminder keep their own card. */
 function homeAlso(){
   const hw=hbWidget(),one=!!hw&&hwStyle()==='one',nd=ciCard()||reviewCard(),bk=nd?'':backupCard();
-  const rows=[nsCard(),one?hw:'',nd].filter(Boolean);
+  const rows=[nsCard(),one?hw:'',typeof mxHome==='function'?mxHome():'',nd].filter(Boolean);
   return (rows.length?`<section class="also" aria-label="Also today"><h2 class="sec-h">Also today</h2><div class="also-in">${rows.join('')}</div></section>`:'')+(one?'':hw)+bk;
 }
 function render(dir){

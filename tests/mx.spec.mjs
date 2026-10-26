@@ -134,3 +134,29 @@ test('OKRs: create with key results, progress, close out to Past, copy to next q
   await expect(page.locator('#setIn .md-card[data-md="mx"] [data-k="mxPh"]')).toHaveCount(2);
   noErrors(errors);
 });
+
+for (const [w, h, look] of [[390, 844, 'focus'], [1400, 900, 'bars']]) {
+  test(`Home widget: ${look} by default at ${w}px, rings by choice, tap opens the item, can be turned off`, async ({ page }) => {
+    await page.setViewportSize({ width: w, height: h });
+    const errors = await openApp(page);
+    await page.evaluate(() => { setCfg('mx', true); const sp = S.spaces[0].id, now = Date.now();
+      S.kpis = [{ id: 1, space: sp, name: 'Outreach messages', target: 50, unit: '', period: 'week', better: 'up', src: 'both', kind: 'sum', created: now, log: [{ id: 9, at: now, v: 38 }] },
+        { id: 2, space: sp, name: 'Demos booked', target: 5, unit: '', period: 'month', better: 'up', src: 'tasks', kind: 'sum', created: now, log: [] }];
+      save(); goHome(); render(); });
+    const wd = page.locator('.mxw:visible');
+    await expect(wd).toHaveCount(1);
+    await expect(wd).toHaveClass(new RegExp(look === 'focus' ? 'mxw-f' : 'mxw-b'));
+    await page.evaluate(() => setCfg('mxHw', 'rings'));
+    await expect(page.locator('.mxw-r:visible .mxw-ring')).toHaveCount(2);
+    // tap a KPI: the popup opens on it, for its own space, even from Home
+    await page.locator('.mxw-r:visible .mxw-ring', { hasText: 'Outreach' }).click();
+    await expect(page.locator('#mxPg')).toHaveClass(/on/);
+    await expect(page.locator('#mxIn .mx-ht b')).toHaveText('Outreach messages');
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#mxPg')).not.toHaveClass(/on/);
+    await page.evaluate(() => setCfg('wMx', false));
+    await expect(page.locator('.mxw:visible')).toHaveCount(0);
+    noErrors(errors);
+  });
+}

@@ -16,7 +16,9 @@ const MX_ONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 function mxOn(){return !!(S.cfg&&S.cfg.mx)}
 const mxKpis=sp=>(S.kpis||[]).filter(k=>k.space===sp);
 const mxOkrs=(sp,closed)=>(S.okrs||[]).filter(o=>o.space===sp&&!!o.closed===!!closed);
-const mxSpaceNow=()=>S.space&&S.space!=='all'&&spaceOf(S.space)?S.space:null;
+var mxSpPick=null; // the Home widget opens the popup for an item's own space
+const mxSpaceIn=()=>S.space&&S.space!=='all'&&spaceOf(S.space)?S.space:null;
+const mxSpaceNow=()=>mxSpPick&&spaceOf(mxSpPick)?mxSpPick:mxSpaceIn();
 const mxPhone=()=>matchMedia('(max-width:699px)').matches;
 const mxLook=()=>{const v=mxPhone()?C().mxPh:C().mxDk;return v==='board'||v==='focus'?v:(mxPhone()?'focus':'board')};
 /* ---- numbers ---- */
@@ -89,10 +91,10 @@ $('mxAsk').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault()
 
 /* ---------- the popup ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="mx-pg" id="mxPg" role="dialog" aria-modal="true" aria-label="KPIs and OKRs"><div class="mx-card" id="mxIn"></div></div>');
-function mxOpenPop(){const sp=mxSpaceNow();if(!sp||!mxOn())return;mxOpen=true;mxView=null;mxDraft=null;mxPast=false;
+function mxOpenPop(pick){mxSpPick=pick||null;const sp=mxSpaceNow();if(!sp||!mxOn())return;mxOpen=true;mxView=null;mxDraft=null;mxPast=false;
   if(typeof closeSearch==='function')closeSearch();mxDraw();$('mxPg').classList.add('on');haptic(5);
   setTimeout(()=>{const b=$('mxIn').querySelector('.mx-x');if(b&&!mxPhone())b.focus()},60)}
-function mxClose(){if(!mxOpen)return;mxOpen=false;mxView=null;mxDraft=null;$('mxPg').classList.remove('on');const a=document.activeElement;if(a&&a.closest&&a.closest('#mxPg'))a.blur()}
+function mxClose(){if(!mxOpen)return;mxOpen=false;mxSpPick=null;mxView=null;mxDraft=null;$('mxPg').classList.remove('on');const a=document.activeElement;if(a&&a.closest&&a.closest('#mxPg'))a.blur()}
 function mxHead(eye,title,back){return `<div class="mx-h">${back?`<button class="mx-ib mx-back" data-mxback aria-label="Back">${BACK_SVG}</button>`:''}
   <div class="mx-ht"><span class="mx-eye">${eye}</span><b>${title}</b></div>
   ${back?'':`<button class="mx-ib" data-mxlook aria-label="${mxLook()==='board'?'Show one at a time':'Show the scoreboard'}" title="${mxLook()==='board'?'One at a time':'Scoreboard'}">${mxLook()==='board'?MX_ONE:MX_LIST}</button>`}
@@ -277,7 +279,8 @@ function mxAddLog(){const f=mxViewItem(),i=$('mxLogIn');if(!f||!i)return;const v
 /* ---------- the gauge button on a space's page (phone header and computer header) ---------- */
 document.querySelectorAll('[data-srch]').forEach(s=>s.insertAdjacentHTML('beforebegin',`<button class="icon-btn mx-btn" data-mxopen hidden aria-label="KPIs and OKRs" title="KPIs and OKRs">${MX_ICON}</button>`));
 document.addEventListener('click',e=>{if(e.target.closest('[data-mxopen]')){e.preventDefault();mxOpenPop()}});
-function mxBtns(){const on=mxOn()&&!!mxSpaceNow();document.querySelectorAll('[data-mxopen]').forEach(b=>{b.hidden=!on})}
+
+function mxBtns(){const on=mxOn()&&!!mxSpaceIn();document.querySelectorAll('[data-mxopen]').forEach(b=>{b.hidden=!on})}
 const _mxRender=render;
 render=function(d){_mxRender(d);try{mxBtns();if(mxOpen){if(!mxOn()||!mxSpaceNow())return mxClose();const a=document.activeElement;if(!(a&&a.closest&&a.closest('#mxPg')&&a.matches('input')))mxDraw()}}catch(err){console.error(err)}};
 
@@ -297,3 +300,34 @@ function mxMark(t){if(!mxOn()||!Array.isArray(t.mx)||!t.mx.length)return '';cons
 $('dPicker').addEventListener('input',e=>{const k=e.target.dataset.mxamt;if(!k||!cur)return;const l=(cur.mx||[]).find(x=>mxKey(x)===k);if(!l)return;
   const v=e.target.value;l.add=v===''?null:Math.max(0,+v||0);save()});
 $('dPicker').addEventListener('change',e=>{if(e.target.dataset.mxamt)render()});
+
+/* ---------- Home widget (Settings → Modes → KPIs & OKRs → On Home): every space's KPIs and OKRs, the ones furthest
+   behind first. Three looks: Focus number (one number that needs you, + Log), Rings, Bars (rows on phones, tiles on
+   computers). Default: Focus on phones, Bars on computers. Tap anything to open it in the popup. ---------- */
+function mxHomeItems(){const now=Date.now(),out=[];
+  (S.kpis||[]).forEach(k=>{if(!spaceOf(k.space))return;const s=mxStart(k.period,now),e=mxShift(k.period,s,1),p=mxKpiP(k);out.push({kind:'kpi',k,sp:k.space,p,behind:(now-s)/(e-s)-p})});
+  (S.okrs||[]).forEach(o=>{if(o.closed||!spaceOf(o.space))return;const s=new Date((o.start||dkey(o.created||now))+'T00:00').getTime(),e=mxEndMs(o),p=mxOkrP(o);
+    out.push({kind:'okr',o,sp:o.space,p,behind:Math.max(0,Math.min(1,(now-s)/Math.max(DAY,e-s)))-p})});
+  return out.sort((a,b)=>b.behind-a.behind)}
+const mxHwLook=()=>{const v=C().mxHw;return v==='focus'||v==='rings'||v==='bars'?v:(mxPhone()?'focus':'bars')};
+const mxIt=x=>x.kind==='kpi'?{id:`kpi:${x.k.id}:${x.sp}`,name:x.k.name,v:mxKpiNow(x.k)==null&&x.k.kind==='last'?'—':mxFmt(mxKpiNow(x.k)??0,x.k.unit),t:mxFmt(+x.k.target,x.k.unit)}
+  :{id:`okr:${x.o.id}:${x.sp}`,name:x.o.name,v:Math.round(x.p*100)+'%',t:''};
+function mxHome(){if(!mxOn()||C().wMx===false)return '';const its=mxHomeItems();if(!its.length)return '';const look=mxHwLook(),hot=x=>x.behind>.15?' behind':'';
+  const head=`<button class="mxw-h" data-mxhw="${mxIt(its[0]).id}" data-mxhwall><span class="mxw-i">${MX_ICON}</span><b>KPIs & OKRs</b><small>${its.length} tracked</small>${CHEV}</button>`;
+  if(look==='focus'){const x=its[0],it=mxIt(x),k=x.kind==='kpi'?x.k:null;
+    const sub=k?(()=>{const left=mxDays(mxShift(k.period,mxStart(k.period,Date.now()),1)),tg=+k.target,v=mxKpiNow(k)??0;return `${k.kind!=='last'&&k.better!=='down'&&tg>v?`${mxFmt(tg-v,k.unit)} to go · `:''}${left} ${left===1?'day':'days'} left`})():mxOkrWhen(x.o);
+    return `<div class="mxw mxw-f${hot(x)}"><button class="mxw-main" data-mxhw="${it.id}"><span class="mx-eye hot">${k?`KPI · ${MX_PER[k.period]}`:'OKR'}${its.length>1?` · ${its.length-1} more`:''}</span><b class="mxw-n">${esc(it.name)}</b>
+      <span class="mxw-big"><b>${it.v}</b>${it.t?`<small>/ ${it.t}</small>`:''}<small class="mxw-sub">${sub}</small></span></button>
+      ${k?`<span class="mxw-sp">${mxSpark(mxKpiHist(k,6),78,32)}</span>`:''}
+      ${its.length>1?`<span class="mxw-also">${its.slice(1,3).map(y=>{const j=mxIt(y);return `<button data-mxhw="${j.id}"><span>${esc(j.name)}</span><b>${j.v}</b>${j.t?`<small>/ ${j.t}</small>`:''}</button>`}).join('')}</span>`:''}
+      ${k&&k.src!=='tasks'?`<button class="mxw-log" data-mxhw="${it.id}" data-mxhwlog aria-label="Log a number for ${esc(it.name)}">${PLUS_S}Log</button>`:''}</div>`}
+  const top=its.slice(0,look==='rings'?3:4);
+  if(look==='rings'){const ring=x=>{const it=mxIt(x),r=27,C2=2*Math.PI*r;
+      return `<button class="mxw-ring${hot(x)}" data-mxhw="${it.id}" aria-label="${esc(it.name)}: ${it.v}${it.t?' of '+it.t:''}"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="r0" cx="32" cy="32" r="${r}"/><circle class="r1" cx="32" cy="32" r="${r}" style="stroke-dasharray:${(C2*x.p).toFixed(1)} ${C2.toFixed(1)}"/></svg><b>${it.v}</b><small>${esc(it.name)}</small></button>`};
+    return `<div class="mxw mxw-r">${head}<div class="mxw-rings">${top.map(ring).join('')}</div></div>`}
+  return `<div class="mxw mxw-b">${head}<div class="mxw-bars">${top.map(x=>{const it=mxIt(x);return `<button class="mxw-bar${hot(x)}" data-mxhw="${it.id}"><span class="mxw-bt"><span>${esc(it.name)}</span><b>${it.v}</b>${it.t?`<small>/ ${it.t}</small>`:''}</span><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span></button>`}).join('')}</div></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-mxhw]');if(!b)return;e.preventDefault();e.stopPropagation();
+  const [kind,id,sp]=b.dataset.mxhw.split(':');mxOpenPop(isNaN(+sp)?sp:+sp);if(!mxOpen)return;
+  if(b.hasAttribute('data-mxhwall'))return;
+  if(kind==='kpi'){mxView={kind:'kpi',id};mxDraw();if(b.hasAttribute('data-mxhwlog'))setTimeout(()=>{const i=$('mxLogIn');if(i)i.focus()},80)}
+  else{mxTab='okr';const its=mxItems(mxSpaceNow());const i=its.findIndex(x=>x.kind==='okr'&&String(x.o.id)===id);if(i>=0)mxFocusI=i;mxDraw()}},true);

@@ -3878,6 +3878,56 @@ button.hg-c:active{transform:scale(.88)}
 .mx-krn input[data-mxkr$=":unit"]{flex:1 1 auto;min-width:56px}
 #mxPg input[type=number],#mxAsk input[type=number],.mx-amt input{-moz-appearance:textfield;appearance:textfield}
 #mxPg input[type=number]::-webkit-inner-spin-button,#mxPg input[type=number]::-webkit-outer-spin-button,#mxAsk input::-webkit-inner-spin-button,.mx-amt input::-webkit-inner-spin-button,.mx-amt input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* ===== Home widget ===== */
+.mxw{background:var(--surface);border-radius:22px;margin:0 0 12px;animation:cardIn .45s var(--ease) both}
+@media (min-width:1100px){.mxw{margin-bottom:16px}}
+.mxw-h{width:100%;display:flex;align-items:center;gap:8px;padding:0;margin-bottom:12px;text-align:left;font:inherit;color:inherit}
+.mxw-h b{flex:1;font-size:15.5px}.mxw-h small{font-size:13px;color:var(--muted)}.mxw-h>svg{width:15px;height:15px;color:var(--muted)}
+.mxw-i{color:var(--today);display:grid}.mxw-i svg{width:16px;height:16px}
+/* Focus */
+.mxw-f{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px}
+.mxw-main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:0;text-align:left;font:inherit;color:inherit}
+.mxw-n{font-size:15.5px;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mxw-big{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 6px;margin-top:2px}
+.mxw-big>b{font-size:34px;font-weight:800;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.mxw-big>small{font-size:14px;color:var(--muted)}
+.mxw-big .mxw-sub{flex-basis:100%;font-size:12.5px}
+.mxw-sp{flex:none;color:var(--today)}
+.mxw-f.behind .mxw-sp,.mxw-f.behind .mx-eye{color:var(--week)}
+.mxw-log{flex:none;display:inline-flex;align-items:center;gap:5px;height:40px;padding:0 14px;border-radius:999px;background:var(--text);color:var(--bg);font-size:14px;font-weight:700;white-space:nowrap}
+.mxw-log svg{width:14px;height:14px}
+@media (max-width:380px){.mxw-sp{display:none}}
+/* Rings */
+.mxw-r,.mxw-b{padding:16px 16px 14px}
+.mxw-rings{display:flex;gap:6px}
+.mxw-ring{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;font:inherit;color:inherit}
+.mxw-ring svg{width:66px;height:66px;transform:rotate(-90deg)}
+.mxw-ring circle{fill:none;stroke-width:7}.mxw-ring .r0{stroke:var(--surface2)}.mxw-ring .r1{stroke:var(--today);stroke-linecap:round;transition:stroke-dasharray .6s var(--ease)}
+.mxw-ring.behind .r1{stroke:var(--week)}
+.mxw-ring>b{position:absolute;top:0;height:66px;display:grid;place-items:center;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.mxw-ring small{font-size:12.5px;color:var(--muted);text-align:center;line-height:1.25;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+/* Bars */
+.mxw-bar{width:100%;display:block;padding:8px 0;text-align:left;font:inherit;color:inherit}
+.mxw-bt{display:flex;align-items:baseline;gap:6px;margin-bottom:7px;font-size:14.5px}
+.mxw-bt span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mxw-bt b{font-variant-numeric:tabular-nums}.mxw-bt small{font-size:12.5px;color:var(--muted)}
+.mxw-bar.behind .mx-bar i{background:var(--week)}
+@media (min-width:1100px){
+  .mxw-r,.mxw-b{padding:18px 20px}
+  .mxw-rings{gap:20px;justify-content:flex-start}.mxw-ring{flex:0 0 140px}.mxw-ring svg{width:76px;height:76px}.mxw-ring>b{height:76px;font-size:16px}
+  .mxw-bars{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+  .mxw-bar{padding:14px 16px;border-radius:16px;background:var(--surface2)}
+  .mxw-bt{flex-wrap:wrap;margin-bottom:12px}.mxw-bt span{flex-basis:100%;font-size:13.5px;color:var(--muted)}.mxw-bt b{font-size:26px;letter-spacing:-.03em}
+  .mxw-bar .mx-bar{background:color-mix(in srgb,var(--text) 10%,transparent)}
+  .mxw-f{padding:18px 22px}.mxw-big>b{font-size:44px}.mxw-n{font-size:17px}
+}
+.mxw-also{display:none}
+@media (min-width:1100px){
+  .mxw-f .mxw-sp svg{width:180px;height:44px}
+  .mxw-also{display:flex;flex-direction:column;width:240px;flex:none;margin-left:12px}
+  .mxw-also button{display:flex;align-items:baseline;gap:6px;padding:9px 0;border-bottom:1px solid var(--line);text-align:left;font:inherit;color:inherit;font-size:14px}
+  .mxw-also button:last-child{border-bottom:0}
+  .mxw-also span{flex:1;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mxw-also small{font-size:12.5px;color:var(--muted)}
+}
 </style>
 </head>
 <body>
@@ -4073,7 +4123,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=207; // bumped with every published update
+const APP_VERSION=208; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -4548,7 +4598,7 @@ function homeHTML(){
    Tiles or pills (a habits style you can pick) and the backup reminder keep their own card. */
 function homeAlso(){
   const hw=hbWidget(),one=!!hw&&hwStyle()==='one',nd=ciCard()||reviewCard(),bk=nd?'':backupCard();
-  const rows=[nsCard(),one?hw:'',nd].filter(Boolean);
+  const rows=[nsCard(),one?hw:'',typeof mxHome==='function'?mxHome():'',nd].filter(Boolean);
   return (rows.length?`<section class="also" aria-label="Also today"><h2 class="sec-h">Also today</h2><div class="also-in">${rows.join('')}</div></section>`:'')+(one?'':hw)+bk;
 }
 function render(dir){
@@ -5857,7 +5907,7 @@ function renderDesk(){
     orderedSpaces().map(sp=>`<button class="s-list s-sp ${S.space===sp.id||(peekOn()&&fwPeek===sp.id)?'on':''} ${S.space===sp.id&&S.subHidden?'folded':''}" data-sp="${sp.id}" title="${esc(sp.name)}"><i class="sp-sq" style="background:${sp.c}">${sp.e?`<em>${esc(sp.e)}</em>`:''}</i><span class="s-name">${esc(sp.name)}${sp.pinned?PIN_I:''}</span><span class="n">${spOpen(sp)}</span><span class="s-more" data-spedit="${sp.id}" role="button" aria-label="Edit ${esc(sp.name)}" title="Edit space"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span></button>${S.space===sp.id&&!S.subHidden?sub:''}${peekOn()&&fwPeek===sp.id?peekSub(sp):''}`).join('')+
     `<button class="s-list" id="sNewSp" title="New space">${PLUS_S}<span class="s-name">New space</span></button>`;
   const spp=!S.space&&spPage&&spPageOn()?spaceOf(spPage):null;if(!spp)spPage=null;
-  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${nsCard()}${hbWidget()}${homeNudge()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
+  if(!S.space){$('dHome').innerHTML=spp?spaceListsPage(spp):(C().homeLayout==='today'?todayFirst():`${todayStrip()}${nsCard()}${typeof mxHome==='function'?mxHome():''}${hbWidget()}${homeNudge()}<div class="sp-grid d-grid">${spaceCards()}</div>`)}
   const gk=S.space?S.space+'|'+S.list:'';
   if(gk!==glintKey){glintKey=gk;if(gk)setTimeout(playGlint,180)}
   const sp=inSpaceMode()?spaceOf(S.space):null;
@@ -5917,7 +5967,7 @@ function todayFirst(){
   const side=orderedSpaces().map(sp=>{const st=spaceStats(sp);
     return `<button class="hf-sp" data-space="${sp.id}"><span class="hf-sph"><span class="hf-ic">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span class="hf-n">${st.today?st.today+' today':st.open?st.open+' open':'Clear'}</span></span>
       <span class="sp-bars">${st.total?VS().map(x=>st.by[x.id]?`<i style="flex:${st.by[x.id]};background:var(--${x.id})"></i>`:'').join(''):'<i class="sp-bars-0"></i>'}</span></button>`}).join('');
-  return `${nsCard()}${hbWidget()}${homeNudge()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
+  return `${nsCard()}${typeof mxHome==='function'?mxHome():''}${hbWidget()}${homeNudge()}<div class="hf"><section class="hf-main"><div class="hf-head"><div><span class="ts-k">Today</span><b>${td.length?`${td.length} ${td.length===1?'task':'tasks'} · ${fmt(m)}`:'Nothing planned yet'}</b></div>${td.length?`<button class="ts-go" id="tsGo">${sunIcon()}Win the day</button>`:''}</div>
     ${rows||`<p class="hf-empty">Open a space and move a few tasks to Today. They’ll show up here, ready to tick off.</p>`}</section>
     <aside class="hf-side"><div class="hf-cap">Spaces</div>${side}<button class="hf-new" id="spNew">${PLUS_S}New space</button></aside></div>`;
 }
@@ -7385,7 +7435,9 @@ modesPage=function(){
   ${card('mx',MX_ICON,'KPIs & OKRs','Key numbers and quarterly results for each space',mxOn(),
     `<p class="md-note">Open them from the gauge on a space’s page. In a task, “Counts toward” links it to a KPI or key result.</p>
      ${row('On phones',`<div class="segc">${sOpt('mxPh','focus','One at a time')}${sOpt('mxPh','board','Scoreboard')}</div>`)}
-     ${row('On computers',`<div class="segc">${sOpt('mxDk','board','Scoreboard')}${sOpt('mxDk','focus','One at a time')}</div>`)}`)}
+     ${row('On computers',`<div class="segc">${sOpt('mxDk','board','Scoreboard')}${sOpt('mxDk','focus','One at a time')}</div>`)}
+     ${row('On Home',tg('wMx'),'Your KPIs and OKRs from every space, the ones furthest behind first')}
+     ${c.wMx!==false?row('Widget style',`<div class="segc">${sOpt('mxHw','auto','Default')}${sOpt('mxHw','focus','Focus')}${sOpt('mxHw','rings','Rings')}${sOpt('mxHw','bars','Bars')}</div>`,'Default: Focus on phones, Bars on computers'):''}`)}
   </div>
   <div class="set-sec"><h3>Everyday</h3><div class="md-list">
   ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits and tomorrow’s first task',!!c.closeDay,'')}
@@ -8159,7 +8211,9 @@ const MX_ONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 function mxOn(){return !!(S.cfg&&S.cfg.mx)}
 const mxKpis=sp=>(S.kpis||[]).filter(k=>k.space===sp);
 const mxOkrs=(sp,closed)=>(S.okrs||[]).filter(o=>o.space===sp&&!!o.closed===!!closed);
-const mxSpaceNow=()=>S.space&&S.space!=='all'&&spaceOf(S.space)?S.space:null;
+var mxSpPick=null; // the Home widget opens the popup for an item's own space
+const mxSpaceIn=()=>S.space&&S.space!=='all'&&spaceOf(S.space)?S.space:null;
+const mxSpaceNow=()=>mxSpPick&&spaceOf(mxSpPick)?mxSpPick:mxSpaceIn();
 const mxPhone=()=>matchMedia('(max-width:699px)').matches;
 const mxLook=()=>{const v=mxPhone()?C().mxPh:C().mxDk;return v==='board'||v==='focus'?v:(mxPhone()?'focus':'board')};
 /* ---- numbers ---- */
@@ -8232,10 +8286,10 @@ $('mxAsk').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault()
 
 /* ---------- the popup ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="mx-pg" id="mxPg" role="dialog" aria-modal="true" aria-label="KPIs and OKRs"><div class="mx-card" id="mxIn"></div></div>');
-function mxOpenPop(){const sp=mxSpaceNow();if(!sp||!mxOn())return;mxOpen=true;mxView=null;mxDraft=null;mxPast=false;
+function mxOpenPop(pick){mxSpPick=pick||null;const sp=mxSpaceNow();if(!sp||!mxOn())return;mxOpen=true;mxView=null;mxDraft=null;mxPast=false;
   if(typeof closeSearch==='function')closeSearch();mxDraw();$('mxPg').classList.add('on');haptic(5);
   setTimeout(()=>{const b=$('mxIn').querySelector('.mx-x');if(b&&!mxPhone())b.focus()},60)}
-function mxClose(){if(!mxOpen)return;mxOpen=false;mxView=null;mxDraft=null;$('mxPg').classList.remove('on');const a=document.activeElement;if(a&&a.closest&&a.closest('#mxPg'))a.blur()}
+function mxClose(){if(!mxOpen)return;mxOpen=false;mxSpPick=null;mxView=null;mxDraft=null;$('mxPg').classList.remove('on');const a=document.activeElement;if(a&&a.closest&&a.closest('#mxPg'))a.blur()}
 function mxHead(eye,title,back){return `<div class="mx-h">${back?`<button class="mx-ib mx-back" data-mxback aria-label="Back">${BACK_SVG}</button>`:''}
   <div class="mx-ht"><span class="mx-eye">${eye}</span><b>${title}</b></div>
   ${back?'':`<button class="mx-ib" data-mxlook aria-label="${mxLook()==='board'?'Show one at a time':'Show the scoreboard'}" title="${mxLook()==='board'?'One at a time':'Scoreboard'}">${mxLook()==='board'?MX_ONE:MX_LIST}</button>`}
@@ -8420,7 +8474,8 @@ function mxAddLog(){const f=mxViewItem(),i=$('mxLogIn');if(!f||!i)return;const v
 /* ---------- the gauge button on a space's page (phone header and computer header) ---------- */
 document.querySelectorAll('[data-srch]').forEach(s=>s.insertAdjacentHTML('beforebegin',`<button class="icon-btn mx-btn" data-mxopen hidden aria-label="KPIs and OKRs" title="KPIs and OKRs">${MX_ICON}</button>`));
 document.addEventListener('click',e=>{if(e.target.closest('[data-mxopen]')){e.preventDefault();mxOpenPop()}});
-function mxBtns(){const on=mxOn()&&!!mxSpaceNow();document.querySelectorAll('[data-mxopen]').forEach(b=>{b.hidden=!on})}
+
+function mxBtns(){const on=mxOn()&&!!mxSpaceIn();document.querySelectorAll('[data-mxopen]').forEach(b=>{b.hidden=!on})}
 const _mxRender=render;
 render=function(d){_mxRender(d);try{mxBtns();if(mxOpen){if(!mxOn()||!mxSpaceNow())return mxClose();const a=document.activeElement;if(!(a&&a.closest&&a.closest('#mxPg')&&a.matches('input')))mxDraw()}}catch(err){console.error(err)}};
 
@@ -8440,6 +8495,37 @@ function mxMark(t){if(!mxOn()||!Array.isArray(t.mx)||!t.mx.length)return '';cons
 $('dPicker').addEventListener('input',e=>{const k=e.target.dataset.mxamt;if(!k||!cur)return;const l=(cur.mx||[]).find(x=>mxKey(x)===k);if(!l)return;
   const v=e.target.value;l.add=v===''?null:Math.max(0,+v||0);save()});
 $('dPicker').addEventListener('change',e=>{if(e.target.dataset.mxamt)render()});
+
+/* ---------- Home widget (Settings → Modes → KPIs & OKRs → On Home): every space's KPIs and OKRs, the ones furthest
+   behind first. Three looks: Focus number (one number that needs you, + Log), Rings, Bars (rows on phones, tiles on
+   computers). Default: Focus on phones, Bars on computers. Tap anything to open it in the popup. ---------- */
+function mxHomeItems(){const now=Date.now(),out=[];
+  (S.kpis||[]).forEach(k=>{if(!spaceOf(k.space))return;const s=mxStart(k.period,now),e=mxShift(k.period,s,1),p=mxKpiP(k);out.push({kind:'kpi',k,sp:k.space,p,behind:(now-s)/(e-s)-p})});
+  (S.okrs||[]).forEach(o=>{if(o.closed||!spaceOf(o.space))return;const s=new Date((o.start||dkey(o.created||now))+'T00:00').getTime(),e=mxEndMs(o),p=mxOkrP(o);
+    out.push({kind:'okr',o,sp:o.space,p,behind:Math.max(0,Math.min(1,(now-s)/Math.max(DAY,e-s)))-p})});
+  return out.sort((a,b)=>b.behind-a.behind)}
+const mxHwLook=()=>{const v=C().mxHw;return v==='focus'||v==='rings'||v==='bars'?v:(mxPhone()?'focus':'bars')};
+const mxIt=x=>x.kind==='kpi'?{id:`kpi:${x.k.id}:${x.sp}`,name:x.k.name,v:mxKpiNow(x.k)==null&&x.k.kind==='last'?'—':mxFmt(mxKpiNow(x.k)??0,x.k.unit),t:mxFmt(+x.k.target,x.k.unit)}
+  :{id:`okr:${x.o.id}:${x.sp}`,name:x.o.name,v:Math.round(x.p*100)+'%',t:''};
+function mxHome(){if(!mxOn()||C().wMx===false)return '';const its=mxHomeItems();if(!its.length)return '';const look=mxHwLook(),hot=x=>x.behind>.15?' behind':'';
+  const head=`<button class="mxw-h" data-mxhw="${mxIt(its[0]).id}" data-mxhwall><span class="mxw-i">${MX_ICON}</span><b>KPIs & OKRs</b><small>${its.length} tracked</small>${CHEV}</button>`;
+  if(look==='focus'){const x=its[0],it=mxIt(x),k=x.kind==='kpi'?x.k:null;
+    const sub=k?(()=>{const left=mxDays(mxShift(k.period,mxStart(k.period,Date.now()),1)),tg=+k.target,v=mxKpiNow(k)??0;return `${k.kind!=='last'&&k.better!=='down'&&tg>v?`${mxFmt(tg-v,k.unit)} to go · `:''}${left} ${left===1?'day':'days'} left`})():mxOkrWhen(x.o);
+    return `<div class="mxw mxw-f${hot(x)}"><button class="mxw-main" data-mxhw="${it.id}"><span class="mx-eye hot">${k?`KPI · ${MX_PER[k.period]}`:'OKR'}${its.length>1?` · ${its.length-1} more`:''}</span><b class="mxw-n">${esc(it.name)}</b>
+      <span class="mxw-big"><b>${it.v}</b>${it.t?`<small>/ ${it.t}</small>`:''}<small class="mxw-sub">${sub}</small></span></button>
+      ${k?`<span class="mxw-sp">${mxSpark(mxKpiHist(k,6),78,32)}</span>`:''}
+      ${its.length>1?`<span class="mxw-also">${its.slice(1,3).map(y=>{const j=mxIt(y);return `<button data-mxhw="${j.id}"><span>${esc(j.name)}</span><b>${j.v}</b>${j.t?`<small>/ ${j.t}</small>`:''}</button>`}).join('')}</span>`:''}
+      ${k&&k.src!=='tasks'?`<button class="mxw-log" data-mxhw="${it.id}" data-mxhwlog aria-label="Log a number for ${esc(it.name)}">${PLUS_S}Log</button>`:''}</div>`}
+  const top=its.slice(0,look==='rings'?3:4);
+  if(look==='rings'){const ring=x=>{const it=mxIt(x),r=27,C2=2*Math.PI*r;
+      return `<button class="mxw-ring${hot(x)}" data-mxhw="${it.id}" aria-label="${esc(it.name)}: ${it.v}${it.t?' of '+it.t:''}"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="r0" cx="32" cy="32" r="${r}"/><circle class="r1" cx="32" cy="32" r="${r}" style="stroke-dasharray:${(C2*x.p).toFixed(1)} ${C2.toFixed(1)}"/></svg><b>${it.v}</b><small>${esc(it.name)}</small></button>`};
+    return `<div class="mxw mxw-r">${head}<div class="mxw-rings">${top.map(ring).join('')}</div></div>`}
+  return `<div class="mxw mxw-b">${head}<div class="mxw-bars">${top.map(x=>{const it=mxIt(x);return `<button class="mxw-bar${hot(x)}" data-mxhw="${it.id}"><span class="mxw-bt"><span>${esc(it.name)}</span><b>${it.v}</b>${it.t?`<small>/ ${it.t}</small>`:''}</span><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span></button>`}).join('')}</div></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-mxhw]');if(!b)return;e.preventDefault();e.stopPropagation();
+  const [kind,id,sp]=b.dataset.mxhw.split(':');mxOpenPop(isNaN(+sp)?sp:+sp);if(!mxOpen)return;
+  if(b.hasAttribute('data-mxhwall'))return;
+  if(kind==='kpi'){mxView={kind:'kpi',id};mxDraw();if(b.hasAttribute('data-mxhwlog'))setTimeout(()=>{const i=$('mxLogIn');if(i)i.focus()},80)}
+  else{mxTab='okr';const its=mxItems(mxSpaceNow());const i=its.findIndex(x=>x.kind==='okr'&&String(x.o.id)===id);if(i>=0)mxFocusI=i;mxDraw()}},true);
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -8911,7 +8997,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */

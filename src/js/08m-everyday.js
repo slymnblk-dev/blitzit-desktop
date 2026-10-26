@@ -197,7 +197,9 @@ modesPage=function(){
   ${card('mx',MX_ICON,'KPIs & OKRs','Key numbers and quarterly results for each space',mxOn(),
     `<p class="md-note">Open them from the gauge on a space’s page. In a task, “Counts toward” links it to a KPI or key result.</p>
      ${row('On phones',`<div class="segc">${sOpt('mxPh','focus','One at a time')}${sOpt('mxPh','board','Scoreboard')}</div>`)}
-     ${row('On computers',`<div class="segc">${sOpt('mxDk','board','Scoreboard')}${sOpt('mxDk','focus','One at a time')}</div>`)}`)}
+     ${row('On computers',`<div class="segc">${sOpt('mxDk','board','Scoreboard')}${sOpt('mxDk','focus','One at a time')}</div>`)}
+     ${row('On Home',tg('wMx'),'Your KPIs and OKRs from every space, the ones furthest behind first')}
+     ${c.wMx!==false?row('Widget style',`<div class="segc">${sOpt('mxHw','auto','Default')}${sOpt('mxHw','focus','Focus')}${sOpt('mxHw','rings','Rings')}${sOpt('mxHw','bars','Bars')}</div>`,'Default: Focus on phones, Bars on computers'):''}`)}
   </div>
   <div class="set-sec"><h3>Everyday</h3><div class="md-list">
   ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits and tomorrow’s first task',!!c.closeDay,'')}
