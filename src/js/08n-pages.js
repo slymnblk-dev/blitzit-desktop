@@ -75,17 +75,19 @@ function hpMenuHTML(){const v=hpView(),left=hbOpenToday().length;
     <span class="pm-sep"></span><button data-hbnew="" role="menuitem"><span class="lpm-i">${PLUS_S}</span>New habit</button>${hbAll().length?`<button data-hbord role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit habits</button>`:''}${left?`<button data-ciopen role="menuitem"><span class="lpm-i">${RH_ICON}</span>Evening check-in</button>`:''}</div></div>`}
 function drawRhythm(){
   const y=$('rhythmPg').scrollTop,hs=hbAll(),v=hpView(),anim=!$('rhIn').dataset.v||$('rhIn').dataset.v!==v||$('rhIn').dataset.fresh==='1';
-  let head,body;
+  let head,body,hpMeta="";
   if(!hs.length){head=`<span class="hp-eye">Habits</span><h1 class="hp-h">Habits</h1>`;
     body=`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`}
   else if(v==='grid'){const days=hpWeekDays(hpWeek),c=hpWeekCount(hs),f=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    hpMeta=`${f(days[0])} – ${f(days[6])} · <b>${c.dn} of ${c.due}</b> kept`;
     head=`<span class="hp-eye">Habits · ${f(days[0])} – ${f(days[6])}</span><h1 class="hp-h">${hpWeek===0?'This week':hpWeek===-1?'Last week':`${-hpWeek} weeks ago`}</h1><span class="hp-sub"><b>${c.dn} of ${c.due}</b> kept${hpWeek===0?' so far':''}</span>`;
     body=hpGrid(hs)}
   else{const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt});
+    hpMeta=`${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}${due.length?'':' · Rest day'}`; // the big number under the sun already counts
     head=`<span class="hp-eye">Habits · ${longDate()}</span><h1 class="hp-h">Today</h1><span class="hp-sub">${due.length?`<b>${due.filter(h=>hbStats(h).dt).length} of ${due.length}</b> done`:'Rest day'}</span>`;body=hpSun(hs)}
   const nav=hs.length&&v==='grid'?`<div class="hp-nav"><button class="pm-btn" data-hpw="-1" aria-label="Previous week">${ARR_L}</button><button class="pm-btn" data-hpw="1" aria-label="Next week" ${hpWeek>=0?'disabled':''}>${ARR_R}</button></div>`:'';
   const html=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>
-    <div class="hp-head"><div class="hp-tt">${head}</div><div class="hp-acts">${nav}${hpMenuHTML()}</div></div><div class="hp-body${anim?' anim':''}">${body}</div>`;
+    ${hpMeta?`<div class="hp-meta">${hpMeta}</div>`:''}<div class="hp-head"><div class="hp-tt">${head}</div><div class="hp-acts">${nav}${hpMenuHTML()}</div></div><div class="hp-body${anim?' anim':''}">${body}</div>`;
   $('rhIn').dataset.v=v;$('rhIn').dataset.fresh='';
   if(!anim&&html===hpHtml)return; // nothing changed: leave the page (and its motion) alone
   hpHtml=html;$('rhIn').innerHTML=html;$('rhythmPg').scrollTop=y;

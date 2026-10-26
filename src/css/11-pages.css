@@ -876,3 +876,14 @@ button.hg-c:active{transform:scale(.88)}
 /* no Back on the Inbox: the tab bar or the sidebar is always there */
 #inboxPg .ib-top{display:none}
 @media (max-width:1099px){#inboxPg .ib-h{margin-top:30px}}
+/* phone Habits page, like Goals: no Back (the Habits tab is there); the date and count sit small, top left; no extra caption */
+.hp-meta{display:none}
+@media (max-width:699px){
+  #rhythmPg .ib-top{display:none}
+  .hp-meta{display:block;position:absolute;z-index:6;top:calc(max(18px,env(safe-area-inset-top,0px)) + 12px);left:22px;right:160px;height:44px;line-height:44px;
+    font-size:13.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hp-meta b{color:var(--text);font-weight:700}
+  #rhIn .hp-head{margin-top:64px}
+  #rhIn .hp-head .hp-eye,#rhIn .hp-head .hp-sub{display:none}
+  #rhIn .hs-cap{display:none}
+}

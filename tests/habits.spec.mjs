@@ -76,7 +76,8 @@ test('habits: Habits page, evening check-in, Home widget', async ({ page }) => {
   expect(await page.evaluate(() => S.habits.filter(h => h.done[today()]).length)).toBe(1);
   await page.locator('#ciPg [data-ciclose]').click();
   // Home: widget with suns; the check-in card is gone for today once you checked in
-  await page.locator('#rhBack').click();
+  await expect(page.locator('#rhBack')).toBeHidden(); // phones: no Back on Habits, the Home tab goes back
+  await page.locator('#tbHome').click();
   await expect(page.locator('.app .hw-one .hw-done')).toHaveCount(1); // phone default: one at a time
   await expect(page.locator('.app .ci-home')).toHaveCount(0);
   await page.locator('.app .hw-done').click();
