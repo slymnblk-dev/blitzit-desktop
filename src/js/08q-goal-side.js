@@ -9,7 +9,7 @@ rhythmSide=function(){
   // habits row as before, then our own Goals row
   const keep=S.cfg.goals;S.cfg.goals=false;let h;try{h=_rhythmSide()}finally{S.cfg.goals=keep}
   const gs=gAll(),open=!!S.gSideOpen;
-  h+=`<button class="s-list s-home s-inbox s-gfold${open?' open':''}" id="sGoals" title="Goals" aria-expanded="${open}">${G_FLAG}<span class="s-name">Goals</span>${gs.length?`<span class="n">${gs.length}</span>`:''}${G_CHEV}</button>`;
+  h+=`<button class="s-list s-home s-inbox s-gfold${open?' open':''}" id="sGoals" title="Goals" aria-expanded="${open}">${G_FLAG}<span class="s-name">Goals</span>${gs.length?`<span class="n">${gs.length}</span>`:''}</button>`;
   if(open)h+=`<div class="s-sub s-gsub">${gs.map(g=>{const p=gProg(g);
       return `<button class="s-list${gdOn&&String(gdId)===String(g.id)?' on':''}" data-sgoal="${g.id}" title="${esc(g.name)}"><span class="sg-e">${g.e?esc(g.e):G_FLAG}</span><span class="s-name">${esc(g.name)}</span><span class="n">${p.n}/${p.of}</span></button>`}).join('')}
     ${gs.length<G_MAX?`<button class="s-list s-mini" data-sgnew title="New goal">${PLUS_S}<span class="s-name">New goal</span></button>`:''}</div>`;

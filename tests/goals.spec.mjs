@@ -555,3 +555,19 @@ test('phone Path: a milestone with no tasks can be marked done (and reopened) fr
   }
   noErrors(errors);
 });
+
+test('computer sidebar: no fold arrows, counts line up on the right and can be hidden', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true; S.cfg.fullWidth = false; S.goals = [{ id: 'g1', name: 'Run', e: '', space: null, why: '', due: '', created: Date.now(), star: true, ms: [] }];
+    save(); applySettings(); openSpaceSide(S.spaces[0].id); });
+  await expect(page.locator('#sGoals .s-chev')).toHaveCount(0);
+  const right = sel => page.locator(sel).evaluate(el => Math.round(el.getBoundingClientRect().right));
+  const g = await right('#sGoals .n'), s = await right('.s-sp.on .n');
+  expect(Math.abs(g - s)).toBeLessThanOrEqual(1);
+  await page.evaluate(() => { openSettings(); setView = 'appearance'; drawSettings(); });
+  await page.locator('#setIn [data-tg="sideN"]').click();
+  await page.evaluate(() => closeSettings());
+  await expect(page.locator('#sGoals .n')).toBeHidden();
+  noErrors(errors);
+});

@@ -55,9 +55,6 @@
   .s-sub{margin:2px 0 8px 14px;padding-left:10px;border-left:2px solid var(--line);animation:inU .3s cubic-bezier(.2,.8,.2,1)}
   .s-sub.closing{transition:height .22s cubic-bezier(.4,0,.2,1),opacity .18s,margin .22s;opacity:0;margin-top:0;margin-bottom:0;animation:none}
   .s-sub.opening{transition:height .28s cubic-bezier(.2,.8,.2,1);animation:inU .3s cubic-bezier(.2,.8,.2,1)}
-  .s-sp.on::after,.s-home#sAll.on::after{content:"";width:6px;height:6px;margin-left:8px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px);transition:transform .25s;flex:none}
-  .s-sp.on.folded::after,#sAll.on.folded::after{transform:rotate(-45deg)}
-  .desk.collapsed .s-sp::after,.desk.collapsed #sAll::after{display:none}
   .s-sub .s-list{padding:7px 10px;font-size:14px}
   .s-mini{font-size:13px!important;color:var(--muted)}
   .desk.collapsed .s-sub,.desk.collapsed .s-lbl2{display:none}

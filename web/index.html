@@ -406,6 +406,9 @@ html,body{overscroll-behavior-y:contain}
   .f-time{font-size:168px}
 }
 .icon-btn{transition:background .15s}
+
+/* Settings → Appearance → Counts in the sidebar: off hides every number in the sidebar */
+:root[data-side-n="off"] .side .s-list .n{display:none}
 /* ---------- settings ---------- */
 .scrim{z-index:20}
 .sheet{z-index:23}
@@ -736,9 +739,6 @@ html,body{overscroll-behavior-y:contain}
   .s-sub{margin:2px 0 8px 14px;padding-left:10px;border-left:2px solid var(--line);animation:inU .3s cubic-bezier(.2,.8,.2,1)}
   .s-sub.closing{transition:height .22s cubic-bezier(.4,0,.2,1),opacity .18s,margin .22s;opacity:0;margin-top:0;margin-bottom:0;animation:none}
   .s-sub.opening{transition:height .28s cubic-bezier(.2,.8,.2,1);animation:inU .3s cubic-bezier(.2,.8,.2,1)}
-  .s-sp.on::after,.s-home#sAll.on::after{content:"";width:6px;height:6px;margin-left:8px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px);transition:transform .25s;flex:none}
-  .s-sp.on.folded::after,#sAll.on.folded::after{transform:rotate(-45deg)}
-  .desk.collapsed .s-sp::after,.desk.collapsed #sAll::after{display:none}
   .s-sub .s-list{padding:7px 10px;font-size:14px}
   .s-mini{font-size:13px!important;color:var(--muted)}
   .desk.collapsed .s-sub,.desk.collapsed .s-lbl2{display:none}
@@ -4253,7 +4253,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=214; // bumped with every published update
+const APP_VERSION=215; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -8231,7 +8231,7 @@ rhythmSide=function(){
   // habits row as before, then our own Goals row
   const keep=S.cfg.goals;S.cfg.goals=false;let h;try{h=_rhythmSide()}finally{S.cfg.goals=keep}
   const gs=gAll(),open=!!S.gSideOpen;
-  h+=`<button class="s-list s-home s-inbox s-gfold${open?' open':''}" id="sGoals" title="Goals" aria-expanded="${open}">${G_FLAG}<span class="s-name">Goals</span>${gs.length?`<span class="n">${gs.length}</span>`:''}${G_CHEV}</button>`;
+  h+=`<button class="s-list s-home s-inbox s-gfold${open?' open':''}" id="sGoals" title="Goals" aria-expanded="${open}">${G_FLAG}<span class="s-name">Goals</span>${gs.length?`<span class="n">${gs.length}</span>`:''}</button>`;
   if(open)h+=`<div class="s-sub s-gsub">${gs.map(g=>{const p=gProg(g);
       return `<button class="s-list${gdOn&&String(gdId)===String(g.id)?' on':''}" data-sgoal="${g.id}" title="${esc(g.name)}"><span class="sg-e">${g.e?esc(g.e):G_FLAG}</span><span class="s-name">${esc(g.name)}</span><span class="n">${p.n}/${p.of}</span></button>`}).join('')}
     ${gs.length<G_MAX?`<button class="s-list s-mini" data-sgnew title="New goal">${PLUS_S}<span class="s-name">New goal</span></button>`:''}</div>`;
@@ -9259,7 +9259,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeLayout:'bento',homeAlso:'switch',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeLayout:'bento',sideN:true,homeAlso:'switch',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -9333,7 +9333,7 @@ function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   root.dataset.size=c.size;root.dataset.density=c.density;
   root.dataset.done=c.showDone?'on':'off';if(!c.showDone&&S.stage==='done')S.stage='today';
   root.dataset.bars=c.bars||'tabs';
-  root.dataset.home='calm';
+  root.dataset.home='calm';root.dataset.sideN=c.sideN===false?'off':'on';
   root.dataset.motion=c.motion?'on':'off';root.dataset.est=c.showEst?'on':'off';
   STAGES.forEach(s=>{s.name=c.names[s.id]||DEF_CFG.names[s.id];s.short=s.name;
     if(c.colors[s.id])root.style.setProperty('--'+s.id,c.colors[s.id]);else root.style.removeProperty('--'+s.id)});
@@ -9414,6 +9414,7 @@ function settingsPage(id){
     ${matchMedia('(min-width:1100px)').matches?'':row('Also today on phones',`<div class="segc">${sOpt('homeAlso','switch','Switch')}${sOpt('homeAlso','tiles','Tiles')}${sOpt('homeAlso','list','One card')}</div>`,{tiles:'Goal and habits side by side, KPIs below.',list:'Everything in one card.'}[c.homeAlso]||'One card. Pills on top switch between habits, goal and KPIs.')}
     </div>${(matchMedia('(min-width:1100px)').matches||DESK())?`<div class="set-sec"><h3>Layout on computers</h3>
     ${row('Home',`<div class="segc"><button data-k="homeLayout" data-v="bento" class="${c.homeLayout==='calm'?'':'on'}">Bento</button>${sOpt('homeLayout','calm','Calm column')}</div>`,c.homeLayout==='calm'?'One calm column: Up next, a few quiet rows, then spaces.':'Today beside small cards for your goal, habits and KPIs.')}
+    ${row('Counts in the sidebar',tg('sideN'),'The numbers next to Inbox, Habits, Goals, spaces and lists')}
     <div class="lay-pick">${[[0,'With sidebar','Spaces and lists on the left.'],[1,'Full width','Hides the sidebar inside a space. Switch spaces and lists from the top.']].map(([v,n,d])=>`<button class="lay ${!!c.fullWidth===!!v?'on':''}" data-fw="${v}">
       <span class="lay-th ${v?'full':''}"><i class="lt-side"></i><span class="lt-main"><i class="lt-top"></i><span class="lt-cols"><i></i><i></i><i></i><i></i></span></span></span>
       <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>

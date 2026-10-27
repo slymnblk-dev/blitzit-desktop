@@ -110,3 +110,6 @@
   .f-time{font-size:168px}
 }
 .icon-btn{transition:background .15s}
+
+/* Settings → Appearance → Counts in the sidebar: off hides every number in the sidebar */
+:root[data-side-n="off"] .side .s-list .n{display:none}
