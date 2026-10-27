@@ -613,8 +613,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gMtIn
 /* marking a milestone done moves you on to the next one (phones show one at a time) */
 const _gMsToggleNext=gMsToggle;
 /* (phones and the computer's Sunrise / Countdown views): the "Done" moment shows for a beat, then it slides on */
-gMsToggle=function(g,m){const was=!!m.done,panel=!!document.querySelector('#gdPg .gpp-mk');_gMsToggleNext(g,m);
-  if(!was&&m.done&&gdOn&&panel&&!gmeOn){const n=gNext(g);if(n&&n!==m){const id=g.id;setTimeout(()=>{if(gdOn&&String(gdId)===String(id)&&String(gSelId)!==String(n.id)){gSelId=n.id;gppDir=1;drawGoal()}},650)}}};
+let gMkAt=0; // only the Mark milestone done button moves on (a last task ticked keeps you on the milestone to see it done)
+document.addEventListener('click',e=>{if(e.target.closest('#gdPg .gpp-mk'))gMkAt=Date.now()},true);
+gMsToggle=function(g,m){const was=!!m.done,mk=Date.now()-gMkAt<1500;_gMsToggleNext(g,m);
+  if(!was&&m.done&&gdOn&&mk&&!gmeOn){gMkAt=0;const n=gNext(g);if(n&&n!==m){const id=g.id,mid=m.id;setTimeout(()=>{if(gdOn&&!gmeOn&&String(gdId)===String(id)&&m.done&&!document.querySelector('#gdPop.on,#gmEd.on')&&(gSelId==null||String(gSelId)===String(mid))){gSelId=n.id;gppDir=1;drawGoal()}},650)}}};
 
 /* phones: swipe the milestone left or right to move between milestones */
 (()=>{let x0=null,y0=0;const pg=$('gdPg');

@@ -169,7 +169,7 @@ function mxItemView(sname){const f=mxViewItem();if(!f){mxView=null;return mxBoar
     ${canLog?`<div class="mx-logrow"><input id="mxLogIn" type="number" inputmode="decimal" step="any" placeholder="${last?'New value':'Amount, e.g. 5'}" aria-label="${last?'Set the latest value':'Add an amount'}"><button class="primary" data-mxadd>${last?'Set':'Add'}</button></div>`
       :`<p class="mx-hint">This KPI moves with done tasks. Link a task from its details: “Counts toward”.</p>`}
     <h3 class="mx-sh">History</h3>
-    ${ents.length?ents.map(e=>{const tk=e.task!=null?S.tasks.find(x=>x.id===e.task):null;return `<div class="mx-ent"><span class="mx-ev">${last?'':(e.v>=0?'+':'')}${mxFmt(e.v,it.unit)}</span><span class="mx-es">${tk?esc(tk.title):e.task!=null?'A task':'Logged'}</span><small>${when(e.at)}</small><button class="mx-ib sm" data-mxdel="${e.id}" aria-label="Remove this entry">${X}</button></div>`}).join('')
+    ${ents.length?ents.map(e=>{const tk=e.task!=null?S.tasks.find(x=>x.id===e.task):null;return `<div class="mx-ent"><span class="mx-ev">${last?'':(e.v>=0?'+':'')}${mxFmt(e.v,it.unit)}</span><span class="mx-es">${tk?esc(tk.title):e.task!=null?'A task':e.gi!=null?'A goal task':'Logged'}</span><small>${when(e.at)}</small><button class="mx-ib sm" data-mxdel="${e.id}" aria-label="Remove this entry">${X}</button></div>`}).join('')
       :`<p class="mx-empty">Nothing yet.</p>`}
     <div class="mx-foot">${isK?`<button class="ghost-btn" data-mxedit="kpi:${it.id}">${PEN_S}Edit KPI</button>`:`<button class="ghost-btn" data-mxo="${f.okr.id}">${PEN_S}Edit OKR</button>`}</div></div>`}
 /* ---- create / edit ---- */

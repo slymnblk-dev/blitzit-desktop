@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=220; // bumped with every published update
+const APP_VERSION=222; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -97,6 +97,7 @@ function sanitize(){
   // KPIs & OKRs (Modes → KPIs & OKRs), each belongs to a space:
   // kpi {id,space,name,unit,target,period:'week'|'month'|'quarter',better:'up'|'down',src:'tasks'|'log'|'both',kind:'sum'|'last',created,log:[{id,at,v,task?}]}
   // okr {id,space,name,start:'YYYY-MM-DD',end:'YYYY-MM-DD',created,closed?,score?,krs:[{id,name,unit,from,target,better,kind,log:[...]}]}
+  S.goals.forEach(g=>{if(g.mx!=null)g.mx=Array.isArray(g.mx)?g.mx.filter(l=>obj(l)&&(l.k==='kpi'||l.k==='okr')&&l.id!=null):[];if(g.mx&&!g.mx.length)delete g.mx;g.ms.forEach(m=>{if(m.fin!=null&&!(obj(m.fin)&&m.fin.id!=null&&Number.isFinite(+m.fin.at)))delete m.fin})});
   const mxLog=a=>Array.isArray(a)?a.filter(e=>obj(e)&&e.id!=null&&Number.isFinite(+e.v)&&Number.isFinite(+e.at)):[];
   S.kpis=Array.isArray(S.kpis)?S.kpis.filter(k=>obj(k)&&k.id!=null&&typeof k.name==='string'):[];
   S.kpis.forEach(k=>{k.log=mxLog(k.log);if(!Number.isFinite(+k.target))k.target=0});

@@ -4175,6 +4175,65 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
   .mt-f{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-22px;padding-right:22px}
   .mt-f button{flex:none}
 }
+/* ===== Goals ↔ KPIs & OKRs (08w-goal-metrics.js) ===== */
+/* Measured by, on the goal page */
+.gmx{margin-top:22px}
+.gmx-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.gmx-h>span{flex:1;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.gmx-ed{font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:4px 2px}.gmx-ed:hover{color:var(--text)}
+.gmx-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.gmx-c{min-width:0;display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:18px;background:var(--surface);text-align:left;font:inherit;color:inherit;transition:box-shadow .2s,transform .2s}
+.gmx-c:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 14%,transparent);transform:translateY(-1px)}
+.gmx-c.okr{box-shadow:inset 3px 0 0 var(--backlog)}
+.gmx-c.okr:hover{box-shadow:inset 3px 0 0 var(--backlog),0 0 0 1px color-mix(in srgb,var(--text) 14%,transparent)}
+.gmx-e{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.gmx-c.kpi .gmx-e{color:var(--today)}.gmx-c.okr .gmx-e{color:var(--backlog)}
+.gmx-n{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmx-v{display:flex;align-items:baseline;gap:5px}.gmx-v b{font-size:24px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.gmx-v small{font-size:13px;color:var(--muted)}
+.gmx-c .mx-bar{height:5px}.gmx-c.late .mx-bar i{background:var(--week)}
+.gmx-ov{display:flex;align-items:center;gap:8px}.gmx-ov>b{font-size:20px;font-weight:800;letter-spacing:-.03em}.gmx-ov small{font-size:12.5px;color:var(--muted)}
+.gmx-ring{width:30px;height:30px;flex:none}.gmx-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.gmx-ring circle{fill:none;stroke-width:4}.gmx-ring .r0{stroke:var(--surface2)}.gmx-ring .r1{stroke:var(--backlog);stroke-linecap:round}
+.gpp .gmx{margin-top:26px}
+/* the picker and the finish line */
+.gmx-lede{margin:-6px 0 14px;font-size:14px;line-height:1.45;color:var(--muted)}
+.gmx-sh{display:flex;align-items:center;gap:8px;margin:18px 0 8px;font-size:15px;font-weight:800}
+.gmx-sh svg{width:17px;height:17px}.gmx-sh small{font-size:12.5px;font-weight:600;color:var(--muted);margin-left:2px}
+.gmx-sh.hot svg{color:var(--today)}.gmx-sh.vi svg{color:var(--backlog)}
+.gmx-r{display:block;width:100%;border-radius:16px;margin-bottom:6px;background:var(--surface);font:inherit;color:inherit;text-align:left;transition:box-shadow .2s}
+.gmx-r.on.kpi{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--today) 55%,transparent)}
+.gmx-r.on.okr{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--backlog) 60%,transparent)}
+.gmx-rb{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px;font:inherit;color:inherit;text-align:left}
+.gmx-k{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 28%,transparent);display:grid;place-items:center;color:transparent;transition:background .2s}
+.gmx-k svg{width:12px;height:12px}
+.gmx-r.on.kpi .gmx-k{background:var(--today);box-shadow:none;color:#0F1013}
+.gmx-r.on.okr .gmx-k{background:var(--backlog);box-shadow:none;color:#fff}
+.gmx-ri{flex:none;display:grid}.gmx-ri svg{width:17px;height:17px}
+.gmx-r.kpi .gmx-ri{color:var(--today)}.gmx-r.okr .gmx-ri{color:var(--backlog)}
+.gmx-rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gmx-rt b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gmx-rt small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmx-tk{display:flex;align-items:center;gap:10px;width:100%;padding:0 14px 12px 48px;font:inherit;font-size:13px;color:var(--muted);text-align:left}
+.gmx-tk .tg{position:relative;flex:none;width:34px;height:20px;border-radius:999px;background:var(--surface2);transition:background .2s}
+.gmx-tk .tg::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.gmx-tk .tg.on{background:var(--today)}.gmx-tk .tg.on::after{transform:translateX(14px)}
+.gmx-none{font-size:13.5px;color:var(--muted);margin:4px 2px 8px;line-height:1.45}
+.gmx-new{display:inline-flex;align-items:center;gap:7px;height:42px;margin-top:16px;padding:0 18px;border-radius:999px;background:color-mix(in srgb,var(--backlog) 14%,transparent);color:var(--backlog);font:inherit;font-size:14.5px;font-weight:700;transition:background .2s}
+.gmx-new:hover{background:color-mix(in srgb,var(--backlog) 22%,transparent)}.gmx-new svg{width:14px;height:14px}
+.gmx-from{display:flex;align-items:center;gap:8px;margin:0 0 6px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--backlog) 10%,transparent);font-size:13.5px;color:var(--muted)}
+.gmx-from svg{width:15px;height:15px;color:var(--backlog);flex:none}.gmx-from b{color:var(--text)}
+.gmx-ms{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 10px;padding:11px 14px;border-radius:14px;background:var(--surface);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--backlog) 40%,transparent);font:inherit;font-size:14px;font-weight:600;color:var(--text);text-align:left}
+.gmx-ms svg{width:15px;height:15px;color:var(--backlog);flex:none}.gmx-ms:hover{background:var(--surface2)}
+.gfl-l{margin-bottom:6px}
+/* the finish line chip on a milestone */
+.gfl{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:5px 11px;border-radius:999px;background:var(--surface);font:inherit;font-size:12.5px;color:var(--muted);max-width:100%}
+.gfl svg{width:13px;height:13px;color:var(--today);flex:none}.gfl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gfl b{color:var(--text)}
+.gfl.done svg{color:var(--done)}
+.gpp-nm{display:flex;flex-direction:column;align-items:center}
+/* Metrics: which goal a KPI or OKR measures */
+.mt-gl{display:flex;flex-wrap:wrap;gap:6px}
+.mt-gl span{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:3px 9px;border-radius:999px;background:var(--surface2);font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gpp-nm .gfl b,.gfl b{font-size:inherit;font-weight:700;letter-spacing:0;line-height:inherit}
+@media (max-width:699px){.gmx-g{grid-template-columns:1fr 1fr}.gmx-c{padding:12px 14px}.gmx-v b{font-size:21px}.gmx-ov small{display:none}}
 </style>
 </head>
 <body>
@@ -4370,7 +4429,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=220; // bumped with every published update
+const APP_VERSION=222; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -4460,6 +4519,7 @@ function sanitize(){
   // KPIs & OKRs (Modes → KPIs & OKRs), each belongs to a space:
   // kpi {id,space,name,unit,target,period:'week'|'month'|'quarter',better:'up'|'down',src:'tasks'|'log'|'both',kind:'sum'|'last',created,log:[{id,at,v,task?}]}
   // okr {id,space,name,start:'YYYY-MM-DD',end:'YYYY-MM-DD',created,closed?,score?,krs:[{id,name,unit,from,target,better,kind,log:[...]}]}
+  S.goals.forEach(g=>{if(g.mx!=null)g.mx=Array.isArray(g.mx)?g.mx.filter(l=>obj(l)&&(l.k==='kpi'||l.k==='okr')&&l.id!=null):[];if(g.mx&&!g.mx.length)delete g.mx;g.ms.forEach(m=>{if(m.fin!=null&&!(obj(m.fin)&&m.fin.id!=null&&Number.isFinite(+m.fin.at)))delete m.fin})});
   const mxLog=a=>Array.isArray(a)?a.filter(e=>obj(e)&&e.id!=null&&Number.isFinite(+e.v)&&Number.isFinite(+e.at)):[];
   S.kpis=Array.isArray(S.kpis)?S.kpis.filter(k=>obj(k)&&k.id!=null&&typeof k.name==='string'):[];
   S.kpis.forEach(k=>{k.log=mxLog(k.log);if(!Number.isFinite(+k.target))k.target=0});
@@ -8267,8 +8327,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gMtIn
 /* marking a milestone done moves you on to the next one (phones show one at a time) */
 const _gMsToggleNext=gMsToggle;
 /* (phones and the computer's Sunrise / Countdown views): the "Done" moment shows for a beat, then it slides on */
-gMsToggle=function(g,m){const was=!!m.done,panel=!!document.querySelector('#gdPg .gpp-mk');_gMsToggleNext(g,m);
-  if(!was&&m.done&&gdOn&&panel&&!gmeOn){const n=gNext(g);if(n&&n!==m){const id=g.id;setTimeout(()=>{if(gdOn&&String(gdId)===String(id)&&String(gSelId)!==String(n.id)){gSelId=n.id;gppDir=1;drawGoal()}},650)}}};
+let gMkAt=0; // only the Mark milestone done button moves on (a last task ticked keeps you on the milestone to see it done)
+document.addEventListener('click',e=>{if(e.target.closest('#gdPg .gpp-mk'))gMkAt=Date.now()},true);
+gMsToggle=function(g,m){const was=!!m.done,mk=Date.now()-gMkAt<1500;_gMsToggleNext(g,m);
+  if(!was&&m.done&&gdOn&&mk&&!gmeOn){gMkAt=0;const n=gNext(g);if(n&&n!==m){const id=g.id,mid=m.id;setTimeout(()=>{if(gdOn&&!gmeOn&&String(gdId)===String(id)&&m.done&&!document.querySelector('#gdPop.on,#gmEd.on')&&(gSelId==null||String(gSelId)===String(mid))){gSelId=n.id;gppDir=1;drawGoal()}},650)}}};
 
 /* phones: swipe the milestone left or right to move between milestones */
 (()=>{let x0=null,y0=0;const pg=$('gdPg');
@@ -8572,7 +8634,7 @@ function mxItemView(sname){const f=mxViewItem();if(!f){mxView=null;return mxBoar
     ${canLog?`<div class="mx-logrow"><input id="mxLogIn" type="number" inputmode="decimal" step="any" placeholder="${last?'New value':'Amount, e.g. 5'}" aria-label="${last?'Set the latest value':'Add an amount'}"><button class="primary" data-mxadd>${last?'Set':'Add'}</button></div>`
       :`<p class="mx-hint">This KPI moves with done tasks. Link a task from its details: “Counts toward”.</p>`}
     <h3 class="mx-sh">History</h3>
-    ${ents.length?ents.map(e=>{const tk=e.task!=null?S.tasks.find(x=>x.id===e.task):null;return `<div class="mx-ent"><span class="mx-ev">${last?'':(e.v>=0?'+':'')}${mxFmt(e.v,it.unit)}</span><span class="mx-es">${tk?esc(tk.title):e.task!=null?'A task':'Logged'}</span><small>${when(e.at)}</small><button class="mx-ib sm" data-mxdel="${e.id}" aria-label="Remove this entry">${X}</button></div>`}).join('')
+    ${ents.length?ents.map(e=>{const tk=e.task!=null?S.tasks.find(x=>x.id===e.task):null;return `<div class="mx-ent"><span class="mx-ev">${last?'':(e.v>=0?'+':'')}${mxFmt(e.v,it.unit)}</span><span class="mx-es">${tk?esc(tk.title):e.task!=null?'A task':e.gi!=null?'A goal task':'Logged'}</span><small>${when(e.at)}</small><button class="mx-ib sm" data-mxdel="${e.id}" aria-label="Remove this entry">${X}</button></div>`}).join('')
       :`<p class="mx-empty">Nothing yet.</p>`}
     <div class="mx-foot">${isK?`<button class="ghost-btn" data-mxedit="kpi:${it.id}">${PEN_S}Edit KPI</button>`:`<button class="ghost-btn" data-mxo="${f.okr.id}">${PEN_S}Edit OKR</button>`}</div></div>`}
 /* ---- create / edit ---- */
@@ -9011,6 +9073,178 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&mtBack()&&!$('dlg').c
 window.addEventListener('click',e=>{if(mtBack()&&e.target.closest('#mxPg [data-mxback]')){e.preventDefault();e.stopImmediatePropagation();mxClose()}},true);
 const _mtSave=mxSave;mxSave=function(){const r=_mtSave.apply(this,arguments);if(mtBack()&&!mxDraft)mxClose();return r};
 const _mtClose=mxClose;mxClose=function(){mtPop=false;return _mtClose.apply(this,arguments)};
+/* ---------- Goals ↔ KPIs & OKRs (always optional) ----------
+   Ladder: Goal (months, years) › OKR (this quarter) › KPI (every week) › tasks (today).
+   1 · Measured by: a goal links KPIs and OKRs it already has (⋯ → Measured by…). The goal page shows them as small
+       cards (KPIs coral, OKRs violet); Metrics tags them with the goal.  Data: g.mx=[{k:'kpi'|'okr',id,tasks?}]
+   2 · New OKR for this goal: the objective and quarter end are filled in; one tap turns the milestones into key results.
+   3 · Finish lines: a milestone can finish itself when a number reaches a value.  Data: m.fin={k:'kpi'|'kr',id,okr?,at,hit?}
+   Gaps: links work across spaces; ticking a goal's own mini tasks can add 1 to a linked KPI (g.mx[].tasks);
+   achieved goals keep their KPIs and OKRs running (Metrics marks them 🏆); deleted KPIs/OKRs quietly drop out. */
+const GMX_OKR_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
+const GMX_FLAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V4"/><path d="M6 4.5h11l-2.2 4.2L17 13H6"/></svg>';
+const gmxKpi=id=>(S.kpis||[]).find(x=>String(x.id)===String(id)&&spaceOf(x.space));
+const gmxOkr=id=>(S.okrs||[]).find(x=>String(x.id)===String(id)&&spaceOf(x.space));
+const gmxLinks=g=>(Array.isArray(g&&g.mx)?g.mx:[]).filter(l=>l.k==='kpi'?gmxKpi(l.id):gmxOkr(l.id));
+const gmxGoalsOf=(k,id)=>(S.goals||[]).filter(g=>Array.isArray(g.mx)&&g.mx.some(l=>l.k===k&&String(l.id)===String(id)));
+const gmxOn=()=>typeof mxOn==='function'&&mxOn()&&goalsOn();
+
+/* ===== 1 · Measured by, on the goal page ===== */
+function gmxSection(g){const ls=gmxLinks(g);if(!ls.length||!mxOn())return '';
+  const its=mxHomeItems();
+  const cards=ls.map(l=>{if(l.k==='kpi'){const k=gmxKpi(l.id),x=its.find(y=>y.kind==='kpi'&&y.k===k)||{p:mxKpiP(k),behind:0},v=mxKpiNow(k);
+      return `<button class="gmx-c kpi${x.behind>.15?' late':''}" data-mxhw="kpi:${k.id}:${k.space}"><span class="gmx-e">KPI · ${MX_PER[k.period]||''}</span><b class="gmx-n">${esc(k.name)}</b>
+        <span class="gmx-v"><b>${v==null&&k.kind==='last'?'—':mxFmt(v??0,k.unit)}</b><small>/ ${mxFmt(+k.target,k.unit)}${mxUw(k.unit)}</small></span><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span></button>`}
+    const o=gmxOkr(l.id),p=o.closed?(o.score||0):mxOkrP(o),r=15,C2=2*Math.PI*r;
+    return `<button class="gmx-c okr" data-mxhw="okr:${o.id}:${o.space}"><span class="gmx-e">OKR · ${o.closed?'closed':mxQ(new Date(o.end+'T12:00'))}</span><b class="gmx-n">${esc(o.name)}</b>
+      <span class="gmx-ov"><span class="gmx-ring"><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="r0" cx="18" cy="18" r="${r}"/><circle class="r1" cx="18" cy="18" r="${r}" style="stroke-dasharray:${(C2*p).toFixed(1)} ${C2.toFixed(1)}"/></svg></span><b>${Math.round(p*100)}%</b><small>${o.krs.length} key ${o.krs.length===1?'result':'results'}</small></span></button>`}).join('');
+  return `<section class="gmx" aria-label="Measured by"><div class="gmx-h"><span>Measured by</span><button class="gmx-ed" data-gmlink>Edit</button></div><div class="gmx-g">${cards}</div></section>`}
+/* a finish line chip under the milestone you're looking at */
+function gmxFinVal(f){if(!f)return null;if(f.k==='kpi'){const k=gmxKpi(f.id);return k?{name:k.name,v:mxKpiNow(k)??0,unit:k.unit,down:k.better==='down'}:null}
+  const o=gmxOkr(f.okr),r=o&&o.krs.find(x=>String(x.id)===String(f.id));return r?{name:r.name,v:mxKrNow(r),unit:r.unit,down:false}:null}
+const gmxReached=(f,fv)=>fv&&(fv.down?fv.v<=+f.at:fv.v>=+f.at);
+function gmxFinChip(m){const f=m.fin,fv=gmxFinVal(f);if(!fv)return '';
+  return `<button class="gfl${m.done?' done':''}" data-gfin="${m.id}" title="Finish line">${GMX_FLAG}<span>${m.done?'Reached':'Done at'} <b>${mxFmt(+f.at,fv.unit)}</b> ${esc(fv.name)}${m.done?'':` · now ${mxFmt(fv.v,fv.unit)}`}</span></button>`}
+const _gmxDraw=drawGoal;
+/* a redraw never closes the ⋯ menu you just opened */
+drawGoal=function(){const p0=$('gdPop'),was=!!(p0&&p0.classList.contains('on'));_gmxDraw.apply(this,arguments);try{gmxPaint()}catch(e){console.error(e)}
+  const p1=$('gdPop');if(was&&p1&&p1!==p0)p1.classList.add('on')};
+function gmxPaint(){if(!gdOn)return;const g=gById(gdId);if(!g)return;const root=$('gdIn');
+  // Measured by
+  const html=gmxSection(g),old=root.querySelector('.gmx');
+  if(!html){if(old)old.remove()}else if(!old||old.outerHTML!==html.replace(/\n\s*/g,m=>m)){const t=document.createElement('div');t.innerHTML=html;const n=t.firstElementChild;
+    if(old)old.replaceWith(n);else{const a=root.querySelector('.gw-l .gw-f')||root.querySelector('.gpp');if(a&&a.classList.contains('gw-f'))a.after(n);else if(a)a.after(n);else root.appendChild(n)}}
+  // finish line on the milestone on show
+  root.querySelectorAll('.gfl').forEach(x=>x.remove());
+  const card=root.querySelector('.gpp-ts[data-gcard]'),m=card&&g.ms.find(x=>String(x.id)===card.dataset.gcard),nm=root.querySelector('.gpp-nm');
+  if(m&&m.fin&&nm&&mxOn()){nm.insertAdjacentHTML('beforeend',gmxFinChip(m))}
+  // menu items: Measured by (goal), Finish line (milestone, phones)
+  const pop=$('gdPop');if(pop&&gmxOn()&&!pop.querySelector('[data-gmlink]')){
+    const del=pop.querySelector('[data-gm="del"]');if(del)del.insertAdjacentHTML('beforebegin',`<button data-gmlink role="menuitem"><span class="lpm-i">${MX_ICON}</span>Measured by…</button>`);
+    const mdel=pop.querySelector('[data-gmx="del"]'),sm=gSel(g);if(mdel&&sm&&!g.done)mdel.insertAdjacentHTML('beforebegin',`<button data-gfin="${sm.id}" role="menuitem"><span class="lpm-i">${GMX_FLAG}</span>${sm.fin?'Edit finish line':'Finish line…'}</button>`)}}
+/* computer milestone ⋯ */
+const _gmxMsMenu=gMsMenu;
+gMsMenu=function(g,m){const it=_gmxMsMenu(g,m);if(!gmxOn()||g.done)return it;const i=it.findIndex(x=>x.sep);
+  it.splice(i<0?it.length:i,0,{t:m.fin?'Edit finish line':'Finish line…',ic:GMX_FLAG,act:()=>gfinOpen(g,m)});return it};
+$('gdPg').addEventListener('click',e=>{
+  if(e.target.closest('[data-gmlink]')){e.stopPropagation();const p=$('gdPop');if(p)p.classList.remove('on');const g=gById(gdId);if(g)gmxOpen(g);return}
+  const f=e.target.closest('[data-gfin]');if(f){e.stopPropagation();const p=$('gdPop');if(p)p.classList.remove('on');const g=gById(gdId),m=g&&g.ms.find(x=>String(x.id)===f.dataset.gfin);if(m)gfinOpen(g,m)}},true);
+
+/* ===== the Measured by picker ===== */
+document.body.insertAdjacentHTML('beforeend','<div class="mx-pg" id="gmxPg" role="dialog" aria-modal="true" aria-label="Measured by"><div class="mx-card" id="gmxIn"></div></div>');
+let gmxG=null,gfinM=null,gfinDraft=null;
+function gmxOpen(g){gmxG=g.id;gfinM=null;gmxDraw();$('gmxPg').classList.add('on');haptic(5)}
+function gmxClose(){gmxG=null;gfinM=null;$('gmxPg').classList.remove('on')}
+const gmxRowSp=sp=>{const s=spaceOf(sp)||{};return orderedSpaces().length>1?`${s.e?esc(s.e)+' ':''}${esc(s.name||'')} · `:''};
+function gmxDraw(){if(gfinM)return gfinDraw();const g=gById(gmxG);if(!g)return gmxClose();
+  const on=(k,id)=>(g.mx||[]).find(l=>l.k===k&&String(l.id)===String(id));
+  const ks=(S.kpis||[]).filter(k=>spaceOf(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)||on('okr',o.id));
+  const row=(k,x,sub,cls,ico)=>{const l=on(k,x.id);return `<div class="gmx-r ${cls}${l?' on':''}"><button class="gmx-rb" data-gmxt="${k}:${x.id}" aria-pressed="${!!l}"><span class="gmx-k">${DH_CK}</span><span class="gmx-ri">${ico}</span><span class="gmx-rt"><b>${esc(x.name)}</b><small>${sub}</small></span></button>
+    ${l&&k==='kpi'?`<button class="gmx-tk" data-gmxtasks="${x.id}" aria-pressed="${!!l.tasks}"><span class="tg${l.tasks?' on':''}" aria-hidden="true"></span>This goal’s own tasks add 1 when done</button>`:''}</div>`};
+  $('gmxIn').innerHTML=`${mxHead(`${g.e?esc(g.e)+' ':''}${esc(g.name)}`,'Measured by',true)}
+    <p class="gmx-lede">Pick the numbers that show this goal is moving. Optional, and you can change it any time.</p>
+    <h3 class="gmx-sh hot">${MX_ICON}KPIs<small>every week or month</small></h3>
+    ${ks.length?ks.map(k=>row('kpi',k,`${gmxRowSp(k.space)}${mxFmt(mxKpiNow(k)??0,k.unit)} of ${mxFmt(+k.target,k.unit)} ${MX_PER[k.period]||''}`,'kpi',MX_ICON)).join(''):`<p class="gmx-none">No KPIs yet.</p>`}
+    <h3 class="gmx-sh vi">${GMX_OKR_I}OKRs<small>this quarter</small></h3>
+    ${os.length?os.map(o=>row('okr',o,`${gmxRowSp(o.space)}${Math.round(mxOkrP(o)*100)}% · ${esc(mxOkrWhen(o))}`,'okr',GMX_OKR_I)).join(''):`<p class="gmx-none">No OKRs yet.</p>`}
+    <button class="gmx-new" data-gmxnew>${PLUS_S}New OKR for this goal</button>
+    <div class="mx-foot"><span></span><button class="primary" data-gmxdone>Done</button></div>`}
+$('gmxPg').addEventListener('click',e=>{
+  if(e.target===$('gmxPg')||e.target.closest('[data-mxx],[data-gmxdone]'))return gmxClose();
+  if(e.target.closest('[data-mxback]'))return gmxClose();
+  const g=gById(gmxG);if(!g)return;
+  const t=e.target.closest('[data-gmxt]');if(t){const [k,id]=t.dataset.gmxt.split(':');const on=()=>(g.mx||[]).some(l=>l.k===k&&String(l.id)===id);
+    commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];const i=g.mx.findIndex(l=>l.k===k&&String(l.id)===id);
+      if(i>=0)g.mx.splice(i,1);else g.mx.push({k,id:isNaN(+id)?id:+id});if(!g.mx.length)delete g.mx},on()?'Unlinked':'Linked to the goal');haptic(5);return gmxDraw()}
+  const tk=e.target.closest('[data-gmxtasks]');if(tk){commit(()=>{const l=(g.mx||[]).find(x=>x.k==='kpi'&&String(x.id)===tk.dataset.gmxtasks);if(l){if(l.tasks)delete l.tasks;else l.tasks=true}},'Saved');gmxTasksSync();return gmxDraw()}
+  if(e.target.closest('[data-gmxnew]')){const gid=g.id;gmxClose();gmxNewOkr(gById(gid))}
+  /* finish line */
+  const fp=e.target.closest('[data-gfpick]');if(fp&&gfinDraft){const [k,id,okr]=fp.dataset.gfpick.split(':');gfinDraft.k=k;gfinDraft.id=id;gfinDraft.okr=okr||undefined;
+    const fv=gmxFinVal(gfinDraft);if(fv&&(gfinDraft.at===''||gfinDraft.at==null))gfinDraft.at='';return gfinDraw()}
+  if(e.target.closest('[data-gfsave]'))return gfinSave();
+  if(e.target.closest('[data-gfrm]')){const m=g.ms.find(x=>x.id===gfinM);if(m)commit(()=>{delete m.fin},'Finish line removed');return gmxClose()}});
+$('gmxPg').addEventListener('input',e=>{if(e.target.id==='gfAt'&&gfinDraft){gfinDraft.at=e.target.value;const er=$('gmxIn').querySelector('.mx-errm');if(er)er.remove()}});
+$('gmxPg').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gfAt'){e.preventDefault();gfinSave()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('gmxPg').classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();gmxClose()}},true);
+
+/* ===== 2 · New OKR for this goal ===== */
+function gmxNewOkr(g){if(!g)return;const sps=orderedSpaces();const sp=g.space&&spaceOf(g.space)?g.space:(sps[0]||{}).id;if(sp==null)return;
+  mxOpenPop(sp);if(!mxOpen)return;mxNew('okr');if(!mxDraft)return;
+  mxDraft.v.name=g.name.slice(0,80);mxDraft.fromGoal=g.id;if(!g.space&&sps.length>1)mxDraft.pickSp=true;mxDraw();
+  setTimeout(()=>{const i=$('mxIn').querySelector('[data-mxkr="0:name"]');if(i)i.focus()},80)}
+const _gmxOkrForm=mxOkrForm;
+mxOkrForm=function(sname){let h=_gmxOkrForm(sname);const g=mxDraft&&mxDraft.fromGoal!=null?gById(mxDraft.fromGoal):null;
+  const open=g?g.ms.filter(m=>!m.done):[];
+  if(g&&open.length&&!mxDraft.id&&!mxDraft.usedMs)h=h.replace('<div class="mx-f"><span>Key results</span>',`<div class="mx-f"><span>Key results</span><button type="button" class="gmx-ms" data-gmxms>${GMX_FLAG}<span>Use the goal’s ${open.length} open ${open.length===1?'milestone':'milestones'} as key results</span></button>`);
+  if(g)h=h.replace('<div class="mx-body mx-form">',`<div class="mx-body mx-form"><p class="gmx-from">${GMX_FLAG}For the goal <b>${g.e?esc(g.e)+' ':''}${esc(g.name)}</b>. It’s linked once you create it.</p>`);
+  return h};
+$('mxPg').addEventListener('click',e=>{if(!e.target.closest('[data-gmxms]')||!mxDraft)return;e.stopPropagation();const g=gById(mxDraft.fromGoal);if(!g)return;
+  const ms=g.ms.filter(m=>!m.done).slice(0,typeof MX_KR_MAX!=='undefined'?MX_KR_MAX:6);
+  mxDraft.v.krs=ms.map(m=>({id:null,name:m.t.slice(0,60),from:0,target:1,unit:'',typed:true,ms:m.id}));mxDraft.usedMs=true;haptic(5);mxDraw()},true);
+const _gmxSave=mxSave;
+mxSave=function(){const d=mxDraft,gid=d&&d.fromGoal,before=new Set((S.okrs||[]).map(o=>String(o.id)));
+  const krMs=d&&d.usedMs?d.v.krs.filter(r=>String(r.name||'').trim()).map(r=>r.ms):null;
+  const r=_gmxSave.apply(this,arguments);
+  if(gid!=null&&!mxDraft){const o=(S.okrs||[]).find(x=>!before.has(String(x.id))),g=gById(gid);
+    if(o&&g)commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];g.mx.push({k:'okr',id:o.id});
+      /* milestones turned into key results finish when their key result does */
+      if(krMs)krMs.forEach((mid,i)=>{const m=g.ms.find(x=>x.id===mid),kr=o.krs[i];if(m&&kr&&!m.fin)m.fin={k:'kr',okr:o.id,id:kr.id,at:1}})},'OKR linked to the goal')}
+  return r};
+
+/* ===== 3 · Finish lines ===== */
+function gfinOpen(g,m){gmxG=g.id;gfinM=m.id;gfinDraft=m.fin?{...m.fin,at:String(m.fin.at)}:{k:null,id:null,at:''};
+  gfinDraw();$('gmxPg').classList.add('on');haptic(5)}
+function gfinChoices(g){const ls=gmxLinks(g),out=[];const add=(k,id,okr,name,sub,cls)=>out.push({k,id,okr,name,sub,cls});
+  const pool=ls.length?ls:[...(S.kpis||[]).filter(k=>spaceOf(k.space)).map(k=>({k:'kpi',id:k.id})),...(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)).map(o=>({k:'okr',id:o.id}))];
+  pool.forEach(l=>{if(l.k==='kpi'){const k=gmxKpi(l.id);if(k)add('kpi',k.id,'',k.name,`KPI · now ${mxFmt(mxKpiNow(k)??0,k.unit)} ${MX_PER[k.period]||''}`,'kpi')}
+    else{const o=gmxOkr(l.id);if(o)o.krs.forEach(r=>add('kr',r.id,o.id,r.name,`Key result of ${o.name} · now ${mxFmt(mxKrNow(r),r.unit)}`,'okr'))}});
+  return {list:out,linked:ls.length>0}}
+function gfinDraw(){const g=gById(gmxG),m=g&&g.ms.find(x=>x.id===gfinM);if(!m)return gmxClose();const d=gfinDraft,ch=gfinChoices(g);
+  const sel=c=>d.k===c.k&&String(d.id)===String(c.id)&&(c.k!=='kr'||String(d.okr)===String(c.okr));
+  const fv=gmxFinVal(d);
+  $('gmxIn').innerHTML=`${mxHead(`Milestone · ${esc(m.t)}`,'Finish line',true)}
+    <p class="gmx-lede">This milestone marks itself done when a number gets there.</p>
+    ${ch.list.length?`<div class="gfl-l">${ch.list.map(c=>`<button class="gmx-r ${c.cls}${sel(c)?' on':''}" data-gfpick="${c.k}:${c.id}:${c.okr||''}"><span class="gmx-rb"><span class="gmx-k">${DH_CK}</span><span class="gmx-ri">${c.k==='kpi'?MX_ICON:GMX_OKR_I}</span><span class="gmx-rt"><b>${esc(c.name)}</b><small>${esc(c.sub)}</small></span></span></button>`).join('')}</div>
+      ${ch.linked?'':'<p class="gmx-none">Tip: link KPIs or OKRs to this goal (⋯ → Measured by) to keep this list short.</p>'}
+      <label class="mx-f"><span>Done when it reaches</span><input id="gfAt" type="number" inputmode="decimal" step="any" value="${esc(String(d.at??''))}" placeholder="${fv?'e.g. '+(Math.ceil((+fv.v||0)*1.5)||10):'Pick a number above'}" ${d.k?'':'disabled'}></label>`
+    :`<p class="gmx-none">No KPIs or OKRs yet. Add one first, then come back to set a finish line.</p>`}
+    <div class="mx-foot">${m.fin?`<button class="ghost-btn warn" data-gfrm>${BIN_S}Remove</button>`:''}<span></span>${ch.list.length?`<button class="primary" data-gfsave>Save</button>`:`<button class="primary" data-gmxdone>Close</button>`}</div>`;
+  if(d.k)setTimeout(()=>{const i=$('gfAt');if(i&&document.activeElement!==i)i.focus()},40)}
+function gfinSave(){const g=gById(gmxG),m=g&&g.ms.find(x=>x.id===gfinM),d=gfinDraft;if(!m)return;
+  if(!d.k){const l=$('gmxIn').querySelector('.gfl-l');if(l)l.insertAdjacentHTML('afterend','<small class="mx-errm" role="alert">Pick a number first</small>');return}
+  const at=+d.at;if(d.at===''||!Number.isFinite(at)){const i=$('gfAt');if(i){i.classList.add('mx-bad');i.focus();if(!$('gmxIn').querySelector('.mx-errm'))i.insertAdjacentHTML('afterend','<small class="mx-errm" role="alert">Set the number it should reach</small>')}return}
+  const fin={k:d.k,id:isNaN(+d.id)?d.id:+d.id,at};if(d.k==='kr')fin.okr=isNaN(+d.okr)?d.okr:+d.okr;
+  const fv=gmxFinVal(fin);if(gmxReached(fin,fv)&&!m.done)fin.hit=true; // already there: no surprise tick now
+  commit(()=>{m.fin=fin},'Finish line set');gmxClose()}
+
+/* keep everything in step after each change: drop dead links, sync goal tasks into KPIs, fire finish lines */
+let gmxBusy=false;
+function gmxTasksSync(){let ch=false;
+  (S.goals||[]).forEach(g=>{if(!Array.isArray(g.mx))return;
+    const live=g.mx.filter(l=>l.k==='kpi'?gmxKpi(l.id):gmxOkr(l.id)||(S.okrs||[]).some(o=>String(o.id)===String(l.id)));
+    if(live.length!==g.mx.length){g.mx=live;if(!g.mx.length)delete g.mx;ch=true}
+    const done=new Map();(g.ms||[]).forEach(m=>(m.items||[]).forEach(it=>{if(it.done)done.set(String(it.id),it.doneAt||Date.now())}));
+    (g.mx||[]).forEach(l=>{if(l.k!=='kpi')return;const k=gmxKpi(l.id);if(!k)return;k.log=k.log||[];
+      const mine=k.log.filter(e=>e.gi!=null&&String(e.goal)===String(g.id));
+      if(!l.tasks){if(mine.length){k.log=k.log.filter(e=>!mine.includes(e));ch=true}return}
+      mine.forEach(e=>{if(!done.has(String(e.gi))){k.log.splice(k.log.indexOf(e),1);ch=true}});
+      done.forEach((at,id)=>{if(!mine.some(e=>String(e.gi)===id)){k.log.push({id:newId(),at,v:1,gi:id,goal:g.id});ch=true}})})});
+  (S.goals||[]).forEach(g=>(g.ms||[]).forEach(m=>{if(m.fin&&!gmxFinVal(m.fin)){delete m.fin;ch=true}}));
+  if(ch)save();return ch}
+function gmxFinCheck(){const fire=[];
+  (S.goals||[]).forEach(g=>{if(g.done)return;(g.ms||[]).forEach(m=>{const f=m.fin;if(!f)return;const r=gmxReached(f,gmxFinVal(f));
+    if(r&&!m.done&&!f.hit)fire.push([g,m]);else if(!r&&f.hit){delete f.hit;save()}else if(r&&m.done&&!f.hit){f.hit=true;save()}})});
+  if(!fire.length)return;
+  setTimeout(()=>{fire.forEach(([g,m])=>{if(m.done||!m.fin)return;m.fin.hit=true;gMsToggle(g,m);
+    const fv=gmxFinVal(m.fin);toast(`🏁 ${m.t} · done, ${fv?fv.name:'the number'} reached ${mxFmt(+m.fin.at,fv&&fv.unit)}`)})},350)}
+const _gmxRender=render;
+render=function(d){_gmxRender(d);if(gmxBusy)return;gmxBusy=true;try{if(gmxTasksSync())_gmxRender();if(mxOn())gmxFinCheck();if(gdOn)gmxPaint()}catch(e){console.error(e)}finally{gmxBusy=false}};
+
+/* Metrics: tag KPIs and OKRs with the goal they measure (🏆 once it's achieved) */
+const gmxTag=(k,id)=>{const gs=gmxGoalsOf(k,id);return gs.length?`<span class="mt-gl">${gs.map(g=>`<span>${g.done?'🏆 ':g.e?esc(g.e)+' ':''}${esc(g.name)}</span>`).join('')}</span>`:''};
+const _gmxKc=mtKpiCard,_gmxOc=mtOkrCard;
+mtKpiCard=function(k){return _gmxKc(k).replace('<small class="mt-kf">',gmxTag('kpi',k.id)+'<small class="mt-kf">')};
+mtOkrCard=function(o){const h=_gmxOc(o),t=gmxTag('okr',o.id);if(!t)return h;const i=h.lastIndexOf('</button>');return h.slice(0,i)+t+h.slice(i)};
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
