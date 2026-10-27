@@ -125,7 +125,7 @@ function todayCard(td,m){
   return `<div class="td-card" id="tdOpen" data-sp="${sp?sp.id:''}" role="button" tabindex="0">
     <div class="td-head"><span class="td-lbl">Today</span></div>
     ${sp?`<span class="td-space">${sp.e?`<i>${esc(sp.e)}</i>`:''}${esc(sp.name)}</span>`:''}
-    <div class="td-next"><span class="td-up">Up next</span><span class="td-title">${esc(nx.title)}</span>${mine.length>1?`<span class="td-more">+${mine.length-1} more</span>`:''}</div>
+    <div class="td-next"><span class="td-up">Up next</span><span class="td-title">${esc(nx.title)}</span></div>
     <button class="td-go" id="tdBlitz" aria-label="Focus: start on today's tasks"><span class="td-ring"></span><svg class="td-sun" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg><span class="td-gl">Focus</span></button>
   </div>`;
 }
