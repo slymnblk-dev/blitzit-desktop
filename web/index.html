@@ -3560,6 +3560,18 @@ button.hg-c:active{transform:scale(.88)}
   #rhIn .hp-head .hp-eye,#rhIn .hp-head .hp-sub{display:none}
   #rhIn .hs-cap{display:none}
 }
+
+/* "Mark milestone done" is the milestone's own action, not another task: a soft coral pill button.
+   "Reset milestone" stays a quiet outlined pill. */
+.gpp-done.gpp-mk,.gpp-done.on:not(.gpp-win){justify-content:center;gap:10px;min-height:48px;margin-top:16px;padding:0 20px;border-top:0;border-radius:999px;font-size:15.5px;font-weight:700;transition:background .2s,transform .15s}
+.gpp-done.gpp-mk{background:color-mix(in srgb,var(--today) 15%,transparent);color:var(--today)}
+.gpp-done.gpp-mk:hover{background:color-mix(in srgb,var(--today) 22%,transparent)}
+.gpp-done.gpp-mk:active{transform:scale(.98)}
+.gpp-done.gpp-mk .gpp-dk{width:22px;height:22px;background:var(--today)!important;box-shadow:none!important;color:#fff!important}
+.gpp-done.gpp-mk .gpp-dk svg{width:12px;height:12px;stroke-width:3.4}
+.gpp-done.on:not(.gpp-win){background:none;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted)}
+.gpp-done.on:not(.gpp-win):hover{color:var(--text)}
+.gpp-done.on:not(.gpp-win) .gpp-dk{width:18px;height:18px;box-shadow:none!important;background:none!important}
 /* ===== Phone Home: Today, one "Also today" card, then Spaces ===== */
 .sec-h{margin:24px 4px 10px;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
 .also .sec-h{margin-top:20px}
@@ -4265,7 +4277,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=216; // bumped with every published update
+const APP_VERSION=217; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -8020,7 +8032,7 @@ function gMsPanel(g,wide){const sel=gSel(g),nx=gNext(g),i=sel?g.ms.indexOf(sel):
       <div class="gpp-ts${sl}" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
         ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}
         ${g.done?'':sel.done?`<button class="gpp-done on" data-gtk="${sel.id}" aria-pressed="true"><span class="gpp-dk">${G_REOPEN}</span>Reset milestone</button>`
-          :`<button class="gpp-done" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk"></span>Mark milestone done</button>`}</div>`}
+          :`<button class="gpp-done gpp-mk" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk">${CK}</span>Mark milestone done</button>`}</div>`}
   return `${g.ms.length?`<div class="gpp-bar" role="group" aria-label="Milestones">${steps}</div>`:''}${body}${gAddMsRow(g)}`}
 const gWinRow=g=>{const pr=gProg(g);return pr.of>0&&pr.n>=pr.of&&!g.done?`<button class="gpp-done gpp-win" data-gwin><span class="gpp-dk">${G_FLAG}</span>Mark goal achieved</button>`:''};
 function gPhoneView(g,kind,anim){
