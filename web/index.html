@@ -3749,6 +3749,18 @@ button.hg-c:active{transform:scale(.88)}
   :root[data-nav="labels"] .tb-add{width:56px;height:56px;margin:0 6px;border-radius:20px;background:var(--today);color:#fff;box-shadow:0 10px 24px -8px color-mix(in srgb,var(--today) 55%,transparent)}
   :root[data-nav="labels"] .tb-add svg{width:24px;height:24px;stroke-width:2.6}
 }
+/* Home · Lists view: every list, grouped under its space */
+.hl2-h{display:flex;align-items:center;gap:7px}
+.hl2-e{font-size:14px}.hl2-sq{width:9px;height:9px;border-radius:3px}
+.hl2-c{background:var(--surface);border-radius:22px;overflow:hidden}
+.hl2-r{width:100%;display:flex;align-items:center;gap:14px;min-height:56px;padding:0 18px;text-align:left;font:inherit;color:inherit;transition:background .15s}
+.hl2-r+.hl2-r{border-top:1px solid var(--line)}
+.hl2-r:active{background:color-mix(in srgb,var(--text) 5%,transparent)}
+.hl2-dot{flex:none;width:11px;height:11px;border-radius:4px}
+.hl2-r b{flex:1;min-width:0;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl2-r small{flex:none;font-size:13px;color:var(--muted)}.hl2-r small em{font-style:normal;font-weight:700;color:var(--text)}
+.hl2-new{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 6px;font:inherit;font-size:15px;font-weight:600;color:var(--muted)}
+.hl2-new svg{width:16px;height:16px}
 /* ===== KPIs & OKRs: the gauge button, the popup (a sheet on phones, a calm window on computers), the task link ===== */
 .mx-btn svg{width:19px;height:19px}
 .mx-pg{position:fixed;inset:0;z-index:44;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,5,7,.58);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility 0s .22s}
@@ -4599,7 +4611,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=227; // bumped with every published update
+const APP_VERSION=228; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5027,6 +5039,14 @@ function spaceRows(){
     </div>`}).join('')+`<button class="sp-new sp-row-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
 }
 /* Home's spaces: the calm list (the Colourful cards style is gone) */
+/* Home's lower half (Settings → Appearance → On Home show): Spaces, or every list grouped by space (one tap into a list) */
+function homeSpaces(){
+  if(C().homeShow!=='lists')return `<h2 class="sec-h">Spaces</h2><div class="sp-grid">${spaceCards()}</div>`;
+  const cnt=l=>{const ts=S.tasks.filter(t=>shown(t)&&t.list===l.id);return {td:ts.filter(t=>t.stage==='today').length,op:ts.filter(t=>t.stage!=='done').length}};
+  return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);if(!ls.length)return '';
+    return `<h2 class="sec-h hl2-h">${sp.e?`<span class="hl2-e">${esc(sp.e)}</span>`:`<i class="hl2-sq" style="background:${sp.c}"></i>`}${esc(sp.name)}</h2>
+      <div class="hl2-c">${ls.map(l=>{const c=cnt(l);return `<button class="hl2-r" data-hlopen="${sp.id}|${l.id}"><i class="hl2-dot" style="background:${l.c}"></i><b>${esc(l.name)}</b><small>${c.td?`<em>${c.td}</em> today · `:''}${c.op?`${c.op} open`:'Clear'}</small></button>`}).join('')}</div>`}).join('')
+    +`<button class="hl2-new" id="spNew">${PLUS_S}New space</button>`}
 function spaceCards(){return spaceRows()}
 /* Today's tasks ordered like the space list: pinned spaces first, then the rest top to bottom */
 function bySpaceOrder(ts){
@@ -5052,7 +5072,7 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${homeAlso()}<h2 class="sec-h">Spaces</h2><div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${homeAlso()}${homeSpaces()}`;
 }
 /* phones: what else today holds, as rows in one card (north star, the next habit, tonight's or this week's nudge).
    Tiles or pills (a habits style you can pick) and the backup reminder keep their own card. */
@@ -9813,6 +9833,10 @@ document.addEventListener('keydown',e=>{
 });
 matchMedia('(min-width:1100px)').addEventListener('change',()=>render());
 
+/* Home's Lists view: one tap opens that list inside its space */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-hlopen]');if(!b)return;e.preventDefault();e.stopPropagation();
+  const [sp,l]=b.dataset.hlopen.split('|');const s=S.spaces.find(x=>String(x.id)===sp),li=S.lists.find(x=>String(x.id)===l);if(!s)return;
+  openSpace(s.id);if(li){S.list=li.id;render()}},true);
 /* ---------- archive: tasks, lists and spaces you remove can be archived (kept safe, restorable) or deleted for good ---------- */
 /* tasks stay in S.tasks with archived:true (they still count in analytics).
    lists and spaces move into S.arch as one bundle with everything inside, so the rest of the app never sees them. */
@@ -10003,7 +10027,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeLayout:'bento',sideN:true,homeAlso:'switch',navStyle:'float',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeLayout:'bento',sideN:true,homeAlso:'switch',navStyle:'float',homeShow:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -10155,6 +10179,7 @@ function settingsPage(id){
     ${themesSection()}<div class="set-sec"><h3>Text and layout</h3>
     ${row('Text size',`<div class="segc">${sOpt('size','default','Default')}${sOpt('size','large','Large')}</div>`)}
     ${row('Density',`<div class="segc">${sOpt('density','comfortable','Roomy')}${sOpt('density','compact','Compact')}</div>`)}
+    ${matchMedia('(min-width:1100px)').matches?'':row('On Home show',`<div class="segc">${sOpt('homeShow','spaces','Spaces')}${sOpt('homeShow','lists','Lists')}</div>`,C().homeShow==='lists'?'Every list, grouped by space. One tap opens it.':'Your spaces. Tap one to see its lists.')}
     ${matchMedia('(min-width:1100px)').matches?'':row('Tab bar on phones',`<div class="segc">${sOpt('navStyle','float','Floating')}${sOpt('navStyle','labels','With labels')}</div>`,C().navStyle==='labels'?'A slim bar with names under the icons.':'A floating pill, with the + on its own.')}
     ${matchMedia('(min-width:1100px)').matches?'':row('Also today on phones',`<div class="segc">${sOpt('homeAlso','switch','Switch')}${sOpt('homeAlso','tiles','Tiles')}${sOpt('homeAlso','list','One card')}</div>`,{tiles:'Goal and habits side by side, KPIs below.',list:'Everything in one card.'}[c.homeAlso]||'One card. Pills on top switch between habits, goal and KPIs.')}
     </div>${(matchMedia('(min-width:1100px)').matches||DESK())?`<div class="set-sec"><h3>Layout on computers</h3>

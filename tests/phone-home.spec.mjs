@@ -111,3 +111,15 @@ test('phone Home: Also today as Switch (default) or Tiles; the KPI shows as a ri
   expect(await page.evaluate(() => !!S.habits[0].done[today()])).toBe(true);
   noErrors(errors);
 });
+
+test('phone Home: Lists view groups every list under its space, one tap opens it', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { setCfg('homeShow', 'lists'); goHome(); });
+  const n = await page.evaluate(() => S.lists.filter(l => orderedSpaces().some(s => s.id === l.space)).length);
+  await expect(page.locator('.app .hl2-r')).toHaveCount(n);
+  const [sp, l] = (await page.locator('.app .hl2-r').last().getAttribute('data-hlopen')).split('|');
+  await page.locator('.app .hl2-r').last().click();
+  expect(await page.evaluate(() => [String(S.space), String(S.list)])).toEqual([sp, l]);
+  noErrors(errors);
+});

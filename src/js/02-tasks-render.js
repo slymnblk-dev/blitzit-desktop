@@ -110,6 +110,14 @@ function spaceRows(){
     </div>`}).join('')+`<button class="sp-new sp-row-new" id="spNew">${PLUS_S}<span>New space</span></button>`;
 }
 /* Home's spaces: the calm list (the Colourful cards style is gone) */
+/* Home's lower half (Settings → Appearance → On Home show): Spaces, or every list grouped by space (one tap into a list) */
+function homeSpaces(){
+  if(C().homeShow!=='lists')return `<h2 class="sec-h">Spaces</h2><div class="sp-grid">${spaceCards()}</div>`;
+  const cnt=l=>{const ts=S.tasks.filter(t=>shown(t)&&t.list===l.id);return {td:ts.filter(t=>t.stage==='today').length,op:ts.filter(t=>t.stage!=='done').length}};
+  return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);if(!ls.length)return '';
+    return `<h2 class="sec-h hl2-h">${sp.e?`<span class="hl2-e">${esc(sp.e)}</span>`:`<i class="hl2-sq" style="background:${sp.c}"></i>`}${esc(sp.name)}</h2>
+      <div class="hl2-c">${ls.map(l=>{const c=cnt(l);return `<button class="hl2-r" data-hlopen="${sp.id}|${l.id}"><i class="hl2-dot" style="background:${l.c}"></i><b>${esc(l.name)}</b><small>${c.td?`<em>${c.td}</em> today · `:''}${c.op?`${c.op} open`:'Clear'}</small></button>`}).join('')}</div>`}).join('')
+    +`<button class="hl2-new" id="spNew">${PLUS_S}New space</button>`}
 function spaceCards(){return spaceRows()}
 /* Today's tasks ordered like the space list: pinned spaces first, then the rest top to bottom */
 function bySpaceOrder(ts){
@@ -135,7 +143,7 @@ function homeHTML(){
     <h1>Home</h1>
     <div class="summary d-only">${td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(m)}</b> planned</span>`:(S.tasks.length?'<span>Nothing planned for today</span>':'<span>Tap <b>+</b> to add your first task</span>')}</div>
     <button class="all-link d-only" id="allTasks">See all tasks${CHEV}</button></section>
-    ${todayCard(td,m)}${homeAlso()}<h2 class="sec-h">Spaces</h2><div class="sp-grid">${spaceCards()}</div>`;
+    ${todayCard(td,m)}${homeAlso()}${homeSpaces()}`;
 }
 /* phones: what else today holds, as rows in one card (north star, the next habit, tonight's or this week's nudge).
    Tiles or pills (a habits style you can pick) and the backup reminder keep their own card. */

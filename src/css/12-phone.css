@@ -158,3 +158,15 @@
   :root[data-nav="labels"] .tb-add{width:56px;height:56px;margin:0 6px;border-radius:20px;background:var(--today);color:#fff;box-shadow:0 10px 24px -8px color-mix(in srgb,var(--today) 55%,transparent)}
   :root[data-nav="labels"] .tb-add svg{width:24px;height:24px;stroke-width:2.6}
 }
+/* Home · Lists view: every list, grouped under its space */
+.hl2-h{display:flex;align-items:center;gap:7px}
+.hl2-e{font-size:14px}.hl2-sq{width:9px;height:9px;border-radius:3px}
+.hl2-c{background:var(--surface);border-radius:22px;overflow:hidden}
+.hl2-r{width:100%;display:flex;align-items:center;gap:14px;min-height:56px;padding:0 18px;text-align:left;font:inherit;color:inherit;transition:background .15s}
+.hl2-r+.hl2-r{border-top:1px solid var(--line)}
+.hl2-r:active{background:color-mix(in srgb,var(--text) 5%,transparent)}
+.hl2-dot{flex:none;width:11px;height:11px;border-radius:4px}
+.hl2-r b{flex:1;min-width:0;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl2-r small{flex:none;font-size:13px;color:var(--muted)}.hl2-r small em{font-style:normal;font-weight:700;color:var(--text)}
+.hl2-new{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 6px;font:inherit;font-size:15px;font-weight:600;color:var(--muted)}
+.hl2-new svg{width:16px;height:16px}

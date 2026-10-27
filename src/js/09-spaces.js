@@ -279,3 +279,7 @@ document.addEventListener('keydown',e=>{
 });
 matchMedia('(min-width:1100px)').addEventListener('change',()=>render());
 
+/* Home's Lists view: one tap opens that list inside its space */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-hlopen]');if(!b)return;e.preventDefault();e.stopPropagation();
+  const [sp,l]=b.dataset.hlopen.split('|');const s=S.spaces.find(x=>String(x.id)===sp),li=S.lists.find(x=>String(x.id)===l);if(!s)return;
+  openSpace(s.id);if(li){S.list=li.id;render()}},true);
