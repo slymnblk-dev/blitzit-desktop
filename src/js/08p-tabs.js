@@ -12,7 +12,7 @@ document.body.insertAdjacentHTML('beforeend','<nav class="tabbar" id="tabBar" ar
 function tabsList(){const t=[['home','Home',TB_HOME]];
   if(inboxOn())t.push(['inbox','Inbox',IB_ICON]);if(habitsOn())t.push(['habits','Habits',RH_ICON]);if(goalsOn())t.push(['goals','Goals',G_FLAG]);
   return t.length>1?t:[]}
-const tabNow=()=>gdOn||glOn?'goals':rhOn?'habits':ibOn?'inbox':'home';
+function tabNow(){return gdOn||glOn?'goals':rhOn?'habits':ibOn?'inbox':'home'}
 let tbSig='';
 function drawTabs(){
   const ts=tabsList(),on=ts.length>0&&(!S.space||ibOn||rhOn||glOn||gdOn);

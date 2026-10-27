@@ -128,3 +128,6 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 .bn-hb.on .bn-hn{color:var(--text);text-decoration:none}
 .bn-hb small{font-size:12px;font-weight:700;color:var(--muted)}
 .bn-hb.on small{color:var(--today)}
+/* OKRs are violet, KPIs coral (Metrics page and Home) */
+.dh-ring.vi .r1{stroke:var(--backlog)}
+.dh-ei.vi{color:var(--backlog);background:color-mix(in srgb,var(--backlog) 13%,transparent)}.dh-ei.vi::after{border-color:color-mix(in srgb,var(--backlog) 40%,transparent)}

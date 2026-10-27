@@ -61,10 +61,10 @@ function bnKpi(x){
     <div class="bn-kv"><b>${it.v}</b><small>/ ${it.t}${mxUw(k.unit)}</small></div><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span>
     <small class="bn-sub">${togo}${left} ${left===1?'day':'days'} left</small></section>`}
 function bnOkr(x){
-  if(!x)return `<section class="bn-c is-empty">${dhEye('OKR')}${dhEmpty(DH_I.okr,'hot','Aim for the quarter','One objective, a few key results that prove it.',dhBtn('data-bnmx="okr"','New OKR'))}</section>`;
+  if(!x)return `<section class="bn-c is-empty">${dhEye('OKR')}${dhEmpty(DH_I.okr,'vi','Aim for the quarter','One objective, a few key results that prove it.',dhBtn('data-bnmx="okr"','New OKR'))}</section>`;
   const o=x.o,it=mxIt(x),done=o.krs.filter(r=>mxKrP(r)>=1).length;
   return `<section class="bn-c bn-okr${x.behind>.15?' late':''}" data-mxhw="${it.id}" role="button" tabindex="0">${dhEye(`OKR · ${mxQ(new Date(o.end+'T12:00'))}`)}<span class="bn-kn">${esc(o.name)}</span>
-    <div class="bn-gr">${dhRing(x.p,92,8,x.behind>.15?'gold':'hot',it.v)}<span class="bn-gn">${done} of ${o.krs.length} results<br>${esc(mxOkrWhen(o))}</span></div></section>`}
+    <div class="bn-gr">${dhRing(x.p,92,8,x.behind>.15?'gold':'vi',it.v)}<span class="bn-gn">${done} of ${o.krs.length} results<br>${esc(mxOkrWhen(o))}</span></div></section>`}
 function bnSpaces(){return `<div class="bn-sps">${orderedSpaces().map(sp=>{const st=spaceStats(sp);
     return `<button class="bn-sp" data-space="${sp.id}"><span class="bn-spi">${sp.e?esc(sp.e):`<i style="background:${sp.c}"></i>`}</span><b>${esc(sp.name)}</b><small>${st.today?`${st.today} today · `:''}${st.open} open</small></button>`}).join('')}
   <button class="bn-sp new" id="spNew">${DH_PLUS}New space</button></div>`}

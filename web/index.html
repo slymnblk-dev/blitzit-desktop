@@ -4082,6 +4082,82 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 .bn-hb.on .bn-hn{color:var(--text);text-decoration:none}
 .bn-hb small{font-size:12px;font-weight:700;color:var(--muted)}
 .bn-hb.on small{color:var(--today)}
+/* OKRs are violet, KPIs coral (Metrics page and Home) */
+.dh-ring.vi .r1{stroke:var(--backlog)}
+.dh-ei.vi{color:var(--backlog);background:color-mix(in srgb,var(--backlog) 13%,transparent)}.dh-ei.vi::after{border-color:color-mix(in srgb,var(--backlog) 40%,transparent)}
+/* ===== Metrics page (08v-metrics.js): KPIs as coral number tiles, OKRs as wide violet cards ===== */
+@media (min-width:1100px){#metricsPg .ib-in{max-width:1080px}}
+.mt-head{margin-bottom:18px}
+.mt-f{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 26px}
+.mt-f button{height:34px;padding:0 15px;border-radius:999px;background:var(--surface);color:var(--muted);font:inherit;font-size:13.5px;font-weight:700;transition:background .2s,color .2s}
+.mt-f button[aria-selected="true"]{background:var(--text);color:var(--bg)}
+.mt-sec+.mt-sec{margin-top:40px}
+.mt-sh{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.mt-si{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+.mt-si svg{width:21px;height:21px}
+.mt-si.hot{color:var(--today);background:color-mix(in srgb,var(--today) 13%,transparent)}
+.mt-si.vi{color:var(--backlog);background:color-mix(in srgb,var(--backlog) 14%,transparent)}
+.mt-st{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.mt-st b{font-size:22px;font-weight:800;letter-spacing:-.03em;display:flex;align-items:baseline;gap:8px}
+.mt-st b small{font-size:14px;font-weight:700;color:var(--muted)}
+.mt-st span{font-size:13.5px;color:var(--muted)}
+.mt-new{flex:none;display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;border-radius:999px;background:var(--surface);font:inherit;font-size:14px;font-weight:700;color:var(--text);transition:background .2s}
+.mt-new:hover{background:var(--surface2)}.mt-new svg{width:14px;height:14px}
+.mt-per{display:block;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* KPI tiles */
+.mt-kg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.mt-k{position:relative;border-radius:22px;background:var(--surface);transition:box-shadow .2s,transform .2s}
+.mt-k:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 14%,transparent);transform:translateY(-1px)}
+.mt-kb{width:100%;display:flex;flex-direction:column;gap:12px;padding:18px 20px;text-align:left;font:inherit;color:inherit;border-radius:22px}
+.mt-kb:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.mt-kt{display:flex;flex-direction:column;gap:4px;padding-right:44px;min-width:0}
+.mt-kt .mt-per{color:var(--today)}
+.mt-kt b{font-size:16px;font-weight:700;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mt-kv{display:flex;align-items:baseline;gap:6px}
+.mt-kv>b{font-size:42px;font-weight:800;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.mt-kv>small{font-size:14px;color:var(--muted)}
+.mt-sp{margin-left:auto;align-self:flex-end;color:var(--today)}
+.mt-k .mx-bar{height:6px}
+.mt-kf{font-size:12.5px;color:var(--muted)}
+.mt-k.late .mx-bar i{background:var(--week)}.mt-k.late .mt-sp{color:var(--week)}
+.mt-log{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;transition:transform .15s}
+.mt-log:active{transform:scale(.92)}.mt-log svg{width:16px;height:16px;stroke-width:2.6}
+/* OKR cards */
+.mt-og{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px}
+.mt-o{display:flex;flex-direction:column;gap:14px;padding:20px 22px;border-radius:22px;background:var(--surface);box-shadow:inset 3px 0 0 var(--backlog);text-align:left;font:inherit;color:inherit;transition:box-shadow .2s,transform .2s}
+.mt-o:hover{box-shadow:inset 3px 0 0 var(--backlog),0 0 0 1px color-mix(in srgb,var(--text) 14%,transparent);transform:translateY(-1px)}
+.mt-o:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.mt-oh{display:flex;align-items:center;gap:16px}
+.mt-ot{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.mt-ot .mt-per{color:var(--backlog)}
+.mt-ot b{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.mt-ring{position:relative;flex:none;width:64px;height:64px;display:grid;place-items:center}
+.mt-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.mt-ring circle{fill:none;stroke-width:6}.mt-ring .r0{stroke:var(--surface2)}.mt-ring .r1{stroke:var(--backlog);stroke-linecap:round;transition:stroke-dasharray .6s var(--ease)}
+.mt-ring b{position:relative;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.mt-krs{display:flex;flex-direction:column;gap:12px;padding-top:14px;border-top:1px solid var(--line)}
+.mt-kr{display:flex;flex-direction:column;gap:7px}
+.mt-krt{display:flex;align-items:baseline;gap:10px;font-size:14.5px}
+.mt-krt>span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mt-krt b{font-variant-numeric:tabular-nums}.mt-krt small{color:var(--muted);font-weight:500}
+.mt-kr .mx-bar{height:5px}.mt-kr .mx-bar i{background:var(--backlog)}
+.mt-o.past{opacity:.6;box-shadow:inset 3px 0 0 var(--surface2)}
+.mt-o.past .mt-ring .r1{stroke:var(--muted)}
+.mt-pastb{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:6px 0;font:inherit;font-size:14px;font-weight:700;color:var(--muted)}
+.mt-pastb small{font-weight:700}.mt-pastb svg{width:14px;height:14px;transition:transform .2s}.mt-pastb[aria-expanded="true"] svg{transform:rotate(90deg)}
+.mt-pastb+.mt-og{margin-top:10px}
+.mt-empty{border-radius:22px;padding:22px;background:color-mix(in srgb,var(--surface) 72%,transparent);box-shadow:inset 0 0 0 1px var(--line)}
+/* Goals | Metrics switch (phones and tablets) */
+.mt-sw{display:flex;gap:4px;padding:4px;margin:0 0 18px;border-radius:999px;background:var(--surface);width:max-content}
+.mt-sw button{height:36px;padding:0 18px;border-radius:999px;font:inherit;font-size:14px;font-weight:700;color:var(--muted);transition:background .2s,color .2s}
+.mt-sw button[aria-selected="true"]{background:var(--text);color:var(--bg)}
+.mt-sps button{white-space:nowrap}
+@media (max-width:699px){
+  .mt-og{grid-template-columns:1fr}.mt-kg{grid-template-columns:1fr}
+  .mt-sh{flex-wrap:wrap}.mt-st span{display:none}
+  .mt-f{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-22px;padding-right:22px}
+  .mt-f button{flex:none}
+}
 </style>
 </head>
 <body>
@@ -4277,7 +4353,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=217; // bumped with every published update
+const APP_VERSION=218; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -8213,7 +8289,7 @@ document.body.insertAdjacentHTML('beforeend','<nav class="tabbar" id="tabBar" ar
 function tabsList(){const t=[['home','Home',TB_HOME]];
   if(inboxOn())t.push(['inbox','Inbox',IB_ICON]);if(habitsOn())t.push(['habits','Habits',RH_ICON]);if(goalsOn())t.push(['goals','Goals',G_FLAG]);
   return t.length>1?t:[]}
-const tabNow=()=>gdOn||glOn?'goals':rhOn?'habits':ibOn?'inbox':'home';
+function tabNow(){return gdOn||glOn?'goals':rhOn?'habits':ibOn?'inbox':'home'}
 let tbSig='';
 function drawTabs(){
   const ts=tabsList(),on=ts.length>0&&(!S.space||ibOn||rhOn||glOn||gdOn);
@@ -8776,10 +8852,10 @@ function bnKpi(x){
     <div class="bn-kv"><b>${it.v}</b><small>/ ${it.t}${mxUw(k.unit)}</small></div><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span>
     <small class="bn-sub">${togo}${left} ${left===1?'day':'days'} left</small></section>`}
 function bnOkr(x){
-  if(!x)return `<section class="bn-c is-empty">${dhEye('OKR')}${dhEmpty(DH_I.okr,'hot','Aim for the quarter','One objective, a few key results that prove it.',dhBtn('data-bnmx="okr"','New OKR'))}</section>`;
+  if(!x)return `<section class="bn-c is-empty">${dhEye('OKR')}${dhEmpty(DH_I.okr,'vi','Aim for the quarter','One objective, a few key results that prove it.',dhBtn('data-bnmx="okr"','New OKR'))}</section>`;
   const o=x.o,it=mxIt(x),done=o.krs.filter(r=>mxKrP(r)>=1).length;
   return `<section class="bn-c bn-okr${x.behind>.15?' late':''}" data-mxhw="${it.id}" role="button" tabindex="0">${dhEye(`OKR · ${mxQ(new Date(o.end+'T12:00'))}`)}<span class="bn-kn">${esc(o.name)}</span>
-    <div class="bn-gr">${dhRing(x.p,92,8,x.behind>.15?'gold':'hot',it.v)}<span class="bn-gn">${done} of ${o.krs.length} results<br>${esc(mxOkrWhen(o))}</span></div></section>`}
+    <div class="bn-gr">${dhRing(x.p,92,8,x.behind>.15?'gold':'vi',it.v)}<span class="bn-gn">${done} of ${o.krs.length} results<br>${esc(mxOkrWhen(o))}</span></div></section>`}
 function bnSpaces(){return `<div class="bn-sps">${orderedSpaces().map(sp=>{const st=spaceStats(sp);
     return `<button class="bn-sp" data-space="${sp.id}"><span class="bn-spi">${sp.e?esc(sp.e):`<i style="background:${sp.c}"></i>`}</span><b>${esc(sp.name)}</b><small>${st.today?`${st.today} today · `:''}${st.open} open</small></button>`}).join('')}
   <button class="bn-sp new" id="spNew">${DH_PLUS}New space</button></div>`}
@@ -8812,6 +8888,111 @@ $('dHome').addEventListener('click',e=>{
   if(e.target.closest('[data-bnall]'))return openSpaceSide('all');
   const m=e.target.closest('[data-bnmx]');if(m){const sp=(orderedSpaces()[0]||{}).id;if(!sp)return;mxOpenPop(sp);if(mxOpen)mxNew(m.dataset.bnmx)}});
 $('dHome').addEventListener('keydown',e=>{const c=e.target.closest('.bn-c[role="button"]');if(c&&e.target===c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();c.click()}});
+/* ---------- Metrics: one page for every KPI and OKR, across spaces ----------
+   Computer: "Metrics" in the sidebar (under Goals) once KPIs & OKRs is on.
+   Phone: no extra tab. The flag tab holds Goals and Metrics, with a Goals | Metrics switch at the top;
+   if only KPIs & OKRs is on, the tab is Metrics itself (gauge icon).
+   KPIs and OKRs look different on purpose: KPIs are coral number tiles (a number per week or month, a trend, + Log);
+   OKRs are wide violet cards (an objective for the quarter, a % ring and its key results). */
+var mtOn=false,mtSp='all',mtPast=false;
+const MT_OKR_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
+const mtWide=()=>matchMedia('(min-width:1100px)').matches;
+const mtCount=()=>(S.kpis||[]).filter(k=>spaceOf(k.space)).length+(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)).length;
+const mtSpaces=()=>orderedSpaces();
+const mtIn=sp=>mtSp==='all'||String(sp)===String(mtSp);
+document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg mt-pg" id="metricsPg" role="region" aria-label="Metrics"><div class="ib-in" id="mtIn"></div></div>');
+
+/* the Goals | Metrics switch (phones and tablets, when both are on) */
+const mtSwitch=on=>goalsOn()&&mxOn()&&!mtWide()?`<div class="mt-sw" role="tablist" aria-label="Goals or Metrics"><button role="tab" data-mtsw="goals" aria-selected="${on==='goals'}">Goals</button><button role="tab" data-mtsw="metrics" aria-selected="${on==='metrics'}">Metrics</button></div>`:'';
+
+function mtKpiCard(k){const x=mxHomeItems().find(y=>y.kind==='kpi'&&y.k===k)||{p:mxKpiP(k),behind:0,sp:k.space};const it=mxIt({...x,kind:'kpi',k,sp:k.space});
+  const left=mxDays(mxShift(k.period,mxStart(k.period,Date.now()),1)),v=mxKpiNow(k)??0,tg=+k.target,late=x.behind>.15,sp=spaceOf(k.space)||{};
+  const togo=k.kind!=='last'&&k.better!=='down'&&tg>v?`${mxFmt(tg-v,k.unit)} to go · `:'';
+  return `<div class="mt-k${late?' late':''}"><button class="mt-kb" data-mxhw="${it.id}" aria-label="${esc(k.name)}: ${it.v} of ${it.t}">
+      <span class="mt-kt"><span class="mt-per">${MX_PER[k.period]||''}${mtSp==='all'&&mtSpaces().length>1?` · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name||'')}`:''}</span><b>${esc(k.name)}</b></span>
+      <span class="mt-kv"><b>${it.v}</b><small>/ ${it.t}${mxUw(k.unit)}</small><span class="mt-sp">${mxSpark(mxKpiHist(k,6),84,30)}</span></span>
+      <span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span>
+      <small class="mt-kf">${togo}${left} ${left===1?'day':'days'} left${k.better==='down'?' · lower is better':''}</small></button>
+    ${k.src!=='tasks'?`<button class="mt-log" data-mxhw="${it.id}" data-mxhwlog aria-label="Log a number for ${esc(k.name)}">${PLUS_S}</button>`:''}</div>`}
+function mtOkrCard(o){const p=o.closed?(o.score||0):mxOkrP(o),sp=spaceOf(o.space)||{},id=`okr:${o.id}:${o.space}`,r=26,C2=2*Math.PI*r;
+  return `<button class="mt-o${o.closed?' past':''}" data-mxhw="${id}" aria-label="${esc(o.name)}: ${Math.round(p*100)}%">
+    <span class="mt-oh"><span class="mt-ot"><span class="mt-per">${esc(mxOkrWhen(o))}${mtSp==='all'&&mtSpaces().length>1?` · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name||'')}`:''}</span><b>${esc(o.name)}</b></span>
+      <span class="mt-ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="r0" cx="32" cy="32" r="${r}"/><circle class="r1" cx="32" cy="32" r="${r}" style="stroke-dasharray:${(C2*p).toFixed(1)} ${C2.toFixed(1)}"/></svg><b>${Math.round(p*100)}%</b></span></span>
+    ${o.closed?'':`<span class="mt-krs">${o.krs.map(k=>`<span class="mt-kr"><span class="mt-krt"><span>${esc(k.name)}</span><b>${mxFmt(mxKrNow(k),k.unit)}<small> ${mxKrKind(k)==='sum'?'/':'→'} ${mxFmt(+k.target,k.unit)}</small></b></span><span class="mx-bar"><i style="width:${(mxKrP(k)*100).toFixed(1)}%"></i></span></span>`).join('')}</span>`}</button>`}
+function drawMetrics(){if(!mtOn)return;const y=$('metricsPg').scrollTop;
+  if(mtSp!=='all'&&!spaceOf(mtSp))mtSp='all';
+  const ks=(S.kpis||[]).filter(k=>spaceOf(k.space)&&mtIn(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)&&mtIn(o.space)),past=(S.okrs||[]).filter(o=>o.closed&&spaceOf(o.space)&&mtIn(o.space));
+  const sps=mtSpaces();
+  const filt=sps.length>1?`<div class="mt-f" role="tablist" aria-label="Space">${[['all','All spaces'],...sps.map(s=>[s.id,(s.e?s.e+' ':'')+s.name])].map(([v,l])=>`<button role="tab" data-mtsp="${v}" aria-selected="${String(v)===String(mtSp)}">${esc(l)}</button>`).join('')}</div>`:'';
+  const head=(ico,cls,t,n,line,kind)=>`<div class="mt-sh"><span class="mt-si ${cls}">${ico}</span><div class="mt-st"><b>${t}${n?`<small>${n}</small>`:''}</b><span>${line}</span></div>${n?`<button class="mt-new" data-mtnew="${kind}">${PLUS_S}New ${t.slice(0,-1)}</button>`:''}</div>`;
+  const kSec=`<section class="mt-sec">${head(MX_ICON,'hot','KPIs',ks.length,'Numbers you keep an eye on, every week or month','kpi')}
+    ${ks.length?`<div class="mt-kg">${ks.map(mtKpiCard).join('')}</div>`:`<div class="mt-empty">${dhEmpty(MX_ICON,'hot','Track a number','Like messages sent or demos booked. Done tasks can count toward it.',dhBtn('data-mtnew="kpi"','New KPI'))}</div>`}</section>`;
+  const oSec=`<section class="mt-sec">${head(MT_OKR_I,'vi','OKRs',os.length,'A goal for the quarter, and the results that prove it','okr')}
+    ${os.length?`<div class="mt-og">${os.map(mtOkrCard).join('')}</div>`:`<div class="mt-empty">${dhEmpty(MT_OKR_I,'vi','Aim for the quarter','One objective, like “Win 3 customers”, with a few key results.',dhBtn('data-mtnew="okr"','New OKR'))}</div>`}
+    ${past.length?`<button class="mt-pastb" data-mtpast aria-expanded="${mtPast}">Past OKRs<small>${past.length}</small>${CHEV}</button>${mtPast?`<div class="mt-og">${past.map(mtOkrCard).join('')}</div>`:''}`:''}</section>`;
+  $('mtIn').innerHTML=`${mtSwitch('metrics')}<div class="hp-head mt-head"><div class="hp-tt"><span class="hp-eye">${ks.length||os.length?`${ks.length} ${ks.length===1?'KPI':'KPIs'} · ${os.length} ${os.length===1?'OKR':'OKRs'}`:'KPIs & OKRs'}</span><h1 class="hp-h">Metrics</h1></div></div>${filt}${kSec}${oSec}`;
+  $('metricsPg').scrollTop=y}
+function openMetrics(){if(!mxOn())return;
+  if(ibOn)closeInbox();if(rhOn)closeRhythm();if(glOn)closeGoals();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();if(typeof closeSearch==='function')closeSearch();
+  mtOn=true;drawMetrics();$('metricsPg').classList.add('on');document.body.classList.add('ib-open');$('metricsPg').scrollTop=0;haptic(5);
+  if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
+function closeMetrics(){if(!mtOn)return;mtOn=false;$('metricsPg').classList.remove('on');if(!ibOn&&!rhOn)document.body.classList.remove('ib-open');
+  const a=document.activeElement;if(a&&a.closest&&a.closest('#metricsPg'))a.blur();if(typeof renderDesk==='function')renderDesk()}
+$('metricsPg').addEventListener('click',e=>{
+  const f=e.target.closest('[data-mtsp]');if(f){mtSp=isNaN(+f.dataset.mtsp)||f.dataset.mtsp==='all'?f.dataset.mtsp:+f.dataset.mtsp;haptic(4);return drawMetrics()}
+  if(e.target.closest('[data-mtpast]')){mtPast=!mtPast;return drawMetrics()}
+  const n=e.target.closest('[data-mtnew]');if(n){const sp=mtSp!=='all'?mtSp:(mtSpaces()[0]||{}).id;if(sp==null)return;mxOpenPop(sp);if(mxOpen){mxNew(n.dataset.mtnew);if(mxDraft&&mtSp==='all'&&mtSpaces().length>1){mxDraft.pickSp=true;mxDraw()}}}});
+/* the Goals | Metrics switch */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-mtsw]');if(!b)return;e.preventDefault();haptic(4);
+  if(b.dataset.mtsw==='metrics'){if(!mtOn)openMetrics()}else{closeMetrics();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();openGoals()}try{drawTabs()}catch(err){}});
+/* New KPI / OKR from "All spaces": the form asks which space it belongs to */
+const _mtKpiForm=mxKpiForm,_mtOkrForm=mxOkrForm;
+const mtSpField=()=>mxDraft&&mxDraft.pickSp&&!mxDraft.id?mxField('Space',`<div class="segc mx-seg mt-sps">${mtSpaces().map(s=>`<button type="button" class="${String(s.id)===String(mxSpaceNow())?'on':''}" data-mtpick="${s.id}">${s.e?esc(s.e)+' ':''}${esc(s.name)}</button>`).join('')}</div>`):'';
+mxKpiForm=function(sname){return _mtKpiForm(sname).replace('<div class="mx-body mx-form">','<div class="mx-body mx-form">'+mtSpField())};
+mxOkrForm=function(sname){return _mtOkrForm(sname).replace('<div class="mx-body mx-form">','<div class="mx-body mx-form">'+mtSpField())};
+$('mxPg').addEventListener('click',e=>{const b=e.target.closest('[data-mtpick]');if(!b||!mxDraft)return;e.stopPropagation();
+  const s=mtSpaces().find(x=>String(x.id)===b.dataset.mtpick);if(s){mxSpPick=s.id;haptic(4);mxDraw()}},true);
+
+/* computer sidebar: Metrics under Goals */
+const _mtSide=rhythmSide;
+rhythmSide=function(){let h=_mtSide();if(!mxOn())return h;const n=mtCount();
+  return h+`<button class="s-list s-home s-inbox ${mtOn?'on':''}" id="sMetrics" title="Metrics">${MX_ICON}<span class="s-name">Metrics</span>${n?`<span class="n">${n}</span>`:''}</button>`};
+$('sLists').addEventListener('click',e=>{
+  if(e.target.closest('#sMetrics')){e.stopImmediatePropagation();return mtOn?closeMetrics():openMetrics()}
+  if(mtOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew]'))closeMetrics()},true);
+/* any other page opening closes Metrics */
+for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide']){const f=window[fn];if(typeof f!=='function')continue;
+  window[fn]=function(){if(mtOn&&!(fn==='openGoal'&&false))closeMetrics();return f.apply(this,arguments)}}
+/* keep the page in step with every change, and Home not lit while Metrics is open */
+const _mtRender=render;render=function(d){_mtRender(d);if(mtOn){if(!mxOn())closeMetrics();else drawMetrics()}};
+const _mtDesk=renderDesk;renderDesk=function(){_mtDesk.apply(this,arguments);if(mtOn){const h=$('sHome');if(h)h.classList.remove('on')}};
+/* Escape closes it (computer) */
+document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!mtOn||mxOpen||$('dlg').classList.contains('on')||document.querySelector('.sheet.on'))return;if(!mtWide())return;e.preventDefault();closeMetrics()});
+
+/* phones: the flag tab holds Goals and Metrics */
+const _mtTabs=tabsList;
+tabsList=function(){let t=_mtTabs();if(goalsOn()||!mxOn())return t;
+  t=t.length?t:[['home','Home',TB_HOME]];t.push(['metrics','Metrics',MX_ICON]);return t};
+const _mtTabNow=tabNow;
+tabNow=function(){if(mtOn)return goalsOn()?'goals':'metrics';return _mtTabNow()};
+const _mtTbGo=tbGo;
+tbGo=function(k){
+  if(k==='metrics'){if(!mtOn)openMetrics();else $('metricsPg').scrollTo({top:0,behavior:'smooth'});return drawTabs()}
+  if(k==='goals'&&mtOn){if(tabNow()==='goals'){$('metricsPg').scrollTo({top:0,behavior:'smooth'});return}}
+  if(mtOn)closeMetrics();return _mtTbGo(k)};
+/* the switch also sits on top of the phone Goals page */
+const _mtDrawGoals=drawGoals;
+drawGoals=function(){_mtDrawGoals.apply(this,arguments);const sw=mtSwitch('goals');if(sw)$('glIn').insertAdjacentHTML('afterbegin',sw)};
+/* turning KPIs & OKRs off while the page is open */
+const _mtApply=applySettings;applySettings=function(){_mtApply.apply(this,arguments);if(mtOn&&!mxOn())closeMetrics()};
+/* the popup opened from Metrics: Back, Escape and Save return to Metrics (not to the space's scoreboard) */
+var mtPop=false;
+window.addEventListener('click',e=>{if(e.target.closest('#metricsPg [data-mxhw],#metricsPg [data-mtnew]'))mtPop=true},true);
+const mtBack=()=>mtPop&&mtOn&&mxOpen;
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&mtBack()&&!$('dlg').classList.contains('on')&&!$('mxAsk').classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();mxClose()}},true);
+window.addEventListener('click',e=>{if(mtBack()&&e.target.closest('#mxPg [data-mxback]')){e.preventDefault();e.stopImmediatePropagation();mxClose()}},true);
+const _mtSave=mxSave;mxSave=function(){const r=_mtSave.apply(this,arguments);if(mtBack()&&!mxDraft)mxClose();return r};
+const _mtClose=mxClose;mxClose=function(){mtPop=false;return _mtClose.apply(this,arguments)};
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
