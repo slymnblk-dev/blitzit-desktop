@@ -4234,6 +4234,24 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 .mt-gl span{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:3px 9px;border-radius:999px;background:var(--surface2);font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gpp-nm .gfl b,.gfl b{font-size:inherit;font-weight:700;letter-spacing:0;line-height:inherit}
 @media (max-width:699px){.gmx-g{grid-template-columns:1fr 1fr}.gmx-c{padding:12px 14px}.gmx-v b{font-size:21px}.gmx-ov small{display:none}}
+/* Measured by: calm rows, the same language as the Metrics page */
+.gmx-l{display:flex;flex-direction:column}
+.gmx-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"i t v" "i b b";align-items:center;gap:6px 12px;padding:12px 2px;border-top:1px solid var(--line);text-align:left;font:inherit;color:inherit;border-radius:10px;transition:background .15s}
+.gmx-row:last-child{border-bottom:1px solid var(--line)}
+.gmx-row:hover{background:color-mix(in srgb,var(--text) 3%,transparent)}
+.gmx-ic{grid-area:i;display:grid;align-self:start;margin-top:2px}.gmx-ic svg{width:16px;height:16px}
+.gmx-row.kpi .gmx-ic{color:var(--today)}.gmx-row.okr .gmx-ic{color:var(--backlog)}
+.gmx-t{grid-area:t;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gmx-t b{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmx-t small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmx-v{grid-area:v;white-space:nowrap}.gmx-v b{font-size:18px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.gmx-v small{font-size:12.5px;color:var(--muted);margin-left:3px}
+.gmx-bar{grid-area:b}.gmx-bar .mx-bar{height:3px}
+.gmx-row.kpi .mx-bar i{background:var(--today)}.gmx-row.kpi.late .mx-bar i{background:var(--week)}.gmx-row.okr .mx-bar i{background:var(--backlog)}
+.gw-l .gmx{margin-top:28px;max-width:460px}
+.gmx-news{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.gmx-news .gmx-new{margin-top:0}
+.gmx-new.kpi{background:color-mix(in srgb,var(--today) 13%,transparent);color:var(--today)}.gmx-new.kpi:hover{background:color-mix(in srgb,var(--today) 20%,transparent)}
+.gmx-news+.gmx-none{margin-top:8px}
+@media (min-width:1100px){#gdIn>.gmx .gmx-l,.gd-pg .gmx:not(.gw-l .gmx) .gmx-l{display:grid;grid-template-columns:1fr 1fr;column-gap:36px}#gdIn .gmx:not(.gw-l .gmx) .gmx-row:nth-last-child(2):nth-child(odd){border-bottom:1px solid var(--line)}}
 /* ===== KPIs & OKRs on tasks, calmer (08x-mx-polish.js) ===== */
 .mxp-mi{display:inline-flex;align-items:center;gap:5px}
 .mxp-mi i,.mxp-pi i{display:grid}
@@ -4552,7 +4570,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=224; // bumped with every published update
+const APP_VERSION=225; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -8602,11 +8620,14 @@ const MX_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const MX_LIST='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg>';
 const MX_ONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4.5" width="14" height="15" rx="3.5"/><path d="M9 12.5h6"/></svg>';
 function mxOn(){return !!(S.cfg&&S.cfg.mx)}
-const mxKpis=sp=>(S.kpis||[]).filter(k=>k.space===sp);
-const mxOkrs=(sp,closed)=>(S.okrs||[]).filter(o=>o.space===sp&&!!o.closed===!!closed);
+/* a KPI or OKR can live in a space, or in no space at all (space:null, shown as 'none'): handy for goals that sit outside any space */
+const mxSpOk=s=>s==null||!!spaceOf(s);
+const mxSpEq=(a,sp)=>sp==='none'?a==null:a===sp;
+const mxKpis=sp=>(S.kpis||[]).filter(k=>mxSpEq(k.space,sp));
+const mxOkrs=(sp,closed)=>(S.okrs||[]).filter(o=>mxSpEq(o.space,sp)&&!!o.closed===!!closed);
 var mxSpPick=null; // the Home widget opens the popup for an item's own space
 const mxSpaceIn=()=>S.space&&S.space!=='all'&&spaceOf(S.space)?S.space:null;
-const mxSpaceNow=()=>mxSpPick&&spaceOf(mxSpPick)?mxSpPick:mxSpaceIn();
+const mxSpaceNow=()=>mxSpPick==='none'||mxSpPick==='null'?'none':mxSpPick&&spaceOf(mxSpPick)?mxSpPick:mxSpaceIn();
 const mxPhone=()=>matchMedia('(max-width:699px)').matches;
 const mxLook=()=>{const v=mxPhone()?C().mxPh:C().mxDk;return v==='board'||v==='focus'?v:(mxPhone()?'focus':'board')};
 /* ---- numbers ---- */
@@ -8650,8 +8671,8 @@ function mxFind(link){if(link.okr!=null){const o=(S.okrs||[]).find(x=>String(x.i
   const k=(S.kpis||[]).find(x=>String(x.id)===String(link.id));return k?{kind:'kpi',item:k,name:k.name}:null}
 const mxKey=l=>l.okr!=null?`kr:${l.okr}:${l.id}`:`kpi:${l.id}`;
 function mxCands(t){const sp=(listOf(t.list)||{}).space;const out=[];
-  mxKpis(sp).filter(k=>k.src!=='log'&&k.kind!=='last').forEach(k=>out.push({id:k.id,name:k.name,kind:'kpi'}));
-  mxOkrs(sp,false).forEach(o=>o.krs.filter(r=>mxKrKind(r)==='sum').forEach(r=>out.push({id:r.id,okr:o.id,name:r.name,kind:'kr',obj:o.name})));
+  [...mxKpis(sp),...mxKpis('none')].filter(k=>k.src!=='log'&&k.kind!=='last').forEach(k=>out.push({id:k.id,name:k.name,kind:'kpi'}));
+  [...mxOkrs(sp,false),...mxOkrs('none',false)].forEach(o=>o.krs.filter(r=>mxKrKind(r)==='sum').forEach(r=>out.push({id:r.id,okr:o.id,name:r.name,kind:'kr',obj:o.name})));
   (t.mx||[]).forEach(l=>{if(!out.some(c=>mxKey(c)===mxKey(l))){const f=mxFind(l);if(f)out.push({id:l.id,okr:l.okr,name:f.name,kind:f.kind})}});
   return out}
 /* ---- tasks move numbers ---- */
@@ -8693,7 +8714,7 @@ function mxHead(eye,title,back){return `<div class="mx-h">${back?`<button class=
   ${back?'':`<button class="mx-ib" data-mxlook aria-label="${mxLook()==='board'?'Show one at a time':'Show the scoreboard'}" title="${mxLook()==='board'?'One at a time':'Scoreboard'}">${mxLook()==='board'?MX_ONE:MX_LIST}</button>`}
   <button class="mx-ib mx-x" data-mxx aria-label="Close">${X}</button></div>`}
 function mxDraw(){if(!mxOpen)return;const sp=mxSpaceNow();if(!sp){mxClose();return}
-  const sname=esc(spaceOf(sp).name);let h;
+  const sname=sp==='none'?'No space':esc(spaceOf(sp).name);let h;
   if(mxDraft)h=mxDraft.kind==='kpi'?mxKpiForm(sname):mxOkrForm(sname);
   else if(mxView)h=mxItemView(sname);
   else h=mxLook()==='board'?mxBoard(sp,sname):mxFocusView(sp,sname);
@@ -8807,7 +8828,7 @@ function mxSave(){const d=mxDraft.v,sp=mxSpaceNow(),nm=String(d.name||'').trim()
   if(mxDraft.kind==='kpi'){const tg=+d.target;if(d.target===''||!Number.isFinite(tg)||tg<=0)return mxErr('[data-mxf="target"]','Set a target above 0')
     const kind=d.src==='log'?d.kind:'sum',vals={name:nm.slice(0,60),target:tg,unit:String(d.unit||'').trim().slice(0,14),period:d.period,better:d.better,src:d.src,kind};
     const was=mxDraft.id;
-    commit(()=>{if(was){const k=S.kpis.find(x=>x.id===was);if(k)Object.assign(k,vals)}else{S.kpis=S.kpis||[];S.kpis.push({id:newId(),space:sp,created:Date.now(),log:[],...vals})}
+    commit(()=>{if(was){const k=S.kpis.find(x=>x.id===was);if(k)Object.assign(k,vals)}else{S.kpis=S.kpis||[];S.kpis.push({id:newId(),space:sp==='none'?null:sp,created:Date.now(),log:[],...vals})}
       if(kind==='last'||d.src==='log')S.tasks.forEach(t=>{if(Array.isArray(t.mx))t.mx=t.mx.filter(l=>!(l.okr==null&&String(l.id)===String(was)))})},was?'KPI saved':'KPI added');
     mxDraft=null;if(!was)mxTab='kpi';try{sfx('add')}catch(e){};return mxDraw()}
   d.krs.forEach(mxGuessTarget);
@@ -8821,7 +8842,7 @@ function mxSave(){const d=mxDraft.v,sp=mxSpaceNow(),nm=String(d.name||'').trim()
     const list=krs.map(r=>{const prev=old&&old.krs.find(x=>x.id===r.id);return {id:prev?prev.id:newId(),name:r.name.slice(0,60),from:+r.from||0,target:+r.target,unit:String(r.unit||'').trim().slice(0,14),log:prev?prev.log:[]}});
     if(old){old.name=nm.slice(0,80);old.end=d.end;const gone=old.krs.filter(r=>!list.some(x=>x.id===r.id)).map(r=>String(r.id));old.krs=list;
       if(gone.length)S.tasks.forEach(t=>{if(Array.isArray(t.mx))t.mx=t.mx.filter(l=>!(String(l.okr)===String(old.id)&&gone.includes(String(l.id))))})}
-    else{S.okrs=S.okrs||[];S.okrs.push({id:newId(),space:sp,name:nm.slice(0,80),start:dkey(),end:d.end,created:Date.now(),krs:list})}},was?'OKR saved':'OKR added');
+    else{S.okrs=S.okrs||[];S.okrs.push({id:newId(),space:sp==='none'?null:sp,name:nm.slice(0,80),start:dkey(),end:d.end,created:Date.now(),krs:list})}},was?'OKR saved':'OKR added');
   mxDraft=null;if(!was)mxTab='okr';try{sfx('add')}catch(e){};mxDraw()}
 function mxRemove(){const dr=mxDraft;if(!dr||!dr.id)return;const isK=dr.kind==='kpi';
   confirmAsk({title:isK?'Delete this KPI?':'Delete this OKR?',text:`“${dr.v.name}” and its history will be deleted. Linked tasks stay; they just stop counting toward it.`,yes:'Yes, delete',no:'No',
@@ -8834,7 +8855,7 @@ function mxCloseOut(id){const o=(S.okrs||[]).find(x=>String(x.id)===String(id));
 function mxCopyNext(){const dr=mxDraft;const o=dr&&(S.okrs||[]).find(x=>x.id===dr.id);if(!o)return;const sp=o.space;
   if(mxOkrs(sp,false).length>=MX_OKR_MAX){toast(`${MX_OKR_MAX} OKRs at once per space keeps it calm`);return}
   const endMs=Math.max(Date.now(),mxEndMs(o));
-  commit(()=>{S.okrs.push({id:newId(),space:sp,name:o.name,start:dkey(),end:mxQuarterEnd(endMs+DAY),created:Date.now(),
+  commit(()=>{S.okrs.push({id:newId(),space:sp==='none'?null:sp,name:o.name,start:dkey(),end:mxQuarterEnd(endMs+DAY),created:Date.now(),
     krs:o.krs.map(r=>({id:newId(),name:r.name,from:mxKrKind(r)==='last'?mxKrNow(r):0,target:r.target,unit:r.unit,log:[]}))})},'Copied to the next quarter');
   mxDraft=null;mxPast=false;mxTab='okr';mxDraw()}
 /* ---- clicks, typing, keys ---- */
@@ -8912,8 +8933,8 @@ $('dPicker').addEventListener('change',e=>{if(e.target.dataset.mxamt)render()});
    behind first. Three looks: Focus number (one number that needs you, + Log), Rings, Bars (rows on phones, tiles on
    computers). Default: Focus on phones, Bars on computers. Tap anything to open it in the popup. ---------- */
 function mxHomeItems(){const now=Date.now(),out=[];
-  (S.kpis||[]).forEach(k=>{if(!spaceOf(k.space))return;const s=mxStart(k.period,now),e=mxShift(k.period,s,1),p=mxKpiP(k);out.push({kind:'kpi',k,sp:k.space,p,behind:(now-s)/(e-s)-p})});
-  (S.okrs||[]).forEach(o=>{if(o.closed||!spaceOf(o.space))return;const s=new Date((o.start||dkey(o.created||now))+'T00:00').getTime(),e=mxEndMs(o),p=mxOkrP(o);
+  (S.kpis||[]).forEach(k=>{if(!mxSpOk(k.space))return;const s=mxStart(k.period,now),e=mxShift(k.period,s,1),p=mxKpiP(k);out.push({kind:'kpi',k,sp:k.space,p,behind:(now-s)/(e-s)-p})});
+  (S.okrs||[]).forEach(o=>{if(o.closed||!mxSpOk(o.space))return;const s=new Date((o.start||dkey(o.created||now))+'T00:00').getTime(),e=mxEndMs(o),p=mxOkrP(o);
     out.push({kind:'okr',o,sp:o.space,p,behind:Math.max(0,Math.min(1,(now-s)/Math.max(DAY,e-s)))-p})});
   return out.sort((a,b)=>b.behind-a.behind)}
 const mxHwLook=()=>{const v=C().mxHw;return v==='focus'||v==='rings'||v==='bars'?v:(mxPhone()?'focus':'bars')};
@@ -9100,9 +9121,10 @@ $('dHome').addEventListener('keydown',e=>{const c=e.target.closest('.bn-c[role="
 var mtOn=false,mtSp='all',mtPast=false;
 const MT_OKR_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
 const mtWide=()=>matchMedia('(min-width:1100px)').matches;
-const mtCount=()=>(S.kpis||[]).filter(k=>spaceOf(k.space)).length+(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)).length;
-const mtSpaces=()=>orderedSpaces();
-const mtIn=sp=>mtSp==='all'||String(sp)===String(mtSp);
+const mtCount=()=>(S.kpis||[]).filter(k=>mxSpOk(k.space)).length+(S.okrs||[]).filter(o=>!o.closed&&mxSpOk(o.space)).length;
+/* spaces, plus 'No space' when something lives outside every space */
+const mtSpaces=()=>[...orderedSpaces(),...((S.kpis||[]).some(k=>k.space==null)||(S.okrs||[]).some(o=>o.space==null)?[{id:'none',name:'No space',e:'',c:'var(--muted)'}]:[])];
+const mtIn=sp=>mtSp==='all'||String(sp??'none')===String(mtSp);
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg mt-pg" id="metricsPg" role="region" aria-label="Metrics"><div class="ib-in" id="mtIn"></div></div>');
 
 /* the Goals | Metrics switch (phones and tablets, when both are on) */
@@ -9144,17 +9166,18 @@ function closeMetrics(){if(!mtOn)return;mtOn=false;$('metricsPg').classList.remo
 $('metricsPg').addEventListener('click',e=>{
   const f=e.target.closest('[data-mtsp]');if(f){mtSp=isNaN(+f.dataset.mtsp)||f.dataset.mtsp==='all'?f.dataset.mtsp:+f.dataset.mtsp;haptic(4);return drawMetrics()}
   if(e.target.closest('[data-mtpast]')){mtPast=!mtPast;return drawMetrics()}
-  const n=e.target.closest('[data-mtnew]');if(n){const sp=mtSp!=='all'?mtSp:(mtSpaces()[0]||{}).id;if(sp==null)return;mxOpenPop(sp);if(mxOpen){mxNew(n.dataset.mtnew);if(mxDraft&&mtSp==='all'&&mtSpaces().length>1){mxDraft.pickSp=true;mxDraw()}}}});
+  const n=e.target.closest('[data-mtnew]');if(n){const sp=mtSp!=='all'?mtSp:(mtSpaces()[0]||{}).id;if(sp==null)return;mxOpenPop(sp);if(mxOpen){mxNew(n.dataset.mtnew);if(mxDraft&&mtSp==='all'){mxDraft.pickSp=true;mxDraw()}}}});
 /* the Goals | Metrics switch */
 document.addEventListener('click',e=>{const b=e.target.closest('[data-mtsw]');if(!b)return;e.preventDefault();haptic(4);
   if(b.dataset.mtsw==='metrics'){if(!mtOn)openMetrics()}else{closeMetrics();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();openGoals()}try{drawTabs()}catch(err){}});
 /* New KPI / OKR from "All spaces": the form asks which space it belongs to */
 const _mtKpiForm=mxKpiForm,_mtOkrForm=mxOkrForm;
-const mtSpField=()=>mxDraft&&mxDraft.pickSp&&!mxDraft.id?mxField('Space',`<div class="segc mx-seg mt-sps">${mtSpaces().map(s=>`<button type="button" class="${String(s.id)===String(mxSpaceNow())?'on':''}" data-mtpick="${s.id}">${s.e?esc(s.e)+' ':''}${esc(s.name)}</button>`).join('')}</div>`):'';
+const mtPickSps=()=>[...orderedSpaces(),{id:'none',name:'No space',e:''}];
+const mtSpField=()=>mxDraft&&mxDraft.pickSp&&!mxDraft.id?mxField('Space',`<div class="segc mx-seg mt-sps">${mtPickSps().map(s=>`<button type="button" class="${String(s.id)===String(mxSpaceNow())?'on':''}" data-mtpick="${s.id}">${s.e?esc(s.e)+' ':''}${esc(s.name)}</button>`).join('')}</div>`):'';
 mxKpiForm=function(sname){return _mtKpiForm(sname).replace('<div class="mx-body mx-form">','<div class="mx-body mx-form">'+mtSpField())};
 mxOkrForm=function(sname){return _mtOkrForm(sname).replace('<div class="mx-body mx-form">','<div class="mx-body mx-form">'+mtSpField())};
 $('mxPg').addEventListener('click',e=>{const b=e.target.closest('[data-mtpick]');if(!b||!mxDraft)return;e.stopPropagation();
-  const s=mtSpaces().find(x=>String(x.id)===b.dataset.mtpick);if(s){mxSpPick=s.id;haptic(4);mxDraw()}},true);
+  const s=mtPickSps().find(x=>String(x.id)===b.dataset.mtpick);if(s){mxSpPick=s.id;haptic(4);mxDraw()}},true);
 
 /* computer sidebar: Metrics under Goals */
 const _mtSide=rhythmSide;
@@ -9206,8 +9229,8 @@ const _mtClose=mxClose;mxClose=function(){mtPop=false;return _mtClose.apply(this
    achieved goals keep their KPIs and OKRs running (Metrics marks them 🏆); deleted KPIs/OKRs quietly drop out. */
 const GMX_OKR_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
 const GMX_FLAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V4"/><path d="M6 4.5h11l-2.2 4.2L17 13H6"/></svg>';
-const gmxKpi=id=>(S.kpis||[]).find(x=>String(x.id)===String(id)&&spaceOf(x.space));
-const gmxOkr=id=>(S.okrs||[]).find(x=>String(x.id)===String(id)&&spaceOf(x.space));
+const gmxKpi=id=>(S.kpis||[]).find(x=>String(x.id)===String(id)&&mxSpOk(x.space));
+const gmxOkr=id=>(S.okrs||[]).find(x=>String(x.id)===String(id)&&mxSpOk(x.space));
 const gmxLinks=g=>(Array.isArray(g&&g.mx)?g.mx:[]).filter(l=>l.k==='kpi'?gmxKpi(l.id):gmxOkr(l.id));
 const gmxGoalsOf=(k,id)=>(S.goals||[]).filter(g=>Array.isArray(g.mx)&&g.mx.some(l=>l.k===k&&String(l.id)===String(id)));
 const gmxOn=()=>typeof mxOn==='function'&&mxOn()&&goalsOn();
@@ -9215,13 +9238,13 @@ const gmxOn=()=>typeof mxOn==='function'&&mxOn()&&goalsOn();
 /* ===== 1 · Measured by, on the goal page ===== */
 function gmxSection(g){const ls=gmxLinks(g);if(!ls.length||!mxOn())return '';
   const its=mxHomeItems();
-  const cards=ls.map(l=>{if(l.k==='kpi'){const k=gmxKpi(l.id),x=its.find(y=>y.kind==='kpi'&&y.k===k)||{p:mxKpiP(k),behind:0},v=mxKpiNow(k);
-      return `<button class="gmx-c kpi${x.behind>.15?' late':''}" data-mxhw="kpi:${k.id}:${k.space}"><span class="gmx-e">KPI · ${MX_PER[k.period]||''}</span><b class="gmx-n">${esc(k.name)}</b>
-        <span class="gmx-v"><b>${v==null&&k.kind==='last'?'—':mxFmt(v??0,k.unit)}</b><small>/ ${mxFmt(+k.target,k.unit)}${mxUw(k.unit)}</small></span><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span></button>`}
-    const o=gmxOkr(l.id),p=o.closed?(o.score||0):mxOkrP(o),r=15,C2=2*Math.PI*r;
-    return `<button class="gmx-c okr" data-mxhw="okr:${o.id}:${o.space}"><span class="gmx-e">OKR · ${o.closed?'closed':mxQ(new Date(o.end+'T12:00'))}</span><b class="gmx-n">${esc(o.name)}</b>
-      <span class="gmx-ov"><span class="gmx-ring"><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="r0" cx="18" cy="18" r="${r}"/><circle class="r1" cx="18" cy="18" r="${r}" style="stroke-dasharray:${(C2*p).toFixed(1)} ${C2.toFixed(1)}"/></svg></span><b>${Math.round(p*100)}%</b><small>${o.krs.length} key ${o.krs.length===1?'result':'results'}</small></span></button>`}).join('');
-  return `<section class="gmx" aria-label="Measured by"><div class="gmx-h"><span>Measured by</span><button class="gmx-ed" data-gmlink>Edit</button></div><div class="gmx-g">${cards}</div></section>`}
+  const rows=ls.map(l=>{if(l.k==='kpi'){const k=gmxKpi(l.id),x=its.find(y=>y.kind==='kpi'&&y.k===k)||{p:mxKpiP(k),behind:0},v=mxKpiNow(k);
+      return `<button class="gmx-row kpi${x.behind>.15?' late':''}" data-mxhw="kpi:${k.id}:${k.space}"><span class="gmx-ic">${MX_ICON}</span><span class="gmx-t"><b>${esc(k.name)}</b><small>KPI · ${MX_PER[k.period]||''}</small></span>
+        <span class="gmx-v"><b>${v==null&&k.kind==='last'?'—':mxFmt(v??0,k.unit)}</b><small>/ ${mxFmt(+k.target,k.unit)}${mxUw(k.unit)}</small></span><span class="gmx-bar"><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span></span></button>`}
+    const o=gmxOkr(l.id),p=o.closed?(o.score||0):mxOkrP(o);
+    return `<button class="gmx-row okr" data-mxhw="okr:${o.id}:${o.space}"><span class="gmx-ic">${GMX_OKR_I}</span><span class="gmx-t"><b>${esc(o.name)}</b><small>OKR · ${o.closed?'closed':esc(mxOkrWhen(o))}</small></span>
+      <span class="gmx-v"><b>${Math.round(p*100)}%</b></span><span class="gmx-bar"><span class="mx-bar"><i style="width:${(p*100).toFixed(1)}%"></i></span></span></button>`}).join('');
+  return `<section class="gmx" aria-label="Measured by"><div class="gmx-h"><span>Measured by</span><button class="gmx-ed" data-gmlink>Edit</button></div><div class="gmx-l">${rows}</div></section>`}
 /* a finish line chip under the milestone you're looking at */
 function gmxFinVal(f){if(!f)return null;if(f.k==='kpi'){const k=gmxKpi(f.id);return k?{name:k.name,v:mxKpiNow(k)??0,unit:k.unit,down:k.better==='down'}:null}
   const o=gmxOkr(f.okr),r=o&&o.krs.find(x=>String(x.id)===String(f.id));return r?{name:r.name,v:mxKrNow(r),unit:r.unit,down:false}:null}
@@ -9258,10 +9281,10 @@ document.body.insertAdjacentHTML('beforeend','<div class="mx-pg" id="gmxPg" role
 let gmxG=null,gfinM=null,gfinDraft=null;
 function gmxOpen(g){gmxG=g.id;gfinM=null;gmxDraw();$('gmxPg').classList.add('on');haptic(5)}
 function gmxClose(){gmxG=null;gfinM=null;$('gmxPg').classList.remove('on')}
-const gmxRowSp=sp=>{const s=spaceOf(sp)||{};return orderedSpaces().length>1?`${s.e?esc(s.e)+' ':''}${esc(s.name||'')} · `:''};
+const gmxRowSp=sp=>{if(sp==null)return 'No space · ';const s=spaceOf(sp)||{};return orderedSpaces().length>1?`${s.e?esc(s.e)+' ':''}${esc(s.name||'')} · `:''};
 function gmxDraw(){if(gfinM)return gfinDraw();const g=gById(gmxG);if(!g)return gmxClose();
   const on=(k,id)=>(g.mx||[]).find(l=>l.k===k&&String(l.id)===String(id));
-  const ks=(S.kpis||[]).filter(k=>spaceOf(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)||on('okr',o.id));
+  const ks=(S.kpis||[]).filter(k=>mxSpOk(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&mxSpOk(o.space)||on('okr',o.id));
   const row=(k,x,sub,cls,ico)=>{const l=on(k,x.id);return `<div class="gmx-r ${cls}${l?' on':''}"><button class="gmx-rb" data-gmxt="${k}:${x.id}" aria-pressed="${!!l}"><span class="gmx-k">${DH_CK}</span><span class="gmx-ri">${ico}</span><span class="gmx-rt"><b>${esc(x.name)}</b><small>${sub}</small></span></button>
     ${l&&k==='kpi'?`<button class="gmx-tk" data-gmxtasks="${x.id}" aria-pressed="${!!l.tasks}"><span class="tg${l.tasks?' on':''}" aria-hidden="true"></span>This goal’s own tasks add 1 when done</button>`:''}</div>`};
   $('gmxIn').innerHTML=`${mxHead(`${g.e?esc(g.e)+' ':''}${esc(g.name)}`,'Measured by',true)}
@@ -9270,7 +9293,8 @@ function gmxDraw(){if(gfinM)return gfinDraw();const g=gById(gmxG);if(!g)return g
     ${ks.length?ks.map(k=>row('kpi',k,`${gmxRowSp(k.space)}${mxFmt(mxKpiNow(k)??0,k.unit)} of ${mxFmt(+k.target,k.unit)} ${MX_PER[k.period]||''}`,'kpi',MX_ICON)).join(''):`<p class="gmx-none">No KPIs yet.</p>`}
     <h3 class="gmx-sh vi">${GMX_OKR_I}OKRs<small>this quarter</small></h3>
     ${os.length?os.map(o=>row('okr',o,`${gmxRowSp(o.space)}${Math.round(mxOkrP(o)*100)}% · ${esc(mxOkrWhen(o))}`,'okr',GMX_OKR_I)).join(''):`<p class="gmx-none">No OKRs yet.</p>`}
-    <button class="gmx-new" data-gmxnew>${PLUS_S}New OKR for this goal</button>
+    <div class="gmx-news"><button class="gmx-new kpi" data-gmxnew="kpi">${PLUS_S}New KPI for this goal</button><button class="gmx-new" data-gmxnew="okr">${PLUS_S}New OKR for this goal</button></div>
+    <p class="gmx-none">New ones can live in a space, or in no space at all.</p>
     <div class="mx-foot"><span></span><button class="primary" data-gmxdone>Done</button></div>`}
 $('gmxPg').addEventListener('click',e=>{
   if(e.target===$('gmxPg')||e.target.closest('[data-mxx],[data-gmxdone]'))return gmxClose();
@@ -9280,7 +9304,7 @@ $('gmxPg').addEventListener('click',e=>{
     commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];const i=g.mx.findIndex(l=>l.k===k&&String(l.id)===id);
       if(i>=0)g.mx.splice(i,1);else g.mx.push({k,id:isNaN(+id)?id:+id});if(!g.mx.length)delete g.mx},on()?'Unlinked':'Linked to the goal');haptic(5);return gmxDraw()}
   const tk=e.target.closest('[data-gmxtasks]');if(tk){commit(()=>{const l=(g.mx||[]).find(x=>x.k==='kpi'&&String(x.id)===tk.dataset.gmxtasks);if(l){if(l.tasks)delete l.tasks;else l.tasks=true}},'Saved');gmxTasksSync();return gmxDraw()}
-  if(e.target.closest('[data-gmxnew]')){const gid=g.id;gmxClose();gmxNewOkr(gById(gid))}
+  {const nw=e.target.closest('[data-gmxnew]');if(nw){const gid=g.id;gmxClose();gmxNewFor(gById(gid),nw.dataset.gmxnew||'okr');return}}
   /* finish line */
   const fp=e.target.closest('[data-gfpick]');if(fp&&gfinDraft){const [k,id,okr]=fp.dataset.gfpick.split(':');gfinDraft.k=k;gfinDraft.id=id;gfinDraft.okr=okr||undefined;
     const fv=gmxFinVal(gfinDraft);if(fv&&(gfinDraft.at===''||gfinDraft.at==null))gfinDraft.at='';return gfinDraw()}
@@ -9291,10 +9315,14 @@ $('gmxPg').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gfA
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('gmxPg').classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();gmxClose()}},true);
 
 /* ===== 2 · New OKR for this goal ===== */
-function gmxNewOkr(g){if(!g)return;const sps=orderedSpaces();const sp=g.space&&spaceOf(g.space)?g.space:(sps[0]||{}).id;if(sp==null)return;
-  mxOpenPop(sp);if(!mxOpen)return;mxNew('okr');if(!mxDraft)return;
-  mxDraft.v.name=g.name.slice(0,80);mxDraft.fromGoal=g.id;if(!g.space&&sps.length>1)mxDraft.pickSp=true;mxDraw();
-  setTimeout(()=>{const i=$('mxIn').querySelector('[data-mxkr="0:name"]');if(i)i.focus()},80)}
+function gmxNewFor(g,kind){if(!g)return;const sp=g.space&&spaceOf(g.space)?g.space:'none';
+  mxOpenPop(sp);if(!mxOpen)return;mxNew(kind);if(!mxDraft)return;
+  if(kind==='okr')mxDraft.v.name=g.name.slice(0,80);mxDraft.fromGoal=g.id;mxDraft.pickSp=true;mxDraw();
+  setTimeout(()=>{const i=$('mxIn').querySelector(kind==='okr'?'[data-mxkr="0:name"]':'[data-mxf="name"]');if(i)i.focus()},80)}
+const gmxNewOkr=g=>gmxNewFor(g,'okr');
+const _gmxKpiForm=mxKpiForm;
+mxKpiForm=function(sname){let h=_gmxKpiForm(sname);const g=mxDraft&&mxDraft.fromGoal!=null?gById(mxDraft.fromGoal):null;
+  if(g&&!mxDraft.id)h=h.replace('<div class="mx-body mx-form">',`<div class="mx-body mx-form"><p class="gmx-from">${GMX_FLAG}For the goal <b>${g.e?esc(g.e)+' ':''}${esc(g.name)}</b>. It’s linked once you create it.</p>`);return h};
 const _gmxOkrForm=mxOkrForm;
 mxOkrForm=function(sname){let h=_gmxOkrForm(sname);const g=mxDraft&&mxDraft.fromGoal!=null?gById(mxDraft.fromGoal):null;
   const open=g?g.ms.filter(m=>!m.done):[];
@@ -9305,9 +9333,11 @@ $('mxPg').addEventListener('click',e=>{if(!e.target.closest('[data-gmxms]')||!mx
   const ms=g.ms.filter(m=>!m.done).slice(0,typeof MX_KR_MAX!=='undefined'?MX_KR_MAX:6);
   mxDraft.v.krs=ms.map(m=>({id:null,name:m.t.slice(0,60),from:0,target:1,unit:'',typed:true,ms:m.id}));mxDraft.usedMs=true;haptic(5);mxDraw()},true);
 const _gmxSave=mxSave;
-mxSave=function(){const d=mxDraft,gid=d&&d.fromGoal,before=new Set((S.okrs||[]).map(o=>String(o.id)));
+mxSave=function(){const d=mxDraft,gid=d&&d.fromGoal,before=new Set((S.okrs||[]).map(o=>String(o.id))),beforeK=new Set((S.kpis||[]).map(k=>String(k.id))),isK=d&&d.kind==='kpi';
   const krMs=d&&d.usedMs?d.v.krs.filter(r=>String(r.name||'').trim()).map(r=>r.ms):null;
   const r=_gmxSave.apply(this,arguments);
+  if(gid!=null&&!mxDraft&&mxOpen)setTimeout(()=>{if(mxOpen&&!mxDraft)mxClose()},0); // made from a goal: back to the goal
+  if(gid!=null&&!mxDraft&&isK){const k=(S.kpis||[]).find(x=>!beforeK.has(String(x.id))),g=gById(gid);if(k&&g)commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];g.mx.push({k:'kpi',id:k.id})},'KPI linked to the goal');return r}
   if(gid!=null&&!mxDraft){const o=(S.okrs||[]).find(x=>!before.has(String(x.id))),g=gById(gid);
     if(o&&g)commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];g.mx.push({k:'okr',id:o.id});
       /* milestones turned into key results finish when their key result does */
@@ -9318,7 +9348,7 @@ mxSave=function(){const d=mxDraft,gid=d&&d.fromGoal,before=new Set((S.okrs||[]).
 function gfinOpen(g,m){gmxG=g.id;gfinM=m.id;gfinDraft=m.fin?{...m.fin,at:String(m.fin.at)}:{k:null,id:null,at:''};
   gfinDraw();$('gmxPg').classList.add('on');haptic(5)}
 function gfinChoices(g){const ls=gmxLinks(g),out=[];const add=(k,id,okr,name,sub,cls)=>out.push({k,id,okr,name,sub,cls});
-  const pool=ls.length?ls:[...(S.kpis||[]).filter(k=>spaceOf(k.space)).map(k=>({k:'kpi',id:k.id})),...(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)).map(o=>({k:'okr',id:o.id}))];
+  const pool=ls.length?ls:[...(S.kpis||[]).filter(k=>mxSpOk(k.space)).map(k=>({k:'kpi',id:k.id})),...(S.okrs||[]).filter(o=>!o.closed&&mxSpOk(o.space)).map(o=>({k:'okr',id:o.id}))];
   pool.forEach(l=>{if(l.k==='kpi'){const k=gmxKpi(l.id);if(k)add('kpi',k.id,'',k.name,`KPI · now ${mxFmt(mxKpiNow(k)??0,k.unit)} ${MX_PER[k.period]||''}`,'kpi')}
     else{const o=gmxOkr(l.id);if(o)o.krs.forEach(r=>add('kr',r.id,o.id,r.name,`Key result of ${o.name} · now ${mxFmt(mxKrNow(r),r.unit)}`,'okr'))}});
   return {list:out,linked:ls.length>0}}
@@ -9423,7 +9453,7 @@ mxBtns=function(){_mxpBtns();const sp=mxOn()?mxSpaceIn():null;
    One "+ New" (KPI or OKR), a space filter in List, a one-tap view switch. Same on phones, stacked. */
 var mtView=(()=>{try{return localStorage.getItem('wd-mtview')==='space'?'space':'list'}catch(e){return 'list'}})();
 const MT_KR_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
-const mt2Dot=sp=>{const s=spaceOf(sp)||{};return `<i class="mt2-dot" style="background:${s.c||'var(--muted)'}"></i>${esc(s.name||'')}`};
+const mt2Dot=sp=>{const s=sp==null?{name:'No space',c:'transparent;box-shadow:inset 0 0 0 1.5px var(--muted)'}:spaceOf(sp)||{};return `<i class="mt2-dot" style="background:${s.c||'var(--muted)'}"></i>${esc(s.name||'')}`};
 const mt2Tag=(k,id)=>typeof gmxTag==='function'?gmxTag(k,id):'';
 function mt2KpiRow(k,showSp){const x=mxHomeItems().find(y=>y.kind==='kpi'&&y.k===k)||{p:mxKpiP(k),behind:0};const it=mxIt({...x,kind:'kpi',k,sp:k.space});
   const left=mxDays(mxShift(k.period,mxStart(k.period,Date.now()),1));
@@ -9440,8 +9470,8 @@ function mt2OkrRow(o,showSp,krs){const p=o.closed?(o.score||0):mxOkrP(o),id=`okr
       <span class="mt2-bar"><span class="mx-bar"><i style="width:${(p*100).toFixed(1)}%"></i></span></span>
       <span class="mt2-p">${o.closed?'closed':''}</span></button>
     ${krs&&!o.closed?`<div class="mt2-krs">${o.krs.map(r=>`<span class="mt2-kr"><span>${esc(r.name)}</span><span class="mx-bar"><i style="width:${(mxKrP(r)*100).toFixed(1)}%"></i></span><b>${mxFmt(mxKrNow(r),r.unit)}</b><small>${mxKrKind(r)==='sum'?'/':'→'} ${mxFmt(+r.target,r.unit)}</small></span>`).join('')}</div>`:''}</div>`}
-drawMetrics=function(){if(!mtOn)return;const y=$('metricsPg').scrollTop;if(mtSp!=='all'&&!spaceOf(mtSp))mtSp='all';
-  const sps=mtSpaces(),multi=sps.length>1,all=(S.kpis||[]).filter(k=>spaceOf(k.space)).length+(S.okrs||[]).filter(o=>spaceOf(o.space)).length;
+drawMetrics=function(){if(!mtOn)return;const y=$('metricsPg').scrollTop;if(mtSp!=='all'&&mtSp!=='none'&&!spaceOf(mtSp))mtSp='all';
+  const sps=mtSpaces(),multi=sps.length>1,all=(S.kpis||[]).filter(k=>mxSpOk(k.space)).length+(S.okrs||[]).filter(o=>mxSpOk(o.space)).length;
   const viewSw=`<div class="mt2-seg" role="tablist" aria-label="View"><button role="tab" data-mtview="list" aria-selected="${mtView==='list'}">List</button><button role="tab" data-mtview="space" aria-selected="${mtView==='space'}">By space</button></div>`;
   const filt=mtView==='list'&&multi?`<div class="mt2-seg mt-f" role="tablist" aria-label="Space">${[['all','All'],...sps.map(s=>[s.id,(s.e?s.e+' ':'')+s.name])].map(([v,l])=>`<button role="tab" data-mtsp="${v}" aria-selected="${String(v)===String(mtSp)}">${esc(l)}</button>`).join('')}</div>`:'';
   const tracked=mtCount();
@@ -9450,10 +9480,10 @@ drawMetrics=function(){if(!mtOn)return;const y=$('metricsPg').scrollTop;if(mtSp!
   let body;
   if(!all)body=`<div class="mt-empty mt2-empty">${dhEmpty(MX_ICON,'hot','Nothing tracked yet','KPIs are numbers you keep an eye on every week. OKRs are goals for the quarter.',`<span class="mt2-eb">${dhBtn('data-mtnew="kpi"','New KPI')}${dhBtn('data-mtnew="okr"','New OKR')}</span>`)}</div>`;
   else if(mtView==='space'){
-    body=`<div class="mt2-spg">${sps.map(s=>{const ks=(S.kpis||[]).filter(k=>String(k.space)===String(s.id)),os=(S.okrs||[]).filter(o=>!o.closed&&String(o.space)===String(s.id));
+    body=`<div class="mt2-spg">${sps.map(s=>{const ks=(S.kpis||[]).filter(k=>String(k.space??'none')===String(s.id)),os=(S.okrs||[]).filter(o=>!o.closed&&String(o.space??'none')===String(s.id));
       return `<section class="mt2-sp"><div class="mt2-sph"><span class="mt2-spe">${s.e?esc(s.e):`<i class="mt2-dot" style="background:${s.c}"></i>`}</span><b>${esc(s.name)}</b><small>${ks.length+os.length?`${ks.length+os.length} tracked`:''}</small><button class="mt2-spadd" data-mtnewsp="${s.id}" aria-label="New in ${esc(s.name)}" title="New KPI or OKR">${PLUS_S}</button></div>
         ${ks.length+os.length?`${ks.map(k=>mt2KpiRow(k,false)).join('')}${os.map(o=>mt2OkrRow(o,false,true)).join('')}`:`<button class="mt2-none" data-mtnewsp="${s.id}">Nothing tracked here yet · <b>Add</b></button>`}</section>`}).join('')}</div>`}
-  else{const ks=(S.kpis||[]).filter(k=>spaceOf(k.space)&&mtIn(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)&&mtIn(o.space)),past=(S.okrs||[]).filter(o=>o.closed&&spaceOf(o.space)&&mtIn(o.space));
+  else{const ks=(S.kpis||[]).filter(k=>mxSpOk(k.space)&&mtIn(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&mxSpOk(o.space)&&mtIn(o.space)),past=(S.okrs||[]).filter(o=>o.closed&&mxSpOk(o.space)&&mtIn(o.space));
     const sh=(t,cls,ico,n)=>`<div class="mt2-sh ${cls}">${ico}<span>${t}</span><small>${n}</small></div>`;
     const showSp=multi&&mtSp==='all';
     body=`${sh('KPIs · every week or month','kpi',MX_ICON,ks.length)}${ks.length?ks.map(k=>mt2KpiRow(k,showSp)).join(''):`<button class="mt2-none mt-empty" data-mtnew="kpi">No KPIs here yet · <b>New KPI</b></button>`}

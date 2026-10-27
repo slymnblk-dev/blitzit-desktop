@@ -38,7 +38,7 @@ test('computer: Metrics in the sidebar only with the mode on; KPIs and OKRs, fil
   // New KPI from All spaces asks for the space
   await page.locator('#metricsPg [data-mtnewmenu]').click();
   await page.locator('.cx-pop button', { hasText: 'New KPI' }).click();
-  await expect(page.locator('#mxPg [data-mtpick]')).toHaveCount(2);
+  await expect(page.locator('#mxPg [data-mtpick]')).toHaveCount(3); // two spaces, or no space
   await page.locator(`#mxPg [data-mtpick="${sp2}"]`).click();
   await page.fill('#mxPg [data-mxf="name"]', 'Calls');
   await page.fill('#mxPg [data-mxf="target"]', '10');

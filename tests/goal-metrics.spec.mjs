@@ -21,8 +21,8 @@ test('measured by: link from the goal menu, cards on the goal page, tags on Metr
   await page.locator('#gmxPg [data-gmxt="okr:3"]').click();
   await page.locator('#gmxPg [data-gmxtasks="1"]').click();
   await page.locator('#gmxPg [data-gmxdone]').click();
-  await expect(page.locator('#gdPg .gmx-c.kpi')).toContainText('Study minutes');
-  await expect(page.locator('#gdPg .gmx-c.okr')).toContainText('40%');
+  await expect(page.locator('#gdPg .gmx-row.kpi')).toContainText('Study minutes');
+  await expect(page.locator('#gdPg .gmx-row.okr')).toContainText('40%');
   // a goal task ticked adds 1 to the KPI; unticking takes it back
   await page.locator('#gdPg .gpp-ts .gm-t [data-gmt]').first().click();
   await expect.poll(() => page.evaluate(() => mxKpiNow(S.kpis[0]))).toBe(1);
@@ -74,5 +74,30 @@ test('finish line: set from the milestone, shows on the milestone, ticks it when
   await page.evaluate(() => { gMsToggle(S.goals[0], S.goals[0].ms[1]); });
   await page.waitForTimeout(800);
   expect(await page.evaluate(() => S.goals[0].ms[1].done)).toBe(false);
+  noErrors(errors);
+});
+
+test('a goal outside any space can get its own KPI in no space; Metrics shows it under No space', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true; S.cfg.mx = true; S.kpis = []; S.okrs = [];
+    S.goals = [{ id: 'g1', name: 'Write a book', e: '', space: null, why: '', due: '', created: Date.now(), star: true, view: 'path', ms: [{ id: 'm1', t: 'Draft', done: false }] }];
+    save(); applySettings(); openGoal('g1'); });
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gmlink]').click();
+  await page.locator('#gmxPg [data-gmxnew="kpi"]').click();
+  await expect(page.locator('#mxPg [data-mtpick="none"]')).toHaveClass(/on/);
+  await page.fill('#mxPg [data-mxf="name"]', 'Words written');
+  await page.fill('#mxPg [data-mxf="target"]', '5000');
+  await page.locator('#mxPg [data-mxsave]').click();
+  await expect(page.locator('#mxPg')).not.toHaveClass(/on/);
+  expect(await page.evaluate(() => [S.kpis[0].space, S.goals[0].mx.length])).toEqual([null, 1]);
+  await expect(page.locator('#gdPg .gmx-row.kpi')).toContainText('Words written');
+  await page.evaluate(() => openMetrics());
+  await expect(page.locator('#metricsPg [data-mtsp="none"]')).toBeVisible();
+  await expect(page.locator('#metricsPg .mt-k')).toContainText('No space');
+  // tasks in any space can count toward it
+  const id = await page.evaluate(() => S.tasks[0].id);
+  expect(await page.evaluate(id => mxCands(S.tasks.find(t => t.id === id)).some(c => c.name === 'Words written'), id)).toBe(true);
   noErrors(errors);
 });

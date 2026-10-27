@@ -7,9 +7,10 @@
 var mtOn=false,mtSp='all',mtPast=false;
 const MT_OKR_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
 const mtWide=()=>matchMedia('(min-width:1100px)').matches;
-const mtCount=()=>(S.kpis||[]).filter(k=>spaceOf(k.space)).length+(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)).length;
-const mtSpaces=()=>orderedSpaces();
-const mtIn=sp=>mtSp==='all'||String(sp)===String(mtSp);
+const mtCount=()=>(S.kpis||[]).filter(k=>mxSpOk(k.space)).length+(S.okrs||[]).filter(o=>!o.closed&&mxSpOk(o.space)).length;
+/* spaces, plus 'No space' when something lives outside every space */
+const mtSpaces=()=>[...orderedSpaces(),...((S.kpis||[]).some(k=>k.space==null)||(S.okrs||[]).some(o=>o.space==null)?[{id:'none',name:'No space',e:'',c:'var(--muted)'}]:[])];
+const mtIn=sp=>mtSp==='all'||String(sp??'none')===String(mtSp);
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg mt-pg" id="metricsPg" role="region" aria-label="Metrics"><div class="ib-in" id="mtIn"></div></div>');
 
 /* the Goals | Metrics switch (phones and tablets, when both are on) */
@@ -51,17 +52,18 @@ function closeMetrics(){if(!mtOn)return;mtOn=false;$('metricsPg').classList.remo
 $('metricsPg').addEventListener('click',e=>{
   const f=e.target.closest('[data-mtsp]');if(f){mtSp=isNaN(+f.dataset.mtsp)||f.dataset.mtsp==='all'?f.dataset.mtsp:+f.dataset.mtsp;haptic(4);return drawMetrics()}
   if(e.target.closest('[data-mtpast]')){mtPast=!mtPast;return drawMetrics()}
-  const n=e.target.closest('[data-mtnew]');if(n){const sp=mtSp!=='all'?mtSp:(mtSpaces()[0]||{}).id;if(sp==null)return;mxOpenPop(sp);if(mxOpen){mxNew(n.dataset.mtnew);if(mxDraft&&mtSp==='all'&&mtSpaces().length>1){mxDraft.pickSp=true;mxDraw()}}}});
+  const n=e.target.closest('[data-mtnew]');if(n){const sp=mtSp!=='all'?mtSp:(mtSpaces()[0]||{}).id;if(sp==null)return;mxOpenPop(sp);if(mxOpen){mxNew(n.dataset.mtnew);if(mxDraft&&mtSp==='all'){mxDraft.pickSp=true;mxDraw()}}}});
 /* the Goals | Metrics switch */
 document.addEventListener('click',e=>{const b=e.target.closest('[data-mtsw]');if(!b)return;e.preventDefault();haptic(4);
   if(b.dataset.mtsw==='metrics'){if(!mtOn)openMetrics()}else{closeMetrics();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();openGoals()}try{drawTabs()}catch(err){}});
 /* New KPI / OKR from "All spaces": the form asks which space it belongs to */
 const _mtKpiForm=mxKpiForm,_mtOkrForm=mxOkrForm;
-const mtSpField=()=>mxDraft&&mxDraft.pickSp&&!mxDraft.id?mxField('Space',`<div class="segc mx-seg mt-sps">${mtSpaces().map(s=>`<button type="button" class="${String(s.id)===String(mxSpaceNow())?'on':''}" data-mtpick="${s.id}">${s.e?esc(s.e)+' ':''}${esc(s.name)}</button>`).join('')}</div>`):'';
+const mtPickSps=()=>[...orderedSpaces(),{id:'none',name:'No space',e:''}];
+const mtSpField=()=>mxDraft&&mxDraft.pickSp&&!mxDraft.id?mxField('Space',`<div class="segc mx-seg mt-sps">${mtPickSps().map(s=>`<button type="button" class="${String(s.id)===String(mxSpaceNow())?'on':''}" data-mtpick="${s.id}">${s.e?esc(s.e)+' ':''}${esc(s.name)}</button>`).join('')}</div>`):'';
 mxKpiForm=function(sname){return _mtKpiForm(sname).replace('<div class="mx-body mx-form">','<div class="mx-body mx-form">'+mtSpField())};
 mxOkrForm=function(sname){return _mtOkrForm(sname).replace('<div class="mx-body mx-form">','<div class="mx-body mx-form">'+mtSpField())};
 $('mxPg').addEventListener('click',e=>{const b=e.target.closest('[data-mtpick]');if(!b||!mxDraft)return;e.stopPropagation();
-  const s=mtSpaces().find(x=>String(x.id)===b.dataset.mtpick);if(s){mxSpPick=s.id;haptic(4);mxDraw()}},true);
+  const s=mtPickSps().find(x=>String(x.id)===b.dataset.mtpick);if(s){mxSpPick=s.id;haptic(4);mxDraw()}},true);
 
 /* computer sidebar: Metrics under Goals */
 const _mtSide=rhythmSide;

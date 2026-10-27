@@ -4,7 +4,7 @@
    One "+ New" (KPI or OKR), a space filter in List, a one-tap view switch. Same on phones, stacked. */
 var mtView=(()=>{try{return localStorage.getItem('wd-mtview')==='space'?'space':'list'}catch(e){return 'list'}})();
 const MT_KR_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
-const mt2Dot=sp=>{const s=spaceOf(sp)||{};return `<i class="mt2-dot" style="background:${s.c||'var(--muted)'}"></i>${esc(s.name||'')}`};
+const mt2Dot=sp=>{const s=sp==null?{name:'No space',c:'transparent;box-shadow:inset 0 0 0 1.5px var(--muted)'}:spaceOf(sp)||{};return `<i class="mt2-dot" style="background:${s.c||'var(--muted)'}"></i>${esc(s.name||'')}`};
 const mt2Tag=(k,id)=>typeof gmxTag==='function'?gmxTag(k,id):'';
 function mt2KpiRow(k,showSp){const x=mxHomeItems().find(y=>y.kind==='kpi'&&y.k===k)||{p:mxKpiP(k),behind:0};const it=mxIt({...x,kind:'kpi',k,sp:k.space});
   const left=mxDays(mxShift(k.period,mxStart(k.period,Date.now()),1));
@@ -21,8 +21,8 @@ function mt2OkrRow(o,showSp,krs){const p=o.closed?(o.score||0):mxOkrP(o),id=`okr
       <span class="mt2-bar"><span class="mx-bar"><i style="width:${(p*100).toFixed(1)}%"></i></span></span>
       <span class="mt2-p">${o.closed?'closed':''}</span></button>
     ${krs&&!o.closed?`<div class="mt2-krs">${o.krs.map(r=>`<span class="mt2-kr"><span>${esc(r.name)}</span><span class="mx-bar"><i style="width:${(mxKrP(r)*100).toFixed(1)}%"></i></span><b>${mxFmt(mxKrNow(r),r.unit)}</b><small>${mxKrKind(r)==='sum'?'/':'→'} ${mxFmt(+r.target,r.unit)}</small></span>`).join('')}</div>`:''}</div>`}
-drawMetrics=function(){if(!mtOn)return;const y=$('metricsPg').scrollTop;if(mtSp!=='all'&&!spaceOf(mtSp))mtSp='all';
-  const sps=mtSpaces(),multi=sps.length>1,all=(S.kpis||[]).filter(k=>spaceOf(k.space)).length+(S.okrs||[]).filter(o=>spaceOf(o.space)).length;
+drawMetrics=function(){if(!mtOn)return;const y=$('metricsPg').scrollTop;if(mtSp!=='all'&&mtSp!=='none'&&!spaceOf(mtSp))mtSp='all';
+  const sps=mtSpaces(),multi=sps.length>1,all=(S.kpis||[]).filter(k=>mxSpOk(k.space)).length+(S.okrs||[]).filter(o=>mxSpOk(o.space)).length;
   const viewSw=`<div class="mt2-seg" role="tablist" aria-label="View"><button role="tab" data-mtview="list" aria-selected="${mtView==='list'}">List</button><button role="tab" data-mtview="space" aria-selected="${mtView==='space'}">By space</button></div>`;
   const filt=mtView==='list'&&multi?`<div class="mt2-seg mt-f" role="tablist" aria-label="Space">${[['all','All'],...sps.map(s=>[s.id,(s.e?s.e+' ':'')+s.name])].map(([v,l])=>`<button role="tab" data-mtsp="${v}" aria-selected="${String(v)===String(mtSp)}">${esc(l)}</button>`).join('')}</div>`:'';
   const tracked=mtCount();
@@ -31,10 +31,10 @@ drawMetrics=function(){if(!mtOn)return;const y=$('metricsPg').scrollTop;if(mtSp!
   let body;
   if(!all)body=`<div class="mt-empty mt2-empty">${dhEmpty(MX_ICON,'hot','Nothing tracked yet','KPIs are numbers you keep an eye on every week. OKRs are goals for the quarter.',`<span class="mt2-eb">${dhBtn('data-mtnew="kpi"','New KPI')}${dhBtn('data-mtnew="okr"','New OKR')}</span>`)}</div>`;
   else if(mtView==='space'){
-    body=`<div class="mt2-spg">${sps.map(s=>{const ks=(S.kpis||[]).filter(k=>String(k.space)===String(s.id)),os=(S.okrs||[]).filter(o=>!o.closed&&String(o.space)===String(s.id));
+    body=`<div class="mt2-spg">${sps.map(s=>{const ks=(S.kpis||[]).filter(k=>String(k.space??'none')===String(s.id)),os=(S.okrs||[]).filter(o=>!o.closed&&String(o.space??'none')===String(s.id));
       return `<section class="mt2-sp"><div class="mt2-sph"><span class="mt2-spe">${s.e?esc(s.e):`<i class="mt2-dot" style="background:${s.c}"></i>`}</span><b>${esc(s.name)}</b><small>${ks.length+os.length?`${ks.length+os.length} tracked`:''}</small><button class="mt2-spadd" data-mtnewsp="${s.id}" aria-label="New in ${esc(s.name)}" title="New KPI or OKR">${PLUS_S}</button></div>
         ${ks.length+os.length?`${ks.map(k=>mt2KpiRow(k,false)).join('')}${os.map(o=>mt2OkrRow(o,false,true)).join('')}`:`<button class="mt2-none" data-mtnewsp="${s.id}">Nothing tracked here yet · <b>Add</b></button>`}</section>`}).join('')}</div>`}
-  else{const ks=(S.kpis||[]).filter(k=>spaceOf(k.space)&&mtIn(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)&&mtIn(o.space)),past=(S.okrs||[]).filter(o=>o.closed&&spaceOf(o.space)&&mtIn(o.space));
+  else{const ks=(S.kpis||[]).filter(k=>mxSpOk(k.space)&&mtIn(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&mxSpOk(o.space)&&mtIn(o.space)),past=(S.okrs||[]).filter(o=>o.closed&&mxSpOk(o.space)&&mtIn(o.space));
     const sh=(t,cls,ico,n)=>`<div class="mt2-sh ${cls}">${ico}<span>${t}</span><small>${n}</small></div>`;
     const showSp=multi&&mtSp==='all';
     body=`${sh('KPIs · every week or month','kpi',MX_ICON,ks.length)}${ks.length?ks.map(k=>mt2KpiRow(k,showSp)).join(''):`<button class="mt2-none mt-empty" data-mtnew="kpi">No KPIs here yet · <b>New KPI</b></button>`}

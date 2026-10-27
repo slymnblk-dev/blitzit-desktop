@@ -57,3 +57,21 @@
 .mt-gl span{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:3px 9px;border-radius:999px;background:var(--surface2);font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gpp-nm .gfl b,.gfl b{font-size:inherit;font-weight:700;letter-spacing:0;line-height:inherit}
 @media (max-width:699px){.gmx-g{grid-template-columns:1fr 1fr}.gmx-c{padding:12px 14px}.gmx-v b{font-size:21px}.gmx-ov small{display:none}}
+/* Measured by: calm rows, the same language as the Metrics page */
+.gmx-l{display:flex;flex-direction:column}
+.gmx-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"i t v" "i b b";align-items:center;gap:6px 12px;padding:12px 2px;border-top:1px solid var(--line);text-align:left;font:inherit;color:inherit;border-radius:10px;transition:background .15s}
+.gmx-row:last-child{border-bottom:1px solid var(--line)}
+.gmx-row:hover{background:color-mix(in srgb,var(--text) 3%,transparent)}
+.gmx-ic{grid-area:i;display:grid;align-self:start;margin-top:2px}.gmx-ic svg{width:16px;height:16px}
+.gmx-row.kpi .gmx-ic{color:var(--today)}.gmx-row.okr .gmx-ic{color:var(--backlog)}
+.gmx-t{grid-area:t;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gmx-t b{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmx-t small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmx-v{grid-area:v;white-space:nowrap}.gmx-v b{font-size:18px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.gmx-v small{font-size:12.5px;color:var(--muted);margin-left:3px}
+.gmx-bar{grid-area:b}.gmx-bar .mx-bar{height:3px}
+.gmx-row.kpi .mx-bar i{background:var(--today)}.gmx-row.kpi.late .mx-bar i{background:var(--week)}.gmx-row.okr .mx-bar i{background:var(--backlog)}
+.gw-l .gmx{margin-top:28px;max-width:460px}
+.gmx-news{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.gmx-news .gmx-new{margin-top:0}
+.gmx-new.kpi{background:color-mix(in srgb,var(--today) 13%,transparent);color:var(--today)}.gmx-new.kpi:hover{background:color-mix(in srgb,var(--today) 20%,transparent)}
+.gmx-news+.gmx-none{margin-top:8px}
+@media (min-width:1100px){#gdIn>.gmx .gmx-l,.gd-pg .gmx:not(.gw-l .gmx) .gmx-l{display:grid;grid-template-columns:1fr 1fr;column-gap:36px}#gdIn .gmx:not(.gw-l .gmx) .gmx-row:nth-last-child(2):nth-child(odd){border-bottom:1px solid var(--line)}}

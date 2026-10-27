@@ -8,8 +8,8 @@
    achieved goals keep their KPIs and OKRs running (Metrics marks them 🏆); deleted KPIs/OKRs quietly drop out. */
 const GMX_OKR_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
 const GMX_FLAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V4"/><path d="M6 4.5h11l-2.2 4.2L17 13H6"/></svg>';
-const gmxKpi=id=>(S.kpis||[]).find(x=>String(x.id)===String(id)&&spaceOf(x.space));
-const gmxOkr=id=>(S.okrs||[]).find(x=>String(x.id)===String(id)&&spaceOf(x.space));
+const gmxKpi=id=>(S.kpis||[]).find(x=>String(x.id)===String(id)&&mxSpOk(x.space));
+const gmxOkr=id=>(S.okrs||[]).find(x=>String(x.id)===String(id)&&mxSpOk(x.space));
 const gmxLinks=g=>(Array.isArray(g&&g.mx)?g.mx:[]).filter(l=>l.k==='kpi'?gmxKpi(l.id):gmxOkr(l.id));
 const gmxGoalsOf=(k,id)=>(S.goals||[]).filter(g=>Array.isArray(g.mx)&&g.mx.some(l=>l.k===k&&String(l.id)===String(id)));
 const gmxOn=()=>typeof mxOn==='function'&&mxOn()&&goalsOn();
@@ -17,13 +17,13 @@ const gmxOn=()=>typeof mxOn==='function'&&mxOn()&&goalsOn();
 /* ===== 1 · Measured by, on the goal page ===== */
 function gmxSection(g){const ls=gmxLinks(g);if(!ls.length||!mxOn())return '';
   const its=mxHomeItems();
-  const cards=ls.map(l=>{if(l.k==='kpi'){const k=gmxKpi(l.id),x=its.find(y=>y.kind==='kpi'&&y.k===k)||{p:mxKpiP(k),behind:0},v=mxKpiNow(k);
-      return `<button class="gmx-c kpi${x.behind>.15?' late':''}" data-mxhw="kpi:${k.id}:${k.space}"><span class="gmx-e">KPI · ${MX_PER[k.period]||''}</span><b class="gmx-n">${esc(k.name)}</b>
-        <span class="gmx-v"><b>${v==null&&k.kind==='last'?'—':mxFmt(v??0,k.unit)}</b><small>/ ${mxFmt(+k.target,k.unit)}${mxUw(k.unit)}</small></span><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span></button>`}
-    const o=gmxOkr(l.id),p=o.closed?(o.score||0):mxOkrP(o),r=15,C2=2*Math.PI*r;
-    return `<button class="gmx-c okr" data-mxhw="okr:${o.id}:${o.space}"><span class="gmx-e">OKR · ${o.closed?'closed':mxQ(new Date(o.end+'T12:00'))}</span><b class="gmx-n">${esc(o.name)}</b>
-      <span class="gmx-ov"><span class="gmx-ring"><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="r0" cx="18" cy="18" r="${r}"/><circle class="r1" cx="18" cy="18" r="${r}" style="stroke-dasharray:${(C2*p).toFixed(1)} ${C2.toFixed(1)}"/></svg></span><b>${Math.round(p*100)}%</b><small>${o.krs.length} key ${o.krs.length===1?'result':'results'}</small></span></button>`}).join('');
-  return `<section class="gmx" aria-label="Measured by"><div class="gmx-h"><span>Measured by</span><button class="gmx-ed" data-gmlink>Edit</button></div><div class="gmx-g">${cards}</div></section>`}
+  const rows=ls.map(l=>{if(l.k==='kpi'){const k=gmxKpi(l.id),x=its.find(y=>y.kind==='kpi'&&y.k===k)||{p:mxKpiP(k),behind:0},v=mxKpiNow(k);
+      return `<button class="gmx-row kpi${x.behind>.15?' late':''}" data-mxhw="kpi:${k.id}:${k.space}"><span class="gmx-ic">${MX_ICON}</span><span class="gmx-t"><b>${esc(k.name)}</b><small>KPI · ${MX_PER[k.period]||''}</small></span>
+        <span class="gmx-v"><b>${v==null&&k.kind==='last'?'—':mxFmt(v??0,k.unit)}</b><small>/ ${mxFmt(+k.target,k.unit)}${mxUw(k.unit)}</small></span><span class="gmx-bar"><span class="mx-bar"><i style="width:${(x.p*100).toFixed(1)}%"></i></span></span></button>`}
+    const o=gmxOkr(l.id),p=o.closed?(o.score||0):mxOkrP(o);
+    return `<button class="gmx-row okr" data-mxhw="okr:${o.id}:${o.space}"><span class="gmx-ic">${GMX_OKR_I}</span><span class="gmx-t"><b>${esc(o.name)}</b><small>OKR · ${o.closed?'closed':esc(mxOkrWhen(o))}</small></span>
+      <span class="gmx-v"><b>${Math.round(p*100)}%</b></span><span class="gmx-bar"><span class="mx-bar"><i style="width:${(p*100).toFixed(1)}%"></i></span></span></button>`}).join('');
+  return `<section class="gmx" aria-label="Measured by"><div class="gmx-h"><span>Measured by</span><button class="gmx-ed" data-gmlink>Edit</button></div><div class="gmx-l">${rows}</div></section>`}
 /* a finish line chip under the milestone you're looking at */
 function gmxFinVal(f){if(!f)return null;if(f.k==='kpi'){const k=gmxKpi(f.id);return k?{name:k.name,v:mxKpiNow(k)??0,unit:k.unit,down:k.better==='down'}:null}
   const o=gmxOkr(f.okr),r=o&&o.krs.find(x=>String(x.id)===String(f.id));return r?{name:r.name,v:mxKrNow(r),unit:r.unit,down:false}:null}
@@ -60,10 +60,10 @@ document.body.insertAdjacentHTML('beforeend','<div class="mx-pg" id="gmxPg" role
 let gmxG=null,gfinM=null,gfinDraft=null;
 function gmxOpen(g){gmxG=g.id;gfinM=null;gmxDraw();$('gmxPg').classList.add('on');haptic(5)}
 function gmxClose(){gmxG=null;gfinM=null;$('gmxPg').classList.remove('on')}
-const gmxRowSp=sp=>{const s=spaceOf(sp)||{};return orderedSpaces().length>1?`${s.e?esc(s.e)+' ':''}${esc(s.name||'')} · `:''};
+const gmxRowSp=sp=>{if(sp==null)return 'No space · ';const s=spaceOf(sp)||{};return orderedSpaces().length>1?`${s.e?esc(s.e)+' ':''}${esc(s.name||'')} · `:''};
 function gmxDraw(){if(gfinM)return gfinDraw();const g=gById(gmxG);if(!g)return gmxClose();
   const on=(k,id)=>(g.mx||[]).find(l=>l.k===k&&String(l.id)===String(id));
-  const ks=(S.kpis||[]).filter(k=>spaceOf(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)||on('okr',o.id));
+  const ks=(S.kpis||[]).filter(k=>mxSpOk(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&mxSpOk(o.space)||on('okr',o.id));
   const row=(k,x,sub,cls,ico)=>{const l=on(k,x.id);return `<div class="gmx-r ${cls}${l?' on':''}"><button class="gmx-rb" data-gmxt="${k}:${x.id}" aria-pressed="${!!l}"><span class="gmx-k">${DH_CK}</span><span class="gmx-ri">${ico}</span><span class="gmx-rt"><b>${esc(x.name)}</b><small>${sub}</small></span></button>
     ${l&&k==='kpi'?`<button class="gmx-tk" data-gmxtasks="${x.id}" aria-pressed="${!!l.tasks}"><span class="tg${l.tasks?' on':''}" aria-hidden="true"></span>This goal’s own tasks add 1 when done</button>`:''}</div>`};
   $('gmxIn').innerHTML=`${mxHead(`${g.e?esc(g.e)+' ':''}${esc(g.name)}`,'Measured by',true)}
@@ -72,7 +72,8 @@ function gmxDraw(){if(gfinM)return gfinDraw();const g=gById(gmxG);if(!g)return g
     ${ks.length?ks.map(k=>row('kpi',k,`${gmxRowSp(k.space)}${mxFmt(mxKpiNow(k)??0,k.unit)} of ${mxFmt(+k.target,k.unit)} ${MX_PER[k.period]||''}`,'kpi',MX_ICON)).join(''):`<p class="gmx-none">No KPIs yet.</p>`}
     <h3 class="gmx-sh vi">${GMX_OKR_I}OKRs<small>this quarter</small></h3>
     ${os.length?os.map(o=>row('okr',o,`${gmxRowSp(o.space)}${Math.round(mxOkrP(o)*100)}% · ${esc(mxOkrWhen(o))}`,'okr',GMX_OKR_I)).join(''):`<p class="gmx-none">No OKRs yet.</p>`}
-    <button class="gmx-new" data-gmxnew>${PLUS_S}New OKR for this goal</button>
+    <div class="gmx-news"><button class="gmx-new kpi" data-gmxnew="kpi">${PLUS_S}New KPI for this goal</button><button class="gmx-new" data-gmxnew="okr">${PLUS_S}New OKR for this goal</button></div>
+    <p class="gmx-none">New ones can live in a space, or in no space at all.</p>
     <div class="mx-foot"><span></span><button class="primary" data-gmxdone>Done</button></div>`}
 $('gmxPg').addEventListener('click',e=>{
   if(e.target===$('gmxPg')||e.target.closest('[data-mxx],[data-gmxdone]'))return gmxClose();
@@ -82,7 +83,7 @@ $('gmxPg').addEventListener('click',e=>{
     commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];const i=g.mx.findIndex(l=>l.k===k&&String(l.id)===id);
       if(i>=0)g.mx.splice(i,1);else g.mx.push({k,id:isNaN(+id)?id:+id});if(!g.mx.length)delete g.mx},on()?'Unlinked':'Linked to the goal');haptic(5);return gmxDraw()}
   const tk=e.target.closest('[data-gmxtasks]');if(tk){commit(()=>{const l=(g.mx||[]).find(x=>x.k==='kpi'&&String(x.id)===tk.dataset.gmxtasks);if(l){if(l.tasks)delete l.tasks;else l.tasks=true}},'Saved');gmxTasksSync();return gmxDraw()}
-  if(e.target.closest('[data-gmxnew]')){const gid=g.id;gmxClose();gmxNewOkr(gById(gid))}
+  {const nw=e.target.closest('[data-gmxnew]');if(nw){const gid=g.id;gmxClose();gmxNewFor(gById(gid),nw.dataset.gmxnew||'okr');return}}
   /* finish line */
   const fp=e.target.closest('[data-gfpick]');if(fp&&gfinDraft){const [k,id,okr]=fp.dataset.gfpick.split(':');gfinDraft.k=k;gfinDraft.id=id;gfinDraft.okr=okr||undefined;
     const fv=gmxFinVal(gfinDraft);if(fv&&(gfinDraft.at===''||gfinDraft.at==null))gfinDraft.at='';return gfinDraw()}
@@ -93,10 +94,14 @@ $('gmxPg').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gfA
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('gmxPg').classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();gmxClose()}},true);
 
 /* ===== 2 · New OKR for this goal ===== */
-function gmxNewOkr(g){if(!g)return;const sps=orderedSpaces();const sp=g.space&&spaceOf(g.space)?g.space:(sps[0]||{}).id;if(sp==null)return;
-  mxOpenPop(sp);if(!mxOpen)return;mxNew('okr');if(!mxDraft)return;
-  mxDraft.v.name=g.name.slice(0,80);mxDraft.fromGoal=g.id;if(!g.space&&sps.length>1)mxDraft.pickSp=true;mxDraw();
-  setTimeout(()=>{const i=$('mxIn').querySelector('[data-mxkr="0:name"]');if(i)i.focus()},80)}
+function gmxNewFor(g,kind){if(!g)return;const sp=g.space&&spaceOf(g.space)?g.space:'none';
+  mxOpenPop(sp);if(!mxOpen)return;mxNew(kind);if(!mxDraft)return;
+  if(kind==='okr')mxDraft.v.name=g.name.slice(0,80);mxDraft.fromGoal=g.id;mxDraft.pickSp=true;mxDraw();
+  setTimeout(()=>{const i=$('mxIn').querySelector(kind==='okr'?'[data-mxkr="0:name"]':'[data-mxf="name"]');if(i)i.focus()},80)}
+const gmxNewOkr=g=>gmxNewFor(g,'okr');
+const _gmxKpiForm=mxKpiForm;
+mxKpiForm=function(sname){let h=_gmxKpiForm(sname);const g=mxDraft&&mxDraft.fromGoal!=null?gById(mxDraft.fromGoal):null;
+  if(g&&!mxDraft.id)h=h.replace('<div class="mx-body mx-form">',`<div class="mx-body mx-form"><p class="gmx-from">${GMX_FLAG}For the goal <b>${g.e?esc(g.e)+' ':''}${esc(g.name)}</b>. It’s linked once you create it.</p>`);return h};
 const _gmxOkrForm=mxOkrForm;
 mxOkrForm=function(sname){let h=_gmxOkrForm(sname);const g=mxDraft&&mxDraft.fromGoal!=null?gById(mxDraft.fromGoal):null;
   const open=g?g.ms.filter(m=>!m.done):[];
@@ -107,9 +112,11 @@ $('mxPg').addEventListener('click',e=>{if(!e.target.closest('[data-gmxms]')||!mx
   const ms=g.ms.filter(m=>!m.done).slice(0,typeof MX_KR_MAX!=='undefined'?MX_KR_MAX:6);
   mxDraft.v.krs=ms.map(m=>({id:null,name:m.t.slice(0,60),from:0,target:1,unit:'',typed:true,ms:m.id}));mxDraft.usedMs=true;haptic(5);mxDraw()},true);
 const _gmxSave=mxSave;
-mxSave=function(){const d=mxDraft,gid=d&&d.fromGoal,before=new Set((S.okrs||[]).map(o=>String(o.id)));
+mxSave=function(){const d=mxDraft,gid=d&&d.fromGoal,before=new Set((S.okrs||[]).map(o=>String(o.id))),beforeK=new Set((S.kpis||[]).map(k=>String(k.id))),isK=d&&d.kind==='kpi';
   const krMs=d&&d.usedMs?d.v.krs.filter(r=>String(r.name||'').trim()).map(r=>r.ms):null;
   const r=_gmxSave.apply(this,arguments);
+  if(gid!=null&&!mxDraft&&mxOpen)setTimeout(()=>{if(mxOpen&&!mxDraft)mxClose()},0); // made from a goal: back to the goal
+  if(gid!=null&&!mxDraft&&isK){const k=(S.kpis||[]).find(x=>!beforeK.has(String(x.id))),g=gById(gid);if(k&&g)commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];g.mx.push({k:'kpi',id:k.id})},'KPI linked to the goal');return r}
   if(gid!=null&&!mxDraft){const o=(S.okrs||[]).find(x=>!before.has(String(x.id))),g=gById(gid);
     if(o&&g)commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];g.mx.push({k:'okr',id:o.id});
       /* milestones turned into key results finish when their key result does */
@@ -120,7 +127,7 @@ mxSave=function(){const d=mxDraft,gid=d&&d.fromGoal,before=new Set((S.okrs||[]).
 function gfinOpen(g,m){gmxG=g.id;gfinM=m.id;gfinDraft=m.fin?{...m.fin,at:String(m.fin.at)}:{k:null,id:null,at:''};
   gfinDraw();$('gmxPg').classList.add('on');haptic(5)}
 function gfinChoices(g){const ls=gmxLinks(g),out=[];const add=(k,id,okr,name,sub,cls)=>out.push({k,id,okr,name,sub,cls});
-  const pool=ls.length?ls:[...(S.kpis||[]).filter(k=>spaceOf(k.space)).map(k=>({k:'kpi',id:k.id})),...(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)).map(o=>({k:'okr',id:o.id}))];
+  const pool=ls.length?ls:[...(S.kpis||[]).filter(k=>mxSpOk(k.space)).map(k=>({k:'kpi',id:k.id})),...(S.okrs||[]).filter(o=>!o.closed&&mxSpOk(o.space)).map(o=>({k:'okr',id:o.id}))];
   pool.forEach(l=>{if(l.k==='kpi'){const k=gmxKpi(l.id);if(k)add('kpi',k.id,'',k.name,`KPI · now ${mxFmt(mxKpiNow(k)??0,k.unit)} ${MX_PER[k.period]||''}`,'kpi')}
     else{const o=gmxOkr(l.id);if(o)o.krs.forEach(r=>add('kr',r.id,o.id,r.name,`Key result of ${o.name} · now ${mxFmt(mxKrNow(r),r.unit)}`,'okr'))}});
   return {list:out,linked:ls.length>0}}

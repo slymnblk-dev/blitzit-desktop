@@ -14,11 +14,14 @@ const MX_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const MX_LIST='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg>';
 const MX_ONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4.5" width="14" height="15" rx="3.5"/><path d="M9 12.5h6"/></svg>';
 function mxOn(){return !!(S.cfg&&S.cfg.mx)}
-const mxKpis=sp=>(S.kpis||[]).filter(k=>k.space===sp);
-const mxOkrs=(sp,closed)=>(S.okrs||[]).filter(o=>o.space===sp&&!!o.closed===!!closed);
+/* a KPI or OKR can live in a space, or in no space at all (space:null, shown as 'none'): handy for goals that sit outside any space */
+const mxSpOk=s=>s==null||!!spaceOf(s);
+const mxSpEq=(a,sp)=>sp==='none'?a==null:a===sp;
+const mxKpis=sp=>(S.kpis||[]).filter(k=>mxSpEq(k.space,sp));
+const mxOkrs=(sp,closed)=>(S.okrs||[]).filter(o=>mxSpEq(o.space,sp)&&!!o.closed===!!closed);
 var mxSpPick=null; // the Home widget opens the popup for an item's own space
 const mxSpaceIn=()=>S.space&&S.space!=='all'&&spaceOf(S.space)?S.space:null;
-const mxSpaceNow=()=>mxSpPick&&spaceOf(mxSpPick)?mxSpPick:mxSpaceIn();
+const mxSpaceNow=()=>mxSpPick==='none'||mxSpPick==='null'?'none':mxSpPick&&spaceOf(mxSpPick)?mxSpPick:mxSpaceIn();
 const mxPhone=()=>matchMedia('(max-width:699px)').matches;
 const mxLook=()=>{const v=mxPhone()?C().mxPh:C().mxDk;return v==='board'||v==='focus'?v:(mxPhone()?'focus':'board')};
 /* ---- numbers ---- */
@@ -62,8 +65,8 @@ function mxFind(link){if(link.okr!=null){const o=(S.okrs||[]).find(x=>String(x.i
   const k=(S.kpis||[]).find(x=>String(x.id)===String(link.id));return k?{kind:'kpi',item:k,name:k.name}:null}
 const mxKey=l=>l.okr!=null?`kr:${l.okr}:${l.id}`:`kpi:${l.id}`;
 function mxCands(t){const sp=(listOf(t.list)||{}).space;const out=[];
-  mxKpis(sp).filter(k=>k.src!=='log'&&k.kind!=='last').forEach(k=>out.push({id:k.id,name:k.name,kind:'kpi'}));
-  mxOkrs(sp,false).forEach(o=>o.krs.filter(r=>mxKrKind(r)==='sum').forEach(r=>out.push({id:r.id,okr:o.id,name:r.name,kind:'kr',obj:o.name})));
+  [...mxKpis(sp),...mxKpis('none')].filter(k=>k.src!=='log'&&k.kind!=='last').forEach(k=>out.push({id:k.id,name:k.name,kind:'kpi'}));
+  [...mxOkrs(sp,false),...mxOkrs('none',false)].forEach(o=>o.krs.filter(r=>mxKrKind(r)==='sum').forEach(r=>out.push({id:r.id,okr:o.id,name:r.name,kind:'kr',obj:o.name})));
   (t.mx||[]).forEach(l=>{if(!out.some(c=>mxKey(c)===mxKey(l))){const f=mxFind(l);if(f)out.push({id:l.id,okr:l.okr,name:f.name,kind:f.kind})}});
   return out}
 /* ---- tasks move numbers ---- */
@@ -105,7 +108,7 @@ function mxHead(eye,title,back){return `<div class="mx-h">${back?`<button class=
   ${back?'':`<button class="mx-ib" data-mxlook aria-label="${mxLook()==='board'?'Show one at a time':'Show the scoreboard'}" title="${mxLook()==='board'?'One at a time':'Scoreboard'}">${mxLook()==='board'?MX_ONE:MX_LIST}</button>`}
   <button class="mx-ib mx-x" data-mxx aria-label="Close">${X}</button></div>`}
 function mxDraw(){if(!mxOpen)return;const sp=mxSpaceNow();if(!sp){mxClose();return}
-  const sname=esc(spaceOf(sp).name);let h;
+  const sname=sp==='none'?'No space':esc(spaceOf(sp).name);let h;
   if(mxDraft)h=mxDraft.kind==='kpi'?mxKpiForm(sname):mxOkrForm(sname);
   else if(mxView)h=mxItemView(sname);
   else h=mxLook()==='board'?mxBoard(sp,sname):mxFocusView(sp,sname);
@@ -219,7 +222,7 @@ function mxSave(){const d=mxDraft.v,sp=mxSpaceNow(),nm=String(d.name||'').trim()
   if(mxDraft.kind==='kpi'){const tg=+d.target;if(d.target===''||!Number.isFinite(tg)||tg<=0)return mxErr('[data-mxf="target"]','Set a target above 0')
     const kind=d.src==='log'?d.kind:'sum',vals={name:nm.slice(0,60),target:tg,unit:String(d.unit||'').trim().slice(0,14),period:d.period,better:d.better,src:d.src,kind};
     const was=mxDraft.id;
-    commit(()=>{if(was){const k=S.kpis.find(x=>x.id===was);if(k)Object.assign(k,vals)}else{S.kpis=S.kpis||[];S.kpis.push({id:newId(),space:sp,created:Date.now(),log:[],...vals})}
+    commit(()=>{if(was){const k=S.kpis.find(x=>x.id===was);if(k)Object.assign(k,vals)}else{S.kpis=S.kpis||[];S.kpis.push({id:newId(),space:sp==='none'?null:sp,created:Date.now(),log:[],...vals})}
       if(kind==='last'||d.src==='log')S.tasks.forEach(t=>{if(Array.isArray(t.mx))t.mx=t.mx.filter(l=>!(l.okr==null&&String(l.id)===String(was)))})},was?'KPI saved':'KPI added');
     mxDraft=null;if(!was)mxTab='kpi';try{sfx('add')}catch(e){};return mxDraw()}
   d.krs.forEach(mxGuessTarget);
@@ -233,7 +236,7 @@ function mxSave(){const d=mxDraft.v,sp=mxSpaceNow(),nm=String(d.name||'').trim()
     const list=krs.map(r=>{const prev=old&&old.krs.find(x=>x.id===r.id);return {id:prev?prev.id:newId(),name:r.name.slice(0,60),from:+r.from||0,target:+r.target,unit:String(r.unit||'').trim().slice(0,14),log:prev?prev.log:[]}});
     if(old){old.name=nm.slice(0,80);old.end=d.end;const gone=old.krs.filter(r=>!list.some(x=>x.id===r.id)).map(r=>String(r.id));old.krs=list;
       if(gone.length)S.tasks.forEach(t=>{if(Array.isArray(t.mx))t.mx=t.mx.filter(l=>!(String(l.okr)===String(old.id)&&gone.includes(String(l.id))))})}
-    else{S.okrs=S.okrs||[];S.okrs.push({id:newId(),space:sp,name:nm.slice(0,80),start:dkey(),end:d.end,created:Date.now(),krs:list})}},was?'OKR saved':'OKR added');
+    else{S.okrs=S.okrs||[];S.okrs.push({id:newId(),space:sp==='none'?null:sp,name:nm.slice(0,80),start:dkey(),end:d.end,created:Date.now(),krs:list})}},was?'OKR saved':'OKR added');
   mxDraft=null;if(!was)mxTab='okr';try{sfx('add')}catch(e){};mxDraw()}
 function mxRemove(){const dr=mxDraft;if(!dr||!dr.id)return;const isK=dr.kind==='kpi';
   confirmAsk({title:isK?'Delete this KPI?':'Delete this OKR?',text:`“${dr.v.name}” and its history will be deleted. Linked tasks stay; they just stop counting toward it.`,yes:'Yes, delete',no:'No',
@@ -246,7 +249,7 @@ function mxCloseOut(id){const o=(S.okrs||[]).find(x=>String(x.id)===String(id));
 function mxCopyNext(){const dr=mxDraft;const o=dr&&(S.okrs||[]).find(x=>x.id===dr.id);if(!o)return;const sp=o.space;
   if(mxOkrs(sp,false).length>=MX_OKR_MAX){toast(`${MX_OKR_MAX} OKRs at once per space keeps it calm`);return}
   const endMs=Math.max(Date.now(),mxEndMs(o));
-  commit(()=>{S.okrs.push({id:newId(),space:sp,name:o.name,start:dkey(),end:mxQuarterEnd(endMs+DAY),created:Date.now(),
+  commit(()=>{S.okrs.push({id:newId(),space:sp==='none'?null:sp,name:o.name,start:dkey(),end:mxQuarterEnd(endMs+DAY),created:Date.now(),
     krs:o.krs.map(r=>({id:newId(),name:r.name,from:mxKrKind(r)==='last'?mxKrNow(r):0,target:r.target,unit:r.unit,log:[]}))})},'Copied to the next quarter');
   mxDraft=null;mxPast=false;mxTab='okr';mxDraw()}
 /* ---- clicks, typing, keys ---- */
@@ -324,8 +327,8 @@ $('dPicker').addEventListener('change',e=>{if(e.target.dataset.mxamt)render()});
    behind first. Three looks: Focus number (one number that needs you, + Log), Rings, Bars (rows on phones, tiles on
    computers). Default: Focus on phones, Bars on computers. Tap anything to open it in the popup. ---------- */
 function mxHomeItems(){const now=Date.now(),out=[];
-  (S.kpis||[]).forEach(k=>{if(!spaceOf(k.space))return;const s=mxStart(k.period,now),e=mxShift(k.period,s,1),p=mxKpiP(k);out.push({kind:'kpi',k,sp:k.space,p,behind:(now-s)/(e-s)-p})});
-  (S.okrs||[]).forEach(o=>{if(o.closed||!spaceOf(o.space))return;const s=new Date((o.start||dkey(o.created||now))+'T00:00').getTime(),e=mxEndMs(o),p=mxOkrP(o);
+  (S.kpis||[]).forEach(k=>{if(!mxSpOk(k.space))return;const s=mxStart(k.period,now),e=mxShift(k.period,s,1),p=mxKpiP(k);out.push({kind:'kpi',k,sp:k.space,p,behind:(now-s)/(e-s)-p})});
+  (S.okrs||[]).forEach(o=>{if(o.closed||!mxSpOk(o.space))return;const s=new Date((o.start||dkey(o.created||now))+'T00:00').getTime(),e=mxEndMs(o),p=mxOkrP(o);
     out.push({kind:'okr',o,sp:o.space,p,behind:Math.max(0,Math.min(1,(now-s)/Math.max(DAY,e-s)))-p})});
   return out.sort((a,b)=>b.behind-a.behind)}
 const mxHwLook=()=>{const v=C().mxHw;return v==='focus'||v==='rings'||v==='bars'?v:(mxPhone()?'focus':'bars')};
