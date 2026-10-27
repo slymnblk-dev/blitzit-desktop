@@ -46,7 +46,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeStyle:'calm',homeLayout:'bento',homeAlso:'switch',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeLayout:'bento',homeAlso:'switch',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -120,7 +120,7 @@ function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   root.dataset.size=c.size;root.dataset.density=c.density;
   root.dataset.done=c.showDone?'on':'off';if(!c.showDone&&S.stage==='done')S.stage='today';
   root.dataset.bars=c.bars||'tabs';
-  root.dataset.home=c.homeStyle||'calm';
+  root.dataset.home='calm';
   root.dataset.motion=c.motion?'on':'off';root.dataset.est=c.showEst?'on':'off';
   STAGES.forEach(s=>{s.name=c.names[s.id]||DEF_CFG.names[s.id];s.short=s.name;
     if(c.colors[s.id])root.style.setProperty('--'+s.id,c.colors[s.id]);else root.style.removeProperty('--'+s.id)});
@@ -198,7 +198,6 @@ function settingsPage(id){
     ${themesSection()}<div class="set-sec"><h3>Text and layout</h3>
     ${row('Text size',`<div class="segc">${sOpt('size','default','Default')}${sOpt('size','large','Large')}</div>`)}
     ${row('Density',`<div class="segc">${sOpt('density','comfortable','Roomy')}${sOpt('density','compact','Compact')}</div>`)}
-    ${row('Home style',`<div class="segc">${sOpt('homeStyle','calm','Calm')}${sOpt('homeStyle','colorful','Colourful')}</div>`,(c.homeStyle||'calm')==='calm'?'A quiet list of spaces. Only Today stands out.':'Colourful space cards with stage bars.')}
     ${matchMedia('(min-width:1100px)').matches?'':row('Also today on phones',`<div class="segc">${sOpt('homeAlso','switch','Switch')}${sOpt('homeAlso','tiles','Tiles')}${sOpt('homeAlso','list','One card')}</div>`,{tiles:'Goal and habits side by side, KPIs below.',list:'Everything in one card.'}[c.homeAlso]||'One card. Pills on top switch between habits, goal and KPIs.')}
     </div>${(matchMedia('(min-width:1100px)').matches||DESK())?`<div class="set-sec"><h3>Layout on computers</h3>
     ${row('Home',`<div class="segc"><button data-k="homeLayout" data-v="bento" class="${c.homeLayout==='calm'?'':'on'}">Bento</button>${sOpt('homeLayout','calm','Calm column')}</div>`,c.homeLayout==='calm'?'One calm column: Up next, a few quiet rows, then spaces.':'Today beside small cards for your goal, habits and KPIs.')}

@@ -65,7 +65,7 @@ test('board: Add task opens a task line; Enter adds and leaves a fresh line', as
 test('full width: a space card on Home opens its lists page; a one-list space opens the board', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
-  const r = await page.evaluate(() => { S.cfg.fullWidth = true; S.cfg.homeStyle = 'colorful'; S.space = null;
+  const r = await page.evaluate(() => { S.cfg.fullWidth = true; S.space = null;
     const multi = S.spaces[0]; if (S.lists.filter(l => l.space === multi.id).length < 2) S.lists.push({ id: 'lz', name: 'Extra', c: '#888', space: multi.id });
     S.spaces.push({ id: 'one', name: 'Solo', c: '#5AB8F5', e: '' }); S.lists.push({ id: 'lone', name: 'Only', c: '#5AB8F5', space: 'one' });
     applySettings(); render(); return { multi: multi.id, l: S.lists.find(x => x.space === multi.id).id }; });
