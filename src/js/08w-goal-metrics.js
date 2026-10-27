@@ -115,12 +115,12 @@ const _gmxSave=mxSave;
 mxSave=function(){const d=mxDraft,gid=d&&d.fromGoal,before=new Set((S.okrs||[]).map(o=>String(o.id))),beforeK=new Set((S.kpis||[]).map(k=>String(k.id))),isK=d&&d.kind==='kpi';
   const krMs=d&&d.usedMs?d.v.krs.filter(r=>String(r.name||'').trim()).map(r=>r.ms):null;
   const r=_gmxSave.apply(this,arguments);
-  if(gid!=null&&!mxDraft&&mxOpen)setTimeout(()=>{if(mxOpen&&!mxDraft)mxClose()},0); // made from a goal: back to the goal
-  if(gid!=null&&!mxDraft&&isK){const k=(S.kpis||[]).find(x=>!beforeK.has(String(x.id))),g=gById(gid);if(k&&g)commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];g.mx.push({k:'kpi',id:k.id})},'KPI linked to the goal');return r}
+  if(gid!=null&&!mxDraft&&isK){const k=(S.kpis||[]).find(x=>!beforeK.has(String(x.id))),g=gById(gid);if(k&&g)commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];g.mx.push({k:'kpi',id:k.id})},'KPI linked to the goal');if(mxOpen)mxClose();return r}
   if(gid!=null&&!mxDraft){const o=(S.okrs||[]).find(x=>!before.has(String(x.id))),g=gById(gid);
     if(o&&g)commit(()=>{g.mx=Array.isArray(g.mx)?g.mx:[];g.mx.push({k:'okr',id:o.id});
       /* milestones turned into key results finish when their key result does */
       if(krMs)krMs.forEach((mid,i)=>{const m=g.ms.find(x=>x.id===mid),kr=o.krs[i];if(m&&kr&&!m.fin)m.fin={k:'kr',okr:o.id,id:kr.id,at:1}})},'OKR linked to the goal')}
+  if(gid!=null&&!mxDraft&&mxOpen)mxClose(); // made from a goal: back to the goal
   return r};
 
 /* ===== 3 · Finish lines ===== */

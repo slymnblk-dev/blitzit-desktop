@@ -129,3 +129,32 @@
 .hl-hn{font-size:15px;line-height:1.25;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .hl-done{height:36px;margin-top:auto;padding:0;font-size:14px;width:100%}
 .hl-hab{gap:10px}.hl-nd{font-size:12.5px;color:var(--muted);margin-top:auto}
+
+/* ===== Tab bar styles (Settings → Appearance → Tab bar on phones) ===== */
+@media (max-width:1099px){
+  .tb-l{display:none}
+  .tb-pill{flex:1;display:flex;align-items:center;justify-content:space-around;min-width:0}
+  /* Floating (default): a soft pill of tabs, a coral + on its own */
+  :root:not([data-nav="labels"]) .tabbar{left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));padding:0;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none}
+  :root:not([data-nav="labels"]) .tabbar::after{border-radius:999px}
+  :root:not([data-nav="labels"]) .tb-in{gap:12px;max-width:480px}
+  :root:not([data-nav="labels"]) .tb-pill{height:64px;padding:0 8px;border-radius:999px;background:color-mix(in srgb,var(--surface2) 80%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+    box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 7%,transparent),0 18px 40px -10px rgba(0,0,0,.45)}
+  :root:not([data-nav="labels"]) .tb{flex:1;height:52px}
+  :root:not([data-nav="labels"]) .tb::before{display:none}
+  :root:not([data-nav="labels"]) .tb::after{content:"";position:absolute;bottom:6px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--today);transform:scale(0);transition:transform .25s var(--ease)}
+  :root:not([data-nav="labels"]) .tb.on::after{transform:none}
+  :root:not([data-nav="labels"]) .tb-add{width:64px;height:64px;margin:0;background:var(--today);color:#fff;box-shadow:0 14px 30px -8px color-mix(in srgb,var(--today) 60%,transparent)}
+  :root:not([data-nav="labels"]) .tb-add svg{width:26px;height:26px;stroke-width:2.6}
+  /* With labels: a slim full bar, names under the icons, a coral line over the page you're on */
+  :root[data-nav="labels"] .tabbar{padding:0 10px env(safe-area-inset-bottom,0px)}
+  :root[data-nav="labels"] .tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:66px}
+  :root[data-nav="labels"] .tb svg{width:23px;height:23px}
+  :root[data-nav="labels"] .tb-l{display:block;font-size:11px;font-weight:500;line-height:1}
+  :root[data-nav="labels"] .tb.on .tb-l{font-weight:700}
+  :root[data-nav="labels"] .tb::before{left:50%;top:-1px;width:22px;height:3px;margin:0 0 0 -11px;border-radius:0 0 3px 3px;background:var(--today);transform:scaleX(.3)}
+  :root[data-nav="labels"] .tb.on::before{transform:none}
+  :root[data-nav="labels"] .tb-n{top:6px}
+  :root[data-nav="labels"] .tb-add{width:56px;height:56px;margin:0 6px;border-radius:20px;background:var(--today);color:#fff;box-shadow:0 10px 24px -8px color-mix(in srgb,var(--today) 55%,transparent)}
+  :root[data-nav="labels"] .tb-add svg{width:24px;height:24px;stroke-width:2.6}
+}

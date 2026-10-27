@@ -14,14 +14,18 @@ function tabsList(){const t=[['home','Home',TB_HOME]];
   return t.length>1?t:[]}
 function tabNow(){return gdOn||glOn?'goals':rhOn?'habits':ibOn?'inbox':'home'}
 let tbSig='';
+/* Settings → Appearance → Tab bar on phones: Floating (default) or With labels */
+const tbStyle=()=>C().navStyle==='labels'?'labels':'float';
 function drawTabs(){
   const ts=tabsList(),on=ts.length>0&&(!S.space||ibOn||rhOn||glOn||gdOn);
   document.body.classList.toggle('tabs-on',on);
   if(!on){tbSig='';return}
-  const cur=tabNow(),n=C().ibBadge===false?0:inboxItems().length,sig=ts.map(x=>x[0]).join()+'|'+cur+'|'+n;if(sig===tbSig)return;tbSig=sig;
-  const btns=ts.map(([k,l,ic])=>`<button class="tb${k===cur?' on':''}" data-tab="${k}" id="tb${l}" aria-label="${l}"${k===cur?' aria-current="page"':''}>${TB_I[k]||ic}${k==='inbox'&&n?`<i class="tb-n">${n>99?'99+':n}</i>`:''}</button>`);
-  btns.splice(Math.ceil(btns.length/2),0,`<button class="tb-add" id="tbAdd" aria-label="Add">${TB_PLUS}</button>`); // the + sits in the middle
-  $('tbIn').innerHTML=btns.join('');
+  const st=tbStyle(),cur=tabNow(),n=C().ibBadge===false?0:inboxItems().length,sig=ts.map(x=>x[0]).join()+'|'+cur+'|'+n+'|'+st;if(sig===tbSig)return;tbSig=sig;
+  const btns=ts.map(([k,l,ic])=>`<button class="tb${k===cur?' on':''}" data-tab="${k}" id="tb${l}" aria-label="${l}"${k===cur?' aria-current="page"':''}>${TB_I[k]||ic}<span class="tb-l">${l}</span>${k==='inbox'&&n?`<i class="tb-n">${n>99?'99+':n}</i>`:''}</button>`);
+  const add=`<button class="tb-add" id="tbAdd" aria-label="Add">${TB_PLUS}</button>`;
+  if(st==='labels'){btns.splice(Math.ceil(btns.length/2),0,add);$('tbIn').innerHTML=btns.join('')} // With labels: the + sits in the middle
+  else $('tbIn').innerHTML=`<div class="tb-pill">${btns.join('')}</div>${add}`; // Floating: a pill of tabs, the + on its own
+  document.documentElement.dataset.nav=st;
 }
 /* one tab at a time: the others close; tapping the open tab goes back to its top (or from a goal to all goals) */
 function tbGo(k){

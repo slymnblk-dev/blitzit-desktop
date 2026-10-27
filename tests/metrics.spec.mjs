@@ -64,7 +64,7 @@ test('phone: Goals | Metrics switch on the flag tab; Metrics is its own tab when
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.goals = true; S.cfg.mx = true; applySettings(); goHome(); });
   await page.evaluate(seed);
-  const ids = await page.locator('#tbIn > button').evaluateAll(b => b.map(x => x.id));
+  const ids = await page.locator('#tbIn button').evaluateAll(b => b.map(x => x.id));
   expect(ids).toContain('tbGoals'); expect(ids).not.toContain('tbMetrics');
   await page.locator('#tbGoals').click();
   await expect(page.locator('#goalsPg .mt-sw')).toBeVisible();
