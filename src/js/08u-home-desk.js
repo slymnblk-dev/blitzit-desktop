@@ -49,9 +49,9 @@ function bnHabits(h){
   const head=x=>`<div class="bn-h">${dhEye('Habits')}<span class="bn-hr">${x}</span></div>`;
   if(h.none)return `<section class="bn-c is-empty">${head('')}${dhEmpty(DH_I.hab,'hot','Small daily wins','Add a habit to tick off each day.',dhBtn('data-hbnew=""','New habit'))}</section>`;
   if(!h.due.length)return `<section class="bn-c is-empty">${head('')}${dhEmpty(DH_I.hab,'calm','Rest day','No habits due today. See you tomorrow.','<button class="dh-eb ghost" data-hbopen>See habits</button>')}</section>`;
-  const list=h.due.slice(0,4),more=h.due.length-list.length;
+  const list=h.due.slice(0,6),more=h.due.length-list.length;
   return `<section class="bn-c bn-hab">${head(`<b>${h.dn.length}</b> of ${h.due.length}`)}<div class="bn-hl">${list.map(x=>{const s=hbStats(x);
-      return `<button class="bn-hb${s.dt?' on':''}" data-hbt="${x.id}" aria-pressed="${s.dt}"><span class="bn-hk">${DH_CK}</span><span class="bn-hn">${x.e?esc(x.e)+' ':''}${esc(x.name)}</span><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></button>`}).join('')}</div>
+      return `<button class="bn-hb${s.dt?' on':''}" data-hbt="${x.id}" aria-pressed="${s.dt}"><span class="bn-hk">${DH_CK}</span><span class="bn-hn">${x.e?esc(x.e)+' ':''}${esc(x.name)}</span>${s.st>1?`<small>${s.st}d</small>`:''}</button>`}).join('')}</div>
     ${more?`<button class="bn-more" data-hbopen>+${more} more</button>`:h.dn.length===h.due.length?`<span class="bn-alld">All done today</span>`:''}</section>`}
 function bnKpi(x){
   if(!x)return `<section class="bn-c is-empty">${dhEye('KPI')}${dhEmpty(DH_I.kpi,'hot','Track a number','Like messages sent or demos booked, week by week.',dhBtn('data-bnmx="kpi"','New KPI'))}</section>`;

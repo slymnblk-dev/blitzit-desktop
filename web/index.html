@@ -4058,6 +4058,18 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 .cm-sp:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 16%,transparent)}
 .cm-sp small{font-size:13.5px;color:var(--muted)}
 .cm-sp.new{background:none;box-shadow:inset 0 0 0 1.5px var(--surface2);color:var(--muted);gap:6px}.cm-sp.new svg{width:14px;height:14px}
+
+/* Bento Habits card: tap pills (so habits don't look like the Today task list) */
+.bn-hl{flex-direction:row;flex-wrap:wrap;align-content:flex-start;gap:8px;margin-top:14px}
+.bn-hb{gap:8px;height:40px;padding:0 14px 0 7px;border-radius:999px;background:var(--surface2);max-width:100%;transition:background .2s,transform .15s}
+.bn-hb:hover{background:color-mix(in srgb,var(--text) 12%,var(--surface2))}
+.bn-hb:active{transform:scale(.96)}
+.bn-hb .bn-hk{width:26px;height:26px}
+.bn-hn{flex:0 1 auto;font-size:14.5px;font-weight:600}
+.bn-hb.on{background:color-mix(in srgb,var(--today) 16%,transparent)}
+.bn-hb.on .bn-hn{color:var(--text);text-decoration:none}
+.bn-hb small{font-size:12px;font-weight:700;color:var(--muted)}
+.bn-hb.on small{color:var(--today)}
 </style>
 </head>
 <body>
@@ -4253,7 +4265,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=215; // bumped with every published update
+const APP_VERSION=216; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -8740,9 +8752,9 @@ function bnHabits(h){
   const head=x=>`<div class="bn-h">${dhEye('Habits')}<span class="bn-hr">${x}</span></div>`;
   if(h.none)return `<section class="bn-c is-empty">${head('')}${dhEmpty(DH_I.hab,'hot','Small daily wins','Add a habit to tick off each day.',dhBtn('data-hbnew=""','New habit'))}</section>`;
   if(!h.due.length)return `<section class="bn-c is-empty">${head('')}${dhEmpty(DH_I.hab,'calm','Rest day','No habits due today. See you tomorrow.','<button class="dh-eb ghost" data-hbopen>See habits</button>')}</section>`;
-  const list=h.due.slice(0,4),more=h.due.length-list.length;
+  const list=h.due.slice(0,6),more=h.due.length-list.length;
   return `<section class="bn-c bn-hab">${head(`<b>${h.dn.length}</b> of ${h.due.length}`)}<div class="bn-hl">${list.map(x=>{const s=hbStats(x);
-      return `<button class="bn-hb${s.dt?' on':''}" data-hbt="${x.id}" aria-pressed="${s.dt}"><span class="bn-hk">${DH_CK}</span><span class="bn-hn">${x.e?esc(x.e)+' ':''}${esc(x.name)}</span><small>${s.st>1?`${s.st} days`:s.dt?'Done':'Today'}</small></button>`}).join('')}</div>
+      return `<button class="bn-hb${s.dt?' on':''}" data-hbt="${x.id}" aria-pressed="${s.dt}"><span class="bn-hk">${DH_CK}</span><span class="bn-hn">${x.e?esc(x.e)+' ':''}${esc(x.name)}</span>${s.st>1?`<small>${s.st}d</small>`:''}</button>`}).join('')}</div>
     ${more?`<button class="bn-more" data-hbopen>+${more} more</button>`:h.dn.length===h.due.length?`<span class="bn-alld">All done today</span>`:''}</section>`}
 function bnKpi(x){
   if(!x)return `<section class="bn-c is-empty">${dhEye('KPI')}${dhEmpty(DH_I.kpi,'hot','Track a number','Like messages sent or demos booked, week by week.',dhBtn('data-bnmx="kpi"','New KPI'))}</section>`;

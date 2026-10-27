@@ -116,3 +116,15 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 .cm-sp:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 16%,transparent)}
 .cm-sp small{font-size:13.5px;color:var(--muted)}
 .cm-sp.new{background:none;box-shadow:inset 0 0 0 1.5px var(--surface2);color:var(--muted);gap:6px}.cm-sp.new svg{width:14px;height:14px}
+
+/* Bento Habits card: tap pills (so habits don't look like the Today task list) */
+.bn-hl{flex-direction:row;flex-wrap:wrap;align-content:flex-start;gap:8px;margin-top:14px}
+.bn-hb{gap:8px;height:40px;padding:0 14px 0 7px;border-radius:999px;background:var(--surface2);max-width:100%;transition:background .2s,transform .15s}
+.bn-hb:hover{background:color-mix(in srgb,var(--text) 12%,var(--surface2))}
+.bn-hb:active{transform:scale(.96)}
+.bn-hb .bn-hk{width:26px;height:26px}
+.bn-hn{flex:0 1 auto;font-size:14.5px;font-weight:600}
+.bn-hb.on{background:color-mix(in srgb,var(--today) 16%,transparent)}
+.bn-hb.on .bn-hn{color:var(--text);text-decoration:none}
+.bn-hb small{font-size:12px;font-weight:700;color:var(--muted)}
+.bn-hb.on small{color:var(--today)}
