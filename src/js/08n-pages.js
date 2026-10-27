@@ -470,8 +470,8 @@ function gMsPanel(g,wide){const sel=gSel(g),nx=gNext(g),i=sel?g.ms.indexOf(sel):
           <span class="gpp-sub">${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}${wide?MORE(`data-gmm="${sel.id}"`,`Options for milestone ${esc(sel.t)}`):''}</span></div>${ar(nxm,' nx','Next milestone')}</div>
       <div class="gpp-ts${sl}" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
         ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}
-        ${g.done?'':sel.done?`<button class="gpp-done on" data-gtk="${sel.id}" aria-pressed="true"><span class="gpp-dk">${G_REOPEN}</span>Reset milestone</button>`
-          :`<button class="gpp-done gpp-mk" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk"></span>Mark milestone done</button>`}</div>`}
+        ${g.done?'':sel.done?`<div class="gpp-fin"><span class="gpp-fb"><span class="gpp-fk">${CK}</span>Milestone done</span><button class="gpp-done gpp-rs" data-gtk="${sel.id}" aria-pressed="true">${G_REOPEN}Reset milestone</button></div>`
+          :`<button class="gpp-done gpp-mk" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk">${CK}</span><span class="gpp-l1">Mark milestone done</span><span class="gpp-l2" aria-hidden="true">Done</span></button>`}</div>`}
   return `${g.ms.length?`<div class="gpp-bar" role="group" aria-label="Milestones">${steps}</div>`:''}${body}${gAddMsRow(g)}`}
 const gWinRow=g=>{const pr=gProg(g);return pr.of>0&&pr.n>=pr.of&&!g.done?`<button class="gpp-done gpp-win" data-gwin><span class="gpp-dk">${G_FLAG}</span>Mark goal achieved</button>`:''};
 function gPhoneView(g,kind,anim){
@@ -612,8 +612,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='gMtIn
 
 /* marking a milestone done moves you on to the next one (phones show one at a time) */
 const _gMsToggleNext=gMsToggle;
-gMsToggle=function(g,m){const was=!!m.done;_gMsToggleNext(g,m);
-  if(!was&&m.done&&gdOn&&gPhone()&&!gmeOn){const n=gNext(g);if(n&&n!==m){gSelId=n.id;drawGoal()}}};
+/* (phones and the computer's Sunrise / Countdown views): the "Done" moment shows for a beat, then it slides on */
+gMsToggle=function(g,m){const was=!!m.done,panel=!!document.querySelector('#gdPg .gpp-mk');_gMsToggleNext(g,m);
+  if(!was&&m.done&&gdOn&&panel&&!gmeOn){const n=gNext(g);if(n&&n!==m){const id=g.id;setTimeout(()=>{if(gdOn&&String(gdId)===String(id)&&String(gSelId)!==String(n.id)){gSelId=n.id;gppDir=1;drawGoal()}},650)}}};
 
 /* phones: swipe the milestone left or right to move between milestones */
 (()=>{let x0=null,y0=0;const pg=$('gdPg');

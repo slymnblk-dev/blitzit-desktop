@@ -888,14 +888,31 @@ button.hg-c:active{transform:scale(.88)}
   #rhIn .hs-cap{display:none}
 }
 
-/* "Mark milestone done" is the milestone's own action, not another task: a soft coral pill button.
-   "Reset milestone" stays a quiet outlined pill. */
-.gpp-done.gpp-mk,.gpp-done.on:not(.gpp-win){justify-content:center;gap:10px;min-height:48px;margin-top:16px;padding:0 20px;border-top:0;border-radius:999px;font-size:15.5px;font-weight:700;transition:background .2s,transform .15s}
-.gpp-done.gpp-mk{background:var(--today);color:#fff}
-.gpp-done.gpp-mk:hover{filter:brightness(1.07)}
+/* "Mark milestone done": the milestone's own action, a soft coral button (not a task row, not a loud block).
+   Hover hints the tick; a tap fills it and says "Done" for a beat, then the next milestone slides in.
+   A done milestone says so plainly (a green check), with "Reset milestone" as a quiet button beside it. */
+.gpp-done.gpp-mk{position:relative;justify-content:center;gap:10px;min-height:48px;margin-top:16px;padding:0 20px;border-top:0;border-radius:999px;
+  background:color-mix(in srgb,var(--today) 13%,transparent);color:var(--today);font-size:15.5px;font-weight:700;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 26%,transparent);transition:background .2s,box-shadow .2s,color .2s,transform .15s}
+.gpp-done.gpp-mk:hover{background:color-mix(in srgb,var(--today) 20%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 45%,transparent)}
 .gpp-done.gpp-mk:active{transform:scale(.98)}
-/* an empty ring: still to do (a filled check would read as already done) */
-.gpp-done.gpp-mk .gpp-dk{width:20px;height:20px;background:none!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.9)!important;color:transparent!important}
-.gpp-done.on:not(.gpp-win){background:none;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted)}
-.gpp-done.on:not(.gpp-win):hover{color:var(--text)}
-.gpp-done.on:not(.gpp-win) .gpp-dk{width:18px;height:18px;box-shadow:none!important;background:none!important}
+.gpp-done.gpp-mk:focus-visible{outline:2px solid var(--today);outline-offset:3px}
+.gpp-done.gpp-mk .gpp-dk{width:20px;height:20px;background:none!important;box-shadow:inset 0 0 0 2px currentColor!important;color:inherit!important;transition:background .2s,transform .3s var(--ease)}
+.gpp-done.gpp-mk .gpp-dk svg{width:11px;height:11px;stroke-width:3.4;opacity:0;transition:opacity .2s}
+.gpp-done.gpp-mk:hover .gpp-dk svg{opacity:.55}
+.gpp-mk .gpp-l2{display:none}
+.gpp-done.gpp-mk.on{background:var(--today);color:#fff;box-shadow:none;pointer-events:none}
+.gpp-done.gpp-mk.on .gpp-dk{background:#fff!important;box-shadow:none!important;color:var(--today)!important;animation:gppPop .4s var(--ease)}
+.gpp-done.gpp-mk.on .gpp-dk svg{opacity:1}
+.gpp-mk.on .gpp-l1{display:none}.gpp-mk.on .gpp-l2{display:inline}
+@keyframes gppPop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.gpp-fin{display:flex;align-items:center;gap:10px;margin-top:16px}
+.gpp-fb{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border-radius:999px;background:color-mix(in srgb,var(--done) 13%,transparent);color:var(--done);font-size:15px;font-weight:700}
+.gpp-fk{flex:none;width:20px;height:20px;border-radius:50%;background:var(--done);color:#0F1013;display:grid;place-items:center}
+.gpp-fk svg{width:11px;height:11px;stroke-width:3.4}
+.gpp-done.gpp-rs{flex:none;width:auto;justify-content:center;gap:7px;min-height:48px;padding:0 18px;border-top:0;border-radius:999px;background:var(--surface);color:var(--text);font-size:14.5px;font-weight:600;box-shadow:inset 0 0 0 1px var(--line);transition:background .2s}
+.gpp-done.gpp-rs:hover{background:var(--surface2)}
+.gpp-done.gpp-rs svg{width:15px;height:15px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.gpp-done.gpp-mk.on .gpp-dk{animation:none}}
+.gpp-fb,.gpp-done.gpp-rs{white-space:nowrap}
+@media (max-width:699px){.gpp-fin{gap:8px}.gpp-fb{padding:0 12px;gap:8px;font-size:14px}.gpp-done.gpp-rs{padding:0 14px;font-size:14px;gap:6px}}

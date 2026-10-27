@@ -514,7 +514,7 @@ test('phone Path: a milestone with no tasks can be marked done (and reopened) fr
   await page.evaluate(() => { S.cfg.goals = true;
     S.goals = [{ id: 'g1', name: 'Run', e: '', space: S.spaces[0].id, why: '', due: '', created: Date.now(), star: false, view: 'path', ms: [{ id: 'm0', t: 'A', done: false }, { id: 'm1', t: 'B', done: false }] }];
     save(); applySettings(); openGoal('g1'); });
-  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Mark milestone done');
+  await expect(page.locator('#gdPg .gpp-done')).toContainText('Mark milestone done');
   await page.evaluate(() => { window.__sfxLog = []; });
   await page.locator('#gdPg .gpp-done').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
