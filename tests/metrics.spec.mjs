@@ -36,7 +36,8 @@ test('computer: Metrics in the sidebar only with the mode on; KPIs and OKRs, fil
   await expect(page.locator('#mxPg')).not.toHaveClass(/on/);
   await expect(page.locator('#metricsPg')).toHaveClass(/on/);
   // New KPI from All spaces asks for the space
-  await page.locator('#metricsPg [data-mtnew="kpi"]').first().click();
+  await page.locator('#metricsPg [data-mtnewmenu]').click();
+  await page.locator('.cx-pop button', { hasText: 'New KPI' }).click();
   await expect(page.locator('#mxPg [data-mtpick]')).toHaveCount(2);
   await page.locator(`#mxPg [data-mtpick="${sp2}"]`).click();
   await page.fill('#mxPg [data-mxf="name"]', 'Calls');
@@ -45,6 +46,11 @@ test('computer: Metrics in the sidebar only with the mode on; KPIs and OKRs, fil
   await expect(page.locator('#mxPg')).not.toHaveClass(/on/);
   expect(await page.evaluate(sp => { const k = S.kpis.find(x => x.name === 'Calls'); return k && String(k.space) === String(sp); }, sp2)).toBe(true);
   await expect(page.locator('#metricsPg .mt-k')).toHaveCount(3);
+  // By space: one card per space; computer sidebar groups Habits, Goals and Metrics under Modes
+  await page.locator('#metricsPg [data-mtview="space"]').click();
+  await expect(page.locator('#metricsPg .mt2-sp')).toHaveCount(await page.evaluate(() => S.spaces.length));
+  await page.locator('#metricsPg [data-mtview="list"]').click();
+  await expect(page.locator('#sLists .s-lbl2').first()).toHaveText('Modes');
   // Home closes it; turning the mode off removes it
   await page.locator('#sHome').click();
   await expect(page.locator('#metricsPg')).not.toHaveClass(/on/);
