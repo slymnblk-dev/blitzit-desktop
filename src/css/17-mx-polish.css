@@ -1,0 +1,46 @@
+/* ===== KPIs & OKRs on tasks, calmer (08x-mx-polish.js) ===== */
+.mxp-mi{display:inline-flex;align-items:center;gap:5px}
+.mxp-mi i,.mxp-pi i{display:grid}
+.mxp-mi svg{width:13px;height:13px}
+.mxp-mi .k,.mxp-pi .k{color:var(--today)}.mxp-mi .r,.mxp-pi .r{color:var(--backlog)}
+.mxp-pi{display:inline-flex;align-items:center;gap:3px;margin-right:2px}
+.mxp-pi svg{width:15px;height:15px}
+/* picker */
+.mxp{flex-basis:100%;display:flex;flex-direction:column;gap:6px}
+.mxp-h{display:flex;align-items:center;gap:6px;margin:4px 2px 0;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.mxp-h svg{width:13px;height:13px}.mxp-h.k{color:var(--today)}.mxp-h.r{color:var(--backlog)}
+.mxp-h+.mxp-r{margin-top:2px}.mxp-r+.mxp-h{margin-top:10px}
+.mxp-r{display:flex;align-items:center;gap:8px;border-radius:14px;background:var(--surface);padding-right:8px;transition:box-shadow .2s}
+.mxp-r.on.kpi{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--today) 50%,transparent)}
+.mxp-r.on.kr{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--backlog) 55%,transparent)}
+#dPicker .pk.mxp-b{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:auto;min-height:50px;padding:8px 12px;margin:0;border-radius:14px;background:none!important;box-shadow:none!important;color:var(--text);text-align:left;font-weight:500}
+.mxp-k{flex:none;width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 28%,transparent);display:grid;place-items:center;color:transparent;transition:background .2s}
+.mxp-k svg{width:11px;height:11px}
+.mxp-r.on.kpi .mxp-k{background:var(--today);box-shadow:none;color:#0F1013}
+.mxp-r.on.kr .mxp-k{background:var(--backlog);box-shadow:none;color:#fff}
+.mxp-ic{flex:none;display:grid}.mxp-ic svg{width:16px;height:16px}
+.mxp-r.kpi .mxp-ic{color:var(--today)}.mxp-r.kr .mxp-ic{color:var(--backlog)}
+.mxp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.mxp-t b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mxp-t small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mxp-amt{flex:none;display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:800}
+.mxp-r.kpi .mxp-amt{color:var(--today)}.mxp-r.kr .mxp-amt{color:var(--backlog)}
+.mxp-amt input{width:52px;height:34px;padding:0 6px;border-radius:10px;border:0;outline:none;background:var(--surface2);color:var(--text);font:inherit;font-size:14px;font-weight:700;text-align:center;-moz-appearance:textfield;appearance:textfield}
+.mxp-amt input::-webkit-inner-spin-button,.mxp-amt input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.mxp-amt input:focus{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--text) 30%,transparent)}
+/* the gauge: overall progress ring, a glow and a +1 when a number moves */
+[data-mxopen]{position:relative;overflow:visible}
+.mxp-ring{position:absolute;inset:-2px;width:calc(100% + 4px);height:calc(100% + 4px);transform:rotate(-90deg);pointer-events:none}
+.mxp-ring circle{fill:none;stroke-width:2}
+.mxp-ring .r0{stroke:color-mix(in srgb,var(--text) 8%,transparent)}
+.mxp-ring .r1{stroke:var(--today);stroke-linecap:round;transition:stroke-dasharray 1.1s cubic-bezier(.3,.8,.2,1)}
+[data-mxopen].mxp-hit{animation:mxpGlow 1.2s ease-out}
+[data-mxopen].mxp-hit svg:not(.mxp-ring){animation:mxpNod .6s cubic-bezier(.3,1.6,.5,1)}
+.mxp-fl{position:absolute;left:50%;top:-16px;transform:translateX(-50%);font-size:12px;font-weight:800;color:var(--today);pointer-events:none;animation:mxpFloat 1.2s ease-out forwards}
+#sMetrics.mxp-hit svg{animation:mxpNod .6s cubic-bezier(.3,1.6,.5,1);color:var(--today)}
+@keyframes mxpGlow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--today) 45%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
+@keyframes mxpNod{0%{transform:rotate(0)}40%{transform:rotate(-14deg) scale(1.12)}100%{transform:none}}
+@keyframes mxpFloat{0%{opacity:0;transform:translate(-50%,4px)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-18px)}}
+@media (prefers-reduced-motion:reduce){[data-mxopen].mxp-hit,[data-mxopen].mxp-hit svg,.mxp-fl,#sMetrics.mxp-hit svg{animation:none}.mxp-ring .r1{transition:none}}
+[data-mxopen] svg.mxp-ring{position:absolute;top:-3px;left:-3px;width:calc(100% + 6px)!important;height:calc(100% + 6px)!important;max-width:none;margin:0}
+.dPills .mxp-pi svg,#dPills .mxp-pi svg{stroke-width:2.6}

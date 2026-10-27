@@ -36,7 +36,9 @@ test('KPIs: off by default, gauge on a space, create, link a task, done adds, re
   await page.locator('#dPicker [data-mxamt]').fill('10');
   expect(await page.evaluate(id => S.tasks.find(x => x.id === id).mx.map(l => l.add), id)).toEqual([10]);
   await page.evaluate(() => closeSheets());
-  await expect(page.locator(`[data-id="${id}"] .mx-mi`).first()).toContainText('+10');
+  // the row shows just a KPI icon; the details live in its tooltip
+  await expect(page.locator(`[data-id="${id}"] .mxp-mi .k:visible`)).toHaveCount(1);
+  await expect(page.locator(`[data-id="${id}"] .mxp-mi`).first()).toHaveAttribute('title', 'Counts toward Outreach messages (+10)');
   // done adds; reopening takes it back off; undo of the done takes it back too
   await page.evaluate(id => { const t = S.tasks.find(x => x.id === id); commit(() => setStage(t, 'done'), 'Done'); }, id);
   expect(await page.evaluate(() => mxKpiNow(S.kpis[0]))).toBe(10);
@@ -197,5 +199,18 @@ test('computer Home: the KPI card opens the item, and hides with KPIs on Home of
   await page.keyboard.press('Escape'); await page.keyboard.press('Escape');
   await page.evaluate(() => setCfg('wMx', false));
   await expect(page.locator('#dHome .bn-kpi')).toHaveCount(0);
+  noErrors(errors);
+});
+
+test('the gauge wears an overall progress ring and glows when a linked task moves a number', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  const id = await page.evaluate(() => { setCfg('mx', true); S.cfg.fullWidth = false; const sp = S.spaces[0].id, now = Date.now();
+    S.kpis = [{ id: 1, space: sp, name: 'Outreach', target: 10, unit: '', period: 'week', better: 'up', src: 'both', kind: 'sum', created: now, log: [] }];
+    const t = S.tasks.find(x => listOf(x.list).space === sp && x.stage === 'today'); t.mx = [{ id: 1, add: 5 }]; save(); openSpaceSide(sp); render(); return t.id; });
+  await expect(page.locator('[data-mxopen]:visible .mxp-ring')).toHaveCount(1);
+  await page.evaluate(id => { const t = S.tasks.find(x => x.id === id); commit(() => setStage(t, 'done'), 'Done'); }, id);
+  await expect(page.locator('[data-mxopen]:visible')).toHaveClass(/mxp-hit/);
+  await expect(page.locator('[data-mxopen]:visible')).toHaveAttribute('title', /50% overall/);
   noErrors(errors);
 });

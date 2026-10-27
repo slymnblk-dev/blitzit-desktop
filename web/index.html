@@ -4234,6 +4234,52 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 .mt-gl span{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:3px 9px;border-radius:999px;background:var(--surface2);font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gpp-nm .gfl b,.gfl b{font-size:inherit;font-weight:700;letter-spacing:0;line-height:inherit}
 @media (max-width:699px){.gmx-g{grid-template-columns:1fr 1fr}.gmx-c{padding:12px 14px}.gmx-v b{font-size:21px}.gmx-ov small{display:none}}
+/* ===== KPIs & OKRs on tasks, calmer (08x-mx-polish.js) ===== */
+.mxp-mi{display:inline-flex;align-items:center;gap:5px}
+.mxp-mi i,.mxp-pi i{display:grid}
+.mxp-mi svg{width:13px;height:13px}
+.mxp-mi .k,.mxp-pi .k{color:var(--today)}.mxp-mi .r,.mxp-pi .r{color:var(--backlog)}
+.mxp-pi{display:inline-flex;align-items:center;gap:3px;margin-right:2px}
+.mxp-pi svg{width:15px;height:15px}
+/* picker */
+.mxp{flex-basis:100%;display:flex;flex-direction:column;gap:6px}
+.mxp-h{display:flex;align-items:center;gap:6px;margin:4px 2px 0;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.mxp-h svg{width:13px;height:13px}.mxp-h.k{color:var(--today)}.mxp-h.r{color:var(--backlog)}
+.mxp-h+.mxp-r{margin-top:2px}.mxp-r+.mxp-h{margin-top:10px}
+.mxp-r{display:flex;align-items:center;gap:8px;border-radius:14px;background:var(--surface);padding-right:8px;transition:box-shadow .2s}
+.mxp-r.on.kpi{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--today) 50%,transparent)}
+.mxp-r.on.kr{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--backlog) 55%,transparent)}
+#dPicker .pk.mxp-b{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:auto;min-height:50px;padding:8px 12px;margin:0;border-radius:14px;background:none!important;box-shadow:none!important;color:var(--text);text-align:left;font-weight:500}
+.mxp-k{flex:none;width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--text) 28%,transparent);display:grid;place-items:center;color:transparent;transition:background .2s}
+.mxp-k svg{width:11px;height:11px}
+.mxp-r.on.kpi .mxp-k{background:var(--today);box-shadow:none;color:#0F1013}
+.mxp-r.on.kr .mxp-k{background:var(--backlog);box-shadow:none;color:#fff}
+.mxp-ic{flex:none;display:grid}.mxp-ic svg{width:16px;height:16px}
+.mxp-r.kpi .mxp-ic{color:var(--today)}.mxp-r.kr .mxp-ic{color:var(--backlog)}
+.mxp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.mxp-t b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mxp-t small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mxp-amt{flex:none;display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:800}
+.mxp-r.kpi .mxp-amt{color:var(--today)}.mxp-r.kr .mxp-amt{color:var(--backlog)}
+.mxp-amt input{width:52px;height:34px;padding:0 6px;border-radius:10px;border:0;outline:none;background:var(--surface2);color:var(--text);font:inherit;font-size:14px;font-weight:700;text-align:center;-moz-appearance:textfield;appearance:textfield}
+.mxp-amt input::-webkit-inner-spin-button,.mxp-amt input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.mxp-amt input:focus{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--text) 30%,transparent)}
+/* the gauge: overall progress ring, a glow and a +1 when a number moves */
+[data-mxopen]{position:relative;overflow:visible}
+.mxp-ring{position:absolute;inset:-2px;width:calc(100% + 4px);height:calc(100% + 4px);transform:rotate(-90deg);pointer-events:none}
+.mxp-ring circle{fill:none;stroke-width:2}
+.mxp-ring .r0{stroke:color-mix(in srgb,var(--text) 8%,transparent)}
+.mxp-ring .r1{stroke:var(--today);stroke-linecap:round;transition:stroke-dasharray 1.1s cubic-bezier(.3,.8,.2,1)}
+[data-mxopen].mxp-hit{animation:mxpGlow 1.2s ease-out}
+[data-mxopen].mxp-hit svg:not(.mxp-ring){animation:mxpNod .6s cubic-bezier(.3,1.6,.5,1)}
+.mxp-fl{position:absolute;left:50%;top:-16px;transform:translateX(-50%);font-size:12px;font-weight:800;color:var(--today);pointer-events:none;animation:mxpFloat 1.2s ease-out forwards}
+#sMetrics.mxp-hit svg{animation:mxpNod .6s cubic-bezier(.3,1.6,.5,1);color:var(--today)}
+@keyframes mxpGlow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--today) 45%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
+@keyframes mxpNod{0%{transform:rotate(0)}40%{transform:rotate(-14deg) scale(1.12)}100%{transform:none}}
+@keyframes mxpFloat{0%{opacity:0;transform:translate(-50%,4px)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-18px)}}
+@media (prefers-reduced-motion:reduce){[data-mxopen].mxp-hit,[data-mxopen].mxp-hit svg,.mxp-fl,#sMetrics.mxp-hit svg{animation:none}.mxp-ring .r1{transition:none}}
+[data-mxopen] svg.mxp-ring{position:absolute;top:-3px;left:-3px;width:calc(100% + 6px)!important;height:calc(100% + 6px)!important;max-width:none;margin:0}
+.dPills .mxp-pi svg,#dPills .mxp-pi svg{stroke-width:2.6}
 </style>
 </head>
 <body>
@@ -4429,7 +4475,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=222; // bumped with every published update
+const APP_VERSION=223; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -9245,6 +9291,55 @@ const gmxTag=(k,id)=>{const gs=gmxGoalsOf(k,id);return gs.length?`<span class="m
 const _gmxKc=mtKpiCard,_gmxOc=mtOkrCard;
 mtKpiCard=function(k){return _gmxKc(k).replace('<small class="mt-kf">',gmxTag('kpi',k.id)+'<small class="mt-kf">')};
 mtOkrCard=function(o){const h=_gmxOc(o),t=gmxTag('okr',o.id);if(!t)return h;const i=h.lastIndexOf('</button>');return h.slice(0,i)+t+h.slice(i)};
+/* ---------- KPIs & OKRs on tasks, calmer ----------
+   Task rows: just an icon — a coral gauge when the task counts toward a KPI, a violet target for a key result.
+   Task details: the pill says how many it counts toward; the picker lists KPIs and key results as clear rows,
+   each with its own "+ amount".
+   The gauge on a space's page wears a thin ring with the space's overall progress; when a number moves
+   (a linked task done, a log), the ring glides to the new value, the gauge glows once and a small "+1" floats up. */
+const MXP_KR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
+const mxpLinks=t=>(Array.isArray(t.mx)?t.mx:[]).map(l=>({l,f:mxFind(l)})).filter(x=>x.f);
+/* rows */
+mxMark=function(t){if(!mxOn())return '';const ls=mxpLinks(t);if(!ls.length)return '';
+  const k=ls.some(x=>x.f.kind==='kpi'),r=ls.some(x=>x.f.kind==='kr');
+  const tip='Counts toward '+ls.map(x=>`${x.f.name}${x.l.add!=null&&x.l.add!==''?` (+${mxN(x.l.add)})`:''}`).join(', ');
+  return `<span class="mi mxp-mi" title="${esc(tip)}" aria-label="${esc(tip)}">${k?`<i class="k">${MX_ICON}</i>`:''}${r?`<i class="r">${MXP_KR}</i>`:''}</span>`};
+/* details pill */
+mxPill=function(t,P){if(!mxOn()||t.inbox)return '';const ls=mxpLinks(t);if(!ls.length&&!mxCands(t).length)return '';
+  if(!ls.length)return P('mx',`${MX_ICON}Counts toward`,true);
+  const k=ls.filter(x=>x.f.kind==='kpi').length,r=ls.length-k;
+  const lbl=ls.length===1?esc(ls[0].f.name):`${k?`${k} ${k===1?'KPI':'KPIs'}`:''}${k&&r?' · ':''}${r?`${r} ${r===1?'key result':'key results'}`:''}`;
+  return P('mx',`<span class="mxp-pi">${k?`<i class="k">${MX_ICON}</i>`:''}${r?`<i class="r">${MXP_KR}</i>`:''}</span>${lbl}`,false)};
+/* the picker */
+mxPicks=function(t){const cs=mxCands(t);if(!cs.length)return `<p class="mx-pkh">Add a KPI or OKR from the gauge on this space’s page first.</p>`;
+  const row=c=>{const l=(t.mx||[]).find(x=>mxKey(x)===mxKey(c)),f=mxFind(c);let sub='';
+    if(c.kind==='kpi'&&f)sub=`${MX_PER[f.item.period]||''}`;else if(c.kind==='kr'){const o=(S.okrs||[]).find(x=>String(x.id)===String(c.okr));sub=o?`OKR · ${esc(o.name)}`:'Key result'}
+    return `<div class="mxp-r ${c.kind}${l?' on':''}"><button class="pk mxp-b${l?' on':''}" data-v="${mxKey(c)}" aria-pressed="${!!l}"><span class="mxp-k">${DH_CK}</span><span class="mxp-ic">${c.kind==='kr'?MXP_KR:MX_ICON}</span><span class="mxp-t"><b>${esc(c.name)}</b>${sub?`<small>${sub}</small>`:''}</span></button>
+      ${l?`<label class="mxp-amt" title="Adds this much when the task is done. Empty: ask me.">+<input type="number" inputmode="decimal" step="any" min="0" data-mxamt="${mxKey(c)}" value="${l.add==null?'':esc(String(l.add))}" placeholder="ask" aria-label="Adds when done (empty: ask me)"></label>`:''}</div>`};
+  const ks=cs.filter(c=>c.kind==='kpi'),rs=cs.filter(c=>c.kind==='kr');
+  return `<div class="mxp">${ks.length?`<span class="mxp-h k">${MX_ICON}KPIs</span>${ks.map(row).join('')}`:''}${rs.length?`<span class="mxp-h r">${MXP_KR}Key results</span>${rs.map(row).join('')}`:''}
+    <p class="mx-pkh">Done adds the number. Leave it empty to be asked.</p></div>`};
+
+/* the gauge: a progress ring that moves when a number does */
+const mxpProg=sp=>{const its=[...mxKpis(sp).map(k=>mxKpiP(k)),...mxOkrs(sp,false).map(o=>mxOkrP(o))];return its.length?its.reduce((a,b)=>a+b,0)/its.length:null};
+const mxpSum=sp=>[...mxKpis(sp).map(k=>(k.log||[]).length),...mxOkrs(sp,false).flatMap(o=>o.krs.map(r=>(r.log||[]).length))].reduce((a,b)=>a+b,0);
+let mxpLast={sp:null,p:null,n:null};
+const _mxpBtns=mxBtns;
+mxBtns=function(){_mxpBtns();const sp=mxOn()?mxSpaceIn():null;
+  const p=sp!=null?mxpProg(sp):null,n=sp!=null?mxpSum(sp):null,r=19,C2=2*Math.PI*r;
+  const grew=sp!=null&&mxpLast.sp===sp&&mxpLast.n!=null&&n>mxpLast.n;
+  document.querySelectorAll('[data-mxopen]').forEach(b=>{
+    let ring=b.querySelector('.mxp-ring');
+    if(p==null){if(ring)ring.remove();b.classList.remove('has-ring');return}
+    if(!ring){b.insertAdjacentHTML('beforeend',`<svg class="mxp-ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="r0" cx="22" cy="22" r="${r}"/><circle class="r1" cx="22" cy="22" r="${r}" style="stroke-dasharray:0 ${C2.toFixed(1)}"/></svg>`);ring=b.querySelector('.mxp-ring')}
+    b.classList.add('has-ring');b.title=`KPIs and OKRs · ${Math.round(p*100)}% overall`;
+    const arc=ring.querySelector('.r1'),to=`${(C2*Math.max(.02,p)).toFixed(1)} ${C2.toFixed(1)}`;
+    if(arc.style.strokeDasharray!==to)requestAnimationFrame(()=>{arc.style.strokeDasharray=to});
+    if(grew&&b.offsetParent){b.classList.remove('mxp-hit');void b.offsetWidth;b.classList.add('mxp-hit');
+      const d=n-mxpLast.n;const fl=document.createElement('span');fl.className='mxp-fl';fl.textContent='+'+d;b.appendChild(fl);setTimeout(()=>fl.remove(),1300);
+      setTimeout(()=>b.classList.remove('mxp-hit'),1300)}});
+  const sm=$('sMetrics');if(grew&&sm){sm.classList.remove('mxp-hit');void sm.offsetWidth;sm.classList.add('mxp-hit');setTimeout(()=>sm.classList.remove('mxp-hit'),1300)}
+  mxpLast={sp,p,n}};
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
