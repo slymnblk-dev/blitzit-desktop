@@ -217,3 +217,73 @@
   .home-hero{padding:24px 0 22px}
   .home-hero h1,.ib-h,.hp-h,.hb-h{font-size:clamp(48px,14vw,72px);line-height:.9;letter-spacing:-.05em}
 }
+
+/* ===== Small moments of motion (08zm-motion.js). Each block can be removed on its own. ===== */
+/* 1 · tick burst */
+.mo-burst{position:fixed;z-index:800;width:0;height:0;pointer-events:none;--mb:var(--today)}
+.mo-burst i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--mb);transform:rotate(var(--a)) translateY(0) scale(.4);animation:moBurst .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes moBurst{0%{opacity:1;transform:rotate(var(--a)) translateY(-6px) scale(.5)}60%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(-24px) scale(1)}}
+/* 2 · rings fill from empty on arrival */
+:root.mo-in .dh-ring .r1,:root.mo-in .hw-r1{animation:moRing .9s var(--ease) both}
+@keyframes moRing{from{stroke-dasharray:0 999}}
+/* 4 · press feel on the cards that didn't have it; on computers a soft lift on hover */
+.cm-sp,button.cm-r,.cm-rl,.hl-tile,.mxw-rr,.ib-row,.hg-n{transition:transform .15s,box-shadow .2s,background .15s}
+.cm-sp:active,button.cm-r:active,.cm-rl:active,.hl-tile:active,.mxw-rr:active{transform:scale(.98)}
+@media (hover:hover) and (pointer:fine){
+  .g-card,.cm-sp,.hl-tile,.sp-card{transition:transform .2s var(--ease),box-shadow .2s,background .15s}
+  .g-card:hover,.cm-sp:hover,.sp-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px -16px rgba(0,0,0,.35)}
+}
+/* 5 · tab direction on phones; pages fade and rise on computers */
+@media (max-width:1099px){
+  :root[data-tdir="l"] .inbox-pg:not(.on){transform:translateX(-24px)}
+  :root[data-tdir="r"] .inbox-pg:not(.on){transform:translateX(24px)}
+  .inbox-pg.pg-out-l:not(.on){transform:translateX(-24px)}
+  .inbox-pg.pg-out-r:not(.on){transform:translateX(24px)}
+}
+@media (min-width:1100px){.inbox-pg:not(.on){transform:translateY(14px)}}
+/* 6 · you won the day */
+.mo-win{position:fixed;inset:0;z-index:690;pointer-events:none;display:grid;place-items:center;animation:moWinIn .35s ease both}
+.mo-win.out{opacity:0;transition:opacity .55s ease}
+.mw-glow{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 62%,rgba(255,196,92,.42),rgba(255,140,70,.16) 45%,transparent 72%);animation:moGlow 2.6s ease both}
+.mw-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 34px;border-radius:28px;background:color-mix(in srgb,var(--surface) 88%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 24px 60px -24px rgba(229,84,63,.5);animation:moCard .5s var(--spring,cubic-bezier(.3,1.5,.5,1)) both}
+.mw-in b{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.mw-in span{font-size:14px;color:var(--muted)}
+.mw-sun{width:64px;height:64px;color:#F2A332;overflow:visible}
+.mw-disc{animation:moRise 1s .15s cubic-bezier(.2,.8,.2,1) both}
+.mw-rays{animation:moRays .6s .8s ease both;transform-origin:24px 36px}
+@keyframes moWinIn{from{opacity:0}}
+@keyframes moGlow{0%{opacity:0}25%{opacity:1}100%{opacity:.6}}
+@keyframes moCard{from{opacity:0;transform:translateY(16px) scale(.94)}}
+@keyframes moRise{from{transform:translateY(12px);opacity:0}}
+@keyframes moRays{from{opacity:0;transform:scale(.6)}}
+/* 7 · streak flip */
+.mo-flip{display:inline-block;animation:moFlip .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes moFlip{0%{transform:perspective(200px) rotateX(-90deg);opacity:0}60%{opacity:1}100%{transform:none}}
+/* 8 · pull Home to refresh */
+.mo-pull{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:18;width:40px;height:40px;margin-left:-20px;border-radius:50%;
+  display:grid;place-items:center;background:var(--surface);color:var(--today);box-shadow:0 8px 20px -10px rgba(0,0,0,.35);
+  opacity:0;transform:translateY(calc(-50px + var(--p,0) * 50px)) scale(calc(.6 + var(--p,0) * .4));pointer-events:none;transition:opacity .2s}
+.mo-pull svg{width:26px;height:26px;overflow:visible}
+.mo-pull .mp-disc{transform:translateY(calc((1 - min(var(--p,0),1)) * 10px))}
+.mo-pull .mp-rays{opacity:var(--p,0);transform-origin:24px 36px}
+.mo-pull.live{opacity:1}
+.mo-pull:not(.live){transform:translateY(-50px) scale(.6);transition:opacity .2s,transform .3s}
+.mo-pull.armed{color:#F2A332}
+.mo-pull.spin .mp-rays{animation:moRaysSpin 1s linear infinite}
+@keyframes moRaysSpin{to{transform:rotate(360deg)}}
+/* 9 · empty states breathe gently */
+.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.gm-empty svg{animation:moBob 4.5s ease-in-out infinite}
+@keyframes moBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+/* 10 · focus: last 10 seconds, and a warm glow on the finish screen */
+.mo-last{transition:color .2s}
+.mo-tk{animation:moTick .9s ease-out}
+@keyframes moTick{0%{transform:scale(1.045)}100%{transform:scale(1)}}
+.focus.sum .f-sum,.tide.t-ended .t-main{position:relative}
+.focus.sum .f-sum::before,.tide.t-ended .t-main::before{content:"";position:absolute;left:50%;top:50%;width:140%;aspect-ratio:1;max-width:900px;transform:translate(-50%,-50%);z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,226,170,.5),rgba(255,200,120,.18) 55%,transparent);animation:moFin 2.4s ease both}
+@keyframes moFin{from{opacity:0;transform:translate(-50%,-44%) scale(.8)}}
+/* motion off: none of the above moves */
+:root[data-motion="off"] .mo-burst,:root[data-motion="off"] .mo-win{display:none}
+:root[data-motion="off"] .ib-empty svg,:root[data-motion="off"] .dh-ei svg,:root[data-motion="off"] .g-empty svg,:root[data-motion="off"] .rh-empty svg,:root[data-motion="off"] .mt2-empty svg,:root[data-motion="off"] .arc-empty svg,:root[data-motion="off"] .gm-empty svg{animation:none}
+@media (prefers-reduced-motion:reduce){.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.gm-empty svg,.mo-tk,.mo-flip{animation:none}}
