@@ -68,9 +68,25 @@ function moWon(){
   const n=S.tasks.filter(t=>shown(t)&&t.stage==='done'&&t.doneAt&&dkey(t.doneAt)===today()).length;
   const el=document.createElement('div');el.id='moWin';el.className='mo-win';el.setAttribute('aria-live','polite');
   el.innerHTML=`<div class="mw-glow"></div><div class="mw-in"><svg class="mw-sun" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><g class="mw-rays"><path d="M24 9v6"/><path d="M11.5 14.5l4 4"/><path d="M36.5 14.5l-4 4"/></g><path class="mw-disc" d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".35" stroke="none"/><path class="mw-disc" d="M12 36a12 12 0 0 1 24 0"/><path d="M4 36h40"/></svg><b>You won the day</b><span>${n} ${n===1?'task':'tasks'} done today</span></div>`;
-  document.body.appendChild(el);haptic([10,50,10,50,24]);
+  document.body.appendChild(el);haptic([10,50,10,50,24]);setTimeout(moWonSound,180);
   setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),600)},2600);
 }
+/* its sound, "Sunrise": four notes rising like the sun, landing on a warm open chord, in a small soft room.
+   Follows Settings → Sounds (on/off and volume) like every other sound. */
+let moVerb=null;
+function moWonSound(){try{
+  if(!S.cfg||S.cfg.uiSounds===false||!sfxReady())return;const c=sfxCtx;
+  if(!moVerb){moVerb=c.createGain();moVerb.gain.value=.28;
+    [.11,.17].forEach(d=>{const dl=c.createDelay(1),fb=c.createGain(),f=c.createBiquadFilter();dl.delayTime.value=d;fb.gain.value=.38;f.type='lowpass';f.frequency.value=2600;
+      moVerb.connect(dl);dl.connect(f).connect(fb).connect(dl);f.connect(sfxBus)})}
+  const osc=(type,f,t,dur,vol,attack=.008)=>{const o=c.createOscillator(),g=c.createGain(),w=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    w.gain.value=.6;o.connect(g);g.connect(sfxBus);g.connect(w).connect(moVerb);o.start(t);o.stop(t+dur+.05)};
+  const bell=(f,t,d,v)=>{osc('sine',f,t,d,v);osc('sine',f*2.01,t,d*.55,v*.18);osc('sine',f*3.02,t,d*.3,v*.06)};
+  const t=c.currentTime+.02;
+  [523.3,659.3,784,1046.5].forEach((f,i)=>bell(f,t+i*.085,.9-i*.05,.16));
+  [523.3,659.3,784].forEach(f=>osc('sine',f,t+.34,1.3,.07,.08));osc('triangle',261.6,t+.34,1.2,.05,.1);bell(1318.5,t+.42,.7,.04);
+}catch(e){}}
 const _moRender2=render;render=function(d){_moRender2(d);try{const n=moTodayLeft();
   if(moLeft>0&&n===0&&performance.now()-sfxAct<2500&&S.tasks.some(t=>shown(t)&&t.stage==='done'&&t.doneAt&&Date.now()-t.doneAt<4000))setTimeout(moWon,380);
   moLeft=n}catch(err){console.error(err)}};
