@@ -289,3 +289,33 @@
 :root[data-motion="off"] .ib-empty svg,:root[data-motion="off"] .dh-ei svg,:root[data-motion="off"] .g-empty svg,:root[data-motion="off"] .rh-empty svg,:root[data-motion="off"] .mt2-empty svg,:root[data-motion="off"] .arc-empty svg,:root[data-motion="off"] .gm-empty svg{animation:none}
 @media (prefers-reduced-motion:reduce){.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.gm-empty svg,.mo-tk,.mo-flip{animation:none}}
 
+
+/* ===== Focus steps: Spotlight (05-focus-classic.js). One step at a time, or three; the card keeps one size so the timer never moves. ===== */
+.f-steps.has{height:156px;box-sizing:border-box;padding:12px 16px 12px;justify-content:space-between;gap:6px}
+.f-steps.has.fs-3{height:212px}
+.f-steps.has .fs-h{padding:0;font-size:13px}
+.fs-hr{display:flex;align-items:center;gap:6px}
+.fs-plusb{width:30px;height:30px;margin:-6px -8px -6px 0;border-radius:50%;display:grid;place-items:center;color:inherit;transition:background .15s}
+.fs-plusb:hover{background:rgba(255,255,255,.18)}.fs-plusb svg{width:15px;height:15px}
+.f-steps.has .fs-list{flex:1;min-height:0;max-height:none;justify-content:center;gap:2px;overflow:hidden}
+.f-steps.has .fs-r{min-height:42px;padding:2px 8px;margin:0 -8px;width:calc(100% + 16px);box-sizing:border-box}
+.f-steps.has:not(.fs-3) .fs-r{font-size:22px;font-weight:700;letter-spacing:-.01em;gap:14px}
+.f-steps.has:not(.fs-3) .fs-r i{width:30px;height:30px}.f-steps.has:not(.fs-3) .fs-r i svg{width:16px;height:16px}
+.f-steps.has:not(.fs-3) .fs-r span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.f-steps.has.fs-3 .fs-r span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-r.fs-in{animation:fsIn .38s cubic-bezier(.2,.8,.2,1) both}
+.fs-r.fs-out span{text-decoration:line-through}
+.fs-r.fs-out{animation:fsOut .28s ease .05s both}
+@keyframes fsIn{from{opacity:0;transform:translateY(12px)}}
+@keyframes fsOut{to{opacity:0;transform:translateY(-10px)}}
+.fs-all{flex:1;display:flex;align-items:center;gap:12px;font-size:19px;font-weight:700}
+.fs-all i{width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--fbg,var(--today));display:grid;place-items:center}.fs-all i svg{width:15px;height:15px}
+.f-steps.has .fs-add.on{flex:1;min-height:0;padding:0}
+.fs-f{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:22px}
+.fs-dots{display:flex;gap:4px;flex:1;max-width:260px}
+.fs-dots i{flex:1;max-width:22px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--ink) 22%,transparent);transition:background .3s}
+.fs-dots i.on{background:var(--ink)}
+.fs-then{font-size:13.5px;font-weight:600;opacity:.75;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-undo{font-size:13.5px;font-weight:800;color:inherit;padding:4px 10px;margin:-4px -10px -4px 0;border-radius:999px;text-decoration:underline;text-underline-offset:3px}
+@media (max-width:1099px){.f-steps.has{height:132px;padding:10px 14px}.f-steps.has.fs-3{height:188px}.f-steps.has:not(.fs-3) .fs-r{font-size:19px}}
+@media (prefers-reduced-motion:reduce){.fs-r.fs-in,.fs-r.fs-out{animation:none}}

@@ -151,8 +151,8 @@ test('search finds tasks, notes, goals and habits, grouped', async ({ page }) =>
   noErrors(errors);
 });
 
-test('focus shows every step: tick, untick, add, keys never end the task', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test('focus steps, one at a time (or three): tick, undo, add, keys never end the task; the timer never moves', async ({ page }) => {
+  await page.setViewportSize({ width: 1300, height: 860 });
   const errors = await openApp(page);
   await page.evaluate(() => {
     S.cfg.focusStyle = 'classic'; const l = S.lists[0], t = newTask('Inbox zero', 'today', l.id, 30);
@@ -161,22 +161,39 @@ test('focus shows every step: tick, untick, add, keys never end the task', async
   });
   await page.waitForTimeout(500);
   const rows = page.locator('#fSteps .fs-r');
-  await expect(rows).toHaveCount(3);
+  const timerTop = () => page.evaluate(() => Math.round($('fTime').getBoundingClientRect().top));
+  const top0 = await timerTop();
+  // one at a time: the first open step, then a hint of the next
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toContainText('Reply to Sara');
   await expect(page.locator('#fsN')).toHaveText('1 of 3');
-  await rows.nth(1).click();
+  await expect(page.locator('#fSteps .fs-then')).toContainText('Archive the rest');
+  await rows.first().click();
   await expect(page.locator('#fsN')).toHaveText('2 of 3');
-  await expect(rows.nth(1)).toHaveAttribute('aria-label', 'Mark not done: Reply to Sara');
-  await rows.nth(0).focus();
-  await page.keyboard.press('Enter'); // unticks the step, doesn't finish the task
+  await expect(rows.first()).toContainText('Archive the rest');
+  expect(await timerTop()).toBe(top0);
+  // Undo brings it back
+  await page.locator('#fSteps [data-fsundo]').click();
   await expect(page.locator('#fsN')).toHaveText('1 of 3');
+  await expect(rows.first()).toContainText('Reply to Sara');
+  // keyboard ticks the step, doesn't finish the task
+  await rows.first().focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#fsN')).toHaveText('2 of 3');
   expect(await page.evaluate(() => [F.on, S.tasks[0].stage])).toEqual([true, 'today']);
+  // add a step
   await page.locator('#fSteps [data-fsadd]').click();
   await page.keyboard.type('Clear the spam folder');
   await page.keyboard.press('Enter');
-  await expect(rows).toHaveCount(4);
   await page.keyboard.press('Escape'); // closes the field, not focus
   await expect(page.locator('#fsIn')).toHaveCount(0);
   expect(await page.evaluate(() => [F.on, S.tasks[0].subs.map(s => s.t)])).toEqual([true, ['Flag urgent', 'Reply to Sara', 'Archive the rest', 'Clear the spam folder']]);
+  // three at a time
+  await page.evaluate(() => { setCfg('fsShow', '3'); drawSteps(); });
+  await expect(rows).toHaveCount(2);
+  await rows.first().click(); await expect(page.locator('#fsN')).toHaveText('3 of 4'); await rows.first().click();
+  await expect(page.locator('#fSteps .fs-all')).toContainText('All 4 steps done');
+  expect(await timerTop()).toBe(top0);
   noErrors(errors);
 });
 
@@ -191,19 +208,20 @@ test('Tide focus shows every step too: tick, untick, add; typing never pauses th
   await page.waitForTimeout(400);
   await page.locator('#tide [data-a="go"]').click();
   const rows = page.locator('#tSteps .fs-r');
-  await expect(rows).toHaveCount(2);
+  await expect(rows).toHaveCount(1);
   await rows.first().click();
   await expect(page.locator('#tSteps #fsN')).toHaveText('1 of 2');
-  await rows.first().click();
+  await expect(rows.first()).toContainText('Reply to Sara');
+  await page.locator('#tSteps [data-fsundo]').click();
   await expect(page.locator('#tSteps #fsN')).toHaveText('0 of 2');
   await page.locator('#tSteps [data-fsadd]').click();
   await page.keyboard.type('Archive the rest');
   await page.keyboard.press('Enter');
-  await expect(rows).toHaveCount(3);
+  expect(await page.evaluate(() => S.tasks[0].subs.length)).toBe(3);
   expect(await page.evaluate(() => T.mode)).toBe('run'); // the space key typed a word, it didn't pause
   // the steps survive a pause/resume redraw
   await page.locator('#tide [data-a="pause"]').click();
-  await expect(rows).toHaveCount(3);
+  await expect(page.locator('#tSteps #fsN')).toHaveText('0 of 3');
   expect(await page.evaluate(() => S.tasks[0].subs.map(s => s.t))).toEqual(['Flag urgent', 'Reply to Sara', 'Archive the rest']);
   await page.evaluate(() => tideLeave());
   noErrors(errors);

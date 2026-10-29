@@ -46,7 +46,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeLayout:'bento',sideN:true,homeAlso:'switch',navStyle:'float',homeShow:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,fsShow:'1',homeLayout:'bento',sideN:true,homeAlso:'switch',navStyle:'float',homeShow:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -261,6 +261,7 @@ function settingsPage(id){
     ${row('Break length',`<div class="segc">${[5,10,15].map(m=>sOpt('pomoBreak',m,m+'m')).join('')}</div>`)}
     </div><div class="set-sec"><h3>Style</h3>
     ${row('Focus sounds',tg('ambShow'),'A 🎧 button in focus mode with calm sounds: rain, ocean, café, fireplace or brown noise.')}
+    ${row('Steps',`<div class="segc">${sOpt('fsShow','1','One at a time')}${sOpt('fsShow','3','Three at a time')}</div>`,'How many of a task\'s steps show in focus')}
     ${row('Timer look',`<div class="segc">${sOpt('focusStyle','classic','Digits')}${sOpt('focusStyle','tide','Wave')}</div>`,(c.focusStyle||'classic')==='tide'?'A circle that fills like a wave as time runs.':'Big clear numbers, with your task steps.')}
     </div><div class="set-sec"><h3>Look</h3>
     <div class="fc-prev ${(c.focusStyle||'classic')==='tide'?'wave':''}" style="--pb:${(FOCUS_COLORS[c.focusColor]||{}).bg||'var(--today)'};--pi:${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).ink}">${(c.focusStyle||'classic')==='tide'

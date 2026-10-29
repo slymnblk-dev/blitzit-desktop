@@ -3880,6 +3880,36 @@ button.hg-c:active{transform:scale(.88)}
 :root[data-motion="off"] .ib-empty svg,:root[data-motion="off"] .dh-ei svg,:root[data-motion="off"] .g-empty svg,:root[data-motion="off"] .rh-empty svg,:root[data-motion="off"] .mt2-empty svg,:root[data-motion="off"] .arc-empty svg,:root[data-motion="off"] .gm-empty svg{animation:none}
 @media (prefers-reduced-motion:reduce){.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.gm-empty svg,.mo-tk,.mo-flip{animation:none}}
 
+
+/* ===== Focus steps: Spotlight (05-focus-classic.js). One step at a time, or three; the card keeps one size so the timer never moves. ===== */
+.f-steps.has{height:156px;box-sizing:border-box;padding:12px 16px 12px;justify-content:space-between;gap:6px}
+.f-steps.has.fs-3{height:212px}
+.f-steps.has .fs-h{padding:0;font-size:13px}
+.fs-hr{display:flex;align-items:center;gap:6px}
+.fs-plusb{width:30px;height:30px;margin:-6px -8px -6px 0;border-radius:50%;display:grid;place-items:center;color:inherit;transition:background .15s}
+.fs-plusb:hover{background:rgba(255,255,255,.18)}.fs-plusb svg{width:15px;height:15px}
+.f-steps.has .fs-list{flex:1;min-height:0;max-height:none;justify-content:center;gap:2px;overflow:hidden}
+.f-steps.has .fs-r{min-height:42px;padding:2px 8px;margin:0 -8px;width:calc(100% + 16px);box-sizing:border-box}
+.f-steps.has:not(.fs-3) .fs-r{font-size:22px;font-weight:700;letter-spacing:-.01em;gap:14px}
+.f-steps.has:not(.fs-3) .fs-r i{width:30px;height:30px}.f-steps.has:not(.fs-3) .fs-r i svg{width:16px;height:16px}
+.f-steps.has:not(.fs-3) .fs-r span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.f-steps.has.fs-3 .fs-r span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-r.fs-in{animation:fsIn .38s cubic-bezier(.2,.8,.2,1) both}
+.fs-r.fs-out span{text-decoration:line-through}
+.fs-r.fs-out{animation:fsOut .28s ease .05s both}
+@keyframes fsIn{from{opacity:0;transform:translateY(12px)}}
+@keyframes fsOut{to{opacity:0;transform:translateY(-10px)}}
+.fs-all{flex:1;display:flex;align-items:center;gap:12px;font-size:19px;font-weight:700}
+.fs-all i{width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--fbg,var(--today));display:grid;place-items:center}.fs-all i svg{width:15px;height:15px}
+.f-steps.has .fs-add.on{flex:1;min-height:0;padding:0}
+.fs-f{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:22px}
+.fs-dots{display:flex;gap:4px;flex:1;max-width:260px}
+.fs-dots i{flex:1;max-width:22px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--ink) 22%,transparent);transition:background .3s}
+.fs-dots i.on{background:var(--ink)}
+.fs-then{font-size:13.5px;font-weight:600;opacity:.75;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-undo{font-size:13.5px;font-weight:800;color:inherit;padding:4px 10px;margin:-4px -10px -4px 0;border-radius:999px;text-decoration:underline;text-underline-offset:3px}
+@media (max-width:1099px){.f-steps.has{height:132px;padding:10px 14px}.f-steps.has.fs-3{height:188px}.f-steps.has:not(.fs-3) .fs-r{font-size:19px}}
+@media (prefers-reduced-motion:reduce){.fs-r.fs-in,.fs-r.fs-out{animation:none}}
 /* ===== KPIs & OKRs: the gauge button, the popup (a sheet on phones, a calm window on computers), the task link ===== */
 .mx-btn svg{width:19px;height:19px}
 .mx-pg{position:fixed;inset:0;z-index:44;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,5,7,.58);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility 0s .22s}
@@ -4731,7 +4761,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=237; // bumped with every published update
+const APP_VERSION=238; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5931,24 +5961,39 @@ const fCur=()=>F.on&&F.q?liveTask(F.q[F.i]):null;
 const FS_TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 12.5l3.5 3.5 7.5-8"/></svg>';
 const FS_PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 const fsLabel=s=>(s.done?'Mark not done: ':'Mark done: ')+s.t;
+/* Spotlight: one step at a time (or three, Settings → Focus → Steps), in a card that keeps one size, so the timer never moves.
+   Ticked steps leave the card and the next one rises in; a row of dashes shows how far through you are. */
+let fsUndo=null,fsUndoT=null,fsFresh=null;
+const fsShow=()=>C().fsShow==='3'?3:1;
 function drawSteps(){
   const t=fCur(),el=fsBox();if(!el)return;if(!t){el.innerHTML='';return}
   const ss=t.subs||[],dn=ss.filter(s=>s.done).length,a=document.activeElement,typing=a&&a.id==='fsIn'?a.value:null;
-  el.classList.toggle('has',ss.length>0);
-  el.innerHTML=(ss.length?`<div class="fs-h"><span>Steps</span><span id="fsN">${dn} of ${ss.length}</span></div><div class="fs-list">${ss.map(s=>`<button class="fs-r${s.done?' on':''}" data-fst="${s.id}" aria-pressed="${!!s.done}" aria-label="${esc(fsLabel(s))}"><i>${FS_TICK}</i><span>${esc(s.t)}</span></button>`).join('')}</div>`:'')
-    +(ss.length>=SUB_MAX?'':fAddStep?`<label class="fs-add on"><span class="fs-plus">${FS_PLUS}</span><input id="fsIn" placeholder="Add a step" maxlength="200" autocomplete="off" enterkeyhint="done" aria-label="Add a step"></label>`
-      :`<button class="fs-add" data-fsadd>${FS_PLUS}<span>${ss.length?'Add step':'Add steps'}</span></button>`);
+  const n=fsShow(),open=ss.filter(s=>!s.done),vis=open.slice(0,n);
+  el.classList.toggle('has',ss.length>0);el.classList.toggle('fs-3',n===3);
+  if(!ss.length){el.innerHTML=fAddStep?`<label class="fs-add on"><span class="fs-plus">${FS_PLUS}</span><input id="fsIn" placeholder="Add a step" maxlength="200" autocomplete="off" enterkeyhint="done" aria-label="Add a step"></label>`
+    :`<button class="fs-add" data-fsadd>${FS_PLUS}<span>Add steps</span></button>`}
+  else{
+    const add=ss.length<SUB_MAX?`<button class="fs-plusb" data-fsadd aria-label="Add a step" title="Add a step">${FS_PLUS}</button>`:'';
+    const body=fAddStep?`<label class="fs-add on"><span class="fs-plus">${FS_PLUS}</span><input id="fsIn" placeholder="Add a step" maxlength="200" autocomplete="off" enterkeyhint="done" aria-label="Add a step"></label>`
+      :!open.length?`<div class="fs-all"><i>${FS_TICK}</i><span>All ${ss.length} ${ss.length===1?'step':'steps'} done</span></div>`
+      :`<div class="fs-list">${vis.map(s=>`<button class="fs-r${s.id===fsFresh?' fs-in':''}" data-fst="${s.id}" aria-pressed="false" aria-label="${esc(fsLabel(s))}"><i>${FS_TICK}</i><span>${esc(s.t)}</span></button>`).join('')}</div>`;
+    const foot=fsUndo?`<button class="fs-undo" data-fsundo>Undo</button>`:n===1&&open[1]?`<span class="fs-then">Then: ${esc(open[1].t)}</span>`:open.length>n?`<span class="fs-then">${open.length-n} more after these</span>`:'<span></span>';
+    el.innerHTML=`<div class="fs-h"><span>Steps</span><span class="fs-hr"><span id="fsN">${dn} of ${ss.length}</span>${add}</span></div>${body}
+      <div class="fs-f"><span class="fs-dots" aria-hidden="true">${ss.map(s=>`<i class="${s.done?'on':''}"></i>`).join('')}</span>${foot}</div>`}
+  fsFresh=null;
   if(typing!==null){const i=$('fsIn');if(i){i.value=typing;i.focus({preventScroll:true})}}
 }
 function fTickStep(id){const t=fCur(),s=t&&(t.subs||[]).find(x=>x.id===id);if(!s)return;s.done=!s.done;save();
   if(s.done){haptic(10);sfx('tick');shuffleFocus()}else haptic(5);
-  const b=fsBox().querySelector(`[data-fst="${id}"]`);if(!b)return drawSteps();
-  b.classList.toggle('on',s.done);b.setAttribute('aria-pressed',s.done);b.setAttribute('aria-label',fsLabel(s));
-  const n=$('fsN');if(n)n.textContent=`${t.subs.filter(x=>x.done).length} of ${t.subs.length}`}
+  const b=fsBox().querySelector(`[data-fst="${id}"]`);
+  if(s.done){fsUndo=id;clearTimeout(fsUndoT);fsUndoT=setTimeout(()=>{fsUndo=null;drawSteps()},4000);
+    const nx=(t.subs||[]).filter(x=>!x.done)[fsShow()-1];fsFresh=nx?nx.id:null}
+  if(b&&s.done){b.classList.add('on','fs-out');setTimeout(drawSteps,280)}else drawSteps()}
 /* the mini timer's step button ticks the next open one */
 function fTickNext(){const t=fCur(),s=t&&(t.subs||[]).find(x=>!x.done);if(s)fTickStep(s.id)}
 function fsClick(e){
-  const b=e.target.closest('[data-fst]');if(b)return fTickStep(+b.dataset.fst);
+  const b=e.target.closest('[data-fst]');if(b){if(b.classList.contains('fs-out'))return;return fTickStep(+b.dataset.fst)}
+  if(e.target.closest('[data-fsundo]')){const id=fsUndo;fsUndo=null;clearTimeout(fsUndoT);if(id!=null)fTickStep(id);return}
   if(e.target.closest('[data-fsadd]')){fAddStep=true;haptic(4);drawSteps();const i=$('fsIn');if(i)i.focus()}}
 function fsKey(e){
   if(e.target.id==='fsIn'){e.stopPropagation(); // typing a step never pauses, finishes or closes focus
@@ -5957,7 +6002,7 @@ function fsKey(e){
       e.target.value='';drawSteps();const l=fsBox().querySelector('.fs-list');if(l)l.scrollTop=l.scrollHeight}
     else if(e.key==='Escape'){e.preventDefault();fAddStep=false;drawSteps()}
     return}
-  const b=e.target.closest('[data-fst]');if(b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();fTickStep(+b.dataset.fst)}}
+  const b=e.target.closest('[data-fst]');if(b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();if(!b.classList.contains('fs-out'))fTickStep(+b.dataset.fst)}}
 function fsOut(e){if(e.target.id!=='fsIn')return;setTimeout(()=>{const a=document.activeElement,i=$('fsIn');if(fAddStep&&i&&a!==i&&!i.value.trim()){fAddStep=false;drawSteps()}},150)}
 $('fSteps').addEventListener('click',fsClick);$('fSteps').addEventListener('keydown',fsKey);$('fSteps').addEventListener('focusout',fsOut);
 $('fMode').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.m===F.mode)return;
@@ -10299,7 +10344,7 @@ function drawStats(){
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
 const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
-  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,homeLayout:'bento',sideN:true,homeAlso:'switch',navStyle:'float',homeShow:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
+  defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,fsShow:'1',homeLayout:'bento',sideN:true,homeAlso:'switch',navStyle:'float',homeShow:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
@@ -10514,6 +10559,7 @@ function settingsPage(id){
     ${row('Break length',`<div class="segc">${[5,10,15].map(m=>sOpt('pomoBreak',m,m+'m')).join('')}</div>`)}
     </div><div class="set-sec"><h3>Style</h3>
     ${row('Focus sounds',tg('ambShow'),'A 🎧 button in focus mode with calm sounds: rain, ocean, café, fireplace or brown noise.')}
+    ${row('Steps',`<div class="segc">${sOpt('fsShow','1','One at a time')}${sOpt('fsShow','3','Three at a time')}</div>`,'How many of a task\'s steps show in focus')}
     ${row('Timer look',`<div class="segc">${sOpt('focusStyle','classic','Digits')}${sOpt('focusStyle','tide','Wave')}</div>`,(c.focusStyle||'classic')==='tide'?'A circle that fills like a wave as time runs.':'Big clear numbers, with your task steps.')}
     </div><div class="set-sec"><h3>Look</h3>
     <div class="fc-prev ${(c.focusStyle||'classic')==='tide'?'wave':''}" style="--pb:${(FOCUS_COLORS[c.focusColor]||{}).bg||'var(--today)'};--pi:${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).ink}">${(c.focusStyle||'classic')==='tide'
