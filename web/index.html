@@ -3910,6 +3910,13 @@ button.hg-c:active{transform:scale(.88)}
 .fs-undo{font-size:13.5px;font-weight:800;color:inherit;padding:4px 10px;margin:-4px -10px -4px 0;border-radius:999px;text-decoration:underline;text-underline-offset:3px}
 @media (max-width:1099px){.f-steps.has{height:132px;padding:10px 14px}.f-steps.has.fs-3{height:188px}.f-steps.has:not(.fs-3) .fs-r{font-size:19px}}
 @media (prefers-reduced-motion:reduce){.fs-r.fs-in,.fs-r.fs-out{animation:none}}
+
+/* the space on the coral Up next card (phone Today card, desktop Calm card): a soft white chip */
+.td-up,.cm-ut .dh-eye{display:flex;align-items:center;gap:8px;min-height:24px}
+.up-chip{display:inline-flex;align-items:center;gap:6px;height:24px;max-width:60%;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff;
+  font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.up-chip:has(i){padding-left:3px}
+.up-chip i{flex:none;width:18px;height:18px;border-radius:50%;background:#fff;display:grid;place-items:center;font-style:normal;font-size:11px;line-height:1}
 /* ===== KPIs & OKRs: the gauge button, the popup (a sheet on phones, a calm window on computers), the task link ===== */
 .mx-btn svg{width:19px;height:19px}
 .mx-pg{position:fixed;inset:0;z-index:44;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,5,7,.58);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility 0s .22s}
@@ -4761,7 +4768,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=239; // bumped with every published update
+const APP_VERSION=240; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5211,10 +5218,12 @@ function todayCard(td,m){
   const sp=focusSpace(td),mine=sp?td.filter(t=>listOf(t.list).space===sp.id):td,nx=mine[0];
   return `<div class="td-card" id="tdOpen" data-sp="${sp?sp.id:''}" role="button" tabindex="0"><span class="hglint" aria-hidden="true"><i></i></span>
     <div class="td-head"><span class="td-lbl">Today</span></div>
-    <div class="td-next"><span class="td-up">Up next${sp?` · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name)}`:''}</span><span class="td-title">${esc(nx.title)}</span></div>
+    <div class="td-next"><span class="td-up">Up next${upChip(sp)}</span><span class="td-title">${esc(nx.title)}</span></div>
     <button class="td-go" id="tdBlitz" aria-label="Focus: start on today's tasks"><span class="td-ring"></span><svg class="td-sun" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg><span class="td-gl">Focus</span></button>
   </div>`;
 }
+/* the space of the next task, as a soft white chip on the coral card: its emoji in a small white circle, its name in normal case */
+const upChip=sp=>sp?`<span class="up-chip">${sp.e?`<i>${esc(sp.e)}</i>`:''}${esc(sp.name)}</span>`:'';
 function homeHTML(){
   const all=S.tasks.filter(shown),td=bySpaceOrder(all.filter(t=>t.stage==='today')),m=td.reduce((a,t)=>a+t.est,0);
   return `<section class="home-hero"><div class="home-date">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</div>
@@ -9309,7 +9318,7 @@ function bentoHome(){
 /* ===== Calm column ===== */
 function calmHome(){const {td,dn}=dhToday(),nx=td[0];
   const nsp=nx?spaceOf((listOf(nx.list)||{}).space):null;
-  const hero=nx?`<div class="cm-up"><span class="hglint" aria-hidden="true"><i></i></span><div class="cm-ut">${dhEye('Up next'+(nsp?` · ${nsp.e?esc(nsp.e)+' ':''}${esc(nsp.name)}`:''))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
+  const hero=nx?`<div class="cm-up"><span class="hglint" aria-hidden="true"><i></i></span><div class="cm-ut">${dhEye('Up next'+upChip(nsp))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
     :`<div class="cm-up is-empty">${dhEmpty(dn?sunIcon():DH_I.task,'hot',dn?'You won the day':'Nothing up next',dn?`${dn} ${dn===1?'task':'tasks'} done today.`:'Add a task for today and it shows up here.',dhBtn('data-bnadd','Add a task'))}</div>`;
   const rows=[];const g=dhGoal(),h=dhHabits(),mx=dhMx();
   if(g!==null)rows.push(g?(()=>{const pr=gProg(g),left=gLeft(g,true);return `<button class="cm-r" data-gopen="${g.id}">${dhRing(pr.p,42,4,'gold',`${pr.n}/${pr.of}`)}<span class="cm-rt"><b>${gName(g)}</b><small>${g.star?'North star':'Goal'}${left?` · ${left}`:''}</small></span><span class="cm-chev">${CHEV}</span></button>`})()

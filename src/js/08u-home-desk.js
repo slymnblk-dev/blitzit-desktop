@@ -77,7 +77,7 @@ function bentoHome(){
 /* ===== Calm column ===== */
 function calmHome(){const {td,dn}=dhToday(),nx=td[0];
   const nsp=nx?spaceOf((listOf(nx.list)||{}).space):null;
-  const hero=nx?`<div class="cm-up"><span class="hglint" aria-hidden="true"><i></i></span><div class="cm-ut">${dhEye('Up next'+(nsp?` · ${nsp.e?esc(nsp.e)+' ':''}${esc(nsp.name)}`:''))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
+  const hero=nx?`<div class="cm-up"><span class="hglint" aria-hidden="true"><i></i></span><div class="cm-ut">${dhEye('Up next'+upChip(nsp))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
     :`<div class="cm-up is-empty">${dhEmpty(dn?sunIcon():DH_I.task,'hot',dn?'You won the day':'Nothing up next',dn?`${dn} ${dn===1?'task':'tasks'} done today.`:'Add a task for today and it shows up here.',dhBtn('data-bnadd','Add a task'))}</div>`;
   const rows=[];const g=dhGoal(),h=dhHabits(),mx=dhMx();
   if(g!==null)rows.push(g?(()=>{const pr=gProg(g),left=gLeft(g,true);return `<button class="cm-r" data-gopen="${g.id}">${dhRing(pr.p,42,4,'gold',`${pr.n}/${pr.of}`)}<span class="cm-rt"><b>${gName(g)}</b><small>${g.star?'North star':'Goal'}${left?` · ${left}`:''}</small></span><span class="cm-chev">${CHEV}</span></button>`})()

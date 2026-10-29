@@ -319,3 +319,10 @@
 .fs-undo{font-size:13.5px;font-weight:800;color:inherit;padding:4px 10px;margin:-4px -10px -4px 0;border-radius:999px;text-decoration:underline;text-underline-offset:3px}
 @media (max-width:1099px){.f-steps.has{height:132px;padding:10px 14px}.f-steps.has.fs-3{height:188px}.f-steps.has:not(.fs-3) .fs-r{font-size:19px}}
 @media (prefers-reduced-motion:reduce){.fs-r.fs-in,.fs-r.fs-out{animation:none}}
+
+/* the space on the coral Up next card (phone Today card, desktop Calm card): a soft white chip */
+.td-up,.cm-ut .dh-eye{display:flex;align-items:center;gap:8px;min-height:24px}
+.up-chip{display:inline-flex;align-items:center;gap:6px;height:24px;max-width:60%;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff;
+  font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.up-chip:has(i){padding-left:3px}
+.up-chip i{flex:none;width:18px;height:18px;border-radius:50%;background:#fff;display:grid;place-items:center;font-style:normal;font-size:11px;line-height:1}
