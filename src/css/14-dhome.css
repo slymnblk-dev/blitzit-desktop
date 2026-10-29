@@ -91,9 +91,10 @@
 .cm-up{display:flex;align-items:center;gap:20px;padding:26px 28px;border-radius:28px;background:linear-gradient(135deg,#FF6A55,#E5543F);color:#1A0E0C;box-shadow:0 24px 60px color-mix(in srgb,var(--today) 22%,transparent)}
 .cm-ut{flex:1;min-width:0}
 .cm-ut .dh-eye{color:#1A0E0C}
-.cm-ut b{display:block;margin-top:4px;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.2}
+.cm-ut b{display:block;margin-top:4px;color:#fff;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.2}
 .cm-ut small{display:block;margin-top:4px;font-size:14px;opacity:.78}
-.cm-go{flex:none;display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 24px;border-radius:999px;background:#1A0E0C;color:var(--today);font:inherit;font-size:16px;font-weight:800;transition:transform .15s}
+.cm-go{flex:none;display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 24px;border-radius:999px;background:#1A0E0C;color:#fff;font:inherit;font-size:16px;font-weight:800;transition:transform .15s}
+.cm-go .sun-ic{color:var(--today)}
 .cm-go:active{transform:scale(.97)}.cm-go .sun-ic{width:24px;height:24px}
 .cm-up.is-empty{display:block;padding:18px;background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
 .cm-list{margin-top:18px;border-radius:24px;background:var(--surface);overflow:hidden}

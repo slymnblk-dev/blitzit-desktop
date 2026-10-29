@@ -6,6 +6,7 @@
 - **Always fix bugs you find without asking.**
 - **Always say at the end whether the tests passed.**
 - Testing policy (agreed 2026-10-27): small UI changes → run only the related spec files + a screenshot check; risky changes (data, sync, saving, new features, shared code) → full suite; "go live" → the pipeline runs the full suite anyway. Say which tests you ran.
+- Quick small tweaks (a colour, a text, one style): no QA sweep and no full suite — just the related spec file(s) + one screenshot (Suly, 2026-10-29).
 
 ## Repo / workflow
 - Repo `slymnblk-dev/blitzit-desktop`. Work on **`dev`** only. Never push to `main` directly.
