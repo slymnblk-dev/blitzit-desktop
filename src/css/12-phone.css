@@ -178,3 +178,11 @@
 .td-card .td-go{background:#fff;color:#C7402C;box-shadow:0 0 0 6px rgba(255,255,255,.18),0 14px 30px -14px rgba(120,30,20,.5)}
 .td-card .td-go .td-sun{color:#E5543F}
 .td-card .td-go:active{box-shadow:0 0 0 4px rgba(255,255,255,.24),0 4px 12px -6px rgba(120,30,20,.4)}
+/* a smaller Focus button, so most task names fit on one line */
+.td-card .td-go{width:92px;height:92px;margin-top:-46px;font-size:14px;gap:2px}
+.td-card .td-go .td-sun{width:32px;height:32px}
+.td-card .td-next{padding-right:104px}
+.td-card .td-space{max-width:calc(100% - 108px)}
+@media (max-width:360px){.td-card .td-go{width:80px;height:80px;margin-top:-40px;font-size:13px}.td-card .td-go .td-sun{width:28px;height:28px}.td-card .td-next{padding-right:92px}.td-card .td-space{max-width:calc(100% - 96px)}}
+/* the + is the same coral as the Today card */
+@media (max-width:1099px){:root .tb-add{background:linear-gradient(135deg,#FF6A55,#E5543F)!important;box-shadow:0 14px 30px -10px rgba(229,84,63,.55)!important}}
