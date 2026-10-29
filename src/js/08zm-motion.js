@@ -20,7 +20,7 @@ document.addEventListener('click',e=>{
   const gm=e.target.closest('[data-gmt],[data-gtk]');if(gm&&gm.getAttribute('aria-pressed')!=='true')moBurst(gm,'var(--today)');
 },true);
 
-/* 2 · numbers count up when you arrive on Home or open a page; rings fill from empty (CSS, while :root.mo-in) */
+/* 2 · numbers count up when you arrive on Home or open a page; rings fill from empty (CSS, while :root.mo-arrive) */
 function moCount(scope){
   if(!moOK()||!scope)return;
   scope.querySelectorAll('.cm-hd p b,.bn-hr,.hw-ring b,.dh-ring b,.hp-sub b,.hb-sub b,.mt2-sub b').forEach(el=>{
@@ -32,7 +32,7 @@ function moCount(scope){
   });
 }
 let moInT=null;
-function moArrive(scope){if(!moOK())return;root.classList.add('mo-in');clearTimeout(moInT);moInT=setTimeout(()=>root.classList.remove('mo-in'),1100);requestAnimationFrame(()=>moCount(scope))}
+function moArrive(scope){if(!moOK())return;root.classList.add('mo-arrive');clearTimeout(moInT);moInT=setTimeout(()=>root.classList.remove('mo-arrive'),1100);requestAnimationFrame(()=>moCount(scope))}
 const moAtHome=()=>!S.space&&!(typeof spPage!=='undefined'&&spPage);
 const moHomeBox=()=>matchMedia('(min-width:1100px)').matches?$('dHome'):$('homeView');
 let moWasHome=null;

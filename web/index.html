@@ -3815,7 +3815,7 @@ button.hg-c:active{transform:scale(.88)}
 .mo-burst i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--mb);transform:rotate(var(--a)) translateY(0) scale(.4);animation:moBurst .6s cubic-bezier(.2,.8,.2,1) both}
 @keyframes moBurst{0%{opacity:1;transform:rotate(var(--a)) translateY(-6px) scale(.5)}60%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(-24px) scale(1)}}
 /* 2 · rings fill from empty on arrival */
-:root.mo-in .dh-ring .r1,:root.mo-in .hw-r1{animation:moRing .9s var(--ease) both}
+:root.mo-arrive .dh-ring .r1,:root.mo-arrive .hw-r1{animation:moRing .9s var(--ease) both}
 @keyframes moRing{from{stroke-dasharray:0 999}}
 /* 4 · press feel on the cards that didn't have it; on computers a soft lift on hover */
 .cm-sp,button.cm-r,.cm-rl,.hl-tile,.mxw-rr,.ib-row,.hg-n{transition:transform .15s,box-shadow .2s,background .15s}
@@ -3841,12 +3841,12 @@ button.hg-c:active{transform:scale(.88)}
 .mw-in b{font-size:26px;font-weight:800;letter-spacing:-.03em}
 .mw-in span{font-size:14px;color:var(--muted)}
 .mw-sun{width:64px;height:64px;color:#F2A332;overflow:visible}
-.mw-disc{animation:moRise 1s .15s cubic-bezier(.2,.8,.2,1) both}
+.mw-disc{animation:mwRise 1s .15s cubic-bezier(.2,.8,.2,1) both}
 .mw-rays{animation:moRays .6s .8s ease both;transform-origin:24px 36px}
 @keyframes moWinIn{from{opacity:0}}
 @keyframes moGlow{0%{opacity:0}25%{opacity:1}100%{opacity:.6}}
 @keyframes moCard{from{opacity:0;transform:translateY(16px) scale(.94)}}
-@keyframes moRise{from{transform:translateY(12px);opacity:0}}
+@keyframes mwRise{from{transform:translateY(12px);opacity:0}}
 @keyframes moRays{from{opacity:0;transform:scale(.6)}}
 /* 7 · streak flip */
 .mo-flip{display:inline-block;animation:moFlip .55s cubic-bezier(.2,.8,.2,1)}
@@ -3878,6 +3878,7 @@ button.hg-c:active{transform:scale(.88)}
 :root[data-motion="off"] .mo-burst,:root[data-motion="off"] .mo-win{display:none}
 :root[data-motion="off"] .ib-empty svg,:root[data-motion="off"] .dh-ei svg,:root[data-motion="off"] .g-empty svg,:root[data-motion="off"] .rh-empty svg,:root[data-motion="off"] .mt2-empty svg,:root[data-motion="off"] .arc-empty svg,:root[data-motion="off"] .gm-empty svg{animation:none}
 @media (prefers-reduced-motion:reduce){.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.gm-empty svg,.mo-tk,.mo-flip{animation:none}}
+
 /* ===== KPIs & OKRs: the gauge button, the popup (a sheet on phones, a calm window on computers), the task link ===== */
 .mx-btn svg{width:19px;height:19px}
 .mx-pg{position:fixed;inset:0;z-index:44;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,5,7,.58);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility 0s .22s}
@@ -4729,7 +4730,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=235; // bumped with every published update
+const APP_VERSION=236; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -9710,7 +9711,7 @@ document.addEventListener('click',e=>{
   const gm=e.target.closest('[data-gmt],[data-gtk]');if(gm&&gm.getAttribute('aria-pressed')!=='true')moBurst(gm,'var(--today)');
 },true);
 
-/* 2 · numbers count up when you arrive on Home or open a page; rings fill from empty (CSS, while :root.mo-in) */
+/* 2 · numbers count up when you arrive on Home or open a page; rings fill from empty (CSS, while :root.mo-arrive) */
 function moCount(scope){
   if(!moOK()||!scope)return;
   scope.querySelectorAll('.cm-hd p b,.bn-hr,.hw-ring b,.dh-ring b,.hp-sub b,.hb-sub b,.mt2-sub b').forEach(el=>{
@@ -9722,7 +9723,7 @@ function moCount(scope){
   });
 }
 let moInT=null;
-function moArrive(scope){if(!moOK())return;root.classList.add('mo-in');clearTimeout(moInT);moInT=setTimeout(()=>root.classList.remove('mo-in'),1100);requestAnimationFrame(()=>moCount(scope))}
+function moArrive(scope){if(!moOK())return;root.classList.add('mo-arrive');clearTimeout(moInT);moInT=setTimeout(()=>root.classList.remove('mo-arrive'),1100);requestAnimationFrame(()=>moCount(scope))}
 const moAtHome=()=>!S.space&&!(typeof spPage!=='undefined'&&spPage);
 const moHomeBox=()=>matchMedia('(min-width:1100px)').matches?$('dHome'):$('homeView');
 let moWasHome=null;

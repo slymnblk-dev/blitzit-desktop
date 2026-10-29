@@ -224,7 +224,7 @@
 .mo-burst i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--mb);transform:rotate(var(--a)) translateY(0) scale(.4);animation:moBurst .6s cubic-bezier(.2,.8,.2,1) both}
 @keyframes moBurst{0%{opacity:1;transform:rotate(var(--a)) translateY(-6px) scale(.5)}60%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(-24px) scale(1)}}
 /* 2 · rings fill from empty on arrival */
-:root.mo-in .dh-ring .r1,:root.mo-in .hw-r1{animation:moRing .9s var(--ease) both}
+:root.mo-arrive .dh-ring .r1,:root.mo-arrive .hw-r1{animation:moRing .9s var(--ease) both}
 @keyframes moRing{from{stroke-dasharray:0 999}}
 /* 4 · press feel on the cards that didn't have it; on computers a soft lift on hover */
 .cm-sp,button.cm-r,.cm-rl,.hl-tile,.mxw-rr,.ib-row,.hg-n{transition:transform .15s,box-shadow .2s,background .15s}
@@ -250,12 +250,12 @@
 .mw-in b{font-size:26px;font-weight:800;letter-spacing:-.03em}
 .mw-in span{font-size:14px;color:var(--muted)}
 .mw-sun{width:64px;height:64px;color:#F2A332;overflow:visible}
-.mw-disc{animation:moRise 1s .15s cubic-bezier(.2,.8,.2,1) both}
+.mw-disc{animation:mwRise 1s .15s cubic-bezier(.2,.8,.2,1) both}
 .mw-rays{animation:moRays .6s .8s ease both;transform-origin:24px 36px}
 @keyframes moWinIn{from{opacity:0}}
 @keyframes moGlow{0%{opacity:0}25%{opacity:1}100%{opacity:.6}}
 @keyframes moCard{from{opacity:0;transform:translateY(16px) scale(.94)}}
-@keyframes moRise{from{transform:translateY(12px);opacity:0}}
+@keyframes mwRise{from{transform:translateY(12px);opacity:0}}
 @keyframes moRays{from{opacity:0;transform:scale(.6)}}
 /* 7 · streak flip */
 .mo-flip{display:inline-block;animation:moFlip .55s cubic-bezier(.2,.8,.2,1)}
@@ -287,3 +287,4 @@
 :root[data-motion="off"] .mo-burst,:root[data-motion="off"] .mo-win{display:none}
 :root[data-motion="off"] .ib-empty svg,:root[data-motion="off"] .dh-ei svg,:root[data-motion="off"] .g-empty svg,:root[data-motion="off"] .rh-empty svg,:root[data-motion="off"] .mt2-empty svg,:root[data-motion="off"] .arc-empty svg,:root[data-motion="off"] .gm-empty svg{animation:none}
 @media (prefers-reduced-motion:reduce){.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.gm-empty svg,.mo-tk,.mo-flip{animation:none}}
+
