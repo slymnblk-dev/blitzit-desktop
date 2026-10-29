@@ -186,3 +186,12 @@
 @media (max-width:360px){.td-card .td-go{width:80px;height:80px;margin-top:-40px;font-size:13px}.td-card .td-go .td-sun{width:28px;height:28px}.td-card .td-next{padding-right:92px}.td-card .td-space{max-width:calc(100% - 96px)}}
 /* the + is the same coral as the Today card */
 @media (max-width:1099px){:root .tb-add{background:linear-gradient(135deg,#FF6A55,#E5543F)!important;box-shadow:0 14px 30px -10px rgba(229,84,63,.55)!important}}
+
+/* ===== Win the day, everywhere: white text on the stage's own two-tone fill (same coral as the Today card for Today).
+   Phones: the big button on each list. Computers: the Today column and the Bento Home button. ===== */
+:root{--win-backlog:linear-gradient(135deg,#7C73F5,#5A51D0);--win-week:linear-gradient(135deg,#F2A332,#C77A06);
+  --win-today:linear-gradient(135deg,#FF6A55,#E5543F);--win-done:linear-gradient(135deg,#1CB582,#0D8A60)}
+.go{color:#fff;background:var(--accent-btn,var(--win-today))}
+.ts-go,.col-go{background:var(--win-today)!important;color:#fff!important;box-shadow:0 12px 26px -12px rgba(229,84,63,.55)}
+/* the space now sits in the Up next line, so the chip is gone */
+.td-card .td-next{margin-top:16px}

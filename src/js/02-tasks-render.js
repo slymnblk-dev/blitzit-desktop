@@ -132,8 +132,7 @@ function todayCard(td,m){
   const sp=focusSpace(td),mine=sp?td.filter(t=>listOf(t.list).space===sp.id):td,nx=mine[0];
   return `<div class="td-card" id="tdOpen" data-sp="${sp?sp.id:''}" role="button" tabindex="0">
     <div class="td-head"><span class="td-lbl">Today</span></div>
-    ${sp?`<span class="td-space">${sp.e?`<i>${esc(sp.e)}</i>`:''}${esc(sp.name)}</span>`:''}
-    <div class="td-next"><span class="td-up">Up next</span><span class="td-title">${esc(nx.title)}</span></div>
+    <div class="td-next"><span class="td-up">Up next${sp?` · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name)}`:''}</span><span class="td-title">${esc(nx.title)}</span></div>
     <button class="td-go" id="tdBlitz" aria-label="Focus: start on today's tasks"><span class="td-ring"></span><svg class="td-sun" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg><span class="td-gl">Focus</span></button>
   </div>`;
 }
@@ -162,7 +161,7 @@ function render(dir){
   }
   const st=STAGES[idx(S.stage)];
   root.style.setProperty('--accent',color(S.stage));root.style.setProperty('--accent-lg',`var(--${S.stage}-lg)`);
-  root.style.setProperty('--on-accent',`var(--on-${S.stage})`);root.style.setProperty('--accent-btn',S.stage==='today'?'var(--cta)':color(S.stage));
+  root.style.setProperty('--on-accent','#fff');root.style.setProperty('--accent-btn',`var(--win-${S.stage})`); // Win the day: white text on the stage's own two-tone fill
   const h=$('stageTitle');h.textContent=st.name;
   if(dir!==undefined){h.classList.remove('in-l','in-r','in-u');void h.offsetWidth;h.classList.add(dir>0?'in-r':dir<0?'in-l':'in-u')}
 

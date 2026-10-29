@@ -3777,6 +3777,15 @@ button.hg-c:active{transform:scale(.88)}
 @media (max-width:360px){.td-card .td-go{width:80px;height:80px;margin-top:-40px;font-size:13px}.td-card .td-go .td-sun{width:28px;height:28px}.td-card .td-next{padding-right:92px}.td-card .td-space{max-width:calc(100% - 96px)}}
 /* the + is the same coral as the Today card */
 @media (max-width:1099px){:root .tb-add{background:linear-gradient(135deg,#FF6A55,#E5543F)!important;box-shadow:0 14px 30px -10px rgba(229,84,63,.55)!important}}
+
+/* ===== Win the day, everywhere: white text on the stage's own two-tone fill (same coral as the Today card for Today).
+   Phones: the big button on each list. Computers: the Today column and the Bento Home button. ===== */
+:root{--win-backlog:linear-gradient(135deg,#7C73F5,#5A51D0);--win-week:linear-gradient(135deg,#F2A332,#C77A06);
+  --win-today:linear-gradient(135deg,#FF6A55,#E5543F);--win-done:linear-gradient(135deg,#1CB582,#0D8A60)}
+.go{color:#fff;background:var(--accent-btn,var(--win-today))}
+.ts-go,.col-go{background:var(--win-today)!important;color:#fff!important;box-shadow:0 12px 26px -12px rgba(229,84,63,.55)}
+/* the space now sits in the Up next line, so the chip is gone */
+.td-card .td-next{margin-top:16px}
 /* ===== KPIs & OKRs: the gauge button, the popup (a sheet on phones, a calm window on computers), the task link ===== */
 .mx-btn svg{width:19px;height:19px}
 .mx-pg{position:fixed;inset:0;z-index:44;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,5,7,.58);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility 0s .22s}
@@ -4628,7 +4637,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=232; // bumped with every published update
+const APP_VERSION=233; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5078,8 +5087,7 @@ function todayCard(td,m){
   const sp=focusSpace(td),mine=sp?td.filter(t=>listOf(t.list).space===sp.id):td,nx=mine[0];
   return `<div class="td-card" id="tdOpen" data-sp="${sp?sp.id:''}" role="button" tabindex="0">
     <div class="td-head"><span class="td-lbl">Today</span></div>
-    ${sp?`<span class="td-space">${sp.e?`<i>${esc(sp.e)}</i>`:''}${esc(sp.name)}</span>`:''}
-    <div class="td-next"><span class="td-up">Up next</span><span class="td-title">${esc(nx.title)}</span></div>
+    <div class="td-next"><span class="td-up">Up next${sp?` · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name)}`:''}</span><span class="td-title">${esc(nx.title)}</span></div>
     <button class="td-go" id="tdBlitz" aria-label="Focus: start on today's tasks"><span class="td-ring"></span><svg class="td-sun" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg><span class="td-gl">Focus</span></button>
   </div>`;
 }
@@ -5108,7 +5116,7 @@ function render(dir){
   }
   const st=STAGES[idx(S.stage)];
   root.style.setProperty('--accent',color(S.stage));root.style.setProperty('--accent-lg',`var(--${S.stage}-lg)`);
-  root.style.setProperty('--on-accent',`var(--on-${S.stage})`);root.style.setProperty('--accent-btn',S.stage==='today'?'var(--cta)':color(S.stage));
+  root.style.setProperty('--on-accent','#fff');root.style.setProperty('--accent-btn',`var(--win-${S.stage})`); // Win the day: white text on the stage's own two-tone fill
   const h=$('stageTitle');h.textContent=st.name;
   if(dir!==undefined){h.classList.remove('in-l','in-r','in-u');void h.offsetWidth;h.classList.add(dir>0?'in-r':dir<0?'in-l':'in-u')}
 
@@ -9161,7 +9169,8 @@ function bentoHome(){
 
 /* ===== Calm column ===== */
 function calmHome(){const {td,dn}=dhToday(),nx=td[0];
-  const hero=nx?`<div class="cm-up"><div class="cm-ut">${dhEye('Up next')}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
+  const nsp=nx?spaceOf((listOf(nx.list)||{}).space):null;
+  const hero=nx?`<div class="cm-up"><div class="cm-ut">${dhEye('Up next'+(nsp?` · ${nsp.e?esc(nsp.e)+' ':''}${esc(nsp.name)}`:''))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
     :`<div class="cm-up is-empty">${dhEmpty(dn?sunIcon():DH_I.task,'hot',dn?'You won the day':'Nothing up next',dn?`${dn} ${dn===1?'task':'tasks'} done today.`:'Add a task for today and it shows up here.',dhBtn('data-bnadd','Add a task'))}</div>`;
   const rows=[];const g=dhGoal(),h=dhHabits(),mx=dhMx();
   if(g!==null)rows.push(g?(()=>{const pr=gProg(g),left=gLeft(g,true);return `<button class="cm-r" data-gopen="${g.id}">${dhRing(pr.p,42,4,'gold',`${pr.n}/${pr.of}`)}<span class="cm-rt"><b>${gName(g)}</b><small>${g.star?'North star':'Goal'}${left?` · ${left}`:''}</small></span><span class="cm-chev">${CHEV}</span></button>`})()
