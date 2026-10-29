@@ -265,8 +265,15 @@ struct PendingLink(Mutex<Option<String>>);
 /// The live web app. Every Netlify upload updates the desktop app too.
 const SITE: &str = "https://dulcet-daifuku-0fb870.netlify.app";
 
+/// The first time the main window appears (after the splash, or from the tray after starting with Windows)
+/// it opens maximized, filling the screen. Later it keeps whatever size the person chose.
+static FIRST_SHOW: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
 fn show_main(app: &AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
+        if FIRST_SHOW.swap(false, std::sync::atomic::Ordering::SeqCst) {
+            let _ = w.maximize();
+        }
         let _ = w.unminimize();
         let _ = w.show();
         let _ = w.set_focus();
