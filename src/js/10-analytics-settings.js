@@ -209,7 +209,7 @@ function settingsPage(id){
       <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>
     ${row('Animations',tg('motion'))}
     ${row('Welcome animation',`<div class="wl-set">${tg('welcome')}<button class="ghost-btn wl-replay" id="wlPlay" type="button">Play</button></div>`,DESK()?'The sunrise splash each time you open Windaday':'The sunrise logo, once a day when you open Windaday')}
-    ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
+    ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open Home or a space'):''}
     ${HAS_KEYS()?row('Quiet when idle',tg('idleHide'),'After 5 seconds without moving, the day’s summary and Add task fade away. Move the mouse to bring them back.'):''}
     ${row('Sounds',tg('uiSounds'),'Soft sounds when you add, move or finish tasks')}
     <button class="link-row" data-page="sounds">Sound style<span class="hint">${esc(sfxStyle().name)}${CHEV}</span></button>

@@ -195,3 +195,25 @@
 .ts-go,.col-go{background:var(--win-today)!important;color:#fff!important;box-shadow:0 12px 26px -12px rgba(229,84,63,.55)}
 /* the space now sits in the Up next line, so the chip is gone */
 .td-card .td-next{margin-top:16px}
+
+/* ===== Home hero: a line of light runs once around the Today card on arrival (08z-hero-glint.js) ===== */
+.td-card,.cm-up,.bn-today{position:relative}
+.hglint{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;z-index:1;--hg:#fff;filter:drop-shadow(0 0 6px rgba(255,255,255,.75))}
+.hglint.hot{--hg:var(--today);filter:drop-shadow(0 0 6px var(--today)) drop-shadow(0 0 2px color-mix(in srgb,var(--today) 60%,#fff))}
+.hglint i{position:absolute;inset:0;border-radius:inherit;padding:2px;
+  background:conic-gradient(from var(--ga),transparent 0deg,transparent 230deg,color-mix(in srgb,var(--hg) 70%,transparent) 315deg,#fff 352deg,transparent 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.hglint.run{animation:glintFade 1.5s ease both}
+.hglint.run i{animation:glintSpin 1.5s cubic-bezier(.45,.05,.35,1) both}
+@keyframes glintFade{0%{opacity:0}12%,80%{opacity:1}100%{opacity:0}}
+@keyframes glintSpin{from{--ga:0deg}to{--ga:360deg}}
+.hg-pulse{animation:hgPulse 1s cubic-bezier(.2,.8,.2,1)}
+@keyframes hgPulse{0%{transform:scale(1)}35%{transform:scale(1.05)}100%{transform:scale(1)}}
+.td-go.hg-pulse{animation:hgPulseC 1s cubic-bezier(.2,.8,.2,1)}
+@keyframes hgPulseC{0%{transform:scale(1)}35%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+/* ===== Phones: Home's title is the same size as the other pages' titles (Inbox, Habits, Goals) ===== */
+@media (max-width:1099px){
+  .home-hero{padding:24px 0 22px}
+  .home-hero h1,.ib-h,.hp-h,.hb-h{font-size:clamp(48px,14vw,72px);line-height:.9;letter-spacing:-.05em}
+}

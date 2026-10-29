@@ -37,7 +37,7 @@ function bnToday(){const {td,dn,m}=dhToday();const MAX=6,list=td.slice(0,MAX),mo
   const rows=list.map((t,i)=>{const l=listOf(t.list)||{},sp=spaceOf(l.space)||{};
     return `<div class="bn-tk${i===0?' first':''}" data-hft="${t.id}" role="button" tabindex="0"><button class="hf-ck" data-hfdone="${t.id}" aria-label="Complete ${esc(t.title)}"></button>
       <span class="bn-tt"><b>${esc(t.title)}</b>${i===0?`<small>Up next · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name||'')}</small>`:''}</span><span class="bn-te">${fmt(t.est)}</span></div>`}).join('');
-  return `<section class="bn-c bn-today">${head}<div class="bn-tl">${rows}${more?`<button class="bn-more" data-bnall>+${more} more</button>`:''}</div>
+  return `<section class="bn-c bn-today"><span class="hglint hot" aria-hidden="true"><i></i></span>${head}<div class="bn-tl">${rows}${more?`<button class="bn-more" data-bnall>+${more} more</button>`:''}</div>
     <div class="bn-go"><button class="ts-go" data-bngo>${sunIcon()}Win the day</button></div></section>`}
 function bnGoal(g){
   if(!g)return `<section class="bn-c is-empty">${dhEye('Goal','gold')}${dhEmpty(DH_I.goal,'gold','One big goal','Pick an outcome and climb it in milestones.',dhBtn('data-gnew=""','Set a goal'))}</section>`;
@@ -77,7 +77,7 @@ function bentoHome(){
 /* ===== Calm column ===== */
 function calmHome(){const {td,dn}=dhToday(),nx=td[0];
   const nsp=nx?spaceOf((listOf(nx.list)||{}).space):null;
-  const hero=nx?`<div class="cm-up"><div class="cm-ut">${dhEye('Up next'+(nsp?` · ${nsp.e?esc(nsp.e)+' ':''}${esc(nsp.name)}`:''))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
+  const hero=nx?`<div class="cm-up"><span class="hglint" aria-hidden="true"><i></i></span><div class="cm-ut">${dhEye('Up next'+(nsp?` · ${nsp.e?esc(nsp.e)+' ':''}${esc(nsp.name)}`:''))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
     :`<div class="cm-up is-empty">${dhEmpty(dn?sunIcon():DH_I.task,'hot',dn?'You won the day':'Nothing up next',dn?`${dn} ${dn===1?'task':'tasks'} done today.`:'Add a task for today and it shows up here.',dhBtn('data-bnadd','Add a task'))}</div>`;
   const rows=[];const g=dhGoal(),h=dhHabits(),mx=dhMx();
   if(g!==null)rows.push(g?(()=>{const pr=gProg(g),left=gLeft(g,true);return `<button class="cm-r" data-gopen="${g.id}">${dhRing(pr.p,42,4,'gold',`${pr.n}/${pr.of}`)}<span class="cm-rt"><b>${gName(g)}</b><small>${g.star?'North star':'Goal'}${left?` · ${left}`:''}</small></span><span class="cm-chev">${CHEV}</span></button>`})()

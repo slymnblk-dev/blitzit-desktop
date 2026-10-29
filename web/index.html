@@ -3786,6 +3786,28 @@ button.hg-c:active{transform:scale(.88)}
 .ts-go,.col-go{background:var(--win-today)!important;color:#fff!important;box-shadow:0 12px 26px -12px rgba(229,84,63,.55)}
 /* the space now sits in the Up next line, so the chip is gone */
 .td-card .td-next{margin-top:16px}
+
+/* ===== Home hero: a line of light runs once around the Today card on arrival (08z-hero-glint.js) ===== */
+.td-card,.cm-up,.bn-today{position:relative}
+.hglint{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;z-index:1;--hg:#fff;filter:drop-shadow(0 0 6px rgba(255,255,255,.75))}
+.hglint.hot{--hg:var(--today);filter:drop-shadow(0 0 6px var(--today)) drop-shadow(0 0 2px color-mix(in srgb,var(--today) 60%,#fff))}
+.hglint i{position:absolute;inset:0;border-radius:inherit;padding:2px;
+  background:conic-gradient(from var(--ga),transparent 0deg,transparent 230deg,color-mix(in srgb,var(--hg) 70%,transparent) 315deg,#fff 352deg,transparent 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.hglint.run{animation:glintFade 1.5s ease both}
+.hglint.run i{animation:glintSpin 1.5s cubic-bezier(.45,.05,.35,1) both}
+@keyframes glintFade{0%{opacity:0}12%,80%{opacity:1}100%{opacity:0}}
+@keyframes glintSpin{from{--ga:0deg}to{--ga:360deg}}
+.hg-pulse{animation:hgPulse 1s cubic-bezier(.2,.8,.2,1)}
+@keyframes hgPulse{0%{transform:scale(1)}35%{transform:scale(1.05)}100%{transform:scale(1)}}
+.td-go.hg-pulse{animation:hgPulseC 1s cubic-bezier(.2,.8,.2,1)}
+@keyframes hgPulseC{0%{transform:scale(1)}35%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+/* ===== Phones: Home's title is the same size as the other pages' titles (Inbox, Habits, Goals) ===== */
+@media (max-width:1099px){
+  .home-hero{padding:24px 0 22px}
+  .home-hero h1,.ib-h,.hp-h,.hb-h{font-size:clamp(48px,14vw,72px);line-height:.9;letter-spacing:-.05em}
+}
 /* ===== KPIs & OKRs: the gauge button, the popup (a sheet on phones, a calm window on computers), the task link ===== */
 .mx-btn svg{width:19px;height:19px}
 .mx-pg{position:fixed;inset:0;z-index:44;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,5,7,.58);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility 0s .22s}
@@ -4637,7 +4659,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=233; // bumped with every published update
+const APP_VERSION=234; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5085,7 +5107,7 @@ function todayCard(td,m){
   if(!S.tasks.length)return `<div class="td-card td-empty"><span class="td-lbl">Today</span><p>Tap <b>+</b> to add your first task.</p></div>`;
   if(!td.length)return `<button class="td-card td-empty" id="tdOpen"><span class="td-lbl">Today</span><p>Nothing planned yet. Pick something from your week.</p><span class="td-link">Plan today${CHEV}</span></button>`;
   const sp=focusSpace(td),mine=sp?td.filter(t=>listOf(t.list).space===sp.id):td,nx=mine[0];
-  return `<div class="td-card" id="tdOpen" data-sp="${sp?sp.id:''}" role="button" tabindex="0">
+  return `<div class="td-card" id="tdOpen" data-sp="${sp?sp.id:''}" role="button" tabindex="0"><span class="hglint" aria-hidden="true"><i></i></span>
     <div class="td-head"><span class="td-lbl">Today</span></div>
     <div class="td-next"><span class="td-up">Up next${sp?` · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name)}`:''}</span><span class="td-title">${esc(nx.title)}</span></div>
     <button class="td-go" id="tdBlitz" aria-label="Focus: start on today's tasks"><span class="td-ring"></span><svg class="td-sun" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg><span class="td-gl">Focus</span></button>
@@ -9130,7 +9152,7 @@ function bnToday(){const {td,dn,m}=dhToday();const MAX=6,list=td.slice(0,MAX),mo
   const rows=list.map((t,i)=>{const l=listOf(t.list)||{},sp=spaceOf(l.space)||{};
     return `<div class="bn-tk${i===0?' first':''}" data-hft="${t.id}" role="button" tabindex="0"><button class="hf-ck" data-hfdone="${t.id}" aria-label="Complete ${esc(t.title)}"></button>
       <span class="bn-tt"><b>${esc(t.title)}</b>${i===0?`<small>Up next · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name||'')}</small>`:''}</span><span class="bn-te">${fmt(t.est)}</span></div>`}).join('');
-  return `<section class="bn-c bn-today">${head}<div class="bn-tl">${rows}${more?`<button class="bn-more" data-bnall>+${more} more</button>`:''}</div>
+  return `<section class="bn-c bn-today"><span class="hglint hot" aria-hidden="true"><i></i></span>${head}<div class="bn-tl">${rows}${more?`<button class="bn-more" data-bnall>+${more} more</button>`:''}</div>
     <div class="bn-go"><button class="ts-go" data-bngo>${sunIcon()}Win the day</button></div></section>`}
 function bnGoal(g){
   if(!g)return `<section class="bn-c is-empty">${dhEye('Goal','gold')}${dhEmpty(DH_I.goal,'gold','One big goal','Pick an outcome and climb it in milestones.',dhBtn('data-gnew=""','Set a goal'))}</section>`;
@@ -9170,7 +9192,7 @@ function bentoHome(){
 /* ===== Calm column ===== */
 function calmHome(){const {td,dn}=dhToday(),nx=td[0];
   const nsp=nx?spaceOf((listOf(nx.list)||{}).space):null;
-  const hero=nx?`<div class="cm-up"><div class="cm-ut">${dhEye('Up next'+(nsp?` · ${nsp.e?esc(nsp.e)+' ':''}${esc(nsp.name)}`:''))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
+  const hero=nx?`<div class="cm-up"><span class="hglint" aria-hidden="true"><i></i></span><div class="cm-ut">${dhEye('Up next'+(nsp?` · ${nsp.e?esc(nsp.e)+' ':''}${esc(nsp.name)}`:''))}<b>${esc(nx.title)}</b><small>${fmt(nx.est)}${td.length>1?` · then ${td.length-1} more`:''}</small></div><button class="cm-go" data-bngo>${sunIcon()}Win the day</button></div>`
     :`<div class="cm-up is-empty">${dhEmpty(dn?sunIcon():DH_I.task,'hot',dn?'You won the day':'Nothing up next',dn?`${dn} ${dn===1?'task':'tasks'} done today.`:'Add a task for today and it shows up here.',dhBtn('data-bnadd','Add a task'))}</div>`;
   const rows=[];const g=dhGoal(),h=dhHabits(),mx=dhMx();
   if(g!==null)rows.push(g?(()=>{const pr=gProg(g),left=gLeft(g,true);return `<button class="cm-r" data-gopen="${g.id}">${dhRing(pr.p,42,4,'gold',`${pr.n}/${pr.of}`)}<span class="cm-rt"><b>${gName(g)}</b><small>${g.star?'North star':'Goal'}${left?` · ${left}`:''}</small></span><span class="cm-chev">${CHEV}</span></button>`})()
@@ -9578,6 +9600,24 @@ $('metricsPg').addEventListener('click',e=>{
 /* computer sidebar: Habits, Goals and Metrics sit under "Modes", like Spaces */
 const _mt2Side=rhythmSide;
 rhythmSide=function(){const h=_mt2Side();return h?`<div class="s-lbl2"><span class="s-name">Modes</span></div>${h}`:''};
+/* ---------- Home: a line of light runs once around the Today card when you arrive on Home ----------
+   The same moment as the Today column's glint on a space, in the hero's own look: a white light on the coral card
+   (phone Today card, Calm column), a coral light on the Bento Today card. Then Focus / Win the day gives one soft pulse.
+   Follows Settings → Today highlight, Motion off and the system's reduced motion. */
+let hgHome=null,heroGlT=null;
+function heroGlint(){
+  if(!S.cfg.todayGlint||root.dataset.motion==='off'||matchMedia('(prefers-reduced-motion: reduce)').matches||S.space)return;
+  const desk=matchMedia('(min-width:1100px)').matches,box=desk?$('dHome'):document.querySelector('.app');
+  const g=box&&box.querySelector('.hglint');if(!g)return;
+  const b=g.parentNode.querySelector('.td-go,.cm-go,.ts-go');
+  g.classList.remove('run');b&&b.classList.remove('hg-pulse');void g.offsetWidth;g.classList.add('run');
+  clearTimeout(heroGlT);heroGlT=setTimeout(()=>{g.classList.remove('run');if(b){b.classList.add('hg-pulse');setTimeout(()=>b.classList.remove('hg-pulse'),1000)}},1500);
+}
+const hgSoon=()=>setTimeout(heroGlint,350);
+/* arriving on Home: on start, coming back from a space, or tapping Home in the tab bar from another page */
+const _hgRender=render;render=function(d){_hgRender(d);try{const h=!S.space;if(h&&hgHome===false)hgSoon();hgHome=h}catch(err){console.error(err)}};
+const _hgTab=tbGo;tbGo=function(k){const c=tabNow();_hgTab(k);if(k==='home'&&c!=='home')hgSoon()};
+setTimeout(()=>{if(!S.space){hgHome=true;heroGlint()}},700);
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -10216,7 +10256,7 @@ function settingsPage(id){
       <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>
     ${row('Animations',tg('motion'))}
     ${row('Welcome animation',`<div class="wl-set">${tg('welcome')}<button class="ghost-btn wl-replay" id="wlPlay" type="button">Play</button></div>`,DESK()?'The sunrise splash each time you open Windaday':'The sunrise logo, once a day when you open Windaday')}
-    ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open a space'):''}
+    ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open Home or a space'):''}
     ${HAS_KEYS()?row('Quiet when idle',tg('idleHide'),'After 5 seconds without moving, the day’s summary and Add task fade away. Move the mouse to bring them back.'):''}
     ${row('Sounds',tg('uiSounds'),'Soft sounds when you add, move or finish tasks')}
     <button class="link-row" data-page="sounds">Sound style<span class="hint">${esc(sfxStyle().name)}${CHEV}</span></button>
