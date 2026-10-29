@@ -170,3 +170,11 @@
 .hl2-r small{flex:none;font-size:13px;color:var(--muted)}.hl2-r small em{font-style:normal;font-weight:700;color:var(--text)}
 .hl2-new{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 6px;font:inherit;font-size:15px;font-weight:600;color:var(--muted)}
 .hl2-new svg{width:16px;height:16px}
+
+/* phone Today card matches the desktop Up next card: one coral in both themes, all text white, a white Focus button, softer glow */
+.td-card:not(.td-empty){background:linear-gradient(135deg,#FF6A55,#E5543F);color:#fff;box-shadow:0 18px 40px -14px rgba(229,84,63,.45)}
+.td-card:not(.td-empty) .td-up{color:rgba(255,255,255,.82)}
+.td-card:not(.td-empty) .td-more,.td-card:not(.td-empty) .td-sum{color:rgba(255,255,255,.88);opacity:1}
+.td-card .td-go{background:#fff;color:#C7402C;box-shadow:0 0 0 6px rgba(255,255,255,.18),0 14px 30px -14px rgba(120,30,20,.5)}
+.td-card .td-go .td-sun{color:#E5543F}
+.td-card .td-go:active{box-shadow:0 0 0 4px rgba(255,255,255,.24),0 4px 12px -6px rgba(120,30,20,.4)}
