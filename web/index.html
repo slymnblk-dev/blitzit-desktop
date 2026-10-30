@@ -4768,6 +4768,25 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 .ibs-tick svg{width:24px;height:24px;stroke:#fff}
 .ibs-end .primary{margin-top:14px}
 @media (max-width:1099px){.ibs-t{font-size:24px}.ibs-dest .ibs-b{font-size:14px;padding:0 8px}}
+
+/* ===== Home hero, calmer (0.243): a soft coral tint with a fine coral edge; "Today" and "Up next" in coral text;
+   the Focus / Win the day button is the one solid coral thing (phone Today card, computer Calm card) ===== */
+.td-card:not(.td-empty),.cm-up:not(.is-empty){background:color-mix(in srgb,var(--today) 9%,var(--surface));color:var(--text);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 20%,transparent)}
+.td-card:not(.td-empty) .td-lbl{color:var(--today-ink)}
+.td-card:not(.td-empty) .td-up,.cm-up .cm-ut .dh-eye{color:var(--today-ink)}
+.td-card:not(.td-empty) .td-title,.cm-up .cm-ut b{color:var(--text)}
+.td-card:not(.td-empty) .td-more,.td-card:not(.td-empty) .td-sum,.cm-up .cm-ut small{color:var(--muted)}
+.td-card:not(.td-empty) .up-chip,.cm-up .up-chip{background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--text)}
+.td-card:not(.td-empty) .up-chip i,.cm-up .up-chip i{background:var(--surface)}
+.td-card .td-go{background:var(--win-today);color:#fff;box-shadow:0 12px 28px -12px rgba(229,84,63,.65)}
+.td-card .td-go .td-sun{color:#fff}
+.td-card .td-go:active{box-shadow:0 4px 12px -6px rgba(229,84,63,.6)}
+.td-card .td-ring{border-color:color-mix(in srgb,var(--today) 60%,transparent)}
+.cm-up .cm-go{background:var(--win-today);color:#fff;box-shadow:0 12px 28px -14px rgba(229,84,63,.65)}
+.cm-up .cm-go .sun-ic{color:#fff}
+/* the arrival light runs in coral on the light card */
+.td-card .hglint,.cm-up .hglint{--hg:var(--today);filter:drop-shadow(0 0 6px var(--today)) drop-shadow(0 0 2px color-mix(in srgb,var(--today) 60%,#fff))}
 </style>
 </head>
 <body>
@@ -4963,7 +4982,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=242; // bumped with every published update
+const APP_VERSION=243; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
