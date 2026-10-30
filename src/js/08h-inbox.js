@@ -44,7 +44,7 @@ function ibRow(t){
     <div class="row-in">
       <button class="check ib-go" data-ibgo="${t.id}" aria-label="Send ${esc(t.title)} to a list" title="Send to a list">${I_SEND}</button>
       <div class="body"><div class="title"><span>${esc(t.title)||'Untitled'}</span></div>${meta?`<div class="meta">${meta}</div>`:''}</div>
-      <div class="est">${fmt(t.est)}</div>${MORE(`data-ibm="${t.id}"`,`Options for ${esc(t.title)||'task'}`)}
+      <div class="est">${fmt(t.est)}</div><div class="ib-qa" aria-label="Send ${esc(t.title)}">${ibQaHTML(t)}</div>${MORE(`data-ibm="${t.id}"`,`Options for ${esc(t.title)||'task'}`)}
     </div></li>`;
 }
 /* a note as a soft card: its first line stands out, the rest follows quietly */
@@ -66,7 +66,7 @@ var I_UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-widt
 function drawInbox(){
   const items=inboxItems(),notes=inboxNotes(),nT=items.length,nN=notes.length,note=ibKind==='note';
   const head=(l,n)=>`<div class="ib-count"><span>${l}</span><small>${n}</small></div>`;
-  const tasksSec=nT?`${head('Tasks',nT)}<ul class="list ib-list">${items.map(ibRow).join('')}</ul>`:'';
+  const tasksSec=nT?`<div class="ib-th">${head('Tasks',nT)}${nT>1||nT===1?`<button class="ib-sortb" data-ibsort>${I_SORT}Sort inbox</button>`:''}</div><ul class="list ib-list">${items.map(ibRow).join('')}</ul>`:'';
   const notesSec=nN?`${head('Notes',nN)}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div>`:'';
   $('ibIn').innerHTML=`<span class="pg-eye ib-eye">Capture</span><h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${(n=>n?`<b>${n}</b> to sort`:'All sorted')(inboxItems().length)}</div>
     <div class="ib-cap${note?' note':''}">
@@ -136,6 +136,9 @@ $('inboxPg').addEventListener('click',e=>{
   const mo=e.target.closest('[data-ibm]');if(mo){e.stopPropagation();const t=S.tasks.find(x=>x.id===+mo.dataset.ibm);if(t)cxOpen(mo,ibMenu(t));return}
   const nt=e.target.closest('[data-ibnote]');if(nt)return openNote(+nt.dataset.ibnote);
   const g=e.target.closest('[data-ibgo]');if(g){haptic(6);return ibOpen(+g.dataset.ibgo,true)}
+  const q=e.target.closest('[data-ibq]');if(q){e.stopPropagation();const t=S.tasks.find(x=>x.id===+q.dataset.ibid2);if(!t)return;
+    if(q.dataset.ibq==='list'){haptic(6);return ibOpen(t.id,true)}return ibQuick(t,q.dataset.ibq,ibDefList())}
+  if(e.target.closest('[data-ibsort]'))return ibSortOpen();
   const r=e.target.closest('[data-ibid] .row-in');if(r)return ibOpen(+r.closest('[data-ibid]').dataset.ibid);
 });
 $('inboxPg').addEventListener('keydown',e=>{
