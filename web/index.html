@@ -4787,6 +4787,13 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 .cm-up .cm-go .sun-ic{color:#fff}
 /* the arrival light runs in coral on the light card */
 .td-card .hglint,.cm-up .hglint{--hg:var(--today);filter:drop-shadow(0 0 6px var(--today)) drop-shadow(0 0 2px color-mix(in srgb,var(--today) 60%,#fff))}
+
+/* ===== Phone tab bar: the + is ink (black on light, white on dark) in both looks — Floating and With labels —
+   so Focus stays the one coral action on Home (0.244) ===== */
+@media (max-width:1099px){
+  :root .tb-add{background:var(--text)!important;color:var(--bg)!important;box-shadow:0 12px 26px -14px rgba(0,0,0,.55)!important}
+  :root .tb-add:active{box-shadow:0 4px 12px -8px rgba(0,0,0,.5)!important}
+}
 </style>
 </head>
 <body>
@@ -4982,7 +4989,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=243; // bumped with every published update
+const APP_VERSION=244; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();

@@ -212,3 +212,10 @@
 .cm-up .cm-go .sun-ic{color:#fff}
 /* the arrival light runs in coral on the light card */
 .td-card .hglint,.cm-up .hglint{--hg:var(--today);filter:drop-shadow(0 0 6px var(--today)) drop-shadow(0 0 2px color-mix(in srgb,var(--today) 60%,#fff))}
+
+/* ===== Phone tab bar: the + is ink (black on light, white on dark) in both looks — Floating and With labels —
+   so Focus stays the one coral action on Home (0.244) ===== */
+@media (max-width:1099px){
+  :root .tb-add{background:var(--text)!important;color:var(--bg)!important;box-shadow:0 12px 26px -14px rgba(0,0,0,.55)!important}
+  :root .tb-add:active{box-shadow:0 4px 12px -8px rgba(0,0,0,.5)!important}
+}
