@@ -152,8 +152,8 @@
 /* computers: point at an item for Today · This week · List */
 .ib-qa{display:none}
 @media (hover:hover) and (pointer:fine) and (min-width:1100px){
-  .ib-r .ib-qa{display:flex;gap:6px;align-items:center;margin-left:8px;opacity:0;pointer-events:none;transition:opacity .15s}
-  .ib-r:hover .ib-qa,.ib-r:focus-within .ib-qa{opacity:1;pointer-events:auto}
+  .ib-r .ib-qa{display:none;gap:6px;align-items:center;margin-left:8px}
+  .ib-r:hover .ib-qa,.ib-r:focus-within .ib-qa{display:flex;animation:pop2 .15s ease}
   .ib-r:hover .est,.ib-r:focus-within .est{display:none}
   .ib-qb{height:32px;padding:0 12px;border-radius:999px;background:var(--surface2);color:var(--text);font-size:13px;font-weight:600;white-space:nowrap}
   .ib-qb:hover{background:var(--text);color:var(--bg)}
@@ -219,3 +219,45 @@
   :root .tb-add{background:var(--text)!important;color:var(--bg)!important;box-shadow:0 12px 26px -14px rgba(0,0,0,.55)!important}
   :root .tb-add:active{box-shadow:0 4px 12px -8px rgba(0,0,0,.5)!important}
 }
+
+/* ===== Inbox, "capture first" (0.245) ===== */
+#inboxPg .ib-cap{height:56px;padding:0 6px 0 20px;border-radius:999px;background:var(--surface);box-shadow:0 10px 26px -18px rgba(0,0,0,.35),inset 0 0 0 1px var(--line);margin-top:16px}
+#inboxPg .ib-cap:focus-within{box-shadow:0 10px 26px -18px rgba(0,0,0,.35),inset 0 0 0 1.5px var(--text)}
+#inboxPg .ib-cap.note{height:auto;min-height:56px;border-radius:24px;padding:6px 6px 6px 20px}
+#inboxPg .ib-cap input,#inboxPg .ib-cap textarea{font-size:17px}
+.ib-seg{flex:none;display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--surface2)}
+.ib-seg button{height:30px;padding:0 11px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted)}
+.ib-seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ib-seg button:not(.on):hover{color:var(--text)}
+#inboxPg .ib-cap.note .ib-seg{align-self:flex-end;margin-bottom:6px}
+#inboxPg .ib-cap-go{background:var(--text);color:var(--bg);height:44px}
+#inboxPg .ib-cap.note .ib-cap-go{align-self:flex-end}
+.ib-swap{display:none}
+.ib-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 4px}
+.ib-fcs{display:flex;gap:6px;flex-wrap:wrap}
+.ib-fc{height:34px;padding:0 13px;border-radius:999px;background:var(--surface);color:var(--muted);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.ib-fc em{font-style:normal;font-weight:600;opacity:.6}
+.ib-fc.on{background:var(--text);color:var(--bg)}
+.ib-fc.on em{opacity:.7}
+.ib-bar .ib-sortb{margin:0}
+.ib-th{display:none}
+/* tasks: one calm card of rows, with when you added each */
+#inboxPg .ib-count{margin:16px 4px 8px}
+#inboxPg .ib-list{background:var(--surface);border-radius:20px;padding:0 14px;overflow:hidden}
+#inboxPg .ib-list .row{border-top:0}
+#inboxPg .ib-list .row+.row{border-top:1px solid var(--line)}
+.ib-when{color:var(--muted)}
+/* notes: warm paper cards */
+.ib-note{background:color-mix(in srgb,#FFC34D 14%,var(--surface))!important;box-shadow:none!important}
+.ib-note b{color:var(--text)}
+.ib-note span,.ib-note small{color:color-mix(in srgb,var(--text) 62%,#8A6A1C)!important}
+#inboxPg .ib-notes{columns:2;column-gap:10px}
+@media (max-width:359px){#inboxPg .ib-notes{columns:1}}
+/* computers: a wider page, tasks and notes side by side */
+@media (min-width:1100px){
+  #inboxPg .ib-in{max-width:1000px}
+  #inboxPg .ib-cap{max-width:640px}
+  .ib-cols.two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
+}
+#inboxPg .ib-list .row,#inboxPg .ib-list .row-in{background:var(--surface)}
+#inboxPg .ib-list .row-in{padding-left:0;padding-right:0}

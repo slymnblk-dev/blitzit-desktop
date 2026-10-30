@@ -37,7 +37,7 @@ function closeInbox(){
 /* one idea, drawn like a task row in a list */
 function ibRow(t){
   const sd=t.subs.filter(s=>s.done).length,pr=priOf(t);
-  const meta=[pr?`<span class="mi pri ${pr.id}">${priIcon(pr.n)}${pr.name}</span>`:'',
+  const meta=[t.created?`<span class="mi ib-when">Added ${nbWhen(t)}</span>`:'',pr?`<span class="mi pri ${pr.id}">${priIcon(pr.n)}${pr.name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
     t.notes.trim()?`<span class="mi" aria-label="Has notes">${I_NOTE}</span>`:''].join('');
   return `<li class="row ib-r${t.id===enterId?' enter':''}" data-ibid="${t.id}">
@@ -63,18 +63,28 @@ function ibMenu(t){return t.note?[{t:'Edit',ic:PEN_S,act:()=>openNote(t.id)},{t:
 /* the page: one big capture line (a small chip at its end switches Task ↔ Note; ↑ appears once you type),
    then Tasks and Notes, each with a quiet header and its count */
 var I_UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+/* the page, "capture first" (0.245): a small label, the name and what waits; one capture bar for tasks and notes
+   (Task | Note inside it); filter chips with counts and Sort; tasks as a calm list with when you added them,
+   notes as warm paper cards. On computers tasks and notes sit side by side. */
 function drawInbox(){
   const items=inboxItems(),notes=inboxNotes(),nT=items.length,nN=notes.length,note=ibKind==='note';
+  if(ibTab==='tasks'&&!nT||ibTab==='notes'&&!nN)ibTab='all';
   const head=(l,n)=>`<div class="ib-count"><span>${l}</span><small>${n}</small></div>`;
-  const tasksSec=nT?`<div class="ib-th">${head('Tasks',nT)}${nT>1||nT===1?`<button class="ib-sortb" data-ibsort>${I_SORT}Sort inbox</button>`:''}</div><ul class="list ib-list">${items.map(ibRow).join('')}</ul>`:'';
-  const notesSec=nN?`${head('Notes',nN)}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div>`:'';
-  $('ibIn').innerHTML=`<span class="pg-eye ib-eye">Capture</span><h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${(n=>n?`<b>${n}</b> to sort`:'All sorted')(inboxItems().length)}</div>
+  const showT=nT&&ibTab!=='notes',showN=nN&&ibTab!=='tasks';
+  const tasksSec=showT?`<div class="ib-col">${head('Tasks',nT)}<ul class="list ib-list">${items.map(ibRow).join('')}</ul></div>`:'';
+  const notesSec=showN?`<div class="ib-col">${head('Notes',nN)}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div></div>`:'';
+  const chip=(k,l,n)=>`<button class="ib-fc${ibTab===k?' on':''}" data-ibtab2="${k}" aria-pressed="${ibTab===k}">${l}<em>${n}</em></button>`;
+  const sum=nT||nN?`${nT?`<b>${nT}</b> ${nT===1?'task':'tasks'} to sort`:'Nothing to sort'}${nN?` · ${nN} ${nN===1?'note':'notes'}`:''}`:'All clear';
+  const seg=k=>ibKind===k?`<button class="on" aria-pressed="true" tabindex="-1">${k==='task'?'Task':'Note'}</button>`:`<button data-ibswap aria-pressed="false" aria-label="Switch to ${k}">${k==='task'?'Task':'Note'}</button>`;
+  $('ibIn').innerHTML=`<span class="pg-eye ib-eye">Capture</span><h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${sum}</div>
     <div class="ib-cap${note?' note':''}">
       ${note?`<textarea id="ibNew" rows="1" placeholder="Write a note" maxlength="4000" aria-label="New note"></textarea>`:`<input id="ibNew" placeholder="Add a task" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="New task">`}
-      <button class="ib-swap" data-ibswap aria-label="${note?'Adding a note. Switch to task':'Adding a task. Switch to note'}" title="Switch to ${note?'task':'note'}">${note?I_NOTE2:I_TASK2}<span>${note?'Note':'Task'}</span></button>
+      <span class="ib-seg" role="group" aria-label="Add as">${seg('task')}${seg('note')}</span>
       <button class="ib-cap-go" id="ibAdd" aria-label="${note?'Add note':'Add task'}">${I_UP}</button></div>
     ${note?'<p class="ib-hint">Enter for a new line · Ctrl or ⌘ + Enter to add</p>':''}
-    ${nT||nN?`${tasksSec}${notesSec}`:`<div class="ib-empty">${IB_ICON}<b>Your inbox is empty</b><span>Tasks and notes you add show up here.</span></div>`}`;
+    ${nT||nN?`<div class="ib-bar"><div class="ib-fcs">${chip('all','All',nT+nN)}${nT?chip('tasks','Tasks',nT):''}${nN?chip('notes','Notes',nN):''}</div>${nT?`<button class="ib-sortb" data-ibsort>${I_SORT}Sort</button>`:''}</div>
+      <div class="ib-cols${showT&&showN?' two':''}">${tasksSec}${notesSec}</div>`
+      :`<div class="ib-empty">${IB_ICON}<b>Your inbox is empty</b><span>Tasks and notes you add show up here.</span></div>`}`;
   enterId=null;
 }
 const ibTyped=()=>{const n=$('ibNew'),c=n&&n.closest('.ib-cap');if(c)c.classList.toggle('typed',!!n.value.trim())};
@@ -139,6 +149,7 @@ $('inboxPg').addEventListener('click',e=>{
   const q=e.target.closest('[data-ibq]');if(q){e.stopPropagation();const t=S.tasks.find(x=>x.id===+q.dataset.ibid2);if(!t)return;
     if(q.dataset.ibq==='list'){haptic(6);return ibOpen(t.id,true)}return ibQuick(t,q.dataset.ibq,ibDefList())}
   if(e.target.closest('[data-ibsort]'))return ibSortOpen();
+  const fc=e.target.closest('[data-ibtab2]');if(fc){ibTab=fc.dataset.ibtab2;haptic(4);return drawInbox()}
   const r=e.target.closest('[data-ibid] .row-in');if(r)return ibOpen(+r.closest('[data-ibid]').dataset.ibid);
 });
 $('inboxPg').addEventListener('keydown',e=>{

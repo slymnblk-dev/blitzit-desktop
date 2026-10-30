@@ -13,7 +13,7 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   await page.keyboard.press('Enter');
   await expect(page.locator('#inboxPg .ib-list .row')).toHaveCount(1);
   // a note: Enter makes a new line, Ctrl+Enter adds it
-  await page.locator('#inboxPg [data-ibswap]').click(); // the small chip at the end switches Task ↔ Note
+  await page.locator('#inboxPg [data-ibswap]').click(); // Task | Note inside the capture bar
   await expect(page.locator('#inboxPg textarea#ibNew')).toBeFocused();
   await page.keyboard.type('Gift ideas');
   await page.keyboard.press('Enter');
@@ -23,9 +23,12 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   expect([n.title, n.notes, n.inbox, n.list]).toEqual(['Gift ideas', 'Gift ideas\nA good book', true, null]);
   await expect(page.locator('#inboxPg .ib-note b')).toHaveText('Gift ideas');
   expect(await page.evaluate(() => [inboxItems().length, inboxNotes().length, S.tasks.filter(t => t.note && shown(t)).length])).toEqual([1, 1, 0]);
-  // no filters: Tasks and Notes each have a quiet header with a count
-  await expect(page.locator('#inboxPg .ib-tabs')).toHaveCount(0);
+  // filter chips with counts; Tasks and Notes each have a quiet header with a count
+  await expect(page.locator('#inboxPg .ib-fc')).toHaveText(['All2', 'Tasks1', 'Notes1']);
   await expect(page.locator('#inboxPg .ib-count')).toHaveText(['Tasks1', 'Notes1']);
+  await page.locator('#inboxPg [data-ibtab2="notes"]').click();
+  await expect(page.locator('#inboxPg .ib-count')).toHaveText(['Notes1']);
+  await page.locator('#inboxPg [data-ibtab2="all"]').click();
   await expect(page.locator('#inboxPg .ib-cap')).not.toHaveClass(/typed/); // the ↑ hides while the line is empty
   // edit in the popup: it saves as you type; pin it
   await page.locator('#inboxPg .ib-note').click();
