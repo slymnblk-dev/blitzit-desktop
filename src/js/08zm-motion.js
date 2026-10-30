@@ -14,7 +14,7 @@ function moBurst(el,col){
 }
 document.addEventListener('click',e=>{
   const ck=e.target.closest('[data-check]');
-  if(ck){const row=ck.closest('.row');if(row&&!row.classList.contains('is-done')&&!row.dataset.busy)moBurst(ck,'var(--done)');return}
+  if(ck){const row=ck.closest('.row');if(row&&!row.classList.contains('is-done')&&!row.dataset.busy)moBurst(ck,'var(--today)');return}
   const hf=e.target.closest('[data-hfdone]');if(hf)return moBurst(hf,'var(--today)');
   const hb=e.target.closest('[data-hbt],[data-hst]');if(hb&&hb.getAttribute('aria-pressed')!=='true'&&!hb.classList.contains('on'))return moBurst(hb.querySelector('.hw-k,.hs-k')||hb,'var(--today)');
   const gm=e.target.closest('[data-gmt],[data-gtk]');if(gm&&gm.getAttribute('aria-pressed')!=='true')moBurst(gm,'var(--today)');

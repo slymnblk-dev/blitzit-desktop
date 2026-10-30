@@ -98,7 +98,7 @@ test('habits on a computer: sidebar Habits page, week grid, week navigation', as
   await page.locator('#sRhythm').click();
   // last week is one tap away; next week can't be opened from this week
   await page.locator('[data-hpw="-1"]').click();
-  await expect(page.locator('#rhythmPg .hp-h')).toHaveText('Last week');
+  await expect(page.locator('#rhythmPg .hp-eye')).toContainText('Last week');
   await page.locator('[data-hpw="1"]').click();
   await expect(page.locator('#rhythmPg [data-hpw="1"]')).toBeDisabled();
   noErrors(errors);

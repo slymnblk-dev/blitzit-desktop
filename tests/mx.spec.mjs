@@ -68,8 +68,8 @@ test('KPIs: "ask me" asks after done; a logged "latest value" KPI; repeating tas
   await expect.poll(() => page.evaluate(() => mxKpiNow(S.kpis[0]))).toBe(2);
   // the next repeat of the task keeps the link
   expect(await page.evaluate(id => { const t = S.tasks.find(x => x.id === id); return S.tasks.find(x => x.id === t.spawned).mx; }, id)).toEqual([{ id: 1, add: null }]);
-  // phones open on Focus; log a latest value from the item view
-  await page.locator('[data-mxopen]:visible').click();
+  // phones open on Focus; log a latest value from the item view (on phones KPIs & OKRs sit in the header's ⋯)
+  await page.locator('#topMore').click(); await page.locator('[data-tpm="mx"]').click();
   await expect(page.locator('#mxIn')).toHaveAttribute('data-look', 'focus');
   await page.locator('#mxPg .mx-ar', { hasText: 'Reply rate' }).click();
   await page.locator('#mxPg .mx-fc [data-mxk]').click();
@@ -170,7 +170,7 @@ test('OKR form on a phone: a missing target is shown under the field, the name f
   await page.setViewportSize({ width: 360, height: 780 });
   const errors = await openApp(page);
   await page.evaluate(() => { setCfg('mx', true); openSpaceSide(S.spaces[0].id); render(); });
-  await page.locator('[data-mxopen]:visible').click();
+  await page.locator('#topMore').click(); await page.locator('[data-tpm="mx"]').click();
   await page.locator('#mxPg [data-mxnew="okr"]').first().click();
   await page.locator('#mxPg [data-mxsave]').click();
   await expect(page.locator('#mxPg .mx-errm')).toHaveText('Give the objective a name');

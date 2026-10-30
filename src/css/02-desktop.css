@@ -6,7 +6,7 @@
   .desk{--ez:cubic-bezier(.65,0,.35,1);display:grid;grid-template-columns:236px 1fr;height:100vh;height:100dvh;transition:grid-template-columns .52s var(--ez)}
   .s-top{display:flex;align-items:center;justify-content:space-between;margin:0 0 40px 10px;min-height:36px;transition:margin .52s var(--ez),padding .52s var(--ez)}
   .s-top .brand{margin:0!important;white-space:nowrap;overflow:hidden}
-  .s-toggle{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--muted);flex:none;transition:background .15s,color .15s}
+  .s-toggle{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:var(--muted);flex:none;transition:background .15s,color .15s}
   .s-toggle:hover{background:var(--surface);color:var(--text)}
   .s-toggle svg{width:19px;height:19px}
   .s-arr{transition:transform .52s var(--ez);transform-origin:14.5px 12px}
@@ -40,7 +40,7 @@
   .s-lbl{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-weight:600;margin:0 0 8px 10px;letter-spacing:.02em}
   .s-lbl button{font-size:12px;font-weight:600;color:var(--muted);padding:2px 6px;border-radius:6px}
   .s-lbl button:hover{color:var(--text)}
-  .s-list{display:flex;align-items:center;gap:12px;width:100%;padding:10px;border-radius:12px;font-size:15px;font-weight:500;text-align:left;color:var(--muted);transition:background .15s,color .15s}
+  .s-list{display:flex;align-items:center;gap:12px;width:100%;padding:10px;border-radius:14px;font-size:15px;font-weight:500;text-align:left;color:var(--muted);transition:background .15s,color .15s}
   .s-list:hover{background:var(--surface);color:var(--text)}
   .s-list.on{background:var(--surface);color:var(--text)}
   .s-list i{width:10px;height:10px;border-radius:4px;flex:none}
@@ -53,7 +53,7 @@
   .m-set{width:44px;height:44px}
   .m-set svg{width:20px;height:20px}
   .m-set:hover{background:var(--surface2)}
-  .go-d{width:100%;height:56px;border-radius:999px;background:var(--today);color:var(--ink);font-weight:800;font-size:16px;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,filter .15s}
+  .go-d{width:100%;height:56px;border-radius:999px;background:var(--today);color:var(--ink);font-weight:800;font-size:17px;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,filter .15s}
   .go-d:hover{filter:brightness(1.06)}
   .go-d:active{transform:scale(.97)}
   .go-d svg{width:16px;height:16px}
@@ -75,29 +75,29 @@
   .col .wd{width:auto;flex-direction:row;gap:0}
   .col .wd i{width:9px;height:9px}
   .col .wd{font-size:0}
-  .col-scroll{flex:1;overflow-y:auto;min-height:0;padding:0 6px 60px;margin:0 -6px;border-radius:16px;transition:background .2s;scrollbar-width:thin}
+  .col-scroll{flex:1;overflow-y:auto;min-height:0;padding:0 6px 60px;margin:0 -6px;border-radius:14px;transition:background .2s;scrollbar-width:thin}
   .col.over .col-scroll{background:color-mix(in srgb,var(--c) 8%,transparent)}
   .col-list .row:first-child{border-top:0}
   .col-list .row:last-child{border-bottom:1px solid var(--line)}
   .col-list .row-in{padding:14px 0;gap:12px;cursor:grab;background:transparent}
   .col-list .row-in:hover .title{color:var(--c)}
   .col-list .row.is-done .row-in:hover .title{color:var(--muted)}
-  .col-list .title{font-size:15.5px;transition:color .15s}
+  .col-list .title{font-size:15px;transition:color .15s}
   .col-list .check{width:22px;height:22px;border-color:var(--c)}
   .col-list .check svg{width:12px;height:12px}
   .col-list .meta{font-size:12px;gap:10px;margin-top:5px;flex-wrap:wrap}
-  .col-list .est{font-size:12.5px;padding-top:2px}
+  .col-list .est{font-size:13px;padding-top:2px}
   .col-list .day-h{padding:18px 0 4px;font-size:12px}
   .col-list .day-h:first-child{padding-top:4px}
-  .col-empty{list-style:none;padding:18px 0;font-size:14px;color:var(--muted)}
+  .col-empty{list-style:none;padding:18px 0;font-size:15px;color:var(--muted)}
   .col-add{padding:10px 0}
-  .ca-btn{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--muted);padding:6px 0;transition:color .15s}
+  .ca-btn{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500;color:var(--muted);padding:6px 0;transition:color .15s}
   .ca-btn:hover{color:var(--c)}
   .ca-btn svg{width:14px;height:14px}
-  .ca-in{width:100%;border:0;border-bottom:2px solid var(--c);background:transparent;color:var(--text);font:inherit;font-size:15.5px;font-weight:500;padding:8px 0;outline:none}
+  .ca-in{width:100%;border:0;border-bottom:2px solid var(--c);background:transparent;color:var(--text);font:inherit;font-size:15px;font-weight:500;padding:8px 0;outline:none}
   .ca-in::placeholder{color:var(--muted)}
   .row.placeholder .row-in{opacity:.25}
-  .ghost{position:fixed;z-index:50;pointer-events:none;list-style:none;background:var(--surface);border-radius:16px;padding:0 16px;
+  .ghost{position:fixed;z-index:50;pointer-events:none;list-style:none;background:var(--surface);border-radius:14px;padding:0 16px;
     box-shadow:0 24px 48px rgba(0,0,0,.35);transform:rotate(1.5deg) scale(1.02);transition:transform .15s}
   .ghost .row-in{background:transparent}
   /* sheets become side drawers */

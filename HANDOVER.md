@@ -30,5 +30,17 @@
 - 0.223 Task rows show KPI/OKR as icons only; clearer picker; gauge button wears a progress ring that glows and floats "+N" (08x-mx-polish.js).
 - 0.222 Goals ↔ KPIs/OKRs: Measured by links, New OKR from goal (milestones → key results), finish lines (`m.fin`), goal mini-tasks can add to a KPI (08w-goal-metrics.js). Desktop Home: **Bento** (default) and **Calm column** (08u-home-desk.js). Metrics page + sidebar item (08v-metrics.js). Mark milestone done button reworked.
 
+## Design system (agreed with Suly, 0.241 — keep new work on it)
+- Overrides live in `src/css/19-consistency.css` and `src/js/08zn-consistency.js`.
+- Text sizes: 12 label · 13 meta · 15 body · 17 row title · 20 · 24 card title · 28 · 34 · 44 · 56 page name (computers) + big display titles. No half sizes.
+- Weights: 500 regular, 600 semibold, 800 heavy (the font only loads these three; 700 renders as 800).
+- Corners: 8 chips · 14 rows/fields · 20 cards · 28 hero/sheets · round for pills and circles. Tiny bars/dots keep 2–6.
+- Buttons: large 56 (bottom actions, hero action) · medium 44 (actions in a card) · small 36 (row/empty-card actions) · round icon buttons 40.
+- Completing: the main "finish" action is a coral pill with a tick (`var(--win-today)`); quick inline "Done" on rows is ink. Every tick you make is coral; green is only for switches and the Done stage's label.
+- Page header: small uppercase label (`.pg-eye`) + big name + one summary line. Home's summary reads like a list's ("6 tasks today  3h 40m planned").
+- Adding: in a list, a "+ Add …" row with a light ring around the +; on an empty card, one soft pill (`--surface2`). Typing fields keep their field.
+- Round buttons: Back top-left, close and ⋯ top-right, 40px, filled. Tab pages (Inbox, Habits, Goals) have no Back on phones while the tab bar shows; pages you drill into always do.
+- Phone header inside a space: Back · space switcher · search · ⋯ (KPIs & OKRs, Profile & settings).
+
 ## Ideas mentioned, not built
 - Pin up to 3 lists to Home (design option A on the canvas, "Phone Home · quicker way into a list").

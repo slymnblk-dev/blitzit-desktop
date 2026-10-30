@@ -68,7 +68,7 @@ function drawInbox(){
   const head=(l,n)=>`<div class="ib-count"><span>${l}</span><small>${n}</small></div>`;
   const tasksSec=nT?`${head('Tasks',nT)}<ul class="list ib-list">${items.map(ibRow).join('')}</ul>`:'';
   const notesSec=nN?`${head('Notes',nN)}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div>`:'';
-  $('ibIn').innerHTML=`<h1 class="ib-h">Inbox</h1>
+  $('ibIn').innerHTML=`<span class="pg-eye ib-eye">Capture</span><h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${(n=>n?`<b>${n}</b> to sort`:'All sorted')(inboxItems().length)}</div>
     <div class="ib-cap${note?' note':''}">
       ${note?`<textarea id="ibNew" rows="1" placeholder="Write a note" maxlength="4000" aria-label="New note"></textarea>`:`<input id="ibNew" placeholder="Add a task" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="New task">`}
       <button class="ib-swap" data-ibswap aria-label="${note?'Adding a note. Switch to task':'Adding a task. Switch to note'}" title="Switch to ${note?'task':'note'}">${note?I_NOTE2:I_TASK2}<span>${note?'Note':'Task'}</span></button>

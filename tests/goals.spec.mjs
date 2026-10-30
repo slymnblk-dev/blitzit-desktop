@@ -72,7 +72,7 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await page.keyboard.press('Escape');
   await expect(page.locator('#gdPg .gpp-bar')).toBeVisible();
   await expect(page.locator('#gdPg .gpp-st')).toHaveCount(2);
-  await expect(page.locator('#gdBack')).toBeHidden();
+  await expect(page.locator('#gdBack')).toBeVisible(); // a page you drill into always has Back, top left
   await page.evaluate(() => { gAddMs = true; drawGoal(); });
   await page.fill('#gMsIn', 'Race day');
   await page.keyboard.press('Enter');
@@ -115,7 +115,8 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await page.locator('#tbGoals').click(); // phones: the Goals tab goes back
   await expect(page.locator('#goalsPg .g-card')).toHaveCount(0);
   await expect(page.locator('#goalsPg .g-wrow')).toHaveCount(1);
-  await page.locator('#glBack').click();
+  await expect(page.locator('#glBack')).toBeHidden(); // tab pages have no Back on phones, like Inbox and Habits
+  await page.locator('#tbHome').click();
 
   // turning Goals off hides every trace; data stays
   await page.evaluate(() => { S.goals[0].done = false; S.cfg.goals = false; save(); render(); });
@@ -187,8 +188,8 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await expect(page.locator('#gdPg .gpp-st.on')).toHaveCount(3);
   // past due: counts the days over, never "0 days left"
   await expect(page.locator('#gdPg .gr-f')).toContainText('days over');
-  // no Back on phones (the Goals tab is there); the facts sit top left
-  await expect(page.locator('#gdBack')).toBeHidden();
+  // Back sits top left like every page you drill into; the facts sit beside it
+  await expect(page.locator('#gdBack')).toBeVisible();
   await expect(page.locator('#gdPg .gr-meta .gr-f')).toBeVisible();
   // the card opens on Next; a quick double tap on Mark done ticks it once
   await expect(page.locator('#gdPg .gpp-st.sel.nx')).toHaveCount(1); // opens on Next, its tasks below (no card)

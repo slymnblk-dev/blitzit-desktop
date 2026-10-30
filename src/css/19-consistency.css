@@ -1,0 +1,127 @@
+/* ===== Consistency pass (0.241): one way to complete, one header pattern, one way to add, one set of round buttons,
+   a fixed set of text sizes, corners and button heights. Coral is the colour of finishing; green stays for switches
+   and for the Done stage's own label. ===== */
+
+/* 8 · every tick you make is coral (white tick); the Done stage keeps its green label */
+.row.row.is-done .check{background:var(--today);border-color:var(--today);border-style:solid}
+.row.is-done .check svg{stroke:#fff}
+.rv-ck,.gpp-fk,.cb-pill svg,.updm-new li i{background:var(--today);color:#fff}
+.cb-halo i{border-color:var(--today);box-shadow:0 0 24px color-mix(in srgb,var(--today) 40%,transparent)}
+.cb-orbit rect{stroke:var(--today);filter:drop-shadow(0 0 6px var(--today))}
+.cb-aurora i:nth-child(1){background:var(--today)}
+.gpp-fb{background:color-mix(in srgb,var(--today) 13%,transparent)}
+.an-hero b{color:var(--today)}.an-bar span,.you-bar span,.you-week .hit i{background:var(--today)}
+.you-week .some i{background:color-mix(in srgb,var(--today) 35%,var(--surface2))}
+.av.has-goal{background:conic-gradient(var(--today) calc(var(--p)*1%),color-mix(in srgb,var(--text) 12%,transparent) 0)}
+.gpp-fb{color:var(--today-ink)}
+
+/* 1 · one way to complete: the main "finish this" action is a coral pill with a tick (task details, milestones).
+   Quick inline "Done" on rows stays ink. */
+.d-complete:not(.undo):not(.send){background:var(--win-today);color:#fff;box-shadow:0 10px 24px -14px rgba(229,84,63,.6)}
+.d-complete svg{width:18px;height:18px;stroke:#fff;stroke-width:2.6;flex:none}
+.is-idea .d-complete{background:var(--text);color:var(--bg);box-shadow:none}
+.gpp-done.gpp-mk:not(.on){background:var(--win-today);color:#fff;box-shadow:0 10px 24px -14px rgba(229,84,63,.6)}
+.gpp-done.gpp-mk:not(.on):hover{background:var(--win-today);filter:brightness(1.05);box-shadow:0 10px 24px -14px rgba(229,84,63,.6)}
+.gpp-done.gpp-mk:not(.on) .gpp-dk{box-shadow:inset 0 0 0 2px #fff!important;color:#fff!important}
+.gm-done:not(.on){background:var(--win-today);color:#fff;box-shadow:none}
+.gm-done:not(.on):hover{color:#fff;filter:brightness(1.05)}
+.gm-card.hot .gm-done:not(.on){background:#0F1013;color:#F3F2EE}
+
+/* 4 · one set of round buttons: 40px, filled, back top-left, close and ⋯ top-right, on every page and sheet */
+.icon-btn,.f-x{width:40px;height:40px}
+@media (min-width:1100px){.m-right .srch-btn,.desk.fw .m-right .srch-btn{width:40px;height:40px}}
+.settings .set-top .icon-btn,.inbox-pg .set-top .icon-btn{background:var(--surface)}
+/* the phone goal page shows Back too (top-left), its facts move over to make room */
+@media (max-width:699px){
+  .gd-pg:has(.gr-hero,.gpp) #gdBack{display:grid}
+  .gd-pg:has(.gr-hero,.gpp) .gd-top{justify-content:space-between}
+  .gr-meta{left:74px}
+}
+
+/* 5 · phone header inside a space: Back · space switcher · search · ⋯ (KPIs & OKRs and your profile are in ⋯) */
+#homeBtn .hb-back{display:none}
+.lb-chev{width:14px;height:14px;flex:none;color:var(--muted);margin-right:-4px}
+.top-more{display:none}
+.top-pop{position:fixed;z-index:40;min-width:210px}
+.top-pop button{display:flex;align-items:center;gap:12px}
+.tp-i{width:28px;height:28px;flex:none;display:grid;place-items:center;color:var(--muted)}
+.tp-i svg{width:18px;height:18px}
+.tp-i .me-a{transform:scale(.8)}
+@media (max-width:1099px){
+  :root[data-view="space"] #homeBtn .hb-home{display:none}
+  :root[data-view="space"] #homeBtn .hb-back{display:block}
+  :root[data-view="space"] .top .mx-btn,:root[data-view="space"] #setBtn{display:none!important}
+  :root[data-view="space"] .top-more{display:grid}
+  .top .chip{height:40px}
+}
+@media (min-width:1100px){.top-pop{display:none!important}}
+
+/* 2 · one page header everywhere: a small label, the big name, one summary line */
+.pg-eye,.hp-eye,.hb-head .eye{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pg-sum,.hp-sub,.hb-sub,.m-sub{font-size:15px;color:var(--muted)}
+.pg-sum b,.hp-sub b,.hb-sub b,.m-sub b{color:var(--text);font-weight:800}
+.home-hero h1{margin-top:8px}
+.home-hero .pg-sum{margin-top:10px}
+.p-only{display:block}
+@media (min-width:1100px){.p-only{display:none}}
+.ib-eye{display:block;margin-top:30px}
+#inboxPg .ib-h{margin-top:8px!important;margin-bottom:6px}
+.ib-sum{margin-bottom:22px}
+.set-eye{display:block;margin-top:26px}
+.set-in .set-eye+h1{margin-top:8px}
+/* computers: the label above the title */
+.m-eye{margin-bottom:6px}
+/* phone Habits: the label and summary show like on every page (the small top-left line goes) */
+@media (max-width:699px){
+  .hp-meta{display:none!important}
+  #rhIn .hp-head .hp-eye,#rhIn .hp-head .hp-sub{display:flex}
+  #rhIn .hp-head .hp-sub{display:block}
+}
+/* tab pages (Inbox, Habits, Goals) have no Back on phones while the tab bar is there; pages you drill into keep it */
+@media (max-width:1099px){body.tabs-on #glBack{visibility:hidden}}
+.m-title{flex-wrap:wrap;row-gap:0}
+.m-eye{flex-basis:100%}
+.m-eye[hidden]{display:none}
+/* computers: every page name is the same size */
+@media (min-width:1100px){
+  :root[data-view="home"] .m-date{font-size:56px;letter-spacing:-.05em;line-height:.95}
+  .ib-h,#inboxPg .ib-h,.hp-h,.hb-h,.set-in h1,.mt2-h{font-size:56px!important;letter-spacing:-.05em;line-height:.95}
+}
+
+/* 3 · two ways to add. In a list: a "+ Add …" row — a light ring with + and the words, left-aligned.
+   On an empty card: one soft pill. Typing fields (Inbox, add a task) keep their field. */
+.hb-add{justify-content:flex-start;gap:12px;height:auto;min-height:52px;padding:0 14px;border:0;border-radius:20px;background:var(--surface);font-size:15px;font-weight:600}
+.hb-add:hover{border-color:transparent;background:color-mix(in srgb,var(--text) 3%,var(--surface))}
+.hb-add svg,.gm-plus svg,.mx-new svg,.new-list svg,.hl2-new svg,.lp-new svg{width:26px;height:26px;padding:6.5px;box-sizing:border-box;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted);flex:none;stroke-width:2.6}
+.gm-plus{width:26px;height:26px}
+.sub-add i{width:26px;height:26px;box-sizing:border-box;border:0;box-shadow:inset 0 0 0 1.5px var(--line);position:relative}
+.sub-add i::before,.sub-add i::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:2px;margin:-1px 0 0 -5.5px;border-radius:1px;background:var(--muted)}
+.sub-add i::after{transform:rotate(90deg)}
+.gm-add input,.sub-add input,.hb-add,.mx-new,.hl2-new{font-size:15px}
+/* empty cards: one soft pill (not a black one) */
+.dh-eb,.dh-eb.ghost{background:var(--surface2);color:var(--text)}
+.dh-eb:hover{filter:none;background:color-mix(in srgb,var(--text) 10%,var(--surface2))}
+.gmx-new{background:var(--surface2);color:var(--text)}
+
+/* 6–7 · three button sizes. Large 56: the bottom actions and the hero's action. Medium 44: actions inside a card.
+   Small 36: quick actions on rows and empty cards. Round icon buttons are 40 (above). */
+@media (min-height:521px),(min-width:1100px){
+  .go,.f-done,.f-back,.primary,.d-complete,.d-focus{height:56px}
+  .plus,.f-btn{width:56px;height:56px}
+  :root[data-view="home"] .dock .plus{height:56px}
+}
+.cm-go{height:56px}
+.ts-go,.col-go,.gmx-new{height:44px}
+.gpp-done.gpp-mk{min-height:44px}
+.dh-eb,.gm-done{height:36px}
+/* Home's summary reads exactly like a list's: "6 tasks today   3h 40m planned" */
+.home-hero .summary{margin-top:12px}
+.m-sub span+span{margin-left:12px}
+.m-sub b{font-weight:600}
+.gpo-add{border-top:0;padding:8px 0 2px}
+.gpo-add .gv-add{padding:4px 0;font-size:15px}
+:root[data-view="home"][data-dhome="calm"][data-sppage="1"] .m-left{visibility:visible}
+/* KPIs & OKRs, nothing yet: two soft pills, like every empty card */
+.mx-pill[data-mxnew],.mx-pill.on[data-mxnew]{height:36px;background:var(--surface2);color:var(--text)}
+/* settings pages: the small "Settings" label above each page's name */
+.sub-h{margin-top:8px!important}

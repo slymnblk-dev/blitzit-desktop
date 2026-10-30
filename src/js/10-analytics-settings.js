@@ -183,7 +183,7 @@ function pageSummary(id){
 }
 function settingsMain(){
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close settings">${BACK_SVG}</button></div>
-  <h1>Settings</h1>
+  <span class="pg-eye set-eye">Windaday</span><h1>Settings</h1>
   <button class="you-card" id="youOpen">${avatarHTML()}<span><b>${esc(meName()||'Your profile')}</b><small>${esc(meSub())} · stats, account</small></span>${CHEV}</button>
   ${SET_GROUPS.map(([g,ids])=>{const ps=ids.map(id=>PAGES.find(p=>p.id===id)).filter(p=>p&&!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS()));
     return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}
@@ -191,7 +191,7 @@ function settingsMain(){
 }
 function settingsPage(id){
   const c=C(),title=PAGES.find(p=>p.id===id).name;
-  const head=`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><h1 class="sub-h">${title}</h1>`;
+  const head=`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><span class="pg-eye set-eye">Settings</span><h1 class="sub-h">${title}</h1>`;
   let body='';
   if(id==='appearance')body=`<div class="set-sec">
     ${row('Mode',`<div class="segc">${sOpt('theme','system','Auto')}${sOpt('theme','light','Light')}${sOpt('theme','dark','Dark')}</div>`,'Auto follows your device')}</div>

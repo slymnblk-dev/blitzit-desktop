@@ -117,7 +117,7 @@ function drawDetail(){
   $('dSubs').querySelectorAll('.s-t').forEach(grow);
   const done=t.stage==='done';
   requestAnimationFrame(subsFade);
-  $('dComplete').textContent=t.inbox?'Send to a list':done?'Mark as not done':'Complete';
+  if(t.inbox||done)$('dComplete').textContent=t.inbox?'Send to a list':'Mark as not done';else $('dComplete').innerHTML=`${CHECK}Complete`;
   $('dComplete').classList.toggle('undo',done);$('dComplete').classList.toggle('send',!!t.inbox);
   $('dFocus').hidden=done||!!t.inbox;
   save();

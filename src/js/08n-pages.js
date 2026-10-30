@@ -76,15 +76,15 @@ function hpMenuHTML(){const v=hpView(),left=hbOpenToday().length;
 function drawRhythm(){
   const y=$('rhythmPg').scrollTop,hs=hbAll(),v=hpView(),anim=!$('rhIn').dataset.v||$('rhIn').dataset.v!==v||$('rhIn').dataset.fresh==='1';
   let head,body,hpMeta="";
-  if(!hs.length){head=`<span class="hp-eye">Habits</span><h1 class="hp-h">Habits</h1>`;
+  if(!hs.length){head=`<span class="hp-eye">Small daily wins</span><h1 class="hp-h">Habits</h1>`;
     body=`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`}
   else if(v==='grid'){const days=hpWeekDays(hpWeek),c=hpWeekCount(hs),f=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
     hpMeta=`${f(days[0])} – ${f(days[6])} · <b>${c.dn} of ${c.due}</b> kept`;
-    head=`<span class="hp-eye">Habits · ${f(days[0])} – ${f(days[6])}</span><h1 class="hp-h">${hpWeek===0?'This week':hpWeek===-1?'Last week':`${-hpWeek} weeks ago`}</h1><span class="hp-sub"><b>${c.dn} of ${c.due}</b> kept${hpWeek===0?' so far':''}</span>`;
+    head=`<span class="hp-eye">${hpWeek===0?'This week':hpWeek===-1?'Last week':`${-hpWeek} weeks ago`} · ${f(days[0])} – ${f(days[6])}</span><h1 class="hp-h">Habits</h1><span class="hp-sub"><b>${c.dn} of ${c.due}</b> kept${hpWeek===0?' so far':''}</span>`;
     body=hpGrid(hs)}
   else{const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt});
     hpMeta=`${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}${due.length?'':' · Rest day'}`; // the big number under the sun already counts
-    head=`<span class="hp-eye">Habits · ${longDate()}</span><h1 class="hp-h">Today</h1><span class="hp-sub">${due.length?`<b>${due.filter(h=>hbStats(h).dt).length} of ${due.length}</b> done`:'Rest day'}</span>`;body=hpSun(hs)}
+    head=`<span class="hp-eye">Today · ${longDate()}</span><h1 class="hp-h">Habits</h1><span class="hp-sub">${due.length?`<b>${due.filter(h=>hbStats(h).dt).length} of ${due.length}</b> done`:'Rest day'}</span>`;body=hpSun(hs)}
   const nav=hs.length&&v==='grid'?`<div class="hp-nav"><button class="pm-btn" data-hpw="-1" aria-label="Previous week">${ARR_L}</button><button class="pm-btn" data-hpw="1" aria-label="Next week" ${hpWeek>=0?'disabled':''}>${ARR_R}</button></div>`:'';
   const html=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>
     ${hpMeta?`<div class="hp-meta">${hpMeta}</div>`:''}<div class="hp-head"><div class="hp-tt">${head}</div><div class="hp-acts">${nav}${hpMenuHTML()}</div></div><div class="hp-body${anim?' anim':''}">${body}</div>`;
@@ -314,7 +314,7 @@ function gMsCard(g,m,cls){if(!m)return '';
   const i=g.ms.indexOf(m),ts=gKids(m),dn=ts.filter(x=>x.done).length,nx=gNext(g),live=!m.done&&!g.done;
   return `<div class="gm-card${cls?' '+cls:''}" data-gcard="${m.id}"><div class="gm-h"><div class="gm-hx"><span class="gm-tag">${m.done?(m.doneAt?`Done · ${gShort(m.doneAt)}`:'Done'):m===nx?'Next':`Milestone ${i+1}`}</span><b>${esc(m.t)}</b>
       <small>${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'} done`:'No tasks yet'}</small></div>
-    ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':'Mark done'}</button>`}${MORE(`data-gmm="${m.id}"`,`Options for milestone ${esc(m.t)}`)}</div>
+    ${g.done?'':`<button class="gm-done${m.done?' on':''}" data-gtk="${m.id}" aria-pressed="${!!m.done}">${m.done?CK+'Done':CK+'Mark done'}</button>`}${MORE(`data-gmm="${m.id}"`,`Options for milestone ${esc(m.t)}`)}</div>
     ${ts.length?`<div class="gm-bar"><i style="width:${(dn/ts.length*100).toFixed(1)}%"></i></div><div class="gm-ts">${gCap('ms-'+m.id,ts,gRow,3,r=>r.k)}</div>`
       :''}
     ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
@@ -394,7 +394,7 @@ const gWide=()=>matchMedia('(min-width:1100px)').matches;
 function gMsList(g){if(!g.ms.length)return '';const sel=gSel(g),nx=gNext(g),pr=gProg(g);
   return `<div class="gm-msl"><div class="gv-sec"><h2>Milestones</h2><span>${pr.n} of ${pr.of} done</span></div><div class="gpo-list">${gCap('msl',g.ms,(m,i)=>{const n=gKids(m).length;
     return `<div class="gpo-m${m.done?' on':''}${m===sel?' sel':''}${m===nx&&!g.done?' nx':''}"><button class="gpo-k" data-gtk="${m.id}" aria-pressed="${!!m.done}" aria-label="${m.done?'Reopen':'Tick'}: ${esc(m.t)}">${CK}</button><button class="gpo-ml" data-gsel="${m.id}" aria-pressed="${m===sel}" aria-label="Milestone ${i+1}: ${esc(m.t)}. Show its tasks">${esc(m.t)}${n?`<small>${gKids(m).filter(x=>x.done).length}/${n}</small>`:''}</button></div>`},3,m=>m.id)}
-    ${g.ms.length<MS_MAX&&!g.done?gAddInput('Add a milestone'):''}</div></div>`}
+    ${g.ms.length<MS_MAX&&!g.done?`<label class="gm-add gpo-add"><span class="gm-plus">${PLUS_S}</span>${gAddInput('Add a milestone')}</label>`:''}</div></div>`}
 /* phones: a hero card that stays pinned while you scroll (its sky slides under the top bar, the name and facts stay),
    then one roadmap: every milestone on a line, the selected one open with its tasks */
 const gPhone=()=>matchMedia('(max-width:699px)').matches;

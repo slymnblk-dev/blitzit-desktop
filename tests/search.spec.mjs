@@ -54,7 +54,7 @@ test('phone: search button sits left of the profile; setting hides it', async ({
   await seed(page);
   const btn = page.locator('.top-r .srch-btn');
   await expect(btn).toBeVisible();
-  const [sb, pb] = [await btn.boundingBox(), await page.locator('#setBtn').boundingBox()];
+  const [sb, pb] = [await btn.boundingBox(), await page.locator('#setBtn:visible, #topMore:visible').first().boundingBox()]; // inside a space the profile is in ⋯
   expect(sb.x).toBeLessThan(pb.x);
   await btn.click();
   await page.keyboard.type('oat');
