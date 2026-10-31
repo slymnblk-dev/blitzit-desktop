@@ -5073,8 +5073,9 @@ ul:has(>.row.imp-big)>.row .row-in{padding-left:14px}
 .rt-home .ci-hi{color:var(--today-ink)}
 .rt-home .ci-hi svg{width:20px;height:20px}
 /* reminder card (08zu-reminders.js) */
-.rem-card{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));z-index:60;width:min(440px,calc(100vw - 24px));transform:translate(-50%,-140%);display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:22px;background:var(--surface);box-shadow:0 18px 44px -18px rgba(0,0,0,.45),inset 0 0 0 1px var(--line);transition:transform .45s var(--ease);box-sizing:border-box}
-.rem-card.on{transform:translate(-50%,0)}
+.rem-card{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));z-index:60;width:min(440px,calc(100vw - 24px));transform:translate(-50%,calc(-100% - 40px - env(safe-area-inset-top,0px)));visibility:hidden;display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:22px;background:var(--surface);box-shadow:0 18px 44px -18px rgba(0,0,0,.45),inset 0 0 0 1px var(--line);transition:transform .45s var(--ease),visibility 0s .45s;box-sizing:border-box}
+/* fully out of sight when closed: on phones with a status bar its edge used to peek out at the top */
+.rem-card.on{transform:translate(-50%,0);visibility:visible;transition:transform .45s var(--ease)}
 .rem-ic{width:42px;height:42px;border-radius:14px;background:color-mix(in srgb,var(--today) 12%,transparent);color:var(--today-ink);display:grid;place-items:center;flex:none}
 .rem-ic svg{width:21px;height:21px}
 .rem-t{flex:1;min-width:0}
@@ -5471,7 +5472,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=250; // bumped with every published update
+const APP_VERSION=251; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -11558,6 +11559,15 @@ setInterval(remTick,30000);setTimeout(remTick,3000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)remTick()});
 /* turning the journal reminder on asks for notifications too */
 const _remSet=setCfg;setCfg=function(k,v){_remSet.apply(this,arguments);if(k==='jRem'&&v)remAsk()};
+/* ---------- the phone's status bar takes the colour of a full-screen moment ----------
+   While Focus (classic or Tide) or a routine is playing, the status bar / browser bar matches its background,
+   so the screen feels whole. When it closes, the bar goes back to the app's look (themeMeta). */
+const SB_IDS=['focus','tide','rtPlay'];
+function sbSync(){const el=SB_IDS.map(id=>$(id)).find(x=>x&&x.classList.contains('on'));
+  if(!el)return themeMeta();
+  const bg=getComputedStyle(el).backgroundColor;if(!bg||bg==='rgba(0, 0, 0, 0)')return;
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute('content',bg))}
+{const mo=new MutationObserver(()=>setTimeout(sbSync,30));SB_IDS.forEach(id=>{const el=$(id);if(el)mo.observe(el,{attributes:true,attributeFilter:['class','style']})})}
 /* ---------- Phone tab bar: Home and up to 3 more (the + sits on its own) ----------
    Settings → Appearance → Tabs: Home is always there; pick up to three of your modes (Inbox, Habits, Goals, Wins, Routines, Plan…).
    S.cfg.tabs holds the picked keys; not set yet, the first three in order. Turning a mode on adds its tab while there's room.
