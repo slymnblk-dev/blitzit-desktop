@@ -4,7 +4,7 @@
    Modes without a tab open from the Modes button on phone Home, and their pages get a Back button.
    This file must stay last of the tab-bar wrappers (08zz), so every mode has added its tab before we choose. */
 const TB_MAX=3;
-const TB_CFG={inbox:'inbox',habits:'habits',goals:'goals',mx:'metrics',wins:'wins',routines:'routines',plan:'plan'};
+const TB_CFG={inbox:'inbox',habits:'habits',goals:'goals',mx:'metrics',wins:'wins',routines:'routines',plan:'plan',journal:'journal'};
 const _tpList=tabsList;
 const tbAvail=()=>_tpList().filter(x=>x[0]!=='home');
 function tbPicked(sel){const av=tbAvail().map(x=>x[0]),c=sel||S.cfg.tabs;return (Array.isArray(c)?av.filter(k=>c.includes(k)):av).slice(0,TB_MAX)}

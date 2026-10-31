@@ -5142,6 +5142,89 @@ body:not(.tabs-on) .pn-tray{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 /* Settings → Modes: the hours of your day */
 .pn-hours{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
 .pn-hsel{height:36px;border:0;border-radius:999px;background:var(--surface2);padding:0 12px;color:var(--text);font:inherit;font-size:14px;font-weight:600}
+/* ===== Journal (08zt-journal.js): a line in the morning, a line at night, a mood a day; Energy optional ===== */
+:root{--mood-lav:#8E86E8}
+@media (min-width:1100px){#journalPg .ib-in{max-width:1080px;padding-top:34px}}
+@media (max-width:1099px){body.tabs-on:not(.tb-off) #journalPg .ib-top{display:none}body.tabs-on:not(.tb-off) #journalPg .jr-head{margin-top:30px}}
+.jr-head .pg-sum b{color:var(--text);font-weight:600}
+.jr-col{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.jr-gridx{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:22px;align-items:start;margin-top:26px}
+.jr-l,.jr-r{display:flex;flex-direction:column;gap:14px;min-width:0}
+.jr-day{display:flex;flex-direction:column;gap:12px;position:relative}
+.jr-past{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 4px}
+.jr-back{height:36px;padding:0 14px;border-radius:999px;background:var(--surface2);font-size:14px;font-weight:600;color:var(--text)}
+.jr-card{background:var(--surface);border-radius:22px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:8px}
+.jr-card.now{background:color-mix(in srgb,var(--today) 7%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 18%,transparent)}
+.jr-q{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.jr-q svg{width:17px;height:17px;flex:none}
+.jr-card.now .jr-q{color:var(--today-ink)}
+.jr-in{width:100%;box-sizing:border-box;border:0;background:none;outline:none;resize:vertical;min-height:52px;color:var(--text);font:inherit;font-size:17px;line-height:1.45;padding:2px 0}
+.jr-in::placeholder{color:var(--muted)}
+.jr-q2{font-size:13px;font-weight:600;color:var(--muted);margin-top:4px}
+.jr-moods{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.jr-mood{height:44px;border-radius:14px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:600}
+@media (min-width:1100px){.jr-mood{height:40px;border-radius:999px}}
+.jr-mood.on{background:var(--text);color:var(--bg)}
+.jr-dm{position:absolute;right:6px;bottom:-34px}
+.jr-day:has(.jr-dm){margin-bottom:30px}
+/* mood colours: coral for good days, lavender for low ones (green stays for switches) */
+.jm-great{--mc:var(--today);--mt:#fff}
+.jm-good{--mc:color-mix(in srgb,var(--today) 45%,var(--surface));--mt:var(--text)}
+.jm-ok{--mc:color-mix(in srgb,var(--today) 18%,var(--surface));--mt:var(--text)}
+.jm-meh{--mc:color-mix(in srgb,var(--mood-lav) 22%,var(--surface));--mt:var(--text)}
+.jm-lo{--mc:color-mix(in srgb,var(--mood-lav) 45%,var(--surface));--mt:var(--text)}
+/* the month */
+.jr-cal{background:var(--surface);border-radius:24px;padding:18px 18px 16px}
+.jr-calh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.jr-calh b{font-size:17px;font-weight:600}
+.jr-calh small{font-size:13px;color:var(--muted);flex:1}
+.jr-calh .pm-btn{width:36px;height:36px;background:var(--surface2)}
+.jr-calh .pm-btn svg{width:16px;height:16px}
+.jr-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.jr-ch{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--muted);text-align:center;height:18px}
+.jr-c{aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-size:13px;font-weight:600;background:var(--mc,var(--surface2));color:var(--mt,var(--muted))}
+.jr-c.wr{background:color-mix(in srgb,var(--text) 10%,var(--surface));color:var(--text)}
+.jr-c.now{box-shadow:inset 0 0 0 2px var(--text)}
+.jr-c.sel:not(.now){box-shadow:inset 0 0 0 2px var(--muted)}
+.jr-c:disabled{opacity:.45;cursor:default}
+.jr-leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:var(--muted)}
+.jr-leg span{display:inline-flex;align-items:center;gap:6px}
+.jr-leg i{width:12px;height:12px;border-radius:3px;background:var(--mc,var(--surface2))}
+/* earlier */
+.jr-lbl{display:block;margin:6px 4px 0}
+.jr-list{background:var(--surface);border-radius:20px;overflow:hidden}
+.jr-ent{display:flex;gap:12px;padding:12px 14px;width:100%;text-align:left;align-items:flex-start}
+.jr-ent+.jr-ent{border-top:1px solid var(--line)}
+.jr-ent>i{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none;background:var(--mc,var(--surface2))}
+.jr-ent b{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.jr-ent span span{display:block;font-size:15px;margin-top:2px;line-height:1.4;overflow-wrap:anywhere}
+/* energy */
+.jr-en{background:var(--surface);border-radius:24px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px}
+.jr-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.jr-eh small{font-size:13px;color:var(--muted)}
+.jr-lvs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.jr-lv{height:64px;border-radius:18px;background:var(--surface2);color:var(--text);font-size:15px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:transform .15s var(--ease)}
+.jr-lv:active{transform:scale(.96)}
+.jr-lv i{display:flex;gap:3px;align-items:flex-end;height:14px}
+.jr-lv i b{width:5px;border-radius:2px;background:currentColor;opacity:.2}
+.jr-lv i b:nth-child(1){height:6px}.jr-lv i b:nth-child(2){height:10px}.jr-lv i b:nth-child(3){height:14px}
+.jr-lv.lv1 i b:nth-child(1),.jr-lv.lv2 i b:nth-child(-n+2),.jr-lv.lv3 i b{opacity:1}
+.jr-usual{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px}
+.jr-usual b{font-size:15px;font-weight:600}.jr-usual small{font-size:12px;color:var(--muted)}
+.jr-chart{width:100%;height:auto;display:block}
+.jr-line{fill:none;stroke:var(--today);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.jr-dot{fill:var(--surface);stroke:var(--today);stroke-width:2}
+.jr-best{fill:var(--today);fill-opacity:.1}
+.jr-ax{font-size:11px;fill:var(--muted);text-anchor:middle;font-family:inherit}
+.jr-hint,.jr-tip{margin:0;font-size:14px;color:var(--muted);line-height:1.45}
+.jr-tip b{color:var(--text);font-weight:600}
+.jr-sn{color:var(--today)!important}
+/* Settings → Modes: Energy as an optional part */
+.md-sub{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.md-sub b{display:block;font-size:15px;font-weight:600}
+.md-sub small{display:block;font-size:13px;color:var(--muted);margin-top:2px;line-height:1.4}
+@media (min-width:1100px){.jr-grid{gap:5px}.jr-c{aspect-ratio:auto;height:40px}}
+.jr-chart{max-height:150px}
 </style>
 </head>
 <body>
@@ -5337,7 +5420,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=248; // bumped with every published update
+const APP_VERSION=249; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5434,6 +5517,9 @@ function sanitize(){
   S.okrs=Array.isArray(S.okrs)?S.okrs.filter(o=>obj(o)&&o.id!=null&&typeof o.name==='string'):[];
   S.wins=Array.isArray(S.wins)?S.wins.filter(w=>obj(w)&&w.id!=null&&typeof w.t==='string'&&Number.isFinite(+w.at)):[];
   {const old=dkey(Date.now()-14*864e5);S.blocks=Array.isArray(S.blocks)?S.blocks.filter(b=>obj(b)&&b.id!=null&&typeof b.t==='string'&&typeof b.d==='string'&&Number.isFinite(+b.s)&&Number.isFinite(+b.len)&&(b.rep||b.d>=old)):[]}
+  {const by={};S.journal=(Array.isArray(S.journal)?S.journal:[]).filter(j=>obj(j)&&j.id!=null&&typeof j.d==='string'&&/^\d{4}-\d\d-\d\d$/.test(j.d)).filter(j=>{
+    j.am=typeof j.am==='string'?j.am:'';j.pm=typeof j.pm==='string'?j.pm:'';if(!(j.mood>=1&&j.mood<=5))delete j.mood;j.en=Array.isArray(j.en)?j.en.filter(e=>obj(e)&&Number.isFinite(+e.at)&&e.v>=1&&e.v<=3):[];
+    const o=by[j.d];if(!o){by[j.d]=j;return true}if((j.u||0)>(o.u||0)){o.am=j.am||o.am;o.pm=j.pm||o.pm;if(j.mood)o.mood=j.mood;}o.en=[...o.en,...j.en.filter(e=>!o.en.some(x=>x.at===e.at))];return false})} // one entry per day
   S.routines=Array.isArray(S.routines)?S.routines.filter(r=>obj(r)&&r.id!=null&&typeof r.name==='string'):[];
   S.routines.forEach(r=>{r.steps=Array.isArray(r.steps)?r.steps.filter(x=>obj(x)&&x.id!=null&&typeof x.t==='string'):[];r.steps.forEach(x=>{x.m=Math.max(0,Math.min(180,Math.round(+x.m)||0))});
     r.days=Array.isArray(r.days)?r.days.filter(d=>Number.isInteger(d)&&d>=0&&d<7):[0,1,2,3,4,5,6];if(typeof r.at!=='string'||!/^\d\d:\d\d$/.test(r.at))r.at='';if(!obj(r.log))r.log={}});
@@ -5458,13 +5544,13 @@ let trackMap=null;
 const bareJSON=x=>{const {u,...r}=x;return JSON.stringify(r)};
 function trackChanges(){
   const now=Date.now(),m={};S.tomb=S.tomb||{};
-  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]],['g',S.goals||[]],['k',S.kpis||[]],['o',S.okrs||[]],['w',S.wins||[]],['r',S.routines||[]],['b',S.blocks||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
+  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]],['g',S.goals||[]],['k',S.kpis||[]],['o',S.okrs||[]],['w',S.wins||[]],['r',S.routines||[]],['b',S.blocks||[]],['j',S.journal||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
   if(trackMap)Object.keys(trackMap).forEach(key=>{if(key[1]===':'&&!(key in m))S.tomb[key]=now});
   m.__ord=S.tasks.map(t=>t.id).join(',');if(trackMap&&m.__ord!==trackMap.__ord)S.orderU=now;
   m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;
   trackMap=m;
 }
-let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains,S.goals,S.kpis,S.okrs,S.wins,S.routines,S.blocks],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
+let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains,S.goals,S.kpis,S.okrs,S.wins,S.routines,S.blocks,S.journal],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
 const save=()=>{try{fSave()}catch(e){};if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
 let PIP=null; // the floating focus window (desktop Chrome)
 const $=id=>document.getElementById(id);
@@ -5903,13 +5989,13 @@ function render(dir){
 function go(stage){if(stage===S.stage)return;const d=idx(stage)-idx(S.stage);S.stage=stage;haptic(5);render(d)}
 
 /* ---------- change + undo ---------- */
-const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],space:S.space,list:S.list,nid:S.nid});
+const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],journal:S.journal||[],space:S.space,list:S.list,nid:S.nid});
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
   toast(msg,()=>{
     undoHash=null;const d=JSON.parse(snap);
-    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.kpis=d.kpis||[];S.okrs=d.okrs||[];S.wins=d.wins||[];S.routines=d.routines||[];S.blocks=d.blocks||[];S.nid=Math.max(S.nid||0,d.nid||0);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.kpis=d.kpis||[];S.okrs=d.okrs||[];S.wins=d.wins||[];S.routines=d.routines||[];S.blocks=d.blocks||[];S.journal=d.journal||[];S.nid=Math.max(S.nid||0,d.nid||0);
     repairData();save();render();afterUndo();haptic(8)});
   undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
 }
@@ -7211,7 +7297,7 @@ $('dHome').addEventListener('click',e=>{
 $('dHome').addEventListener('keydown',e=>{const r=e.target.closest('[data-hft]');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDetail(+r.dataset.hft)}});
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],journal:S.journal||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;
@@ -11133,13 +11219,156 @@ modesPage=function(){const h=_pnModes.apply(this,arguments),on=planOn();
 $('setIn').addEventListener('change',e=>{const s=e.target.closest('[data-pnh]');if(!s)return;const k=s.dataset.pnh,v=+s.value;
   if(k==='planTo'&&v<=pnFrom())return toast('The day has to end after it starts');if(k==='planFrom'&&v>=pnTo())return toast('The day has to start before it ends');
   S.cfg[k]=v;S.cfgU=Date.now();save();haptic(4);if(pnOn)drawPlan()});
+/* ---------- Journal (optional mode, Settings → Modes): one line in the morning, one in the evening ----------
+   Each day has one entry in S.journal: {id, d: dayKey, am: "what would make today a win?", pm: "what went well?",
+   mood: 1 Low … 5 Great, en: [{at, v: 1 Low, 2 OK, 3 High}]} — synced, backed up and undoable.
+   Energy is an optional part (Settings → Modes → Journal → Energy check-ins): tap how you feel, and after a few
+   days Journal shows your usual day and your best hours to focus.
+   Phones: a Journal tab. Computers: "Journal" under Modes, the month of moods on the left and the day on the right. */
+var jrOn=false,jrDay=null,jrMonth=0;
+function journalOn(){return !!(S.cfg&&S.cfg.journal)}
+const jrEnergyOn=()=>journalOn()&&!!S.cfg.jEnergy;
+var JR_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5M10 11h3"/></svg>';
+const JR_SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 17a7 7 0 0 1 14 0"/><path d="M3 17h18M12 5v3M6.3 8.3l2 2M17.7 8.3l-2 2"/></svg>';
+const JR_MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/></svg>';
+const JR_MOODS=['Low','Meh','OK','Good','Great'];
+const JR_EN=['Low','OK','High'];
+/* ---------- data ---------- */
+const jrAll=()=>S.journal||(S.journal=[]);
+const jrGet=d=>jrAll().find(j=>j.d===d);
+function jrMake(d){let j=jrGet(d);if(!j){j={id:newId(),d,am:'',pm:'',en:[]};jrAll().push(j)}return j}
+const jrWritten=j=>!!(j&&(j.am.trim()||j.pm.trim()||j.mood));
+const jrDays=()=>jrAll().filter(jrWritten).length;
+const jrDate=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d,12)};
+const jrLbl=(k,o)=>k===today()?'Today':jrDate(k).toLocaleDateString(undefined,o||{weekday:'long'});
+const jrMoodCls=m=>m?['jm-lo','jm-meh','jm-ok','jm-good','jm-great'][m-1]:'';
+/* the energy you usually have at each hour (last 3 weeks of check-ins) */
+function jrEnergyByHour(){const from=Date.now()-21*864e5,by={};
+  jrAll().forEach(j=>(j.en||[]).forEach(e=>{if(e.at<from)return;const h=new Date(e.at).getHours();(by[h]=by[h]||[]).push(e.v)}));
+  const avg={};Object.keys(by).forEach(h=>avg[h]=by[h].reduce((a,b)=>a+b,0)/by[h].length);Object.defineProperty(avg,'_n',{value:by});return avg}
+const jrCheckins=()=>jrAll().reduce((a,j)=>a+(j.en||[]).length,0);
+function jrInsight(){const avg=jrEnergyByHour(),hs=Object.keys(avg).map(Number).sort((a,b)=>a-b);if(jrCheckins()<6||hs.length<3)return null;
+  /* best two hours: the highest average over at least 3 check-ins (one lucky tap doesn't count) */
+  const n=avg._n,sum=h=>(n[h]||[]).reduce((a,b)=>a+b,0),cnt=h=>(n[h]||[]).length;let best=null;
+  hs.forEach(h=>{const c=cnt(h)+cnt(h+1);if(c<3)return;const v=(sum(h)+sum(h+1))/c;if(!best||v>best.v+1e-9)best={h,v}});if(!best)return null;
+  const pm=hs.filter(h=>h>=12&&cnt(h)>=2),dip=pm.length?pm.reduce((a,h)=>avg[h]<avg[a]?h:a,pm[0]):null;
+  return {best:best.h,dip:dip!=null&&avg[dip]<best.v?dip:null}}
+
+/* ---------- the page ---------- */
+document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg jr-pg" id="journalPg" role="region" aria-label="Journal"><div class="ib-in" id="jrIn"></div></div>');
+const jrDesk=()=>matchMedia('(min-width:1100px)').matches;
+function jrDayHTML(k){const j=jrGet(k)||{am:'',pm:'',en:[]},isT=k===today(),eve=new Date().getHours()>=15;
+  const moods=JR_MOODS.map((m,i)=>`<button class="jr-mood${j.mood===i+1?' on':''} ${jrMoodCls(i+1)}" data-jrmood="${i+1}" aria-pressed="${j.mood===i+1}">${m}</button>`).join('');
+  return `<div class="jr-day">${isT?'':`<div class="jr-past"><span class="pg-eye">${jrDate(k).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}</span><button class="jr-back" data-jrtoday>Back to today</button></div>`}
+    <div class="jr-card${isT&&!eve?' now':''}"><div class="jr-q">${JR_SUN}<span>Morning · What would make ${isT?'today':'the day'} a win?</span></div>
+      <textarea class="jr-in" data-jrf="am" rows="2" maxlength="600" placeholder="Write one line…" aria-label="What would make the day a win">${esc(j.am)}</textarea></div>
+    <div class="jr-card${isT&&eve?' now':''}"><div class="jr-q">${JR_MOON}<span>Evening · What went well?</span></div>
+      <textarea class="jr-in" data-jrf="pm" rows="2" maxlength="600" placeholder="Write one line…" aria-label="What went well">${esc(j.pm)}</textarea>
+      <span class="jr-q2">How did ${isT?'today':'the day'} feel?</span><div class="jr-moods" role="group" aria-label="Mood">${moods}</div></div>
+    ${jrWritten(j)?`<div class="jr-dm">${MORE(`data-jrm="${k}"`,'More for this day')}</div>`:''}</div>`}
+function jrEnergyHTML(){if(!jrEnergyOn())return '';const j=jrGet(today()),n=(j&&j.en||[]).length,last=n?j.en[n-1]:null;
+  const avg=jrEnergyByHour(),hs=Object.keys(avg).map(Number).sort((a,b)=>a-b),ins=jrInsight();
+  const W=320,H=110,x=h=>(h-6)/(22-6)*W,y=v=>H-8-(v-1)/2*(H-24);
+  const pts=hs.filter(h=>h>=6&&h<=22).map(h=>[x(h),y(avg[h])]);
+  const path=pts.length>1?'M'+pts.map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L'):'';
+  const chart=pts.length>1?`<svg class="jr-chart" viewBox="0 0 ${W} ${H+18}" role="img" aria-label="Your usual energy through the day${ins?`: highest around ${pnHMsafe(ins.best*60)}`:''}">
+      ${ins?`<rect x="${x(ins.best)-6}" y="4" width="${x(ins.best+2)-x(ins.best)+12}" height="${H-6}" rx="10" class="jr-best"/>`:''}
+      <path d="${path}" class="jr-line"/>${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" class="jr-dot"/>`).join('')}
+      ${[7,10,14,19].map(h=>`<text x="${x(h)}" y="${H+14}" class="jr-ax">${h}:00</text>`).join('')}</svg>`:`<p class="jr-hint">Check in a few times a day. After a few days you'll see your usual energy here.</p>`;
+  return `<div class="jr-en"><div class="jr-eh"><span class="pg-eye">Energy</span><small>${n?`${n} check-in${n===1?'':'s'} today · last ${JR_EN[last.v-1]} at ${pnHMsafe(new Date(last.at).getHours()*60+new Date(last.at).getMinutes())}`:'How is your energy right now?'}</small></div>
+    <div class="jr-lvs">${JR_EN.map((l,i)=>`<button class="jr-lv lv${i+1}" data-jren="${i+1}"><i aria-hidden="true"><b></b><b></b><b></b></i>${l}</button>`).join('')}</div>
+    <div class="jr-usual"><b>Your usual day</b><small>last 3 weeks</small></div>${chart}
+    ${ins?`<p class="jr-tip">You focus best around <b>${pnHMsafe(ins.best*60)} – ${pnHMsafe((ins.best+2)*60)}</b>.${ins.dip!=null?` Your dip is around ${pnHMsafe(ins.dip*60)}: good for emails and calls.`:''}</p>`:''}</div>`}
+const pnHMsafe=m=>`${Math.floor(m/60)%24}:${String(Math.round(m)%60).padStart(2,'0')}`;
+function jrCalHTML(){const base=new Date();base.setDate(1);base.setMonth(base.getMonth()+jrMonth);const y=base.getFullYear(),m=base.getMonth();
+  const days=new Date(y,m+1,0).getDate(),lead=(new Date(y,m,1).getDay()+6)%7,t=today();
+  const cells=[...Array(lead)].map(()=>'<span class="jr-c0"></span>').join('')+[...Array(days)].map((_,i)=>{const k=dkey(new Date(y,m,i+1,12)),j=jrGet(k),fut=k>t;
+    return `<button class="jr-c ${j&&j.mood?jrMoodCls(j.mood):jrWritten(j)?'wr':''}${k===t?' now':''}${k===(jrDay||t)?' sel':''}" data-jrday="${k}" ${fut?'disabled':''} aria-label="${jrDate(k).toLocaleDateString(undefined,{month:'long',day:'numeric'})}${j&&j.mood?', '+JR_MOODS[j.mood-1]:jrWritten(j)?', written':''}">${i+1}</button>`}).join('');
+  const hd=[1,2,3,4,5,6,0].map(d=>`<span class="jr-ch">${new Date(2024,0,7+d).toLocaleDateString(undefined,{weekday:'narrow'})}</span>`).join('');
+  return `<div class="jr-cal"><div class="jr-calh"><b>${base.toLocaleDateString(undefined,{month:'long',year:y===new Date().getFullYear()?undefined:'numeric'})}</b><small>Mood each day</small>
+      <div class="hp-nav"><button class="pm-btn" data-jrmon="-1" aria-label="Previous month">${ARR_L}</button><button class="pm-btn" data-jrmon="1" aria-label="Next month" ${jrMonth>=0?'disabled':''}>${ARR_R}</button></div></div>
+    <div class="jr-grid">${hd}${cells}</div>
+    <div class="jr-leg"><span><i class="jm-great"></i>Great</span><span><i class="jm-good"></i>Good</span><span><i class="jm-ok"></i>OK</span><span><i class="jm-meh"></i>Meh</span><span><i class="jm-lo"></i>Low</span><span><i></i>Not written</span></div></div>`}
+function jrEarlierHTML(){const t=today(),list=jrAll().filter(j=>j.d<t&&jrWritten(j)).sort((a,b)=>a.d<b.d?1:-1).slice(0,jrDesk()?7:10);
+  if(!list.length)return '';
+  return `<span class="pg-eye jr-lbl">Earlier</span><div class="jr-list">${list.map(j=>`<button class="jr-ent" data-jrday="${j.d}"><i class="${jrMoodCls(j.mood)}"></i><span><b>${jrLbl(j.d,{weekday:'short',month:'short',day:'numeric'})}${j.mood?' · '+JR_MOODS[j.mood-1]:''}</b>${(j.pm||j.am).trim()?`<span>${esc((j.pm||j.am).trim())}</span>`:''}</span></button>`).join('')}</div>`}
+function jrSummary(){const n=jrDays(),ms=jrAll().filter(j=>j.mood&&j.d.slice(0,7)===today().slice(0,7)).map(j=>j.mood);
+  const avg=ms.length?ms.reduce((a,b)=>a+b,0)/ms.length:0,word=avg>=4.5?'great':avg>=3.5?'good':avg>=2.5?'OK':avg?'low':'';
+  return `<b>${n}</b> ${n===1?'day':'days'} written${word&&ms.length>=3?` · mostly <b>${word}</b> this month`:' · one line is enough'}`}
+function drawJournal(){if(!jrOn)return;const y=$('journalPg').scrollTop,desk=jrDesk(),k=jrDay||today();
+  const head=`<div class="jr-head"><span class="pg-eye">${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}</span><h1 class="ib-h wn-h">Journal</h1><div class="pg-sum">${jrSummary()}</div></div>`;
+  $('jrIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="jrBack" aria-label="Back">${BACK_SVG}</button></div>${head}
+    ${desk?`<div class="jr-gridx"><div class="jr-l">${jrCalHTML()}${jrEnergyHTML()}</div><div class="jr-r">${jrDayHTML(k)}${jrEarlierHTML()}</div></div>`
+      :`<div class="jr-col">${jrDayHTML(k)}${k===today()?jrEnergyHTML():''}${jrEarlierHTML()}${jrCalHTML()}</div>`}`;
+  $('journalPg').scrollTop=y}
+function openJournal(){if(!journalOn())return;
+  if(ibOn)closeInbox();if(rhOn)closeRhythm();if(glOn)closeGoals();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();if(typeof mtOn!=='undefined'&&mtOn)closeMetrics();if(wnOn)closeWins();if(rtOn)closeRoutines();if(pnOn)closePlan();if(typeof closeSearch==='function')closeSearch();
+  jrOn=true;jrDay=null;jrMonth=0;drawJournal();$('journalPg').classList.add('on');document.body.classList.add('ib-open');$('journalPg').scrollTop=0;haptic(5);
+  if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
+function closeJournal(){if(!jrOn)return;jrSaveNow();jrOn=false;$('journalPg').classList.remove('on');if(!ibOn&&!rhOn&&!wnOn&&!rtOn&&!pnOn)document.body.classList.remove('ib-open');
+  const a=document.activeElement;if(a&&a.closest&&a.closest('#journalPg'))a.blur();if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
+/* writing saves quietly as you type (no Undo toast per letter) */
+let jrT=null,jrPend=null;
+function jrSaveNow(){clearTimeout(jrT);if(!jrPend)return;const {k,f,v}=jrPend;jrPend=null;const j=jrMake(k);if(j[f]!==v){j[f]=v;save();try{renderDesk()}catch(e){}}}
+$('journalPg').addEventListener('input',e=>{const ta=e.target.closest('[data-jrf]');if(!ta)return;jrPend={k:jrDay||today(),f:ta.dataset.jrf,v:ta.value.slice(0,600)};clearTimeout(jrT);jrT=setTimeout(jrSaveNow,500)});
+$('journalPg').addEventListener('focusout',e=>{if(e.target.closest('[data-jrf]')){jrSaveNow();setTimeout(()=>{if(jrOn&&!document.activeElement.closest('#journalPg [data-jrf]'))drawJournal()},0)}});
+$('journalPg').addEventListener('keydown',e=>{if(e.target.closest('[data-jrf]')&&e.key==='Escape'){e.preventDefault();e.stopPropagation();e.target.blur()}});
+$('journalPg').addEventListener('click',e=>{
+  if(e.target.closest('#jrBack'))return closeJournal();
+  const md=e.target.closest('[data-jrmood]');if(md){jrSaveNow();const k=jrDay||today(),v=+md.dataset.jrmood,j=jrMake(k);j.mood=j.mood===v?undefined:v;if(!j.mood)delete j.mood;save();haptic(5);try{sfx('toggle')}catch(err){}return drawJournal()}
+  const en=e.target.closest('[data-jren]');if(en){const j=jrMake(today());j.en=j.en||[];j.en.push({at:Date.now(),v:+en.dataset.jren});save();haptic(6);try{sfx('done')}catch(err){}toast(`Energy: ${JR_EN[+en.dataset.jren-1]} · noted`);return drawJournal()}
+  const dy=e.target.closest('[data-jrday]');if(dy){jrSaveNow();jrDay=dy.dataset.jrday===today()?null:dy.dataset.jrday;haptic(4);drawJournal();if(!jrDesk())$('journalPg').scrollTo({top:0,behavior:'smooth'});return}
+  if(e.target.closest('[data-jrtoday]')){jrDay=null;return drawJournal()}
+  const mo=e.target.closest('[data-jrmon]');if(mo){const n=jrMonth+ +mo.dataset.jrmon;if(n>0)return;jrMonth=n;haptic(4);return drawJournal()}
+  const m=e.target.closest('[data-jrm]');if(m){e.stopPropagation();const k=m.dataset.jrm;
+    cxOpen(m,[{t:'Clear this day',ic:BIN_S,warn:1,act:()=>{commit(()=>{const j=jrGet(k);if(j){j.am='';j.pm='';delete j.mood}},'Day cleared');drawJournal()}}])}});
+
+/* ---------- keep it fresh ---------- */
+const _jrRender=render;render=function(d){_jrRender(d);try{if(jrOn){if(!journalOn())closeJournal();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#journalPg [data-jrf]'))drawJournal()}}catch(err){console.error(err)}};
+
+/* ---------- computers: "Journal" under Modes in the sidebar ---------- */
+const _jrSide=rhythmSide;
+rhythmSide=function(){const h=_jrSide();if(!journalOn())return h;const done=jrWritten(jrGet(today()));
+  const it=`<button class="s-list s-home s-inbox ${jrOn?'on':''}" id="sJournal" title="Journal">${JR_ICON}<span class="s-name">Journal</span>${done?'<span class="n jr-sn" aria-label="Written today">✓</span>':''}</button>`;
+  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`};
+$('sLists').addEventListener('click',e=>{
+  if(e.target.closest('#sJournal')){e.stopImmediatePropagation();return jrOn?closeJournal():openJournal()}
+  if(jrOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins,#sRoutines,#sPlan'))closeJournal()},true);
+for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics','openWins','openRoutines','openPlan']){const f=window[fn];if(typeof f!=='function')continue;
+  window[fn]=function(){if(jrOn)closeJournal();return f.apply(this,arguments)}}
+const _jrDesk=renderDesk;renderDesk=function(){_jrDesk.apply(this,arguments);if(jrOn){const h=$('sHome');if(h)h.classList.remove('on')}};
+document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!jrOn||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on,.cx-pop.on'))return;
+  if(e.target&&e.target.closest&&e.target.closest('#journalPg textarea'))return;if(!jrDesk())return;e.preventDefault();closeJournal()});
+ESC_PAGES.journalPg=()=>{if(jrDay){jrDay=null;return drawJournal()}closeJournal()};
+
+/* ---------- phones: a Journal tab ---------- */
+TB_I.journal=JR_ICON;
+const _jrTabs=tabsList;
+tabsList=function(){let t=_jrTabs();if(!journalOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['journal','Journal',JR_ICON]);return t};
+const _jrTabNow=tabNow;tabNow=function(){return jrOn?'journal':_jrTabNow()};
+const _jrTbGo=tbGo;
+tbGo=function(k){
+  if(k==='journal'){if(jrOn){if(jrDay){jrDay=null;drawJournal()}$('journalPg').scrollTo({top:0,behavior:'smooth'});return}_jrTbGo('home');openJournal();return drawTabs()}
+  if(jrOn)closeJournal();return _jrTbGo(k)};
+/* the + on the Journal tab jumps to today's line */
+document.addEventListener('click',e=>{if(!jrOn||!e.target.closest('#tbAdd'))return;e.preventDefault();e.stopImmediatePropagation();jrDay=null;drawJournal();
+  const ta=$('jrIn').querySelector(`[data-jrf="${new Date().getHours()>=15?'pm':'am'}"]`);if(ta){ta.focus();ta.scrollIntoView({block:'center',behavior:'smooth'})}},true);
+const _jrApply=applySettings;applySettings=function(){_jrApply.apply(this,arguments);if(jrOn&&!journalOn())closeJournal()};
+
+/* ---------- Settings → Modes: a Journal card, with Energy as an optional part ---------- */
+const _jrModes=modesPage;
+modesPage=function(){const h=_jrModes.apply(this,arguments),on=journalOn();
+  const card=`<div class="md-card${on?' on':''}" data-md="journal"><div class="md-head"><span class="md-ic">${JR_ICON}</span><span class="md-t"><b>Journal</b><small>One line in the morning, one at night</small></span>${tg('journal')}</div>
+    ${on?`<div class="md-body"><p class="md-note">What would make today a win, what went well, and how the day felt. Your moods fill a calendar.</p>
+      <div class="md-sub"><span><b>Energy check-ins</b><small>Tap how you feel during the day. Journal learns your best hours to focus.</small></span>${tg('jEnergy')}</div></div>`:''}</div>`;
+  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)};
 /* ---------- Phone tab bar: Home and up to 3 more (the + sits on its own) ----------
    Settings → Appearance → Tabs: Home is always there; pick up to three of your modes (Inbox, Habits, Goals, Wins, Routines, Plan…).
    S.cfg.tabs holds the picked keys; not set yet, the first three in order. Turning a mode on adds its tab while there's room.
    Modes without a tab open from the Modes button on phone Home, and their pages get a Back button.
    This file must stay last of the tab-bar wrappers (08zz), so every mode has added its tab before we choose. */
 const TB_MAX=3;
-const TB_CFG={inbox:'inbox',habits:'habits',goals:'goals',mx:'metrics',wins:'wins',routines:'routines',plan:'plan'};
+const TB_CFG={inbox:'inbox',habits:'habits',goals:'goals',mx:'metrics',wins:'wins',routines:'routines',plan:'plan',journal:'journal'};
 const _tpList=tabsList;
 const tbAvail=()=>_tpList().filter(x=>x[0]!=='home');
 function tbPicked(sel){const av=tbAvail().map(x=>x[0]),c=sel||S.cfg.tabs;return (Array.isArray(c)?av.filter(k=>c.includes(k)):av).slice(0,TB_MAX)}
@@ -12164,11 +12393,11 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],journal:S.journal||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
     try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
       const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
       const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.kpis=Array.isArray(d.kpis)?d.kpis:(S.kpis||[]);S.okrs=Array.isArray(d.okrs)?d.okrs:(S.okrs||[]);S.wins=Array.isArray(d.wins)?d.wins:(S.wins||[]);S.routines=Array.isArray(d.routines)?d.routines:(S.routines||[]);S.blocks=Array.isArray(d.blocks)?d.blocks:(S.blocks||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.kpis=Array.isArray(d.kpis)?d.kpis:(S.kpis||[]);S.okrs=Array.isArray(d.okrs)?d.okrs:(S.okrs||[]);S.wins=Array.isArray(d.wins)?d.wins:(S.wins||[]);S.routines=Array.isArray(d.routines)?d.routines:(S.routines||[]);S.blocks=Array.isArray(d.blocks)?d.blocks:(S.blocks||[]);S.journal=Array.isArray(d.journal)?d.journal:(S.journal||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
@@ -12220,7 +12449,7 @@ function loadDemo(){
 }
 function resetAll(){
   const keep={lastBackup:S.lastBackup,syncedUser:S.syncedUser,syncV:S.syncV,tomb:S.tomb,nid:S.nid};
-  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.kpis=[];S.okrs=[];S.wins=[];S.routines=[];S.blocks=[];S.lens={};
+  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.kpis=[];S.okrs=[];S.wins=[];S.routines=[];S.blocks=[];S.journal=[];S.lens={};
   const sp={id:'s'+newId(),name:'Personal',c:'#9C95FF',e:'🌱',autoSet:true};
   S.spaces=[sp];S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:sp.id}];
   S.cfg=JSON.parse(JSON.stringify(DEF_CFG));S.focusLog={};S.resetAt=Date.now();
@@ -12248,7 +12477,7 @@ const CID=Math.random().toString(36).slice(2);
 let sb=null,user=null,syncState='off',syncTimer=null,pendingRemote=null,channel=null,applying=false,lastHash='';
 let authStep='email',authEmail='',authBusy=false,authMsg='',resendAt=0;
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[],S.goals||[],S.kpis||[],S.okrs||[],S.wins||[],S.routines||[],S.blocks||[]]);
+const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[],S.goals||[],S.kpis||[],S.okrs||[],S.wins||[],S.routines||[],S.blocks||[],S.journal||[]]);
 const busyUI=()=>document.querySelector('.sheet.on,.focus.on,.tide.on');
 const SYNC_LABEL={off:'Off',syncing:'Syncing…',synced:'Up to date',offline:'Offline, will sync later',error:'Couldn’t sync, will retry'};
 function setSync(s){syncState=s;const el=document.getElementById('syncStatus');if(el)el.textContent=SYNC_LABEL[s];try{drawMe()}catch(e){}
@@ -12258,8 +12487,8 @@ function cloudDirty(){
   S.dirty=true;S.editAt=Date.now();saveLocal();clearTimeout(syncTimer);syncTimer=setTimeout(push,1500);
 }
 /* ---- merge: combine two copies item by item, newest change wins, deletions respected ---- */
-const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
-const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog,d.habits||[],d.hchains||[],d.goals||[],d.kpis||[],d.okrs||[],d.wins||[],d.routines||[],d.blocks||[]]);
+const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],journal:S.journal||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
+const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog,d.habits||[],d.hchains||[],d.goals||[],d.kpis||[],d.okrs||[],d.wins||[],d.routines||[],d.blocks||[],d.journal||[]]);
 function mergeDocs(L,Rm){
   const tomb={...(Rm.tomb||{})};Object.entries(L.tomb||{}).forEach(([k,v])=>{if(!tomb[k]||tomb[k]<v)tomb[k]=v});
   const cut=Date.now()-60*DAY;Object.keys(tomb).forEach(k=>{if(tomb[k]<cut)delete tomb[k]});
@@ -12275,12 +12504,12 @@ function mergeDocs(L,Rm){
   const lr=L.resetAt||0,rr=Rm.resetAt||0;
   const fl=lr!==rr?{...((lr>rr?L:Rm).focusLog||{})}:{...(Rm.focusLog||{})};if(lr===rr)Object.entries(L.focusLog||{}).forEach(([k,v])=>{fl[k]=Math.max(fl[k]||0,v)});
   const lc=(L.cfgU||0)>=(Rm.cfgU||0);
-  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),habits:mergeArr('h',L.habits,Rm.habits,true),hchains:mergeArr('c',L.hchains,Rm.hchains,true),goals:mergeArr('g',L.goals,Rm.goals,true),kpis:mergeArr('k',L.kpis,Rm.kpis,true),okrs:mergeArr('o',L.okrs,Rm.okrs,true),wins:mergeArr('w',L.wins,Rm.wins,true),routines:mergeArr('r',L.routines,Rm.routines,true),blocks:mergeArr('b',L.blocks,Rm.blocks,true),
+  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),habits:mergeArr('h',L.habits,Rm.habits,true),hchains:mergeArr('c',L.hchains,Rm.hchains,true),goals:mergeArr('g',L.goals,Rm.goals,true),kpis:mergeArr('k',L.kpis,Rm.kpis,true),okrs:mergeArr('o',L.okrs,Rm.okrs,true),wins:mergeArr('w',L.wins,Rm.wins,true),routines:mergeArr('r',L.routines,Rm.routines,true),blocks:mergeArr('b',L.blocks,Rm.blocks,true),journal:mergeArr('j',L.journal,Rm.journal,true),
     cfg:lc?L.cfg:(Rm.cfg||L.cfg),cfgU:Math.max(L.cfgU||0,Rm.cfgU||0),orderU:Math.max(L.orderU||0,Rm.orderU||0),tomb,nid:Math.max(L.nid||0,Rm.nid||0),focusLog:fl,resetAt:Math.max(lr,rr)};
 }
 function applyDoc(d){
   applying=true;
-  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(Array.isArray(d.habits))S.habits=d.habits;if(Array.isArray(d.hchains))S.hchains=d.hchains;if(Array.isArray(d.goals))S.goals=d.goals;if(Array.isArray(d.kpis))S.kpis=d.kpis;if(Array.isArray(d.okrs))S.okrs=d.okrs;if(Array.isArray(d.wins))S.wins=d.wins;if(Array.isArray(d.routines))S.routines=d.routines;if(Array.isArray(d.blocks))S.blocks=d.blocks;if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
+  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(Array.isArray(d.habits))S.habits=d.habits;if(Array.isArray(d.hchains))S.hchains=d.hchains;if(Array.isArray(d.goals))S.goals=d.goals;if(Array.isArray(d.kpis))S.kpis=d.kpis;if(Array.isArray(d.okrs))S.okrs=d.okrs;if(Array.isArray(d.wins))S.wins=d.wins;if(Array.isArray(d.routines))S.routines=d.routines;if(Array.isArray(d.blocks))S.blocks=d.blocks;if(Array.isArray(d.journal))S.journal=d.journal;if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
   S.cfgU=d.cfgU||0;S.orderU=d.orderU||0;S.tomb=d.tomb||{};S.nid=Math.max(S.nid||0,d.nid||0);S.focusLog=d.focusLog||{};if(d.resetAt)S.resetAt=d.resetAt;
   if(d.cfg)S.cfg=Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors)});
   migrateSpaces();

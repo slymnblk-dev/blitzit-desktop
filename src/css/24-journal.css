@@ -1,0 +1,83 @@
+/* ===== Journal (08zt-journal.js): a line in the morning, a line at night, a mood a day; Energy optional ===== */
+:root{--mood-lav:#8E86E8}
+@media (min-width:1100px){#journalPg .ib-in{max-width:1080px;padding-top:34px}}
+@media (max-width:1099px){body.tabs-on:not(.tb-off) #journalPg .ib-top{display:none}body.tabs-on:not(.tb-off) #journalPg .jr-head{margin-top:30px}}
+.jr-head .pg-sum b{color:var(--text);font-weight:600}
+.jr-col{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.jr-gridx{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:22px;align-items:start;margin-top:26px}
+.jr-l,.jr-r{display:flex;flex-direction:column;gap:14px;min-width:0}
+.jr-day{display:flex;flex-direction:column;gap:12px;position:relative}
+.jr-past{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 4px}
+.jr-back{height:36px;padding:0 14px;border-radius:999px;background:var(--surface2);font-size:14px;font-weight:600;color:var(--text)}
+.jr-card{background:var(--surface);border-radius:22px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:8px}
+.jr-card.now{background:color-mix(in srgb,var(--today) 7%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 18%,transparent)}
+.jr-q{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.jr-q svg{width:17px;height:17px;flex:none}
+.jr-card.now .jr-q{color:var(--today-ink)}
+.jr-in{width:100%;box-sizing:border-box;border:0;background:none;outline:none;resize:vertical;min-height:52px;color:var(--text);font:inherit;font-size:17px;line-height:1.45;padding:2px 0}
+.jr-in::placeholder{color:var(--muted)}
+.jr-q2{font-size:13px;font-weight:600;color:var(--muted);margin-top:4px}
+.jr-moods{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.jr-mood{height:44px;border-radius:14px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:600}
+@media (min-width:1100px){.jr-mood{height:40px;border-radius:999px}}
+.jr-mood.on{background:var(--text);color:var(--bg)}
+.jr-dm{position:absolute;right:6px;bottom:-34px}
+.jr-day:has(.jr-dm){margin-bottom:30px}
+/* mood colours: coral for good days, lavender for low ones (green stays for switches) */
+.jm-great{--mc:var(--today);--mt:#fff}
+.jm-good{--mc:color-mix(in srgb,var(--today) 45%,var(--surface));--mt:var(--text)}
+.jm-ok{--mc:color-mix(in srgb,var(--today) 18%,var(--surface));--mt:var(--text)}
+.jm-meh{--mc:color-mix(in srgb,var(--mood-lav) 22%,var(--surface));--mt:var(--text)}
+.jm-lo{--mc:color-mix(in srgb,var(--mood-lav) 45%,var(--surface));--mt:var(--text)}
+/* the month */
+.jr-cal{background:var(--surface);border-radius:24px;padding:18px 18px 16px}
+.jr-calh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.jr-calh b{font-size:17px;font-weight:600}
+.jr-calh small{font-size:13px;color:var(--muted);flex:1}
+.jr-calh .pm-btn{width:36px;height:36px;background:var(--surface2)}
+.jr-calh .pm-btn svg{width:16px;height:16px}
+.jr-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.jr-ch{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--muted);text-align:center;height:18px}
+.jr-c{aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-size:13px;font-weight:600;background:var(--mc,var(--surface2));color:var(--mt,var(--muted))}
+.jr-c.wr{background:color-mix(in srgb,var(--text) 10%,var(--surface));color:var(--text)}
+.jr-c.now{box-shadow:inset 0 0 0 2px var(--text)}
+.jr-c.sel:not(.now){box-shadow:inset 0 0 0 2px var(--muted)}
+.jr-c:disabled{opacity:.45;cursor:default}
+.jr-leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:var(--muted)}
+.jr-leg span{display:inline-flex;align-items:center;gap:6px}
+.jr-leg i{width:12px;height:12px;border-radius:3px;background:var(--mc,var(--surface2))}
+/* earlier */
+.jr-lbl{display:block;margin:6px 4px 0}
+.jr-list{background:var(--surface);border-radius:20px;overflow:hidden}
+.jr-ent{display:flex;gap:12px;padding:12px 14px;width:100%;text-align:left;align-items:flex-start}
+.jr-ent+.jr-ent{border-top:1px solid var(--line)}
+.jr-ent>i{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none;background:var(--mc,var(--surface2))}
+.jr-ent b{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.jr-ent span span{display:block;font-size:15px;margin-top:2px;line-height:1.4;overflow-wrap:anywhere}
+/* energy */
+.jr-en{background:var(--surface);border-radius:24px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px}
+.jr-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.jr-eh small{font-size:13px;color:var(--muted)}
+.jr-lvs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.jr-lv{height:64px;border-radius:18px;background:var(--surface2);color:var(--text);font-size:15px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:transform .15s var(--ease)}
+.jr-lv:active{transform:scale(.96)}
+.jr-lv i{display:flex;gap:3px;align-items:flex-end;height:14px}
+.jr-lv i b{width:5px;border-radius:2px;background:currentColor;opacity:.2}
+.jr-lv i b:nth-child(1){height:6px}.jr-lv i b:nth-child(2){height:10px}.jr-lv i b:nth-child(3){height:14px}
+.jr-lv.lv1 i b:nth-child(1),.jr-lv.lv2 i b:nth-child(-n+2),.jr-lv.lv3 i b{opacity:1}
+.jr-usual{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px}
+.jr-usual b{font-size:15px;font-weight:600}.jr-usual small{font-size:12px;color:var(--muted)}
+.jr-chart{width:100%;height:auto;display:block}
+.jr-line{fill:none;stroke:var(--today);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.jr-dot{fill:var(--surface);stroke:var(--today);stroke-width:2}
+.jr-best{fill:var(--today);fill-opacity:.1}
+.jr-ax{font-size:11px;fill:var(--muted);text-anchor:middle;font-family:inherit}
+.jr-hint,.jr-tip{margin:0;font-size:14px;color:var(--muted);line-height:1.45}
+.jr-tip b{color:var(--text);font-weight:600}
+.jr-sn{color:var(--today)!important}
+/* Settings → Modes: Energy as an optional part */
+.md-sub{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.md-sub b{display:block;font-size:15px;font-weight:600}
+.md-sub small{display:block;font-size:13px;color:var(--muted);margin-top:2px;line-height:1.4}
+@media (min-width:1100px){.jr-grid{gap:5px}.jr-c{aspect-ratio:auto;height:40px}}
+.jr-chart{max-height:150px}
