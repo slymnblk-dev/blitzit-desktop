@@ -277,3 +277,14 @@
    The old auto margins needed "Up next" to be the last thing shown; with steps it was hidden and everything sank to the bottom. */
 .f-main{justify-content:safe center}
 .f-main>:first-child{margin-top:0}.f-main>:last-child{margin-bottom:0}
+/* Beta (08zw-beta.js): the folded group in Settings → Modes, and the badge after a beta page's title */
+.bt-grp{border-radius:20px;background:var(--surface);margin:2px 0 10px;overflow:hidden}
+.bt-head{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;text-align:left;color:var(--text)}
+.bt-t{flex:1;min-width:0}.bt-t b{display:block;font-size:16px;font-weight:600}.bt-t small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.bt-chev{width:20px;height:20px;color:var(--muted);transition:transform .25s var(--ease)}
+.bt-grp.open .bt-chev{transform:rotate(180deg)}
+.bt-body{display:flex;flex-direction:column;gap:10px;padding:0 10px 10px}
+.bt-body[hidden]{display:none}
+.bt-body .md-card{margin:0}
+.bt-tag{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;flex:none}
+#winsPg h1.ib-h::after,#routinesPg h1.ib-h::after,#planPg h1.ib-h::after,#journalPg h1.ib-h::after,#metricsPg h1.hp-h::after{content:'Beta';display:inline-flex;align-items:center;vertical-align:middle;height:22px;padding:0 9px;margin-left:12px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;line-height:1}

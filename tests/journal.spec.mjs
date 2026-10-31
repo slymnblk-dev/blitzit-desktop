@@ -49,6 +49,7 @@ test('Energy check-ins (optional): log, then your usual day and best hours; comp
   await expect(page.locator('#journalPg .jr-en')).toHaveCount(0);
   // turn on Energy from Settings → Modes → Journal
   await page.evaluate(() => { openSettings(); setView = 'modes'; drawSettings(); });
+  await page.locator('#setIn [data-btgrp]').click(); // the Beta group starts folded
   await page.locator('#setIn .md-card[data-md="journal"] [data-tg="jEnergy"]').click();
   await expect.poll(() => page.evaluate(() => S.cfg.jEnergy)).toBe(true);
   await page.evaluate(() => { closeSettings(); openJournal(); });

@@ -83,6 +83,7 @@ test('computer: sidebar opens Plan; drag a task onto the day; tap an empty hour 
   // Settings → Modes: Plan card with the hours of the day
   await page.evaluate(() => { S.cfg.planFrom = 480; S.cfg.planTo = 1200; openSettings(); setView = 'modes'; drawSettings(); });
   await expect(page.locator('#setIn .md-card[data-md="plan"]')).toContainText('Time blocks for today');
+  await page.locator('#setIn [data-btgrp]').click(); // the Beta group starts folded
   await page.locator('#setIn [data-pnh="planFrom"]').selectOption('420');
   expect(await page.evaluate(() => S.cfg.planFrom)).toBe(420);
   noErrors(errors);

@@ -4852,6 +4852,17 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
    The old auto margins needed "Up next" to be the last thing shown; with steps it was hidden and everything sank to the bottom. */
 .f-main{justify-content:safe center}
 .f-main>:first-child{margin-top:0}.f-main>:last-child{margin-bottom:0}
+/* Beta (08zw-beta.js): the folded group in Settings → Modes, and the badge after a beta page's title */
+.bt-grp{border-radius:20px;background:var(--surface);margin:2px 0 10px;overflow:hidden}
+.bt-head{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;text-align:left;color:var(--text)}
+.bt-t{flex:1;min-width:0}.bt-t b{display:block;font-size:16px;font-weight:600}.bt-t small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.bt-chev{width:20px;height:20px;color:var(--muted);transition:transform .25s var(--ease)}
+.bt-grp.open .bt-chev{transform:rotate(180deg)}
+.bt-body{display:flex;flex-direction:column;gap:10px;padding:0 10px 10px}
+.bt-body[hidden]{display:none}
+.bt-body .md-card{margin:0}
+.bt-tag{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;flex:none}
+#winsPg h1.ib-h::after,#routinesPg h1.ib-h::after,#planPg h1.ib-h::after,#journalPg h1.ib-h::after,#metricsPg h1.hp-h::after{content:'Beta';display:inline-flex;align-items:center;vertical-align:middle;height:22px;padding:0 9px;margin-left:12px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;line-height:1}
 /* ===== Wins (08zp-wins.js): a jar that fills itself ===== */
 @media (min-width:1100px){#winsPg .ib-in{max-width:1080px;padding-top:34px}}
 @media (max-width:1099px){body.tabs-on #winsPg .ib-top{display:none}#winsPg .wn-head{margin-top:30px}}
@@ -5476,7 +5487,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=252; // bumped with every published update
+const APP_VERSION=253; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -11572,6 +11583,21 @@ function sbSync(){const el=SB_IDS.map(id=>$(id)).find(x=>x&&x.classList.contains
   const bg=getComputedStyle(el).backgroundColor;if(!bg||bg==='rgba(0, 0, 0, 0)')return;
   document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute('content',bg))}
 {const mo=new MutationObserver(()=>setTimeout(sbSync,30));SB_IDS.forEach(id=>{const el=$(id);if(el)mo.observe(el,{attributes:true,attributeFilter:['class','style']})})}
+/* ---------- Beta: newer modes live in a folded "Beta" group in Settings → Modes, and their pages wear a Beta badge ----------
+   The group starts folded each time Settings opens; switching a mode on or off inside it keeps it open. */
+const BETA_MD=['mx','wins','routines','plan','journal'];
+let betaOpen=false;
+const _btModes=modesPage;
+modesPage=function(){const h=_btModes.apply(this,arguments),tpl=document.createElement('template');tpl.innerHTML=h;
+  const cards=BETA_MD.map(k=>tpl.content.querySelector(`.md-card[data-md="${k}"]`)).filter(Boolean);if(!cards.length)return h;
+  const on=cards.filter(c=>c.classList.contains('on')).length;
+  const grp=document.createElement('div');grp.className='bt-grp'+(betaOpen?' open':'');
+  grp.innerHTML=`<button class="bt-head" data-btgrp aria-expanded="${betaOpen}"><span class="bt-tag">Beta</span><span class="bt-t"><b>Try new modes</b><small>${cards.length} modes still being polished${on?` · ${on} on`:''}</small></span><svg class="bt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button><div class="bt-body"${betaOpen?'':' hidden'}></div>`;
+  cards[0].before(grp);const body=grp.querySelector('.bt-body');cards.forEach(c=>body.appendChild(c));
+  return tpl.innerHTML};
+$('setIn').addEventListener('click',e=>{const b=e.target.closest('[data-btgrp]');if(!b)return;e.stopPropagation();betaOpen=!betaOpen;haptic(4);
+  const g=b.closest('.bt-grp');g.classList.toggle('open',betaOpen);b.setAttribute('aria-expanded',betaOpen);g.querySelector('.bt-body').hidden=!betaOpen},true);
+const _btOpenSet=openSettings;openSettings=function(){betaOpen=false;return _btOpenSet.apply(this,arguments)};
 /* ---------- Phone tab bar: Home and up to 3 more (the + sits on its own) ----------
    Settings → Appearance → Tabs: Home is always there; pick up to three of your modes (Inbox, Habits, Goals, Wins, Routines, Plan…).
    S.cfg.tabs holds the picked keys; not set yet, the first three in order. Turning a mode on adds its tab while there's room.
