@@ -7,7 +7,7 @@ test('off by default; on: start from a template, edit steps, play it through, st
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.habits = true; save(); applySettings(); goHome(); });
   await expect(page.locator('#tabBar [data-tab="routines"]')).toHaveCount(0);
-  await page.evaluate(() => { S.cfg.routines = true; S.cfg.wins = true; save(); applySettings(); goHome(); });
+  await page.evaluate(() => { S.cfg.routines = true; S.cfg.wins = true; S.cfg.tabs = ['habits', 'wins', 'routines']; save(); applySettings(); goHome(); });
   await page.locator('#tabBar [data-tab="routines"]').click();
   await expect(page.locator('#routinesPg')).toHaveClass(/on/);
   // empty: three templates

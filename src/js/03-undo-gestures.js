@@ -1,11 +1,11 @@
 /* ---------- change + undo ---------- */
-const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],space:S.space,list:S.list,nid:S.nid});
+const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],space:S.space,list:S.list,nid:S.nid});
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
   toast(msg,()=>{
     undoHash=null;const d=JSON.parse(snap);
-    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.kpis=d.kpis||[];S.okrs=d.okrs||[];S.wins=d.wins||[];S.routines=d.routines||[];S.nid=Math.max(S.nid||0,d.nid||0);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.kpis=d.kpis||[];S.okrs=d.okrs||[];S.wins=d.wins||[];S.routines=d.routines||[];S.blocks=d.blocks||[];S.nid=Math.max(S.nid||0,d.nid||0);
     repairData();save();render();afterUndo();haptic(8)});
   undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
 }

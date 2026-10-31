@@ -261,3 +261,15 @@
 }
 #inboxPg .ib-list .row,#inboxPg .ib-list .row-in{background:var(--surface)}
 #inboxPg .ib-list .row-in{padding-left:0;padding-right:0}
+/* phone tab bar: Home + up to 3 (08zz-tabs-pick.js) */
+.modes-btn{display:none}
+@media (max-width:1099px){body.tb-more .modes-btn{display:grid}:root[data-view="space"] .modes-btn{display:none!important}
+  body.tabs-on.tb-off #glBack{visibility:visible}
+  body.tabs-on.tb-off #winsPg .ib-top,body.tabs-on.tb-off #routinesPg .ib-top{display:flex}}
+.tbp-row{flex-direction:column;align-items:stretch!important;gap:12px}
+.tbp-row .set-l b{color:var(--text);font-weight:600}
+.tbp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));grid-auto-rows:72px;align-content:start;gap:8px}
+.tbp{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:72px;padding:10px 6px;border-radius:14px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:600}
+.tbp svg{width:22px;height:22px}
+.tbp.on{background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 2px var(--text)}
+.mdp-set{border-top:1px solid var(--line);margin-top:4px;padding-top:10px!important;color:var(--muted)}

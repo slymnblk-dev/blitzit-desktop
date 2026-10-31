@@ -226,11 +226,11 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],routines:S.routines||[],blocks:S.blocks||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
     try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
       const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
       const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.kpis=Array.isArray(d.kpis)?d.kpis:(S.kpis||[]);S.okrs=Array.isArray(d.okrs)?d.okrs:(S.okrs||[]);S.wins=Array.isArray(d.wins)?d.wins:(S.wins||[]);S.routines=Array.isArray(d.routines)?d.routines:(S.routines||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.kpis=Array.isArray(d.kpis)?d.kpis:(S.kpis||[]);S.okrs=Array.isArray(d.okrs)?d.okrs:(S.okrs||[]);S.wins=Array.isArray(d.wins)?d.wins:(S.wins||[]);S.routines=Array.isArray(d.routines)?d.routines:(S.routines||[]);S.blocks=Array.isArray(d.blocks)?d.blocks:(S.blocks||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
@@ -282,7 +282,7 @@ function loadDemo(){
 }
 function resetAll(){
   const keep={lastBackup:S.lastBackup,syncedUser:S.syncedUser,syncV:S.syncV,tomb:S.tomb,nid:S.nid};
-  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.kpis=[];S.okrs=[];S.wins=[];S.routines=[];S.lens={};
+  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.kpis=[];S.okrs=[];S.wins=[];S.routines=[];S.blocks=[];S.lens={};
   const sp={id:'s'+newId(),name:'Personal',c:'#9C95FF',e:'🌱',autoSet:true};
   S.spaces=[sp];S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:sp.id}];
   S.cfg=JSON.parse(JSON.stringify(DEF_CFG));S.focusLog={};S.resetAt=Date.now();

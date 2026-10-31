@@ -15,7 +15,7 @@ test('Wins is off by default; on, it gathers the week and keeps your own wins (a
     const done = {}; for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() - i); done[dkey(d)] = 1; }
     S.habits = [{ id: 'h1', name: 'Drink water', e: '', space: null, days: [0, 1, 2, 3, 4, 5, 6], done, created: Date.now() - 30 * 864e5 }];
     S.goals = [{ id: 'g1', name: 'Run a half marathon', e: '', space: null, why: '', due: gPlus(3), created: Date.now(), ms: [{ id: 'm1', t: '10 km', done: true, doneAt: Date.now() }, { id: 'm2', t: '21 km', done: false }] }];
-    S.cfg.goals = true; save(); applySettings(); goHome();
+    S.cfg.goals = true; S.cfg.tabs = ['habits', 'goals', 'wins']; save(); applySettings(); goHome();
   });
   await page.locator('#tabBar [data-tab="wins"]').click();
   await expect(page.locator('#winsPg')).toHaveClass(/on/);
