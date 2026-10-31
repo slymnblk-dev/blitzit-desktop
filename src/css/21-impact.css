@@ -1,0 +1,32 @@
+/* ===== Impact (02-tasks-render.js): how much a task matters. Violet, so it never reads as priority or done ===== */
+:root{--imp:#7A5AF8;--imp-s:#EEE9FF}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--imp:#A996FF;--imp-s:#2A2540}}
+:root[data-theme="dark"]{--imp:#A996FF;--imp-s:#2A2540}
+.imp-sp{display:inline-flex;gap:2px;color:var(--imp)}
+.imp-sp svg{width:13px;height:13px;flex:none}
+.imp-sp svg.o{opacity:.25}
+/* rows: sparks (or the number), a "Quick win" tag, and a thin violet line for Big */
+.meta .mi.imp{color:var(--imp)}
+.meta .mi.imp b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:999px;background:var(--imp-s);color:var(--imp);font-size:12px;font-weight:800}
+.meta .mi.imp-qw{height:20px;padding:0 7px;border-radius:999px;background:var(--imp-s);color:var(--imp);font-size:12px;font-weight:800;gap:4px}
+.meta .mi.imp-qw svg{width:11px;height:11px}
+ul:has(>.row.imp-big)>.row .row-in{padding-left:14px}
+.row.imp-big .row-in::after{content:'';position:absolute;left:0;top:16px;bottom:16px;width:3.5px;border-radius:3px;background:var(--imp)}
+.row.imp-big[class*=" pe-"] .row-in::after{display:none}
+/* task details: the pill and the picker */
+#dPills .pill[data-p="imp"]:not(.muted){background:var(--imp-s);color:var(--imp)}
+#dPills .pill[data-p="imp"]>svg{width:14px;height:14px}
+#dPills .pill .imp-sp svg{width:12px;height:12px}
+#dPicker[data-k="imp"]{padding:12px}
+.imp-pk{display:flex;flex-direction:column;gap:8px;width:100%}
+.imp-h{font-size:13px;font-weight:600;color:var(--muted);margin:0 2px}
+.imp-lv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#dPicker .pk.imp-c{height:auto;min-height:72px;padding:10px 6px;border-radius:14px;flex-direction:column;justify-content:center;gap:3px;text-align:center;line-height:1.1}
+.pk.imp-c b{font-size:13px;font-weight:600}
+.pk.imp-c small{font-size:12px;color:var(--muted)}
+#dPicker .pk.imp-c.on{background:var(--surface);box-shadow:inset 0 0 0 2px var(--imp);color:var(--imp)}
+.imp-dots{display:flex;gap:6px;justify-content:center}
+#dPicker .pk.imp-d{width:44px;height:44px;padding:0;border-radius:50%;justify-content:center;font-size:15px;font-weight:800;color:var(--muted)}
+#dPicker .pk.imp-d.on{background:var(--imp);color:#fff}
+.imp-ax{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:600;margin:0 2px}
+.wn-ic.big{background:var(--imp-s);color:var(--imp)}

@@ -5,15 +5,37 @@ function nextDate(rep){
   do{d=new Date(d.getTime()+DAY)}while(rep==='weekdays'&&(d.getDay()===0||d.getDay()===6));
   return dkey(d);
 }
-/* priority order (optional, on by default): High, then Medium, then Low, then the rest; your own order stays within each level */
+/* impact (optional, Settings → Tasks): how much a task matters once it's done, kept as 1–5 on t.imp.
+   "levels" shows it as Small (1–2), Medium (3), Big (4–5) with violet sparks; "num" shows the number. Off hides it. */
+const impStyle=()=>(S.cfg&&S.cfg.impStyle)||'levels';
+const impOn=()=>impStyle()!=='off';
+const IMP_LV=[{id:'s',name:'Small',v:1,n:1,sub:'nice to do'},{id:'m',name:'Medium',v:3,n:2,sub:'moves things'},{id:'b',name:'Big',v:5,n:3,sub:'changes the week'}];
+const impLv=t=>{const v=+(t&&t.imp)||0;return v?IMP_LV[v<=2?0:v===3?1:2]:null};
+const impVal=t=>impOn()?(impStyle()==='num'?+(t&&t.imp)||0:(impLv(t)||{n:0}).n):0;
+const SPARK='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg>';
+const impSparks=n=>`<span class="imp-sp">${[0,1,2].map(i=>SPARK.replace('<svg',`<svg class="${i<n?'':'o'}"`)).join('')}</span>`;
+/* "Quick win": big impact for 30 minutes or less */
+const impQuick=t=>impOn()&&(+t.imp||0)>=4&&t.est>0&&t.est<=30;
+function impLabel(t){if(!impOn()||!t.imp)return '';return impStyle()==='num'?'Impact '+t.imp:impLv(t).name+' impact'}
+/* task details: the Impact pill and its picker (three cards with sparks, or five circles) */
+function impPill(t,P){if(!impOn())return '';const v=+t.imp||0;
+  return P('imp',v?(impStyle()==='num'?`${SPARK}Impact ${v}`:`${impSparks(impLv(t).n)}${impLv(t).name} impact`):`${SPARK}Impact`,!v)}
+function impPicks(t,pk){const v=+t.imp||0;
+  if(impStyle()==='num')return `<div class="imp-pk"><span class="imp-h">Impact</span><div class="imp-dots">${[1,2,3,4,5].map(n=>`<button class="pk imp-d ${v===n?'on':''}" data-v="${v===n?0:n}" aria-pressed="${v===n}" aria-label="Impact ${n}">${n}</button>`).join('')}</div><div class="imp-ax"><span>Barely matters</span><span>Changes everything</span></div></div>`;
+  const cur=impLv(t);
+  return `<div class="imp-pk"><span class="imp-h">How much will this matter?</span><div class="imp-lv">${IMP_LV.map(l=>`<button class="pk imp-c ${cur&&cur.id===l.id?'on':''}" data-v="${cur&&cur.id===l.id?0:l.v}" aria-pressed="${!!(cur&&cur.id===l.id)}">${impSparks(l.n)}<b>${l.name}</b><small>${l.sub}</small></button>`).join('')}</div></div>`}
+/* order (automatic): the biggest impact first, then High, Medium, Low priority (if on); your own order stays within each level */
 const priSortOn=()=>!S.cfg||S.cfg.priSort!==false;
 const priRank=t=>({high:0,med:1,low:2})[t&&t.pri]??3;
-const priSorted=list=>priSortOn()?[...list].sort((a,b)=>priRank(a)-priRank(b)):list;
-/* after a drag: did the person drop the task where priority order won't let it stay? */
-function priBreaks(t,prev,next){return priSortOn()&&((prev&&priRank(prev)>priRank(t))||(next&&priRank(next)<priRank(t)))}
+const ordRank=t=>(impOn()?(5-impVal(t))*10:0)+(priSortOn()?priRank(t):0);
+const ordOn=()=>priSortOn()||impOn();
+const priSorted=list=>ordOn()?[...list].sort((a,b)=>ordRank(a)-ordRank(b)):list;
+/* after a drag: did the person drop the task where the automatic order won't let it stay? */
+function priBreaks(t,prev,next){return ordOn()&&((prev&&ordRank(prev)>ordRank(t))||(next&&ordRank(next)<ordRank(t)))}
 let priHintAt=0;
 function priHint(t){if(Date.now()-priHintAt<1500)return;priHintAt=Date.now();
-  toast('Sorted by priority. To move this task, change its priority.')}
+  const by=impOn()&&impVal(t)?(priSortOn()?'impact and priority':'impact'):'priority';
+  toast(`Sorted by ${by}. To move this task, change its ${by==='impact and priority'?'impact or priority':by}.`)}
 function setStage(t,stage){
   const was=t.stage;t.stage=stage;
   sfxStage(t,was,stage);
@@ -21,7 +43,7 @@ function setStage(t,stage){
   if(stage==='done'&&was!=='done'){
     t.doneAt=Date.now();
     if(t.repeat!=='none'&&!t.spawned){
-      const c={id:newId(),title:t.title,stage:'today',list:t.list,est:t.est,notes:t.notes,repeat:t.repeat,...(t.pri?{pri:t.pri}:{}),
+      const c={id:newId(),title:t.title,stage:'today',list:t.list,est:t.est,notes:t.notes,repeat:t.repeat,...(t.pri?{pri:t.pri}:{}),...(t.imp?{imp:t.imp}:{}),
         subs:t.subs.map(s=>({...s,done:false})),showFrom:nextDate(t.repeat)};
       S.tasks.push(c);t.spawned=c.id;
     }
@@ -67,16 +89,19 @@ function rowHTML(t){
   const l=listOf(t.list);
   const sd=t.subs.filter(s=>s.done).length;
   const pr=t.stage!=='done'?priOf(t):null,ps=S.cfg.priStyle||'bars';
+  const im=t.stage!=='done'&&impOn()&&+t.imp>0;
   const extra=[
     pr&&ps==='bars'?`<span class="mi pri ${pr.id}" title="${pr.name} priority">${priIcon(pr.n)}${pr.name}</span>`:'',
     goalStar(t),
+    im?`<span class="mi imp" title="${impLabel(t)}">${impStyle()==='num'?`<b>${t.imp}</b>`:impSparks(impLv(t).n)}</span>`:'',
+    im&&impQuick(t)?`<span class="mi imp-qw">${SPARK}Quick win</span>`:'',
     (typeof mxMark==='function'?mxMark(t):''),
     tagChips(t,3),
     t.repeat!=='none'?`<span class="mi">${I_REP}${REPEATS.find(r=>r.id===t.repeat).name}</span>`:'',
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
     t.notes.trim()?`<span class="mi" aria-label="Has notes">${I_NOTE}</span>`:''
   ].join('');
-  return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''} ${pr&&ps==='ring'?'pr-'+pr.id:''} ${pr&&ps==='edge'?'pe-'+pr.id:''} ${pr&&ps==='tint'?'pt-'+pr.id:''}" data-id="${t.id}">
+  return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''} ${pr&&ps==='ring'?'pr-'+pr.id:''} ${pr&&ps==='edge'?'pe-'+pr.id:''} ${pr&&ps==='tint'?'pt-'+pr.id:''} ${im&&impStyle()==='levels'&&t.imp>=4?'imp-big':''}" data-id="${t.id}">
     <div class="under"><span></span></div>
     <div class="row-in">
       <button class="check" data-check aria-label="Complete">${CHECK}</button>
@@ -122,7 +147,8 @@ function spaceCards(){return spaceRows()}
 /* Today's tasks ordered like the space list: pinned spaces first, then the rest top to bottom */
 function bySpaceOrder(ts){
   const rank=new Map(orderedSpaces().map((sp,i)=>[sp.id,i]));
-  return ts.map((t,i)=>({t,i,r:rank.has(listOf(t.list).space)?rank.get(listOf(t.list).space):999})).sort((a,b)=>a.r-b.r||a.i-b.i).map(x=>x.t);
+  const o=ordOn();
+  return ts.map((t,i)=>({t,i,r:rank.has(listOf(t.list).space)?rank.get(listOf(t.list).space):999,k:o?ordRank(t):0})).sort((a,b)=>a.r-b.r||a.k-b.k||a.i-b.i).map(x=>x.t);
 }
 /* the Home card is about one space: pinned first, otherwise the first space (top to bottom) with tasks in Today */
 function focusSpace(td){const sp=orderedSpaces().find(x=>td.some(t=>listOf(t.list).space===x.id));return sp||null}

@@ -6,7 +6,7 @@
 var wnOn=false,wnWeek=0,wnAdding=false;
 function winsOn(){return !!(S.cfg&&S.cfg.wins)}
 var WN_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M5 5H3v1a4 4 0 0 0 4 4M19 5h2v1a4 4 0 0 1-4 4M12 13v4M8 20h8"/></svg>';
-const WN_I={
+const WN_I={big:SPARK,rt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M4 12h10M4 17h7"/><path d="M17 15l4 2.5-4 2.5z" fill="currentColor"/></svg>',
   task:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
   streak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 18.5h17"/><path d="M7.5 18.5a4.5 4.5 0 0 1 9 0"/><path d="M12 6.5V9M6.2 9.6l1.7 1.7M17.8 9.6l-1.7 1.7"/></svg>',
   ms:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V4"/><path d="M6 4.5h11l-2.2 4.2L17 13H6"/></svg>',
@@ -15,7 +15,7 @@ const WN_I={
   mine:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'};
 const WN_STREAKS=[3,7,14,21,30,50,100,150,200,250,300,365,500,730,1000];
 /* the order highlights are told in (biggest first) */
-const WN_RANK={goal:0,ms:1,streak:2,day:3,mine:4,task:5};
+const WN_RANK={goal:0,ms:1,big:2,streak:3,rt:4,day:5,mine:6,task:7};
 
 /* a habit's streak on one day: due days in a row, done, ending that day (rest days don't break it) */
 function wnStreakAt(h,d){const done=h.done||{},born=dkey(new Date(h.created||0));let n=0;const x=new Date(d);x.setHours(12,0,0,0);
@@ -27,18 +27,20 @@ function wnCollect(off){
   const spName=t=>{const l=listOf(t.list),sp=l&&spaceOf(l.space);return sp?(sp.e?sp.e+' ':'')+sp.name:''};
   const arch=new Set(S.arch||[]);
   [...S.tasks,...arch].forEach(t=>{if(!t||t.note||t.inbox)return;const day=t.stage==='done'||arch.has(t)?inW(t.doneAt):null;
-    if(day)add('task',t.title,['Task',spName(t)].filter(Boolean).join(' · '),t.doneAt,day)});
+    const big=impOn()&&+t.imp>=4; // big-impact tasks are highlights
+    if(day)add(big?'big':'task',t.title,[big?'Big impact':'Task',spName(t)].filter(Boolean).join(' · '),t.doneAt,day)});
   gList().forEach(g=>{if(!g)return;
     (g.ms||[]).forEach(m=>{const day=m.done&&inW(m.doneAt);if(day)add('ms',`Milestone: ${m.t}`,g.name,m.doneAt,day);
       (m.items||[]).forEach(it=>{const d2=it.done&&inW(it.doneAt);if(d2)add('task',it.t,`Task · ${g.name}`,it.doneAt,d2)})});
     const day=g.done&&inW(g.doneAt);if(day)add('goal',`Goal achieved: ${g.name}`,g.why||'Every step got you here.',g.doneAt,day)});
   if(typeof hbAll==='function')hbAll().forEach(h=>{days.forEach((d,i)=>{if(keys[i]>today()||!(h.done||{})[keys[i]])return;const n=wnStreakAt(h,d);
     if(WN_STREAKS.includes(n))add('streak',`${n} days in a row: ${h.name}`,'Habit streak',null,keys[i],{n})})});
+  if(typeof routinesOn==='function'&&routinesOn())(S.routines||[]).forEach(r=>Object.keys(r.log||{}).forEach(k=>{if(keys.includes(k))add('rt',`Routine: ${r.name}`,`${r.steps.length} ${r.steps.length===1?'step':'steps'}`,null,k)}));
   (S.wins||[]).forEach(w=>{const day=inW(w.at);if(!day)return;
     if(w.kind==='day')add('day','You won the day',w.t||'Every Today task done',w.at,day,{id:w.id});
     else add('mine',w.t,'Added by you',w.at,day,{id:w.id,mine:true})});
   return {days,keys,list:out}}
-const wnCounts=list=>{const c={task:0,streak:0,ms:0,day:0,mine:0};list.forEach(w=>{c[w.kind==='goal'?'ms':w.kind]++});return c};
+const wnCounts=list=>{const c={task:0,streak:0,rt:0,ms:0,day:0,mine:0};list.forEach(w=>{c[w.kind==='goal'?'ms':w.kind==='big'?'task':w.kind]++});return c};
 const wnPerDay=(keys,list)=>keys.map(k=>list.filter(w=>w.day===k).length);
 const wnBest=(days,per)=>{const m=Math.max(...per);return m?days[per.indexOf(m)].toLocaleDateString(undefined,{weekday:'long'}):''};
 const wnWeekLbl=off=>off===0?'This week':off===-1?'Last week':`${-off} weeks ago`;
@@ -56,7 +58,7 @@ function drawWins(){if(!wnOn)return;const y=$('winsPg').scrollTop;
   const bars=days.map((d,i)=>{const k=keys[i],h=per[i]?Math.max(10,Math.round(per[i]/max*100)):4,top=per[i]===max&&per[i]>0;
     return `<span class="wn-bar${top?' top':''}${k===t?' now':''}${k>t?' fut':''}"><i style="height:${h}%"></i><small>${d.toLocaleDateString(undefined,{weekday:'short'})}</small></span>`}).join('');
   const chip=(v,l1,l2)=>v?`<span class="wn-chip"><b>${v}</b> ${v===1?l1:l2}</span>`:'';
-  const chips=[chip(c.task,'task','tasks'),chip(c.streak,'streak','streaks'),chip(c.ms,'milestone','milestones'),chip(c.day,'won day','won days'),chip(c.mine,'of yours','of yours')].join('');
+  const chips=[chip(c.task,'task','tasks'),chip(c.streak,'streak','streaks'),chip(c.rt,'routine','routines'),chip(c.ms,'milestone','milestones'),chip(c.day,'won day','won days'),chip(c.mine,'of yours','of yours')].join('');
   const groups=keys.map((k,i)=>({k,d:days[i],ws:list.filter(w=>w.day===k).sort((a,b)=>(WN_RANK[a.kind]-WN_RANK[b.kind])||((b.at||0)-(a.at||0)))})).filter(g=>g.ws.length).reverse();
   const addRow=wnAdding?`<div class="wn-add on"><span class="wn-ic mine">${WN_I.mine}</span><input id="wnNew" placeholder="What went well?" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="Your win"><button class="ib-cap-go wn-go" data-wnsave aria-label="Add win">${I_UP}</button></div>`
     :`<button class="wn-add" data-wnadd><span class="wn-pl">${PLUS_S}</span>Add a win of your own</button>`;

@@ -9,7 +9,7 @@ let audio0=null;
 $('goBtn').onclick=()=>{
   let q=visible().filter(t=>t.stage==='today');
   if(!q.length)q=visible().filter(t=>t.stage==='week');
-  if(!inSpaceMode())q=bySpaceOrder(q); // from Home or All tasks: same order as the space list
+  q=inSpaceMode()?priSorted(q):bySpaceOrder(q); // same order as the list you see (biggest impact, then priority)
   if(!q.length)return toast('Add a task to Today first');
   startBlitz(q);
 };

@@ -78,13 +78,13 @@ function drawDetail(){
   $('dPills').innerHTML=t.inbox?
     P('list',`${I_SEND}Send to a list`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
-    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))
+    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+impPill(t,P)
   :
     P('stage',`<i style="background:${color(t.stage)}"></i>${esc(st.name)}`)+
     P('list',`<i style="background:${l.c}"></i>${esc(l.name)}`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
     P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
-    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+
+    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+impPill(t,P)+
     (goalPill(t,P))+
     (typeof mxPill==='function'?mxPill(t,P):'')+
     (secOn()&&t.stage!=='done'&&secsForTask(t).length?P('sec',`${I_SEC}${secOfTask(t)?esc(secOfTask(t).name):'Section'}`,!secOfTask(t)):'')+
@@ -98,6 +98,7 @@ function drawDetail(){
       est:()=>ESTS.map(m=>pk(t.est===m,m,fmt(m))).join(''),
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
       pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
+      imp:()=>impPicks(t,pk),
       goal:()=>goalPicks(t,pk),
       mx:()=>mxPicks(t),
       sec:()=>pk(!secOfTask(t),'','No section')+secsForTask(t).map(s=>pk((secOfTask(t)||{}).id===s.id,s.id,s.name)).join(''),
@@ -140,6 +141,7 @@ $('dPicker').onclick=e=>{
   else if(k==='est')t.est=+v;
   else if(k==='repeat')t.repeat=v;
   else if(k==='pri'){if(v)t.pri=v;else delete t.pri}
+  else if(k==='imp'){if(+v)t.imp=+v;else delete t.imp}
   else if(k==='sec'){if(v)t.sec=v;else delete t.sec}
   else if(k==='goal'){if(String(v)!==String(t.goal))delete t.ms;if(v)t.goal=v;else delete t.goal}
   if(k!=='stage'){save();render()}
