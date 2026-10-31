@@ -22,6 +22,8 @@
 - **Live = dev = 0.228** (commit `a1eec5e`). All 131 tests pass.
 
 ## What landed recently (newest first)
+- 0.246 **Wins** mode (Settings → Modes, off by default): `08zp-wins.js`, `20-wins.css`. Auto wins from done tasks (and goal milestone tasks), habit streak milestones (3, 7, 14, 21, 30…), milestones, goals achieved, won days (logged in `S.wins` kind 'day' when the last Today task is ticked); your own wins in `S.wins` kind 'mine' (synced key `w`, backup, undo). Phone: Wins tab (+ adds a win). Computer: sidebar under Modes. Week reel dialog. Tests: `tests/wins.spec.mjs`.
+- 0.241–0.245: consistency pass (design system below), desktop Habits grid, Inbox sort + redesign (capture first), calmer Home hero, ink + button.
 - 0.228 Phone Home: Settings → Appearance → **On Home show: Spaces / Lists**. Lists view = every list grouped under its space, one tap opens it (`homeSpaces()` in 02-tasks-render.js, `[data-hlopen]` in 09-spaces.js).
 - 0.227 Today card (phone) no longer shows "+N more".
 - 0.226 Phone tab bar: **Floating** pill (default, coral + on its own) or **With labels** (`navStyle`, 08p-tabs.js + 12-phone.css).
@@ -41,6 +43,10 @@
 - Adding: in a list, a "+ Add …" row with a light ring around the +; on an empty card, one soft pill (`--surface2`). Typing fields keep their field.
 - Round buttons: Back top-left, close and ⋯ top-right, 40px, filled. Tab pages (Inbox, Habits, Goals) have no Back on phones while the tab bar shows; pages you drill into always do.
 - Phone header inside a space: Back · space switcher · search · ⋯ (KPIs & OKRs, Profile & settings).
+
+## Next up (agreed with Suly)
+- **Task Impact** in task details: let the user choose a task's impact. Build right after Wins.
+- Later modes Suly liked (mock-ups on the Claude Design canvas "Windaday New Modes"): **Routines**, **Plan** (time blocks), **Journal** with **Energy** as an optional part of it.
 
 ## Ideas mentioned, not built
 - Pin up to 3 lists to Home (design option A on the canvas, "Phone Home · quicker way into a list").

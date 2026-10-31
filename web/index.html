@@ -4836,6 +4836,81 @@ button.cm-r:hover,.cm-rl:hover{background:color-mix(in srgb,var(--text) 3%,trans
 }
 #inboxPg .ib-list .row,#inboxPg .ib-list .row-in{background:var(--surface)}
 #inboxPg .ib-list .row-in{padding-left:0;padding-right:0}
+/* ===== Wins (08zp-wins.js): a jar that fills itself ===== */
+@media (min-width:1100px){#winsPg .ib-in{max-width:1080px;padding-top:34px}}
+@media (max-width:1099px){body.tabs-on #winsPg .ib-top{display:none}#winsPg .wn-head{margin-top:30px}}
+.wn-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.wn-h{margin:8px 0 6px!important}
+.wn-head .pg-sum b{color:var(--text);font-weight:600}
+.wn-acts{display:flex;align-items:center;gap:8px}
+.wn-reelb{height:40px;padding:0 16px;border-radius:999px;background:var(--text);color:var(--bg);font-size:15px;font-weight:800}
+.wn-grid{display:flex;flex-direction:column;gap:14px;margin-top:20px}
+@media (min-width:1100px){.wn-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:start;margin-top:26px}}
+.wn-l{display:flex;flex-direction:column;gap:10px;min-width:0}
+.wn-r{display:flex;flex-direction:column;gap:16px;min-width:0}
+/* the jar */
+.wn-jar{background:color-mix(in srgb,var(--today) 9%,var(--surface));border-radius:28px;padding:18px 20px 16px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 20%,transparent)}
+.wn-jt{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.wn-je{color:var(--today-ink)}
+.wn-n{display:block;font-size:56px;font-weight:800;letter-spacing:-.05em;line-height:.95;margin-top:4px;font-variant-numeric:tabular-nums}
+@media (min-width:1100px){.wn-n{font-size:72px}}
+.wn-bars{flex:1;max-width:320px;height:96px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;align-items:end}
+@media (min-width:1100px){.wn-bars{height:128px;gap:10px}}
+.wn-bar{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+.wn-bar i{display:block;width:100%;max-width:22px;border-radius:6px;background:color-mix(in srgb,var(--today) 55%,var(--surface));transition:height .5s var(--ease)}
+@media (min-width:1100px){.wn-bar i{max-width:34px;border-radius:8px}}
+.wn-bar.top i{background:var(--today)}
+.wn-bar.fut i{background:var(--surface2)}
+.wn-bar small{font-size:12px;color:var(--muted);font-weight:600}
+.wn-bar.now small{color:var(--text);font-weight:800}
+.wn-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.wn-chip{height:28px;padding:0 10px;border-radius:999px;background:var(--surface);font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.wn-chip b{color:var(--text);font-weight:600}
+.wn-empty{margin:12px 0 0;font-size:15px;color:var(--muted);line-height:1.45}
+.wn-cmp{margin:2px 6px 0;font-size:13px;color:var(--muted)}
+/* add a win of your own */
+.wn-add{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:0 14px;border-radius:20px;background:var(--surface);color:var(--muted);font-size:15px;font-weight:600;text-align:left;box-sizing:border-box}
+.wn-pl svg{width:26px;height:26px;padding:6.5px;box-sizing:border-box;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted);display:block}
+.wn-add.on{padding:6px 6px 6px 12px;box-shadow:inset 0 0 0 1.5px var(--text)}
+.wn-add input{flex:1;min-width:0;border:0;background:none;outline:none;color:var(--text);font:inherit;font-size:16px;font-weight:500}
+.wn-add input::placeholder{color:var(--muted)}
+.wn-go{width:40px!important;height:40px!important;opacity:1!important;margin:0!important;transform:none!important;pointer-events:auto!important;background:var(--text)!important;color:var(--bg)!important}
+/* highlights */
+.wn-day .pg-eye{display:block;margin:0 4px 8px}
+.wn-list{background:var(--surface);border-radius:20px;overflow:hidden}
+.wn-it{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:60px;box-sizing:border-box}
+.wn-it+.wn-it{border-top:1px solid var(--line)}
+.wn-ic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--surface2);color:var(--text)}
+.wn-ic svg{width:17px;height:17px}
+.wn-ic.streak,.wn-ic.day,.wn-ic.mine{background:color-mix(in srgb,var(--today) 13%,var(--surface));color:var(--today-ink)}
+.wn-ic.ms,.wn-ic.goal{background:color-mix(in srgb,var(--week) 16%,var(--surface));color:var(--week-ink)}
+.wn-tx{flex:1;min-width:0}
+.wn-tx b{display:block;font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.wn-tx small{display:block;font-size:13px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wn-tm{font-size:13px;color:var(--muted);flex:none}
+.wn-it .gm-more{margin-right:-6px}
+@media (hover:hover){.wn-it .gm-more{opacity:0}.wn-it:hover .gm-more,.wn-it:focus-within .gm-more{opacity:1}}
+/* the week reel */
+.wn-rin{max-width:420px;background:color-mix(in srgb,var(--today) 7%,var(--surface));position:relative;overflow:hidden;padding:20px 22px 20px;display:flex;flex-direction:column;gap:6px}
+.wn-rin::before{content:"";position:absolute;left:-30%;right:-30%;bottom:-40%;height:70%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,176,92,.45),rgba(255,120,90,.12) 60%,transparent);pointer-events:none}
+.wn-rin>*{position:relative}
+.wn-rtop{display:flex;justify-content:space-between;align-items:center}
+.wn-rtop .pg-eye{color:var(--today-ink)}
+.wn-rtop .icon-btn{background:var(--surface)}
+.wn-rsun{width:56px;height:56px;color:var(--today);margin-top:6px}
+.wn-rsun svg{width:100%;height:100%}
+.wn-rbig{font-size:88px;font-weight:800;letter-spacing:-.06em;line-height:.85;font-variant-numeric:tabular-nums}
+.wn-rl{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.wn-rp{margin:6px 0 4px;font-size:15px;color:var(--muted);line-height:1.45}
+.wn-rp b{color:var(--text)}
+.wn-rlist{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.wn-rit{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:color-mix(in srgb,var(--surface) 80%,transparent)}
+.wn-racts{display:flex;gap:8px;margin-top:12px}
+.wn-rgo{flex:1;margin:0!important;background:var(--text)!important;color:var(--bg)!important}
+.wn-rclose{height:56px;padding:0 20px;border-radius:999px;background:var(--surface);color:var(--text);font-size:16px;font-weight:600}
+.wn-reel.on .wn-rsun{animation:mwRise .9s .1s var(--ease) both}
+.wn-reel.on .wn-rbig{animation:moCard .5s var(--ease) both}
+:root[data-motion="off"] .wn-reel .wn-rsun,:root[data-motion="off"] .wn-reel .wn-rbig{animation:none}
 </style>
 </head>
 <body>
@@ -5031,7 +5106,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=245; // bumped with every published update
+const APP_VERSION=246; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -5126,6 +5201,7 @@ function sanitize(){
   S.kpis=Array.isArray(S.kpis)?S.kpis.filter(k=>obj(k)&&k.id!=null&&typeof k.name==='string'):[];
   S.kpis.forEach(k=>{k.log=mxLog(k.log);if(!Number.isFinite(+k.target))k.target=0});
   S.okrs=Array.isArray(S.okrs)?S.okrs.filter(o=>obj(o)&&o.id!=null&&typeof o.name==='string'):[];
+  S.wins=Array.isArray(S.wins)?S.wins.filter(w=>obj(w)&&w.id!=null&&typeof w.t==='string'&&Number.isFinite(+w.at)):[];
   S.okrs.forEach(o=>{o.krs=Array.isArray(o.krs)?o.krs.filter(r=>obj(r)&&r.id!=null&&typeof r.name==='string'):[];o.krs.forEach(r=>{r.log=mxLog(r.log)})});
   if(!obj(S.lens))S.lens={};
   if(!obj(S.cfg))delete S.cfg;
@@ -5147,13 +5223,13 @@ let trackMap=null;
 const bareJSON=x=>{const {u,...r}=x;return JSON.stringify(r)};
 function trackChanges(){
   const now=Date.now(),m={};S.tomb=S.tomb||{};
-  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]],['g',S.goals||[]],['k',S.kpis||[]],['o',S.okrs||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
+  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]],['g',S.goals||[]],['k',S.kpis||[]],['o',S.okrs||[]],['w',S.wins||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
   if(trackMap)Object.keys(trackMap).forEach(key=>{if(key[1]===':'&&!(key in m))S.tomb[key]=now});
   m.__ord=S.tasks.map(t=>t.id).join(',');if(trackMap&&m.__ord!==trackMap.__ord)S.orderU=now;
   m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;
   trackMap=m;
 }
-let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains,S.goals,S.kpis,S.okrs],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
+let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains,S.goals,S.kpis,S.okrs,S.wins],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
 const save=()=>{try{fSave()}catch(e){};if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};try{cloudDirty()}catch(e){}};
 let PIP=null; // the floating focus window (desktop Chrome)
 const $=id=>document.getElementById(id);
@@ -5566,13 +5642,13 @@ function render(dir){
 function go(stage){if(stage===S.stage)return;const d=idx(stage)-idx(S.stage);S.stage=stage;haptic(5);render(d)}
 
 /* ---------- change + undo ---------- */
-const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],space:S.space,list:S.list,nid:S.nid});
+const snapshot=()=>JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],space:S.space,list:S.list,nid:S.nid});
 function commit(fn,msg){
   const snap=snapshot();
   fn();render();
   toast(msg,()=>{
     undoHash=null;const d=JSON.parse(snap);
-    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.kpis=d.kpis||[];S.okrs=d.okrs||[];S.nid=Math.max(S.nid||0,d.nid||0);
+    S.tasks=d.tasks;S.lists=d.lists;S.spaces=d.spaces;S.arch=d.arch||[];S.habits=d.habits||[];S.hchains=d.hchains||[];S.goals=d.goals||[];S.kpis=d.kpis||[];S.okrs=d.okrs||[];S.wins=d.wins||[];S.nid=Math.max(S.nid||0,d.nid||0);
     repairData();save();render();afterUndo();haptic(8)});
   undoHash=undoCore(); // once tasks, lists or spaces change again (another edit, a sync), this undo is withdrawn
 }
@@ -6872,7 +6948,7 @@ $('dHome').addEventListener('click',e=>{
 $('dHome').addEventListener('keydown',e=>{const r=e.target.closest('[data-hft]');if(r&&e.target===r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDetail(+r.dataset.hft)}});
 
 /* ---------- backup reminder (only for people not signed in) ---------- */
-const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
+const backupData=()=>JSON.stringify({app:'blitzit',v:8,tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],cfg:S.cfg,nid:S.nid,tomb:S.tomb||{},cfgU:S.cfgU||0,orderU:S.orderU||0});
 const canDownload=()=>CLOUD; // file downloads work in the installed app, not inside the Claude preview
 function needBackup(){
   if(!S.cfg||S.cfg.backupRemind===false)return false;
@@ -10249,6 +10325,166 @@ addEventListener('keydown',e=>{
   const k={'1':'today','2':'week','3':'backlog',s:'skip',S:'skip'}[e.key];if(k){e.preventDefault();e.stopImmediatePropagation();ibsAct(k)}
 },true);
 ESC_PAGES.ibSort=()=>ibSortClose();
+/* ---------- Wins (optional mode, Settings → Modes) ----------
+   A jar that fills itself. Every week it gathers what you already did — tasks finished, habit streaks that hit
+   3, 7, 14, 21, 30, 50, 100… days, milestones climbed, goals achieved, days you won (every Today task done) — plus
+   wins you add yourself. Phones: a Wins tab. Computers: "Wins" under Modes in the sidebar.
+   Your own wins and won days are kept in S.wins ({id, t, at, kind:'mine'|'day'}): synced, backed up and undoable. */
+var wnOn=false,wnWeek=0,wnAdding=false;
+function winsOn(){return !!(S.cfg&&S.cfg.wins)}
+var WN_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M5 5H3v1a4 4 0 0 0 4 4M19 5h2v1a4 4 0 0 1-4 4M12 13v4M8 20h8"/></svg>';
+const WN_I={
+  task:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  streak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 18.5h17"/><path d="M7.5 18.5a4.5 4.5 0 0 1 9 0"/><path d="M12 6.5V9M6.2 9.6l1.7 1.7M17.8 9.6l-1.7 1.7"/></svg>',
+  ms:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V4"/><path d="M6 4.5h11l-2.2 4.2L17 13H6"/></svg>',
+  goal:WN_ICON,
+  day:'<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg>',
+  mine:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'};
+const WN_STREAKS=[3,7,14,21,30,50,100,150,200,250,300,365,500,730,1000];
+/* the order highlights are told in (biggest first) */
+const WN_RANK={goal:0,ms:1,streak:2,day:3,mine:4,task:5};
+
+/* a habit's streak on one day: due days in a row, done, ending that day (rest days don't break it) */
+function wnStreakAt(h,d){const done=h.done||{},born=dkey(new Date(h.created||0));let n=0;const x=new Date(d);x.setHours(12,0,0,0);
+  for(let i=0;i<1100;i++){const k=dkey(x);if(k<born)break;if(done[k])n++;else if(hbDue(h,x)){if(i===0)return 0;break}x.setDate(x.getDate()-1)}return n}
+/* everything won in one week (off = 0 this week, -1 last week, …) */
+function wnCollect(off){
+  const days=hpWeekDays(off),keys=days.map(d=>dkey(d)),first=keys[0],last=keys[6],inW=at=>{if(!at)return null;const k=dkey(at);return k>=first&&k<=last?k:null};
+  const out=[],add=(kind,t,sub,at,day,extra)=>out.push({kind,t,sub,at,day,...(extra||{})});
+  const spName=t=>{const l=listOf(t.list),sp=l&&spaceOf(l.space);return sp?(sp.e?sp.e+' ':'')+sp.name:''};
+  const arch=new Set(S.arch||[]);
+  [...S.tasks,...arch].forEach(t=>{if(!t||t.note||t.inbox)return;const day=t.stage==='done'||arch.has(t)?inW(t.doneAt):null;
+    if(day)add('task',t.title,['Task',spName(t)].filter(Boolean).join(' · '),t.doneAt,day)});
+  gList().forEach(g=>{if(!g)return;
+    (g.ms||[]).forEach(m=>{const day=m.done&&inW(m.doneAt);if(day)add('ms',`Milestone: ${m.t}`,g.name,m.doneAt,day);
+      (m.items||[]).forEach(it=>{const d2=it.done&&inW(it.doneAt);if(d2)add('task',it.t,`Task · ${g.name}`,it.doneAt,d2)})});
+    const day=g.done&&inW(g.doneAt);if(day)add('goal',`Goal achieved: ${g.name}`,g.why||'Every step got you here.',g.doneAt,day)});
+  if(typeof hbAll==='function')hbAll().forEach(h=>{days.forEach((d,i)=>{if(keys[i]>today()||!(h.done||{})[keys[i]])return;const n=wnStreakAt(h,d);
+    if(WN_STREAKS.includes(n))add('streak',`${n} days in a row: ${h.name}`,'Habit streak',null,keys[i],{n})})});
+  (S.wins||[]).forEach(w=>{const day=inW(w.at);if(!day)return;
+    if(w.kind==='day')add('day','You won the day',w.t||'Every Today task done',w.at,day,{id:w.id});
+    else add('mine',w.t,'Added by you',w.at,day,{id:w.id,mine:true})});
+  return {days,keys,list:out}}
+const wnCounts=list=>{const c={task:0,streak:0,ms:0,day:0,mine:0};list.forEach(w=>{c[w.kind==='goal'?'ms':w.kind]++});return c};
+const wnPerDay=(keys,list)=>keys.map(k=>list.filter(w=>w.day===k).length);
+const wnBest=(days,per)=>{const m=Math.max(...per);return m?days[per.indexOf(m)].toLocaleDateString(undefined,{weekday:'long'}):''};
+const wnWeekLbl=off=>off===0?'This week':off===-1?'Last week':`${-off} weeks ago`;
+const wnRange=days=>{const f=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'});return `${f(days[0])} – ${f(days[6])}`};
+const wnTime=at=>at?new Date(at).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}):'';
+const wnThisWeek=()=>wnCollect(0).list.length;
+
+/* ---------- the page ---------- */
+document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg wn-pg" id="winsPg" role="region" aria-label="Wins"><div class="ib-in" id="wnIn"></div></div>');
+function wnItem(w){
+  return `<div class="wn-it"><span class="wn-ic ${w.kind}">${WN_I[w.kind]}</span><span class="wn-tx"><b>${esc(w.t)}</b><small>${esc(w.sub||'')}</small></span>${w.at&&w.kind!=='day'?`<span class="wn-tm">${wnTime(w.at)}</span>`:''}${w.mine?MORE(`data-wnm="${w.id}"`,`Options for ${esc(w.t)}`):''}</div>`}
+function drawWins(){if(!wnOn)return;const y=$('winsPg').scrollTop;
+  const {days,keys,list}=wnCollect(wnWeek),per=wnPerDay(keys,list),max=Math.max(1,...per),n=list.length,c=wnCounts(list),best=wnBest(days,per),t=today();
+  const prev=wnCollect(wnWeek-1).list.length;
+  const bars=days.map((d,i)=>{const k=keys[i],h=per[i]?Math.max(10,Math.round(per[i]/max*100)):4,top=per[i]===max&&per[i]>0;
+    return `<span class="wn-bar${top?' top':''}${k===t?' now':''}${k>t?' fut':''}"><i style="height:${h}%"></i><small>${d.toLocaleDateString(undefined,{weekday:'short'})}</small></span>`}).join('');
+  const chip=(v,l1,l2)=>v?`<span class="wn-chip"><b>${v}</b> ${v===1?l1:l2}</span>`:'';
+  const chips=[chip(c.task,'task','tasks'),chip(c.streak,'streak','streaks'),chip(c.ms,'milestone','milestones'),chip(c.day,'won day','won days'),chip(c.mine,'of yours','of yours')].join('');
+  const groups=keys.map((k,i)=>({k,d:days[i],ws:list.filter(w=>w.day===k).sort((a,b)=>(WN_RANK[a.kind]-WN_RANK[b.kind])||((b.at||0)-(a.at||0)))})).filter(g=>g.ws.length).reverse();
+  const addRow=wnAdding?`<div class="wn-add on"><span class="wn-ic mine">${WN_I.mine}</span><input id="wnNew" placeholder="What went well?" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="Your win"><button class="ib-cap-go wn-go" data-wnsave aria-label="Add win">${I_UP}</button></div>`
+    :`<button class="wn-add" data-wnadd><span class="wn-pl">${PLUS_S}</span>Add a win of your own</button>`;
+  const sum=n?`<b>${n}</b> ${n===1?'win':'wins'}${wnWeek===0?' so far':''}${best?` · best day <b>${best}</b>`:''}`:wnWeek===0?'Nothing in the jar yet this week':'A quiet week';
+  const nav=`<div class="hp-nav"><button class="pm-btn" data-wnw="-1" aria-label="Previous week">${ARR_L}</button><button class="pm-btn" data-wnw="1" aria-label="Next week" ${wnWeek>=0?'disabled':''}>${ARR_R}</button></div>`;
+  $('wnIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="wnBack" aria-label="Back">${BACK_SVG}</button></div>
+    <div class="wn-head"><div><span class="pg-eye">${wnWeekLbl(wnWeek)} · ${wnRange(days)}</span><h1 class="ib-h wn-h">Wins</h1><div class="pg-sum">${sum}</div></div>
+      <div class="wn-acts">${nav}${n?`<button class="wn-reelb" data-wnreel>Week reel</button>`:''}</div></div>
+    <div class="wn-grid"><div class="wn-l">
+      <div class="wn-jar"><div class="wn-jt"><div><span class="pg-eye wn-je">The jar</span><b class="wn-n">${n}</b></div>
+        <div class="wn-bars" role="img" aria-label="Wins per day: ${days.map((d,i)=>`${d.toLocaleDateString(undefined,{weekday:'long'})} ${per[i]}`).join(', ')}">${bars}</div></div>
+        ${chips?`<div class="wn-chips">${chips}</div>`:''}
+        ${!n?`<p class="wn-empty">${wnWeek===0?'Finish a task, keep a habit or climb a milestone and it lands here. Or add a win of your own.':'Nothing was saved that week.'}</p>`:''}</div>
+      ${wnWeek===0?addRow:''}
+      ${prev||n?`<p class="wn-cmp">${n>prev?`${n-prev} more than the week before.`:n===prev?'Same as the week before.':`The week before had ${prev}. Every win counts.`}</p>`:''}</div>
+    <div class="wn-r">${groups.map(g=>`<div class="wn-day"><span class="pg-eye">${g.k===t?'Today':g.d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}</span><div class="wn-list">${g.ws.map(wnItem).join('')}</div></div>`).join('')}</div></div>`;
+  $('winsPg').scrollTop=y;
+  if(wnAdding){const i=$('wnNew');if(i)i.focus({preventScroll:true})}
+}
+function openWins(){if(!winsOn())return;
+  if(ibOn)closeInbox();if(rhOn)closeRhythm();if(glOn)closeGoals();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();if(typeof mtOn!=='undefined'&&mtOn)closeMetrics();if(typeof closeSearch==='function')closeSearch();
+  wnOn=true;wnWeek=0;wnAdding=false;drawWins();$('winsPg').classList.add('on');document.body.classList.add('ib-open');$('winsPg').scrollTop=0;haptic(5);
+  if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
+function closeWins(){if(!wnOn)return;wnOn=false;wnAdding=false;$('winsPg').classList.remove('on');if(!ibOn&&!rhOn)document.body.classList.remove('ib-open');
+  const a=document.activeElement;if(a&&a.closest&&a.closest('#winsPg'))a.blur();if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
+function wnSaveNew(){const i=$('wnNew'),v=(i&&i.value||'').trim();if(!v){wnAdding=false;return drawWins()}
+  wnAdding=false;S.wins=S.wins||[];const w={id:newId(),t:v.slice(0,120),at:Date.now(),kind:'mine'};
+  commit(()=>{S.wins.push(w)},'Win added');try{sfx('done')}catch(e){}haptic([8,30,12]);
+  setTimeout(()=>{const el=document.querySelector(`#winsPg [data-wnm="${w.id}"]`);if(el&&typeof moBurst==='function')moBurst(el.closest('.wn-it').querySelector('.wn-ic'),'var(--today)')},60)}
+$('winsPg').addEventListener('click',e=>{
+  if(e.target.closest('#wnBack'))return closeWins();
+  const w=e.target.closest('[data-wnw]');if(w){const nw=wnWeek+ +w.dataset.wnw;if(nw>0)return;wnWeek=nw;wnAdding=false;haptic(4);return drawWins()}
+  if(e.target.closest('[data-wnadd]')){wnAdding=true;haptic(4);return drawWins()}
+  if(e.target.closest('[data-wnsave]'))return wnSaveNew();
+  if(e.target.closest('[data-wnreel]'))return wnReelOpen();
+  const m=e.target.closest('[data-wnm]');if(m){e.stopPropagation();const id=+m.dataset.wnm,x=(S.wins||[]).find(v=>v.id===id);if(!x)return;
+    cxOpen(m,[{t:'Delete win',ic:BIN_S,warn:1,act:()=>{commit(()=>{S.wins=S.wins.filter(v=>v.id!==id)},'Win deleted');try{sfx('remove')}catch(err){}}}])}});
+$('winsPg').addEventListener('keydown',e=>{if(e.target.id!=='wnNew')return;
+  if(e.key==='Enter'){e.preventDefault();wnSaveNew()}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();wnAdding=false;drawWins()}});
+$('winsPg').addEventListener('focusout',e=>{if(e.target.id!=='wnNew')return;setTimeout(()=>{const i=$('wnNew');if(wnAdding&&i&&document.activeElement!==i&&!i.value.trim()){wnAdding=false;drawWins()}},150)});
+
+/* ---------- the week reel: one warm card with the week's story ---------- */
+document.body.insertAdjacentHTML('beforeend','<div class="dlg wn-reel" id="wnReel" role="dialog" aria-modal="true" aria-label="Your week in wins"><div class="dlg-in wn-rin" id="wnRin"></div></div>');
+function wnReelOpen(){const {days,keys,list}=wnCollect(wnWeek),per=wnPerDay(keys,list),n=list.length,best=wnBest(days,per),prev=wnCollect(wnWeek-1).list.length;
+  const top=list.slice().sort((a,b)=>(WN_RANK[a.kind]-WN_RANK[b.kind])||((b.n||0)-(a.n||0))||((b.at||0)-(a.at||0))).slice(0,3),won=list.filter(w=>w.kind==='day').length;
+  const bestN=Math.max(...per);
+  $('wnRin').innerHTML=`<div class="wn-rtop"><span class="pg-eye">${wnWeek===0?'Your week in wins':wnWeekLbl(wnWeek)+' in wins'}</span><button class="icon-btn" data-wnrx aria-label="Close">${X}</button></div>
+    <div class="wn-rsun">${WN_I.day}</div><b class="wn-rbig">${n}</b><b class="wn-rl">${n===1?'win':'wins'} ${wnWeek===0?'this week':'that week'}</b>
+    <p class="wn-rp">${best?`Your best day was <b>${best}</b>, with ${bestN}. `:''}${n>prev?`That's ${n-prev} more than the week before.`:n===prev?'Same as the week before.':'Steady. Every win counts.'}${won?` You won the day ${won} ${won===1?'time':'times'}.`:''}</p>
+    <div class="wn-rlist">${top.map(w=>`<div class="wn-rit"><span class="wn-ic ${w.kind}">${WN_I[w.kind]}</span><span class="wn-tx"><b>${esc(w.t)}</b><small>${esc(w.sub||'')}</small></span></div>`).join('')}</div>
+    <div class="wn-racts"><button class="primary wn-rgo" data-wnrplan>Plan next week</button><button class="wn-rclose" data-wnrx>Close</button></div>`;
+  $('wnReel').classList.add('on');haptic(8);try{sfx('done')}catch(e){}setTimeout(()=>{const b=$('wnRin').querySelector('[data-wnrplan]');b&&b.focus()},80)}
+function wnReelClose(){$('wnReel').classList.remove('on')}
+$('wnReel').addEventListener('click',e=>{if(e.target.closest('[data-wnrx]')||e.target.id==='wnReel')return wnReelClose();
+  if(e.target.closest('[data-wnrplan]')){wnReelClose();closeWins();goHome();const sp=orderedSpaces()[0];if(sp){openSpace(sp.id);S.stage='week';render()}}});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('wnReel').classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();wnReelClose()}},true);
+
+/* ---------- a won day goes in the jar: the moment every Today task is done ---------- */
+let wnLeft=null;
+const _wnRender=render;render=function(d){_wnRender(d);try{
+  const left=S.tasks.filter(t=>shown(t)&&t.stage==='today').length;
+  if(wnLeft>0&&left===0&&performance.now()-sfxAct<2500&&S.tasks.some(t=>shown(t)&&t.stage==='done'&&t.doneAt&&Date.now()-t.doneAt<4000)){
+    S.wins=S.wins||[];const k=today();if(!S.wins.some(w=>w.kind==='day'&&dkey(w.at)===k)){const n=S.tasks.filter(t=>t.stage==='done'&&t.doneAt&&dkey(t.doneAt)===k).length;
+      S.wins.push({id:newId(),t:`${n} ${n===1?'task':'tasks'} done`,at:Date.now(),kind:'day'});save()}}
+  wnLeft=left;
+  if(wnOn){if(!winsOn())closeWins();else drawWins()}}catch(err){console.error(err)}};
+
+/* ---------- computers: "Wins" under Modes in the sidebar ---------- */
+const _wnSide=rhythmSide;
+rhythmSide=function(){const h=_wnSide();if(!winsOn())return h;const n=wnThisWeek();
+  const it=`<button class="s-list s-home s-inbox ${wnOn?'on':''}" id="sWins" title="Wins">${WN_ICON}<span class="s-name">Wins</span>${n?`<span class="n">${n}</span>`:''}</button>`;
+  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`};
+$('sLists').addEventListener('click',e=>{
+  if(e.target.closest('#sWins')){e.stopImmediatePropagation();return wnOn?closeWins():openWins()}
+  if(wnOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics'))closeWins()},true);
+for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics']){const f=window[fn];if(typeof f!=='function')continue;
+  window[fn]=function(){if(wnOn)closeWins();return f.apply(this,arguments)}}
+const _wnDesk=renderDesk;renderDesk=function(){_wnDesk.apply(this,arguments);if(wnOn){const h=$('sHome');if(h)h.classList.remove('on')}};
+document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!wnOn||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on')||$('wnReel').classList.contains('on'))return;
+  if(e.target&&e.target.id==='wnNew')return;if(!matchMedia('(min-width:1100px)').matches)return;e.preventDefault();closeWins()});
+ESC_PAGES.winsPg=()=>closeWins();
+
+/* ---------- phones: a Wins tab ---------- */
+TB_I.wins=WN_ICON;
+const _wnTabs=tabsList;
+tabsList=function(){let t=_wnTabs();if(!winsOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['wins','Wins',WN_ICON]);return t};
+const _wnTabNow=tabNow;tabNow=function(){return wnOn?'wins':_wnTabNow()};
+const _wnTbGo=tbGo;
+tbGo=function(k){
+  if(k==='wins'){if(wnOn){$('winsPg').scrollTo({top:0,behavior:'smooth'});return}_wnTbGo('home');openWins();return drawTabs()}
+  if(wnOn)closeWins();return _wnTbGo(k)};
+/* the + on the Wins tab adds a win of your own */
+document.addEventListener('click',e=>{if(!wnOn||!e.target.closest('#tbAdd'))return;e.preventDefault();e.stopImmediatePropagation();wnWeek=0;wnAdding=true;drawWins()},true);
+const _wnApply=applySettings;applySettings=function(){_wnApply.apply(this,arguments);if(wnOn&&!winsOn())closeWins()};
+
+/* ---------- Settings → Modes: a Wins card ---------- */
+const _wnModes=modesPage;
+modesPage=function(){const h=_wnModes.apply(this,arguments),on=winsOn(),n=on?wnThisWeek():0;
+  const card=`<div class="md-card${on?' on':''}" data-md="wins"><div class="md-head"><span class="md-ic">${WN_ICON}</span><span class="md-t"><b>Wins</b><small>A jar that fills itself with what you got done</small></span>${tg('wins')}</div>
+    ${on?`<div class="md-body"><p class="md-note">Tasks you finish, habit streaks, milestones and the days you win all land in the jar. Add your own wins too. ${n?`This week: ${n} so far.`:''}</p></div>`:''}</div>`;
+  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)};
 /* ---------- spaces ---------- */
 function openSpace(id){spPage=null;fwPeek=null;S.space=id;S.list='all';S.colFocus=null;if(S.cfg&&!S.cfg.showDone&&S.stage==='done')S.stage='today';haptic(6);applyColFocus(false);render(0);window.scrollTo(0,0)}
 function goHome(){spPage=null;fwPeek=null;S.space=null;S.colFocus=null;haptic(5);applyColFocus(false);render();window.scrollTo(0,0)}
@@ -11229,11 +11465,11 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#bkFile')){doBackup();return}
   if(e.target.closest('#bkOpen')){$('bkBox').classList.toggle('on');$('bkTxt').value='';$('bkTxt').focus();return}
   if(e.target.closest('#bkGo')){
-    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
+    const before=JSON.stringify({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],cfg:S.cfg,nid:S.nid,space:S.space,list:S.list});
     try{const d=JSON.parse($('bkTxt').value);if(!d||!Array.isArray(d.tasks)||!Array.isArray(d.lists))throw 0;
       const ok=d.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);if(d.tasks.length&&!ok.length)throw 0;
       const cfg=d.cfg&&typeof d.cfg==='object'?Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names||{}),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors||{})}):null;
-      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.kpis=Array.isArray(d.kpis)?d.kpis:(S.kpis||[]);S.okrs=Array.isArray(d.okrs)?d.okrs:(S.okrs||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
+      commit(()=>{S.tasks=d.tasks;S.lists=d.lists;S.spaces=Array.isArray(d.spaces)?d.spaces:null;S.arch=Array.isArray(d.arch)?d.arch:[];S.habits=Array.isArray(d.habits)?d.habits:(S.habits||[]);S.hchains=Array.isArray(d.hchains)?d.hchains:(S.hchains||[]);S.goals=Array.isArray(d.goals)?d.goals:(S.goals||[]);S.kpis=Array.isArray(d.kpis)?d.kpis:(S.kpis||[]);S.okrs=Array.isArray(d.okrs)?d.okrs:(S.okrs||[]);S.wins=Array.isArray(d.wins)?d.wins:(S.wins||[]);S.space=null;S.nid=Math.max(+d.nid||0,S.nid||0);S.list='all';migrateSpaces();if(cfg)S.cfg=cfg},'Backup restored');
       applySettings();render();drawSettings();
     }catch(_){try{Object.assign(S,JSON.parse(before));repairData();applySettings();save();render();drawSettings()}catch(e){}toast('That backup doesn’t look right. Nothing was changed.')}
     return;
@@ -11285,7 +11521,7 @@ function loadDemo(){
 }
 function resetAll(){
   const keep={lastBackup:S.lastBackup,syncedUser:S.syncedUser,syncV:S.syncV,tomb:S.tomb,nid:S.nid};
-  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.kpis=[];S.okrs=[];S.lens={};
+  S.tasks=[];S.arch=[];S.habits=[];S.hchains=[];S.goals=[];S.kpis=[];S.okrs=[];S.wins=[];S.lens={};
   const sp={id:'s'+newId(),name:'Personal',c:'#9C95FF',e:'🌱',autoSet:true};
   S.spaces=[sp];S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:sp.id}];
   S.cfg=JSON.parse(JSON.stringify(DEF_CFG));S.focusLog={};S.resetAt=Date.now();
@@ -11313,7 +11549,7 @@ const CID=Math.random().toString(36).slice(2);
 let sb=null,user=null,syncState='off',syncTimer=null,pendingRemote=null,channel=null,applying=false,lastHash='';
 let authStep='email',authEmail='',authBusy=false,authMsg='',resendAt=0;
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[],S.goals||[],S.kpis||[],S.okrs||[]]);
+const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[],S.goals||[],S.kpis||[],S.okrs||[],S.wins||[]]);
 const busyUI=()=>document.querySelector('.sheet.on,.focus.on,.tide.on');
 const SYNC_LABEL={off:'Off',syncing:'Syncing…',synced:'Up to date',offline:'Offline, will sync later',error:'Couldn’t sync, will retry'};
 function setSync(s){syncState=s;const el=document.getElementById('syncStatus');if(el)el.textContent=SYNC_LABEL[s];try{drawMe()}catch(e){}
@@ -11323,8 +11559,8 @@ function cloudDirty(){
   S.dirty=true;S.editAt=Date.now();saveLocal();clearTimeout(syncTimer);syncTimer=setTimeout(push,1500);
 }
 /* ---- merge: combine two copies item by item, newest change wins, deletions respected ---- */
-const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
-const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog,d.habits||[],d.hchains||[],d.goals||[],d.kpis||[],d.okrs||[]]);
+const localDoc=()=>({tasks:S.tasks,lists:S.lists,spaces:S.spaces,arch:S.arch||[],habits:S.habits||[],hchains:S.hchains||[],goals:S.goals||[],kpis:S.kpis||[],okrs:S.okrs||[],wins:S.wins||[],cfg:S.cfg,cfgU:S.cfgU||0,orderU:S.orderU||0,tomb:S.tomb||{},nid:S.nid,focusLog:S.focusLog||{},resetAt:S.resetAt||0});
+const coreOf=d=>JSON.stringify([d.tasks,d.lists,d.spaces,d.arch||[],d.cfg,d.focusLog,d.habits||[],d.hchains||[],d.goals||[],d.kpis||[],d.okrs||[],d.wins||[]]);
 function mergeDocs(L,Rm){
   const tomb={...(Rm.tomb||{})};Object.entries(L.tomb||{}).forEach(([k,v])=>{if(!tomb[k]||tomb[k]<v)tomb[k]=v});
   const cut=Date.now()-60*DAY;Object.keys(tomb).forEach(k=>{if(tomb[k]<cut)delete tomb[k]});
@@ -11340,12 +11576,12 @@ function mergeDocs(L,Rm){
   const lr=L.resetAt||0,rr=Rm.resetAt||0;
   const fl=lr!==rr?{...((lr>rr?L:Rm).focusLog||{})}:{...(Rm.focusLog||{})};if(lr===rr)Object.entries(L.focusLog||{}).forEach(([k,v])=>{fl[k]=Math.max(fl[k]||0,v)});
   const lc=(L.cfgU||0)>=(Rm.cfgU||0);
-  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),habits:mergeArr('h',L.habits,Rm.habits,true),hchains:mergeArr('c',L.hchains,Rm.hchains,true),goals:mergeArr('g',L.goals,Rm.goals,true),kpis:mergeArr('k',L.kpis,Rm.kpis,true),okrs:mergeArr('o',L.okrs,Rm.okrs,true),
+  return {tasks:mergeArr('t',L.tasks,Rm.tasks,(L.orderU||0)>=(Rm.orderU||0)),lists:mergeArr('l',L.lists,Rm.lists,true),spaces:mergeArr('s',L.spaces,Rm.spaces,true),arch:mergeArr('a',L.arch,Rm.arch,true),habits:mergeArr('h',L.habits,Rm.habits,true),hchains:mergeArr('c',L.hchains,Rm.hchains,true),goals:mergeArr('g',L.goals,Rm.goals,true),kpis:mergeArr('k',L.kpis,Rm.kpis,true),okrs:mergeArr('o',L.okrs,Rm.okrs,true),wins:mergeArr('w',L.wins,Rm.wins,true),
     cfg:lc?L.cfg:(Rm.cfg||L.cfg),cfgU:Math.max(L.cfgU||0,Rm.cfgU||0),orderU:Math.max(L.orderU||0,Rm.orderU||0),tomb,nid:Math.max(L.nid||0,Rm.nid||0),focusLog:fl,resetAt:Math.max(lr,rr)};
 }
 function applyDoc(d){
   applying=true;
-  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(Array.isArray(d.habits))S.habits=d.habits;if(Array.isArray(d.hchains))S.hchains=d.hchains;if(Array.isArray(d.goals))S.goals=d.goals;if(Array.isArray(d.kpis))S.kpis=d.kpis;if(Array.isArray(d.okrs))S.okrs=d.okrs;if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
+  S.tasks=d.tasks||[];S.arch=Array.isArray(d.arch)?d.arch:[];if(Array.isArray(d.habits))S.habits=d.habits;if(Array.isArray(d.hchains))S.hchains=d.hchains;if(Array.isArray(d.goals))S.goals=d.goals;if(Array.isArray(d.kpis))S.kpis=d.kpis;if(Array.isArray(d.okrs))S.okrs=d.okrs;if(Array.isArray(d.wins))S.wins=d.wins;if(d.lists&&d.lists.length)S.lists=d.lists;if(d.spaces&&d.spaces.length)S.spaces=d.spaces;
   S.cfgU=d.cfgU||0;S.orderU=d.orderU||0;S.tomb=d.tomb||{};S.nid=Math.max(S.nid||0,d.nid||0);S.focusLog=d.focusLog||{};if(d.resetAt)S.resetAt=d.resetAt;
   if(d.cfg)S.cfg=Object.assign({},DEF_CFG,d.cfg,{names:Object.assign({},DEF_CFG.names,d.cfg.names),colors:Object.assign({},DEF_CFG.colors,d.cfg.colors)});
   migrateSpaces();

@@ -1,0 +1,75 @@
+/* ===== Wins (08zp-wins.js): a jar that fills itself ===== */
+@media (min-width:1100px){#winsPg .ib-in{max-width:1080px;padding-top:34px}}
+@media (max-width:1099px){body.tabs-on #winsPg .ib-top{display:none}#winsPg .wn-head{margin-top:30px}}
+.wn-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.wn-h{margin:8px 0 6px!important}
+.wn-head .pg-sum b{color:var(--text);font-weight:600}
+.wn-acts{display:flex;align-items:center;gap:8px}
+.wn-reelb{height:40px;padding:0 16px;border-radius:999px;background:var(--text);color:var(--bg);font-size:15px;font-weight:800}
+.wn-grid{display:flex;flex-direction:column;gap:14px;margin-top:20px}
+@media (min-width:1100px){.wn-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:start;margin-top:26px}}
+.wn-l{display:flex;flex-direction:column;gap:10px;min-width:0}
+.wn-r{display:flex;flex-direction:column;gap:16px;min-width:0}
+/* the jar */
+.wn-jar{background:color-mix(in srgb,var(--today) 9%,var(--surface));border-radius:28px;padding:18px 20px 16px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 20%,transparent)}
+.wn-jt{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.wn-je{color:var(--today-ink)}
+.wn-n{display:block;font-size:56px;font-weight:800;letter-spacing:-.05em;line-height:.95;margin-top:4px;font-variant-numeric:tabular-nums}
+@media (min-width:1100px){.wn-n{font-size:72px}}
+.wn-bars{flex:1;max-width:320px;height:96px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;align-items:end}
+@media (min-width:1100px){.wn-bars{height:128px;gap:10px}}
+.wn-bar{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+.wn-bar i{display:block;width:100%;max-width:22px;border-radius:6px;background:color-mix(in srgb,var(--today) 55%,var(--surface));transition:height .5s var(--ease)}
+@media (min-width:1100px){.wn-bar i{max-width:34px;border-radius:8px}}
+.wn-bar.top i{background:var(--today)}
+.wn-bar.fut i{background:var(--surface2)}
+.wn-bar small{font-size:12px;color:var(--muted);font-weight:600}
+.wn-bar.now small{color:var(--text);font-weight:800}
+.wn-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.wn-chip{height:28px;padding:0 10px;border-radius:999px;background:var(--surface);font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.wn-chip b{color:var(--text);font-weight:600}
+.wn-empty{margin:12px 0 0;font-size:15px;color:var(--muted);line-height:1.45}
+.wn-cmp{margin:2px 6px 0;font-size:13px;color:var(--muted)}
+/* add a win of your own */
+.wn-add{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:0 14px;border-radius:20px;background:var(--surface);color:var(--muted);font-size:15px;font-weight:600;text-align:left;box-sizing:border-box}
+.wn-pl svg{width:26px;height:26px;padding:6.5px;box-sizing:border-box;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted);display:block}
+.wn-add.on{padding:6px 6px 6px 12px;box-shadow:inset 0 0 0 1.5px var(--text)}
+.wn-add input{flex:1;min-width:0;border:0;background:none;outline:none;color:var(--text);font:inherit;font-size:16px;font-weight:500}
+.wn-add input::placeholder{color:var(--muted)}
+.wn-go{width:40px!important;height:40px!important;opacity:1!important;margin:0!important;transform:none!important;pointer-events:auto!important;background:var(--text)!important;color:var(--bg)!important}
+/* highlights */
+.wn-day .pg-eye{display:block;margin:0 4px 8px}
+.wn-list{background:var(--surface);border-radius:20px;overflow:hidden}
+.wn-it{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:60px;box-sizing:border-box}
+.wn-it+.wn-it{border-top:1px solid var(--line)}
+.wn-ic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--surface2);color:var(--text)}
+.wn-ic svg{width:17px;height:17px}
+.wn-ic.streak,.wn-ic.day,.wn-ic.mine{background:color-mix(in srgb,var(--today) 13%,var(--surface));color:var(--today-ink)}
+.wn-ic.ms,.wn-ic.goal{background:color-mix(in srgb,var(--week) 16%,var(--surface));color:var(--week-ink)}
+.wn-tx{flex:1;min-width:0}
+.wn-tx b{display:block;font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.wn-tx small{display:block;font-size:13px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wn-tm{font-size:13px;color:var(--muted);flex:none}
+.wn-it .gm-more{margin-right:-6px}
+@media (hover:hover){.wn-it .gm-more{opacity:0}.wn-it:hover .gm-more,.wn-it:focus-within .gm-more{opacity:1}}
+/* the week reel */
+.wn-rin{max-width:420px;background:color-mix(in srgb,var(--today) 7%,var(--surface));position:relative;overflow:hidden;padding:20px 22px 20px;display:flex;flex-direction:column;gap:6px}
+.wn-rin::before{content:"";position:absolute;left:-30%;right:-30%;bottom:-40%;height:70%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,176,92,.45),rgba(255,120,90,.12) 60%,transparent);pointer-events:none}
+.wn-rin>*{position:relative}
+.wn-rtop{display:flex;justify-content:space-between;align-items:center}
+.wn-rtop .pg-eye{color:var(--today-ink)}
+.wn-rtop .icon-btn{background:var(--surface)}
+.wn-rsun{width:56px;height:56px;color:var(--today);margin-top:6px}
+.wn-rsun svg{width:100%;height:100%}
+.wn-rbig{font-size:88px;font-weight:800;letter-spacing:-.06em;line-height:.85;font-variant-numeric:tabular-nums}
+.wn-rl{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.wn-rp{margin:6px 0 4px;font-size:15px;color:var(--muted);line-height:1.45}
+.wn-rp b{color:var(--text)}
+.wn-rlist{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.wn-rit{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:color-mix(in srgb,var(--surface) 80%,transparent)}
+.wn-racts{display:flex;gap:8px;margin-top:12px}
+.wn-rgo{flex:1;margin:0!important;background:var(--text)!important;color:var(--bg)!important}
+.wn-rclose{height:56px;padding:0 20px;border-radius:999px;background:var(--surface);color:var(--text);font-size:16px;font-weight:600}
+.wn-reel.on .wn-rsun{animation:mwRise .9s .1s var(--ease) both}
+.wn-reel.on .wn-rbig{animation:moCard .5s var(--ease) both}
+:root[data-motion="off"] .wn-reel .wn-rsun,:root[data-motion="off"] .wn-reel .wn-rbig{animation:none}
