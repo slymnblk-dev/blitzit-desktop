@@ -273,3 +273,7 @@
 .tbp svg{width:22px;height:22px}
 .tbp.on{background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 2px var(--text)}
 .mdp-set{border-top:1px solid var(--line);margin-top:4px;padding-top:10px!important;color:var(--muted)}
+/* Focus (classic): the task, steps and timer sit as one block in the middle, whatever is hidden.
+   The old auto margins needed "Up next" to be the last thing shown; with steps it was hidden and everything sank to the bottom. */
+.f-main{justify-content:safe center}
+.f-main>:first-child{margin-top:0}.f-main>:last-child{margin-bottom:0}

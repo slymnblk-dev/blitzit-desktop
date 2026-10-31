@@ -191,9 +191,10 @@ test('focus steps, one at a time (or three): tick, undo, add, keys never end the
   // three at a time
   await page.evaluate(() => { setCfg('fsShow', '3'); drawSteps(); });
   await expect(rows).toHaveCount(2);
+  const top3 = await timerTop(); // a taller card for three steps: the centred block settles once, then stays put
   await rows.first().click(); await expect(page.locator('#fsN')).toHaveText('3 of 4'); await rows.first().click();
   await expect(page.locator('#fSteps .fs-all')).toContainText('All 4 steps done');
-  expect(await timerTop()).toBe(top0);
+  expect(await timerTop()).toBe(top3);
   noErrors(errors);
 });
 
