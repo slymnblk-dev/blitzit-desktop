@@ -74,3 +74,15 @@ body:not(.tabs-on) .pn-tray{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 /* Settings → Modes: the hours of your day */
 .pn-hours{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
 .pn-hsel{height:36px;border:0;border-radius:999px;background:var(--surface2);padding:0 12px;color:var(--text);font:inherit;font-size:14px;font-weight:600}
+/* today / tomorrow, calendar import, resize */
+.pn-hr2{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pn-sw{width:auto!important}
+@media (max-width:1099px){.pn-sw{margin-top:16px}.pn-sw button{flex:1}}
+.pn-cal{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0 14px;border-radius:20px;background:var(--surface);color:var(--muted);font-size:15px;font-weight:600;margin-top:8px}
+.pn-cal svg{width:20px;height:20px}
+.pn-rs{position:absolute;left:0;right:0;bottom:0;height:10px;cursor:ns-resize;touch-action:none;z-index:2}
+.pn-rs::after{content:'';position:absolute;left:50%;bottom:3px;width:26px;height:3px;margin-left:-13px;border-radius:2px;background:currentColor;opacity:0;transition:opacity .2s}
+.pn-blk:hover .pn-rs::after,.pn-blk.pn-sizing .pn-rs::after{opacity:.35}
+@media (hover:none){.pn-rs::after{opacity:.25}.pn-rs{height:14px}}
+.pn-blk.pn-sizing{box-shadow:inset 3px 0 0 var(--today),0 8px 22px -12px rgba(0,0,0,.35);z-index:3}
+.pn-blk{padding-bottom:10px}

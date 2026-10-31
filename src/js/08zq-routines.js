@@ -35,6 +35,17 @@ function rtNext(){return rtAll().filter(r=>rtDue(r)&&!rtDone(r)&&r.steps.length)
 const rtLeftToday=()=>rtAll().filter(r=>rtDue(r)&&!rtDone(r)&&r.steps.length).length;
 function rtFromTpl(tp){return {id:newId(),name:tp.name,e:tp.e,at:tp.at,days:[...tp.days],steps:tp.steps.map(([t,m])=>({id:newId(),t,m})),log:{},created:Date.now()}}
 const rtEsc=s=>esc(s).replace(/'/g,'&#39;');
+/* "counts as a habit": the routine has its own habit, ticked when you finish the routine */
+function rtHabit(r,any){S.habits=S.habits||[];const h=r.habit&&S.habits.find(x=>x.id===r.habit);return h&&(any||hbAll().includes(h))?h:null}
+/* Home: the next routine as a gentle card, from 30 minutes before its time (any time of day if it has none) */
+let rtLater={};
+function rtHomeCard(){if(!routinesOn()||C().rtHome===false)return '';const r=rtNext();if(!r||rtLater[r.id]===today())return '';
+  const now=rtNowHM(),soon=!r.at||(()=>{const [h,m]=r.at.split(':').map(Number),d=new Date();d.setHours(h,m-30,0,0);return Date.now()>=d.getTime()})();if(!soon)return '';
+  return `<div class="ci-home rt-home"><span class="ci-hi">${RT_ICON}</span><span class="ci-ht"><b>${r.e?esc(r.e)+' ':''}${esc(r.name)}</b><small>${r.at&&r.at>now?`At ${r.at} · `:''}${r.steps.length} ${r.steps.length===1?'step':'steps'} · ${fmt(rtMins(r))}</small></span>
+    <button class="rv-skip" data-rthlater="${r.id}">Later</button><button class="rv-go" data-rthstart="${r.id}">Start</button></div>`}
+const _rtCi=ciCard;ciCard=function(){return rtHomeCard()||_rtCi()};
+document.addEventListener('click',e=>{const s=e.target.closest('[data-rthstart]'),l=e.target.closest('[data-rthlater]');if(!s&&!l)return;e.preventDefault();e.stopPropagation();
+  if(s)return rtPlayOpen(+s.dataset.rthstart);rtLater[+l.dataset.rthlater]=today();haptic(4);render()},true);
 
 /* ---------- the page ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg rt-pg" id="routinesPg" role="region" aria-label="Routines"><div class="ib-in" id="rtIn"></div></div>');
@@ -69,6 +80,8 @@ function rtEditorHTML(r){if(!r)return `<div class="rt-ed rt-ed0"><p class="wn-em
       <div class="rt-step rt-addst"><span class="wn-pl">${PLUS_S}</span><input id="rtNewStep" placeholder="Add a step" maxlength="60" enterkeyhint="done" autocomplete="off" aria-label="Add a step"></div></div>
     <div class="rt-set"><span class="pg-eye">Days</span><div class="rt-days">${[1,2,3,4,5,6,0].map(d=>`<button class="rt-day${r.days.includes(d)?' on':''}" data-rtday="${d}" aria-pressed="${r.days.includes(d)}">${new Date(2024,0,7+d).toLocaleDateString(undefined,{weekday:'narrow'})}</button>`).join('')}</div></div>
     <div class="rt-set"><span class="pg-eye">Time</span><div class="rt-time"><input type="time" id="rtAt" value="${r.at||''}" aria-label="Time of day">${r.at?`<button class="rt-clr" data-rtat>Any time</button>`:''}</div></div>
+    <div class="rt-set"><span class="pg-eye">Reminder</span>${r.at?`<div class="segc rt-seg"><button data-rtrem="0" class="${r.rem?'':'on'}" aria-pressed="${!r.rem}">Off</button><button data-rtrem="1" class="${r.rem?'on':''}" aria-pressed="${!!r.rem}">At ${r.at}</button></div>`:'<small class="rt-hint">Pick a time first</small>'}</div>
+    ${typeof habitsOn==='function'&&habitsOn()?`<div class="rt-set"><span class="pg-eye">Counts as a habit</span><div class="segc rt-seg"><button data-rthab="0" class="${rtHabit(r)?'':'on'}" aria-pressed="${!rtHabit(r)}">No</button><button data-rthab="1" class="${rtHabit(r)?'on':''}" aria-pressed="${!!rtHabit(r)}">Yes</button></div></div>`:''}
     ${r.steps.length?`<button class="primary rt-play" data-rtstart="${r.id}">${RT_PLAY}Start routine</button>`:''}</div>`}
 function drawRoutines(){if(!rtOn)return;const y=$('routinesPg').scrollTop,rs=rtAll(),desk=rtDesk();
   if(rtSel&&!rtById(rtSel))rtSel=null;if(desk&&!rtSel&&rs.length)rtSel=(rtNext()||rs[0]).id;
@@ -102,6 +115,11 @@ $('routinesPg').addEventListener('click',e=>{
     const mv=d=>()=>{commit(()=>{const [x]=r.steps.splice(i,1);r.steps.splice(i+d,0,x)},'Step moved');drawRoutines()};
     return cxOpen(sm,[...(i>0?[{t:'Move up',ic:ARR_L,act:mv(-1)}]:[]),...(i<r.steps.length-1?[{t:'Move down',ic:ARR_R,act:mv(1)}]:[]),
       {t:'Delete step',ic:BIN_S,warn:1,act:()=>{commit(()=>{r.steps=r.steps.filter(x=>x.id!==id)},'Step deleted');drawRoutines()}}])}
+  const rm=e.target.closest('[data-rtrem]');if(rm){const r=rtById(rtSel);if(!r)return;const on=rm.dataset.rtrem==='1';haptic(4);if(on&&typeof remAsk==='function')remAsk();
+    return rtSet(()=>{if(on)r.rem=1;else delete r.rem})}
+  const hb=e.target.closest('[data-rthab]');if(hb){const r=rtById(rtSel);if(!r)return;const on=hb.dataset.rthab==='1';if(on===!!rtHabit(r))return;haptic(4);
+    if(on){commit(()=>{const h=rtHabit(r,true)||{id:'h'+newId(),name:r.name,e:r.e||'',space:null,days:[...r.days],done:{},created:Date.now()};if(!S.habits.includes(h))S.habits.push(h);r.habit=h.id},`${r.name} counts as a habit`)}
+    else{commit(()=>{delete r.habit},'Not a habit any more');toast('The habit stays in Habits, with its streak')}return drawRoutines()}
   const dy=e.target.closest('[data-rtday]');if(dy){const r=rtById(rtSel),d=+dy.dataset.rtday;if(!r)return;haptic(4);return rtSet(()=>{r.days=r.days.includes(d)?r.days.filter(x=>x!==d):[...r.days,d]})}
   if(e.target.closest('[data-rtat]')){const r=rtById(rtSel);if(r)rtSet(()=>{r.at=''});return}
   if(e.target.closest('input,select,label'))return;
@@ -149,7 +167,7 @@ function rpNext(did){const r=RP.r,x=r.steps[RP.i];if(did){RP.done.add(x.id);RP.d
   if(RP.i<r.steps.length-1){RP.i++;RP.t0=Date.now();RP.paused=false;RP.rang=false;haptic(6);try{sfx(did?'done':'move')}catch(e){}return rpDraw()}
   rpFinish()}
 function rpFinish(){const r=RP.r;RP.fin=true;
-  if(RP.did>0){const k=today();commit(()=>{r.log=r.log||{};r.log[k]=1},`${r.name} done`)}
+  if(RP.did>0){const k=today(),h=rtHabit(r);commit(()=>{r.log=r.log||{};r.log[k]=1;if(h){h.done=h.done||{};h.done[k]=1}},`${r.name} done${h?' · habit ticked':''}`)}
   try{ambFocusEnd()}catch(e){}try{sfx('done')}catch(e){}haptic([8,30,12]);rpDraw();
   setTimeout(()=>{const b=$('rpIn').querySelector('[data-rpx]');b&&b.focus()},60);if(rtOn)drawRoutines()}
 function rtPlayClose(){if(!RP)return;clearInterval(RP.iv);if(!RP.fin)try{ambFocusEnd()}catch(e){}RP=null;$('rtPlay').classList.remove('on');document.body.classList.remove('rp-open');if(rtOn)drawRoutines()}
@@ -199,5 +217,6 @@ const _rtApply=applySettings;applySettings=function(){_rtApply.apply(this,argume
 const _rtModes=modesPage;
 modesPage=function(){const h=_rtModes.apply(this,arguments),on=routinesOn(),n=on?rtAll().length:0;
   const card=`<div class="md-card${on?' on':''}" data-md="routines"><div class="md-head"><span class="md-ic">${RT_ICON}</span><span class="md-t"><b>Routines</b><small>Small rituals you run step by step</small></span>${tg('routines')}</div>
-    ${on?`<div class="md-body"><p class="md-note">Morning, workday shutdown, evening wind-down: a few steps with a gentle timer each. Finish one and it counts toward its streak${typeof winsOn==='function'?' and lands in Wins':''}. ${n?`You have ${n}.`:''}</p></div>`:''}</div>`;
+    ${on?`<div class="md-body"><p class="md-note">Morning, workday shutdown, evening wind-down: a few steps with a gentle timer each. Finish one and it counts toward its streak${typeof winsOn==='function'?' and lands in Wins':''}. ${n?`You have ${n}.`:''}</p>
+      <div class="md-sub"><span><b>Next routine on Home</b><small>A small card with Start, from half an hour before its time.</small></span>${tg('rtHome')}</div></div>`:''}</div>`;
   const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)};

@@ -40,7 +40,7 @@ function jrDayHTML(k){const j=jrGet(k)||{am:'',pm:'',en:[]},isT=k===today(),eve=
   const moods=JR_MOODS.map((m,i)=>`<button class="jr-mood${j.mood===i+1?' on':''} ${jrMoodCls(i+1)}" data-jrmood="${i+1}" aria-pressed="${j.mood===i+1}">${m}</button>`).join('');
   return `<div class="jr-day">${isT?'':`<div class="jr-past"><span class="pg-eye">${jrDate(k).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}</span><button class="jr-back" data-jrtoday>Back to today</button></div>`}
     <div class="jr-card${isT&&!eve?' now':''}"><div class="jr-q">${JR_SUN}<span>Morning · What would make ${isT?'today':'the day'} a win?</span></div>
-      <textarea class="jr-in" data-jrf="am" rows="2" maxlength="600" placeholder="Write one line…" aria-label="What would make the day a win">${esc(j.am)}</textarea></div>
+      <textarea class="jr-in" data-jrf="am" rows="2" maxlength="600" placeholder="Write one line…" aria-label="What would make the day a win">${esc(j.am)}</textarea>${jrLinkHTML(j,k)}</div>
     <div class="jr-card${isT&&eve?' now':''}"><div class="jr-q">${JR_MOON}<span>Evening · What went well?</span></div>
       <textarea class="jr-in" data-jrf="pm" rows="2" maxlength="600" placeholder="Write one line…" aria-label="What went well">${esc(j.pm)}</textarea>
       <span class="jr-q2">How did ${isT?'today':'the day'} feel?</span><div class="jr-moods" role="group" aria-label="Mood">${moods}</div></div>
@@ -68,9 +68,22 @@ function jrCalHTML(){const base=new Date();base.setDate(1);base.setMonth(base.ge
       <div class="hp-nav"><button class="pm-btn" data-jrmon="-1" aria-label="Previous month">${ARR_L}</button><button class="pm-btn" data-jrmon="1" aria-label="Next month" ${jrMonth>=0?'disabled':''}>${ARR_R}</button></div></div>
     <div class="jr-grid">${hd}${cells}</div>
     <div class="jr-leg"><span><i class="jm-great"></i>Great</span><span><i class="jm-good"></i>Good</span><span><i class="jm-ok"></i>OK</span><span><i class="jm-meh"></i>Meh</span><span><i class="jm-lo"></i>Low</span><span><i></i>Not written</span></div></div>`}
-function jrEarlierHTML(){const t=today(),list=jrAll().filter(j=>j.d<t&&jrWritten(j)).sort((a,b)=>a.d<b.d?1:-1).slice(0,jrDesk()?7:10);
-  if(!list.length)return '';
-  return `<span class="pg-eye jr-lbl">Earlier</span><div class="jr-list">${list.map(j=>`<button class="jr-ent" data-jrday="${j.d}"><i class="${jrMoodCls(j.mood)}"></i><span><b>${jrLbl(j.d,{weekday:'short',month:'short',day:'numeric'})}${j.mood?' · '+JR_MOODS[j.mood-1]:''}</b>${(j.pm||j.am).trim()?`<span>${esc((j.pm||j.am).trim())}</span>`:''}</span></button>`).join('')}</div>`}
+/* the morning line can point at a task; it shows a tick once that task is done */
+function jrLinkHTML(j,k){const t=j.task!=null&&S.tasks.find(x=>String(x.id)===String(j.task));
+  if(t){const done=t.stage==='done';return `<div class="jr-link"><button class="jr-lk${done?' done':''}" data-jrtask="${t.id}" aria-label="Linked task: ${esc(t.title)}${done?', done':''}">${done?RT_TICK:'<i></i>'}<span>${esc(t.title)}</span></button><button class="jr-lx" data-jrunlink aria-label="Unlink the task">${X}</button></div>`}
+  if(k<today()||!S.tasks.some(x=>shown(x)&&x.stage==='today'))return '';
+  return `<div class="jr-link"><button class="jr-lk add" data-jrlink>${PLUS_S}<span>Link a task</span></button></div>`}
+/* earlier days, or what matches your search */
+let jrQ='';
+const jrMark=(txt,q)=>{const e=esc(txt);if(!q)return e;const qq=esc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return e.replace(new RegExp(qq,'gi'),m=>`<mark>${m}</mark>`)};
+function jrRowsHTML(){const t=today(),q=jrQ.trim().toLowerCase();
+  const list=q?jrAll().filter(j=>(j.am+' '+j.pm).toLowerCase().includes(q)).sort((a,b)=>a.d<b.d?1:-1).slice(0,30)
+    :jrAll().filter(j=>j.d<t&&jrWritten(j)).sort((a,b)=>a.d<b.d?1:-1).slice(0,jrDesk()?7:10);
+  if(!list.length)return q?`<p class="jr-none">Nothing found for “${esc(jrQ.trim())}”.</p>`:'';
+  return `<div class="jr-list">${list.map(j=>{const line=q?[j.am,j.pm].find(x=>x.toLowerCase().includes(q)):(j.pm||j.am).trim();
+    return `<button class="jr-ent" data-jrday="${j.d}"><i class="${jrMoodCls(j.mood)}"></i><span><b>${jrLbl(j.d,{weekday:'short',month:'short',day:'numeric'})}${j.mood?' · '+JR_MOODS[j.mood-1]:''}</b>${line?`<span>${jrMark(line.trim(),q?jrQ.trim():'')}</span>`:''}</span></button>`}).join('')}</div>`}
+function jrEarlierHTML(){if(!jrAll().some(jrWritten))return '';
+  return `<div class="jr-eh2"><span class="pg-eye jr-lbl">${jrQ.trim()?'Found':'Earlier'}</span><label class="jr-srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input id="jrQ" type="search" placeholder="Search your journal" value="${esc(jrQ)}" autocomplete="off" aria-label="Search your journal"></label></div><div id="jrRows">${jrRowsHTML()}</div>`}
 function jrSummary(){const n=jrDays(),ms=jrAll().filter(j=>j.mood&&j.d.slice(0,7)===today().slice(0,7)).map(j=>j.mood);
   const avg=ms.length?ms.reduce((a,b)=>a+b,0)/ms.length:0,word=avg>=4.5?'great':avg>=3.5?'good':avg>=2.5?'OK':avg?'low':'';
   return `<b>${n}</b> ${n===1?'day':'days'} written${word&&ms.length>=3?` · mostly <b>${word}</b> this month`:' · one line is enough'}`}
@@ -103,7 +116,7 @@ $('journalPg').addEventListener('click',e=>{
     cxOpen(m,[{t:'Clear this day',ic:BIN_S,warn:1,act:()=>{commit(()=>{const j=jrGet(k);if(j){j.am='';j.pm='';delete j.mood}},'Day cleared');drawJournal()}}])}});
 
 /* ---------- keep it fresh ---------- */
-const _jrRender=render;render=function(d){_jrRender(d);try{if(jrOn){if(!journalOn())closeJournal();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#journalPg [data-jrf]'))drawJournal()}}catch(err){console.error(err)}};
+const _jrRender=render;render=function(d){_jrRender(d);try{if(jrOn){if(!journalOn())closeJournal();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#journalPg [data-jrf],#jrQ'))drawJournal()}}catch(err){console.error(err)}};
 
 /* ---------- computers: "Journal" under Modes in the sidebar ---------- */
 const _jrSide=rhythmSide;
@@ -139,5 +152,17 @@ const _jrModes=modesPage;
 modesPage=function(){const h=_jrModes.apply(this,arguments),on=journalOn();
   const card=`<div class="md-card${on?' on':''}" data-md="journal"><div class="md-head"><span class="md-ic">${JR_ICON}</span><span class="md-t"><b>Journal</b><small>One line in the morning, one at night</small></span>${tg('journal')}</div>
     ${on?`<div class="md-body"><p class="md-note">What would make today a win, what went well, and how the day felt. Your moods fill a calendar.</p>
-      <div class="md-sub"><span><b>Energy check-ins</b><small>Tap how you feel during the day. Journal learns your best hours to focus.</small></span>${tg('jEnergy')}</div></div>`:''}</div>`;
+      <div class="md-sub"><span><b>Energy check-ins</b><small>Tap how you feel during the day. Journal learns your best hours to focus.</small></span>${tg('jEnergy')}</div>
+      <div class="md-sub"><span><b>Evening reminder</b><small>A nudge to write your evening line, if you haven't yet.</small></span>${C().jRem?`<select class="pn-hsel" data-jrremat aria-label="Reminder time">${['18:00','19:00','20:00','21:00','21:30','22:00','23:00'].map(v=>`<option${v===(C().jRemAt||'21:00')?' selected':''}>${v}</option>`).join('')}</select>`:''}${tg('jRem')}</div></div>`:''}</div>`;
   const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)};
+
+/* linking a task, searching */
+$('journalPg').addEventListener('click',e=>{
+  const ln=e.target.closest('[data-jrlink]');if(ln){e.stopPropagation();const k=jrDay||today(),ts=priSorted(S.tasks.filter(t=>shown(t)&&t.stage==='today')).slice(0,8);
+    return cxOpen(ln,ts.map(t=>({t:t.title,ic:PLUS_S,act:()=>{jrSaveNow();const j=jrMake(k);j.task=t.id;save();haptic(5);drawJournal()}})))}
+  if(e.target.closest('[data-jrunlink]')){const j=jrGet(jrDay||today());if(j){delete j.task;save();haptic(4);drawJournal()}return}
+  const tk=e.target.closest('[data-jrtask]');if(tk)return openDetail(isNaN(+tk.dataset.jrtask)?tk.dataset.jrtask:+tk.dataset.jrtask)});
+$('journalPg').addEventListener('input',e=>{if(e.target.id!=='jrQ')return;jrQ=e.target.value;const r=$('jrRows');if(r)r.innerHTML=jrRowsHTML();
+  const l=$('jrIn').querySelector('.jr-eh2 .jr-lbl');if(l)l.textContent=jrQ.trim()?'Found':'Earlier'});
+$('journalPg').addEventListener('keydown',e=>{if(e.target.id==='jrQ'&&e.key==='Escape'){e.preventDefault();e.stopPropagation();if(jrQ){jrQ='';e.target.value='';$('jrRows').innerHTML=jrRowsHTML()}else e.target.blur()}},true);
+$('setIn').addEventListener('change',e=>{const s=e.target.closest('[data-jrremat]');if(!s)return;S.cfg.jRemAt=s.value;S.cfgU=Date.now();save();haptic(4)});
