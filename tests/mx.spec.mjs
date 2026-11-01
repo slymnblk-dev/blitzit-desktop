@@ -16,16 +16,16 @@ test('KPIs: off by default, gauge on a space, create, link a task, done adds, re
   await page.evaluate(() => { goHome(); });
   await expect(page.locator('[data-mxopen]:visible')).toHaveCount(0); // only on a space's page
   await inSpace(page);
-  // computers open on the Scoreboard
+  // one view everywhere: KPI and OKR cards
   await page.locator('[data-mxopen]:visible').click();
   await expect(page.locator('#mxPg')).toHaveClass(/on/);
-  await expect(page.locator('#mxIn')).toHaveAttribute('data-look', 'board');
+  await expect(page.locator('#mxIn')).toHaveAttribute('data-look', 'cards');
   await page.locator('#mxPg [data-mxnew="kpi"]').first().click();
   await page.fill('#mxPg [data-mxf="name"]', 'Outreach messages');
   await page.fill('#mxPg [data-mxf="target"]', '50');
   await page.locator('#mxPg [data-mxsave]').click();
   await expect.poll(() => page.evaluate(() => S.kpis.map(k => [k.name, k.target, k.period, k.src, k.space === S.space]))).toEqual([['Outreach messages', 50, 'week', 'both', true]]);
-  await expect(page.locator('#mxPg .mx-kr')).toHaveCount(1);
+  await expect(page.locator('#mxPg .mxc.kpi')).toHaveCount(1);
   await page.keyboard.press('Escape');
   await expect(page.locator('#mxPg')).not.toHaveClass(/on/);
   // link a task from its details: Counts toward, +10
@@ -68,24 +68,21 @@ test('KPIs: "ask me" asks after done; a logged "latest value" KPI; repeating tas
   await expect.poll(() => page.evaluate(() => mxKpiNow(S.kpis[0]))).toBe(2);
   // the next repeat of the task keeps the link
   expect(await page.evaluate(id => { const t = S.tasks.find(x => x.id === id); return S.tasks.find(x => x.id === t.spawned).mx; }, id)).toEqual([{ id: 1, add: null }]);
-  // phones open on Focus; log a latest value from the item view (on phones KPIs & OKRs sit in the header's ⋯)
+  // phones show the same cards; log a latest value from the item view (on phones KPIs & OKRs sit in the header's ⋯)
   await page.locator('#topMore').click(); await page.locator('[data-tpm="mx"]').click();
-  await expect(page.locator('#mxIn')).toHaveAttribute('data-look', 'focus');
-  await page.locator('#mxPg .mx-ar', { hasText: 'Reply rate' }).click();
-  await page.locator('#mxPg .mx-fc [data-mxk]').click();
+  await expect(page.locator('#mxIn')).toHaveAttribute('data-look', 'cards');
+  await page.locator('#mxPg .mxc.kpi', { hasText: 'Reply rate' }).locator('.mxc-log').click();
   await page.fill('#mxLogIn', '18');
   await page.keyboard.press('Enter');
   await page.fill('#mxLogIn', '21');
   await page.keyboard.press('Enter');
   expect(await page.evaluate(() => mxKpiNow(S.kpis[1]))).toBe(21); // latest, not added up
   await expect(page.locator('#mxPg .mx-ent')).toHaveCount(2);
-  // switch the look: remembered for this device size
+  // no second look to switch to any more
   await page.keyboard.press('Escape');
-  await page.locator('#mxPg [data-mxlook]').click();
-  expect(await page.evaluate(() => S.cfg.mxPh)).toBe('board');
-  await expect(page.locator('#mxIn')).toHaveAttribute('data-look', 'board');
+  await expect(page.locator('#mxPg [data-mxlook]')).toHaveCount(0);
   // delete a KPI: its history goes, linked tasks stay and stop counting
-  await page.locator('#mxPg .mx-kr').first().click();
+  await page.locator('#mxPg .mxc.kpi .mxc-open').first().click();
   await page.locator('#mxPg [data-mxedit]').click();
   await page.locator('#mxPg [data-mxrm]').click();
   await page.locator('#dlgYes').click();
@@ -116,7 +113,7 @@ test('OKRs: create with key results, progress, close out to Past, copy to next q
   // a key result that starts at 0 adds up; one that starts higher keeps the latest value
   await page.evaluate(() => { const o = S.okrs[0]; o.krs[0].log.push({ id: 1, at: Date.now(), v: 3 }, { id: 2, at: Date.now(), v: 3 }); o.krs[1].log.push({ id: 3, at: Date.now() - 1000, v: 15 }, { id: 4, at: Date.now(), v: 18.5 }); save(); render(); });
   expect(await page.evaluate(() => { const o = S.okrs[0]; return [mxKrNow(o.krs[0]), mxKrNow(o.krs[1]), Math.round(mxOkrP(o) * 100)]; })).toEqual([6, 18.5, 50]);
-  await expect(page.locator('#mxPg .mx-op')).toHaveText('50%');
+  await expect(page.locator('#mxPg .mxc.okr .mxc-big b')).toHaveText('50%');
   // a task can count toward a key result
   const id = await todayTask(page);
   await page.evaluate(id => { const t = S.tasks.find(x => x.id === id); const o = S.okrs[0]; t.mx = [{ id: o.krs[0].id, okr: o.id, add: 1 }]; setStage(t, 'done'); save(); }, id);
@@ -124,19 +121,19 @@ test('OKRs: create with key results, progress, close out to Past, copy to next q
   // sync and backup carry KPIs and OKRs
   expect(await page.evaluate(() => [localDoc().okrs.length, JSON.parse(backupData()).okrs.length, mergeDocs(localDoc(), { tasks: [], lists: [], spaces: [], okrs: [] }).okrs.length])).toEqual([1, 1, 1]);
   // close it out: the score is kept under Past; copy it to the next quarter
-  await page.locator('#mxPg .mx-oh').click();
+  await page.locator('#mxPg .mxc.okr .mxc-open').click();
   await page.locator('#mxPg [data-mxcl]').click();
   await expect.poll(() => page.evaluate(() => [!!S.okrs[0].closed, S.okrs[0].score])).toEqual([true, 0.54]);
   await page.locator('#mxPg [data-mxpast]').click();
-  await page.locator('#mxPg .mx-okr.past .mx-oh').click();
+  await page.locator('#mxPg .mxc.okr.past .mxc-open').click();
   await page.locator('#mxPg [data-mxcopy]').click();
   await expect.poll(() => page.evaluate(() => S.okrs.length)).toBe(2);
   expect(await page.evaluate(() => { const n = S.okrs[1]; return [n.closed || null, n.krs.map(r => [r.name, r.from, r.target, r.log.length])]; })).toEqual([null, [['Book 12 demos', 0, 12, 0], ['Reply rate', 18.5, 25, 0]]]);
-  // Settings → Modes has the card with the look per device size
+  // Settings → Modes has the card (no look to choose any more)
   await page.keyboard.press('Escape');
   await page.evaluate(() => { openSettings(); setView = 'modes'; drawSettings(); });
   await expect(page.locator('#setIn .md-card[data-md="mx"]')).toHaveClass(/on/);
-  await expect(page.locator('#setIn .md-card[data-md="mx"] [data-k="mxPh"]')).toHaveCount(2);
+  await expect(page.locator('#setIn .md-card[data-md="mx"] [data-k="mxPh"]')).toHaveCount(0);
   noErrors(errors);
 });
 

@@ -1,0 +1,40 @@
+/* ---------- KPIs & OKRs popup: twin cards (12c-mx-cards.js) ---------- */
+/* a focused view: the page behind dims and blurs */
+.mx-pg{background:rgba(4,5,7,.66);-webkit-backdrop-filter:blur(14px) saturate(.9);backdrop-filter:blur(14px) saturate(.9)}
+@media (prefers-reduced-transparency:reduce){.mx-pg{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(4,5,7,.82)}}
+@media (min-width:700px){.mx-card[data-look="cards"]{max-width:900px}}
+
+.mxc-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:18px}
+@media (min-width:700px){.mxc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
+.mxc{--mc:var(--today);position:relative;display:flex;flex-direction:column;min-width:0;background:var(--surface);border-radius:24px;padding:20px 22px 18px;box-shadow:inset 0 0 0 1px var(--line);transition:box-shadow .2s}
+.mxc.okr{--mc:var(--backlog)}
+.mxc.past{opacity:.7}
+.mxc:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mc) 45%,var(--line))}
+.mxc-open{position:absolute;inset:0;border-radius:inherit;z-index:0}
+.mxc-open:focus-visible{outline:2px solid var(--mc);outline-offset:2px}
+.mxc>*:not(.mxc-open){position:relative;z-index:1;pointer-events:none}
+.mxc .mxc-kr,.mxc .mxc-log,.mxc .mx-close,.mxc-f{pointer-events:auto}
+.mxc-eye{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mc)}
+.mxc-t{display:block;margin-top:6px;font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2;overflow-wrap:anywhere}
+.mxc-big{display:flex;align-items:baseline;gap:8px;margin-top:14px;min-width:0}
+.mxc-big b{font-size:56px;font-weight:800;letter-spacing:-.05em;line-height:1}
+.mxc-big span{font-size:15px;color:var(--muted);overflow-wrap:anywhere}
+.mxc-bar{display:block;height:6px;margin-top:14px;border-radius:6px;background:var(--surface2);overflow:hidden}
+.mxc-bar i{display:block;height:100%;border-radius:6px;background:var(--mc);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.mxc.late .mxc-bar i{background:var(--week)}
+.mxc-kr{display:flex;align-items:baseline;gap:6px;width:100%;min-height:40px;margin-top:6px;padding:0;text-align:left;font-size:15px;color:var(--text);border-top:1px solid var(--line)}
+.mxc-kr:first-of-type{margin-top:12px}
+.mxc-kr span{flex:1;min-width:0;padding-top:10px;color:color-mix(in srgb,var(--text) 80%,var(--muted));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mxc-kr b{font-weight:800}.mxc-kr small{font-size:13px;color:var(--muted)}
+.mxc-kr:hover span{color:var(--text)}
+.mxc-f{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:16px}
+.mxc-f small{flex:1;min-width:0;font-size:13px;color:var(--muted)}
+.mxc-log{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;background:var(--surface2);color:var(--text);font-size:15px;font-weight:600;flex:none}
+.mxc-log svg{width:15px;height:15px;color:var(--mc)}
+.mxc-log:hover{background:color-mix(in srgb,var(--mc) 18%,var(--surface2))}
+.mxc-adds{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.mxc-adds .mx-new{display:inline-flex;min-height:40px;height:40px;padding:0 16px 0 12px;border-radius:999px;background:var(--surface);color:var(--text);font-weight:600;gap:8px}
+.mxc-plus{font-size:18px;font-weight:700;line-height:1;color:var(--today)}
+.mxc-adds .mx-new.okr .mxc-plus{color:var(--backlog)}
+.mxc-adds .mx-new:hover{background:var(--surface2)}
+.mx-fe .mxc-adds{justify-content:center}

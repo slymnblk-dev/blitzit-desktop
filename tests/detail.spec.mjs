@@ -26,9 +26,8 @@ test('focus view: task opens big in the middle and is remembered', async ({ page
   await page.evaluate(() => openDetail(S.tasks.find(x => !x.archived).id));
   await page.locator('#dWide').click();
   await expect(page.locator('#detailSheet')).toHaveClass(/wide/);
-  await page.waitForTimeout(400);
+  await expect.poll(async () => { const b = await page.locator('#detailSheet').boundingBox(); return Math.abs(b.x + b.width / 2 - 700) < 4; }).toBe(true); // centred once it has opened
   const box = await page.locator('#detailSheet').boundingBox();
-  expect(Math.abs(box.x + box.width / 2 - 700)).toBeLessThan(4);                                  // centred
   expect(box.width).toBeGreaterThan(900);
   await page.locator('#dClose').click();
   await page.evaluate(() => openDetail(S.tasks.find(x => !x.archived).id));

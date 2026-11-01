@@ -196,8 +196,6 @@ modesPage=function(){
      ${row('North star on Home',tg('wStar'),'Your starred goal under the Today card')}`)}
   ${card('mx',MX_ICON,'KPIs & OKRs','Key numbers and quarterly results for each space',mxOn(),
     `<p class="md-note">Open them from the gauge on a space’s page. In a task, “Counts toward” links it to a KPI or key result.</p>
-     ${row('On phones',`<div class="segc">${sOpt('mxPh','focus','One at a time')}${sOpt('mxPh','board','Scoreboard')}</div>`)}
-     ${row('On computers',`<div class="segc">${sOpt('mxDk','board','Scoreboard')}${sOpt('mxDk','focus','One at a time')}</div>`)}
      ${row('On Home',tg('wMx'),'Your KPIs and OKRs from every space, the ones furthest behind first')}
      ${c.wMx!==false?row('Widget style',`<div class="segc">${sOpt('mxHw','auto','Default')}${sOpt('mxHw','focus','Focus')}${sOpt('mxHw','rings','Rings')}${sOpt('mxHw','bars','Bars')}</div>`,'On phones. Default: Focus'):''}`)}
   </div>

@@ -23,7 +23,7 @@ var mxSpPick=null; // the Home widget opens the popup for an item's own space
 const mxSpaceIn=()=>S.space&&S.space!=='all'&&spaceOf(S.space)?S.space:null;
 const mxSpaceNow=()=>mxSpPick==='none'||mxSpPick==='null'?'none':mxSpPick&&spaceOf(mxSpPick)?mxSpPick:mxSpaceIn();
 const mxPhone=()=>matchMedia('(max-width:699px)').matches;
-const mxLook=()=>{const v=mxPhone()?C().mxPh:C().mxDk;return v==='board'||v==='focus'?v:(mxPhone()?'focus':'board')};
+var mxLook=()=>{const v=mxPhone()?C().mxPh:C().mxDk;return v==='board'||v==='focus'?v:(mxPhone()?'focus':'board')};
 /* ---- numbers ---- */
 const mxN=v=>{if(v==null||!Number.isFinite(+v))return '—';const r=Math.round(+v*10)/10;return Math.abs(r)>=10000?Math.round(r).toLocaleString():String(r)};
 const mxFmt=(v,unit)=>{const u=(unit||'').trim();if(v==null)return '—';if(u==='%')return mxN(v)+'%';if(u==='€'||u==='$'||u==='£')return u+mxN(v);return mxN(v)};
