@@ -1,6 +1,6 @@
 /* ===== Computer Home: Bento and Calm column (08u-home-desk.js) ===== */
 .dh-eye{display:block;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.dh-eye.hot{color:var(--today)}.dh-eye.gold{color:var(--week)}
+.dh-eye.hot{color:var(--today-ink)}.dh-eye.gold{color:var(--week-ink)}
 .dh-ring{position:relative;flex:none;display:inline-grid;place-items:center}
 .dh-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .dh-ring circle{fill:none}.dh-ring .r0{stroke:var(--surface2)}.dh-ring .r1{stroke:var(--today);stroke-linecap:round;transition:stroke-dasharray .7s var(--ease)}
@@ -42,7 +42,7 @@
 .bn-tt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .bn-tt b{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bn-tk.first .bn-tt b{font-weight:800;font-size:17px}
-.bn-tt small{font-size:13px;color:var(--today)}
+.bn-tt small{font-size:13px;color:var(--today-ink)}
 .bn-te{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .bn-more{align-self:flex-start;margin-top:8px;padding:4px 0;font:inherit;font-size:13px;font-weight:600;color:var(--muted)}.bn-more:hover{color:var(--text)}
 .bn-go{margin-top:auto;padding-top:18px}

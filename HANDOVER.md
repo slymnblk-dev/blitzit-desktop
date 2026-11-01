@@ -11,7 +11,7 @@
 
 ## Repo / workflow
 - Repo `slymnblk-dev/blitzit-desktop`. Work on **`dev`** only. Never push to `main` directly.
-- Build: `src/index.html` + `src/css/*.css` + `src/js/*.js` are concatenated in sorted order into `web/index.html` by `node tools/build.mjs` (one shared scope; later files wrap earlier functions by reassigning them, e.g. `render`, `drawGoal`, `mxSave`, `rhythmSide`).
+- Build: `src/index.html` + `src/css/*.css` + `src/js/*.js` are concatenated in sorted order into `web/index.html` by `node tools/build.mjs` (one shared scope; later files wrap earlier functions by reassigning them, e.g. `render`, `drawGoal`, `mxSave`, `rhythmSide`). Since 0.254 the CSS and JS are minified with esbuild (pinned devDependency; top-level names are kept). `BUILD_PLAIN=1 node tools/build.mjs` builds unminified for debugging — never commit that. The service worker opens the saved copy if the network takes over 1.5s.
 - After every change: bump `APP_VERSION` in `src/js/01-boot-data.js` **and** `blitzit-vNN` in `web/sw.js` (same number) → build → tests → commit (with the attribution lines) → push `dev`.
 - Tests: `(node tests/server.mjs > /dev/null 2>&1 &)` then `PW_CHROMIUM=<chromium path> npm test` (or `npx playwright test tests/<file>.spec.mjs`). Kill the server after: `pgrep -f "node tests/serve[r]" | xargs -r kill`.
 - Test copy for Suly: https://slymnblk-dev.github.io/blitzit-desktop/ (from `dev`).
