@@ -7,11 +7,11 @@ let srchQ='',srchOpen=false,srchSel=0,srchKind='all';
 const srchOn=()=>S.cfg.search!==false;
 /* filters narrow a board, so they only show where there is one (a space or All tasks), not on Home */
 const srchBoard=()=>!!S.space&&!spPage;
-const srchFiltering=()=>SF.pri.size>0||SF.tags.size>0;
+const srchFiltering=()=>(priOn()&&SF.pri.size>0)||(tagsOn()&&SF.tags.size>0);
 /* does a task pass the filters? (used by the board too) */
 function srchPass(t){
-  if(SF.pri.size&&!SF.pri.has(t.pri||''))return false;
-  if(SF.tags.size&&!tagsOf(t).some(n=>SF.tags.has(tagKey(n))))return false;
+  if(priOn()&&SF.pri.size&&!SF.pri.has(t.pri||''))return false;
+  if(tagsOn()&&SF.tags.size&&!tagsOf(t).some(n=>SF.tags.has(tagKey(n))))return false;
   return true;
 }
 const srchNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
@@ -75,14 +75,15 @@ function srchResults(){
 function srchFilterCard(){
   const pool=srchTagPool();
   return `<div class="sf-card"><div class="sf-head"><span>Filter the board</span>${srchFiltering()?`<button class="sf-clear" data-sfclear>Clear</button>`:''}</div>
-    <div class="sf-row pri-row"><span class="sf-l">Priority</span><div class="sf-chips">${PRIS.map(p=>`<button class="sf-chip pri ${p.id} ${SF.pri.has(p.id)?'on':''}" data-sfp="${p.id}">${priIcon(p.n)}${p.name}</button>`).join('')}</div></div>
-    <div class="sf-row"><span class="sf-l">Tags</span><div class="sf-chips">${pool.length?pool.map(([k,n])=>`<button class="sf-chip ${SF.tags.has(k)?'on':''}" data-sft="${esc(k)}">#${esc(n)}</button>`).join(''):'<span class="sf-none">No tags yet. Add them in a task.</span>'}</div></div></div>`;
+    ${priOn()?`<div class="sf-row pri-row"><span class="sf-l">Priority</span><div class="sf-chips">${PRIS.map(p=>`<button class="sf-chip pri ${p.id} ${SF.pri.has(p.id)?'on':''}" data-sfp="${p.id}">${priIcon(p.n)}${p.name}</button>`).join('')}</div></div>`:''}
+    ${tagsOn()?`<div class="sf-row"><span class="sf-l">Tags</span><div class="sf-chips">${pool.length?pool.map(([k,n])=>`<button class="sf-chip ${SF.tags.has(k)?'on':''}" data-sft="${esc(k)}">#${esc(n)}</button>`).join(''):'<span class="sf-none">No tags yet. Add them in a task.</span>'}</div></div>`:''}</div>`;
 }
 function srchDraw(){
   const p=$('srch');if(!p)return;
-  p.querySelector('.sr-body').innerHTML=srchResults()+(srchBoard()?srchFilterCard():'');
+  p.querySelector('.sr-body').innerHTML=srchResults()+(srchBoard()&&(priOn()||tagsOn())?srchFilterCard():'');
 }
 function srchChip(){
+  if(!priOn())SF.pri.clear();if(!tagsOn())SF.tags.clear(); // a switched-off detail can't keep filtering
   const c=$('srchChip'),n=SF.pri.size+SF.tags.size;
   document.querySelectorAll('.srch-btn').forEach(b=>b.classList.toggle('filtering',n>0));
   if(!c)return;c.hidden=!n||!srchOn();

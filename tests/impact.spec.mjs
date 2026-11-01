@@ -54,10 +54,11 @@ test('1 to 5 shows five circles and a number; Off hides it all and keeps your or
   await page.locator('#dPicker .imp-d', { hasText: '5' }).click();
   await page.keyboard.press('Escape');
   await expect(col.first()).toHaveAttribute('data-id', String(ids[0]));
-  // Settings → Tasks has the three choices
+  // Settings → Tasks → Task details: Impact has its own switch and a two-way scale
   await page.evaluate(() => { openSettings(); setView = 'tasks'; drawSettings(); });
-  await expect(page.locator('#setIn [data-k="impStyle"]')).toHaveText(['Off', 'Small · Medium · Big', '1 to 5']);
-  await page.locator('#setIn [data-k="impStyle"][data-v="off"]').click();
+  await expect(page.locator('#setIn [data-k="impStyle"]')).toHaveText(['Small to Big', '1 to 5']);
+  await page.locator('#setIn .md-card[data-md="imp"] [data-tg="imp"]').click();
+  await expect(page.locator('#setIn [data-k="impStyle"]')).toHaveCount(0);
   await page.keyboard.press('Escape');
   await expect(page.locator('.col[data-s="today"] .mi.imp')).toHaveCount(0);
   await page.evaluate(id => openDetail(id), ids[0]);

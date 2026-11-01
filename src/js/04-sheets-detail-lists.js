@@ -68,7 +68,7 @@ function addListTag(l,name){name=tagClean(name);if(!name||!l)return null;const e
 function toggleTaskTag(t,name){const has=tagsOf(t).some(x=>tagKey(x)===tagKey(name));t.tags=has?tagsOf(t).filter(x=>tagKey(x)!==tagKey(name)):[...tagsOf(t),name]}
 /* moving a task to another list brings its tags along */
 function carryTags(t){if(!tagsOf(t).length)return;const l=listOf(t.list);t.tags=tagsOf(t).map(n=>addListTag(l,n)).filter(Boolean)}
-const tagChips=(t,max)=>{const a=tagsOf(t);if(!a.length)return '';return a.slice(0,max).map(n=>`<span class="ttag">#${esc(n)}</span>`).join('')+(a.length>max?`<span class="ttag more">+${a.length-max}</span>`:'')};
+const tagChips=(t,max)=>{const a=tagsOn()?tagsOf(t):[];if(!a.length)return '';return a.slice(0,max).map(n=>`<span class="ttag">#${esc(n)}</span>`).join('')+(a.length>max?`<span class="ttag more">+${a.length-max}</span>`:'')};
 function drawDetail(){
   const t=cur;if(!t)return;
   {const full=t.subs.length>=SUB_MAX;$('dSubIn').closest('.sub-add').classList.toggle('full',full);$('dSubIn').placeholder=full?`${SUB_MAX} steps, the most for one task`:'Add a step'}
@@ -78,17 +78,17 @@ function drawDetail(){
   $('dPills').innerHTML=t.inbox?
     P('list',`${I_SEND}Send to a list`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
-    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+impPill(t,P)
+    (priOn()?P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t)):'')+impPill(t,P)
   :
     P('stage',`<i style="background:${color(t.stage)}"></i>${esc(st.name)}`)+
     P('list',`<i style="background:${l.c}"></i>${esc(l.name)}`)+
     P('est',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(t.est)}`)+
     P('repeat',`${I_REP}${t.repeat==='none'?'Repeat':rp.name}`,t.repeat==='none')+
-    P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t))+impPill(t,P)+
+    (priOn()?P('pri',priOf(t)?`${priIcon(priOf(t).n)}${priOf(t).name}`:`${priIcon(0)}Priority`,!priOf(t)):'')+impPill(t,P)+
     (goalPill(t,P))+
     (typeof mxPill==='function'?mxPill(t,P):'')+
     (secOn()&&t.stage!=='done'&&secsForTask(t).length?P('sec',`${I_SEC}${secOfTask(t)?esc(secOfTask(t).name):'Section'}`,!secOfTask(t)):'')+
-    P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length);
+    (tagsOn()?P('tags',tagsOf(t).length?`${I_TAG}${tagsOf(t).map(n=>`<span class="pl-tg">#${esc(n)}</span>`).join('')}`:`${I_TAG}Tags`,!tagsOf(t).length):'');
   const pk=(on,v,label,dot)=>`<button class="pk ${on?'on':''}" data-v="${v}">${dot?`<i style="background:${dot}"></i>`:''}${esc(label)}</button>`;
   const pick=$('dPicker');
   if(pickOpen){
@@ -273,8 +273,8 @@ function lePanel(l,only,anim){
       ${lxRow('c','Colour',`<i class="lx-dot" style="background:${l.c}"></i>`,`<div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>`,leSub==='c')}
       ${S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name)}</span>`,
         `<div class="lx-list">${S.spaces.map(x=>`<button class="lx-opt${l.space===x.id?' on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}>${spMini(x)}<span>${esc(x.name)}</span>${l.space===x.id?tick():''}</button>`).join('')}</div>${only?`<p class="le-note">It’s the only list in ${esc(sp.name)}, so it stays here.</p>`:''}`,leSub==='s'):''}
-      ${lxRow('t','Tags',tg.length?`${tg.length} ${tg.length===1?'tag':'tags'}`:'None',`<div class="le-tags">${tg.map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
-          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>`,leSub==='t')}
+      ${tagsOn()?lxRow('t','Tags',tg.length?`${tg.length} ${tg.length===1?'tag':'tags'}`:'None',`<div class="le-tags">${tg.map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
+          <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>`,leSub==='t'):''}
     </div>
     ${only?`<p class="le-note">The only list in ${esc(sp.name)} can’t be archived or deleted.</p>`:`<div class="le-acts"><button class="le-btn" data-larc="${l.id}">${ARC_S}Archive</button><button class="le-btn warn" data-ldel="${l.id}">${BIN_S}Delete</button></div>`}
   </div></div>`}

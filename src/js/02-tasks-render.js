@@ -7,7 +7,10 @@ function nextDate(rep){
 }
 /* impact (optional, Settings → Tasks): how much a task matters once it's done, kept as 1–5 on t.imp.
    "levels" shows it as Small (1–2), Medium (3), Big (4–5) with violet sparks; "num" shows the number. Off hides it. */
-const impStyle=()=>(S.cfg&&S.cfg.impStyle)||'levels';
+const impStyle=()=>S.cfg&&S.cfg.imp===false?'off':(S.cfg&&S.cfg.impStyle)||'levels';
+/* optional task details (Settings → Tasks → Task details): off = hidden everywhere, the data stays */
+const priOn=()=>!S.cfg||S.cfg.pri!==false;
+const tagsOn=()=>!S.cfg||S.cfg.tags!==false;
 const impOn=()=>impStyle()!=='off';
 const IMP_LV=[{id:'s',name:'Small',v:1,n:1,sub:'nice to do'},{id:'m',name:'Medium',v:3,n:2,sub:'moves things'},{id:'b',name:'Big',v:5,n:3,sub:'changes the week'}];
 const impLv=t=>{const v=+(t&&t.imp)||0;return v?IMP_LV[v<=2?0:v===3?1:2]:null};
@@ -25,7 +28,7 @@ function impPicks(t,pk){const v=+t.imp||0;
   const cur=impLv(t);
   return `<div class="imp-pk"><span class="imp-h">How much will this matter?</span><div class="imp-lv">${IMP_LV.map(l=>`<button class="pk imp-c ${cur&&cur.id===l.id?'on':''}" data-v="${cur&&cur.id===l.id?0:l.v}" aria-pressed="${!!(cur&&cur.id===l.id)}">${impSparks(l.n)}<b>${l.name}</b><small>${l.sub}</small></button>`).join('')}</div></div>`}
 /* order (automatic): the biggest impact first, then High, Medium, Low priority (if on); your own order stays within each level */
-const priSortOn=()=>!S.cfg||S.cfg.priSort!==false;
+const priSortOn=()=>priOn()&&(!S.cfg||S.cfg.priSort!==false);
 const priRank=t=>({high:0,med:1,low:2})[t&&t.pri]??3;
 const ordRank=t=>(impOn()?(5-impVal(t))*10:0)+(priSortOn()?priRank(t):0);
 const ordOn=()=>priSortOn()||impOn();
@@ -83,7 +86,7 @@ function foldRows(list,key){
 }
 /* priority (optional, set in task details): High / Medium / Low, shown as small signal bars */
 const PRIS=[{id:'high',name:'High',n:3},{id:'med',name:'Medium',n:2},{id:'low',name:'Low',n:1}];
-const priOf=t=>PRIS.find(p=>p.id===t.pri)||null;
+const priOf=t=>priOn()&&PRIS.find(p=>p.id===t.pri)||null;
 const priIcon=n=>`<svg class="pri-i" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="9.5" width="3" height="4.5" rx="1" ${n>=1?'':'class="off"'}/><rect x="6.5" y="6" width="3" height="8" rx="1" ${n>=2?'':'class="off"'}/><rect x="11" y="2" width="3" height="12" rx="1" ${n>=3?'':'class="off"'}/></svg>`;
 function rowHTML(t){
   const l=listOf(t.list);

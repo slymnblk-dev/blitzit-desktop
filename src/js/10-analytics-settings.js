@@ -45,10 +45,12 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,impStyle:'levels',rtHome:true,jRemAt:'21:00',ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,impStyle:'levels',pri:true,imp:true,tags:true,rtHome:true,jRemAt:'21:00',ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,fsShow:'1',homeLayout:'bento',sideN:true,homeAlso:'switch',navStyle:'float',homeShow:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
+/* Impact used to be switched off with impStyle 'off'; now it has its own switch (cfg.imp) and impStyle is only the scale */
+if(S.cfg.impStyle==='off'){S.cfg.imp=false;S.cfg.impStyle='levels'}
 /* Full width became the default: turn it on once, then the choice you make in Settings is remembered */
 if(S.cfg.fwDefault!==1){S.cfg.fullWidth=true;S.cfg.fwDefault=1}
 S.cfg.names=Object.assign({},DEF_CFG.names,S.cfg.names);S.cfg.colors=Object.assign({},DEF_CFG.colors,S.cfg.colors);
@@ -190,6 +192,21 @@ function settingsMain(){
   <h3 class="cat-cap">Help</h3><div class="cats"><button class="cat" id="replayIntro"><span class="cat-t">Quick tour<small>The basics in 1 minute</small></span>${CHEV}</button></div>
   <div class="ver">Windaday, version ${VER}. ${user?'Your tasks sync to your account.':'Your data stays on this device.'}</div>`;
 }
+/* Settings → Tasks → Task details: Priorities, Impact and Tags, each a card with its own switch (like Modes) */
+const TF_I={pri:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 19v-4M12 19V10M18 19V5"/></svg>',
+  imp:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/></svg>',
+  tags:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7l8.3 8.3a1 1 0 0 1 0 1.4l-7.3 7.3a1 1 0 0 1-1.4 0z"/><circle cx="8" cy="8" r="1.4" fill="currentColor"/></svg>'};
+function tfCards(){const c=C();
+  const card=(k,name,sub,body)=>{const on=c[k]!==false;return `<div class="md-card${on?' on':''}" data-md="${k}"><div class="md-head"><span class="md-ic">${TF_I[k]}</span><span class="md-t"><b>${name}</b><small>${sub}</small></span>${tg(k)}</div>${on?`<div class="md-body${typeof mdJust!=='undefined'&&mdJust===k?' in':''}">${body}</div>`:''}</div>`};
+  return card('pri','Priorities','High, Medium or Low on each task',
+      `${row('Sort by priority',tg('priSort'),'High priority tasks go to the top, then Medium, then Low.')}
+    <div class="set-row"><div class="set-l">Priority look<small>How High, Medium and Low show on your tasks.</small></div>
+      <div class="pri-pick">${[['bars','Label','Bars and the word.'],['marks','Marks','!!! / !! / ! after the name.'],['ring','Ring','The circle takes the colour.'],['edge','Edge','A coloured line at the start.'],['tint','Tint','The whole row softly takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${((c.priStyle==='dot'?'marks':c.priStyle)||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
+        <span class="prp-row"><span class="pc"></span><span class="pt"><span>Call the bank${v==='marks'?'<i class="pri-mk high">!!!</i>':''}</span>${v==='bars'?`<em>${priIcon(3)}High</em>`:''}</span></span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`)
+    +card('imp','Impact','How much a task matters once it’s done',
+      `${row('Scale',`<div class="segc">${sOpt('impStyle','levels','Small to Big')}${sOpt('impStyle','num','1 to 5')}</div>`,(c.impStyle||'levels')==='num'?'Rate each task from 1 to 5. The biggest impact goes to the top and leads your day.':'Small, Medium or Big. The biggest impact goes to the top and leads your day.')}`)
+    +card('tags','Tags','Short labels like #calls, to find and filter tasks',
+      `<p class="md-note">Add tags in a task’s details. Each list keeps its own tags: rename or remove them in Settings → Lists.</p>`)}
 function settingsPage(id){
   const c=C(),title=PAGES.find(p=>p.id===id).name;
   const head=`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><span class="pg-eye set-eye">Settings</span><h1 class="sub-h">${title}</h1>`;
@@ -235,16 +252,13 @@ function settingsPage(id){
     </div><div class="set-sec"><h3>Display</h3>
     ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
-    ${row('Search & filter',tg('search'),'A search button at the top. Find any task and filter the board by priority or tags.')}
+    ${row('Search & filter',tg('search'),'A search button at the top. Find any task'+(c.pri!==false||c.tags!==false?` and filter the board by ${[c.pri!==false?'priority':'',c.tags!==false?'tags':''].filter(Boolean).join(' or ')}`:'')+'.')}
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
     ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
     ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
-    ${row('Sort by priority',tg('priSort'),'High priority tasks go to the top, then Medium, then Low.')}
-    <div class="set-row"><div class="set-l">Priority look<small>How High, Medium and Low show on your tasks.</small></div>
-      <div class="pri-pick">${[['bars','Label','Bars and the word.'],['marks','Marks','!!! / !! / ! after the name.'],['ring','Ring','The circle takes the colour.'],['edge','Edge','A coloured line at the start.'],['tint','Tint','The whole row softly takes the colour.']].map(([v,n,d])=>`<button class="prp ${v} ${((c.priStyle==='dot'?'marks':c.priStyle)||'bars')===v?'on':''}" data-k="priStyle" data-v="${v}">
-        <span class="prp-row"><span class="pc"></span><span class="pt"><span>Call the bank${v==='marks'?'<i class="pri-mk high">!!!</i>':''}</span>${v==='bars'?`<em>${priIcon(3)}High</em>`:''}</span></span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>
-    ${row('Impact',`<div class="segc">${sOpt('impStyle','off','Off')}${sOpt('impStyle','levels','Small · Medium · Big')}${sOpt('impStyle','num','1 to 5')}</div>`,'How much a task matters once it’s done. The biggest impact goes to the top, and leads your day.')}
     ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}
+    </div><div class="set-sec"><h3>Task details</h3><p class="sub-p">Extras you can add to a task. Turn one off and it disappears everywhere. What you set stays safe and comes back when you turn it on again.</p>
+    <div class="md-list">${tfCards()}</div>
     </div><div class="set-sec"><h3>Celebrations</h3>
     ${row('Celebrate finished tasks',tg('celebrate'),'A short, quiet moment, with a sound if sounds are on.')}
     ${c.celebrate?row('Every',`<div class="segc">${sOpt('celebEvery',1,'1 task')}${sOpt('celebEvery',3,'3 tasks')}</div>`):''}
