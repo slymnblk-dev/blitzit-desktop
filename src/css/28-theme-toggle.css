@@ -12,3 +12,16 @@
 .tt-anim::view-transition-old(root){z-index:1}
 .tt-anim::view-transition-new(root){z-index:2}
 @media (prefers-reduced-motion:reduce){.tt-btn svg{transition:none}}
+/* ---------- Settings → Appearance → Themes: small pills, no big previews (09b-themes.js) ---------- */
+.thg2{margin-top:14px}
+.thg2-h{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;margin-bottom:10px}
+.thg2-h em{font-style:normal;font-size:12px;font-weight:700;color:var(--today);display:inline-flex;align-items:center;gap:6px}
+.thg2-h em::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--today)}
+.thg2-row{display:flex;flex-wrap:wrap;gap:8px}
+.thp{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 16px 0 8px;border-radius:999px;background:var(--surface);color:var(--text);font-size:15px;font-weight:600;box-shadow:inset 0 0 0 1px var(--line);transition:box-shadow .2s,background .2s}
+.thp:hover{background:var(--surface2)}
+.thp.on{box-shadow:inset 0 0 0 2px var(--text)}
+.thp-sw{position:relative;width:28px;height:28px;border-radius:50%;overflow:hidden;flex:none}
+.thp-sw i{position:absolute;right:0;top:0;bottom:0;width:50%}
+.thp-sw b{position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%}
+.thg2-note{margin:14px 0 0;font-size:13px;color:var(--muted)}

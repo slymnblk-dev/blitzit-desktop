@@ -9,13 +9,13 @@ test('themes: pick Sand, hovering changes nothing, Ember for dark', async ({ pag
   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(await bg()).toBe('rgb(244, 244, 240)');
   await page.evaluate(() => { openSettings(); setView = 'appearance'; drawSettings(); });
-  await page.locator('.thc[data-thid="sand"]').click();
+  await page.locator('.thp[data-thid="sand"]').click();
   await expect.poll(bg).toBe('rgb(241, 235, 225)');
   expect(await page.evaluate(() => S.cfg.lightTheme)).toBe('sand');
-  await page.locator('.thc[data-thid="onyx"]').hover();                    // hovering no longer changes the app
+  await page.locator('.thp[data-thid="onyx"]').hover();                    // hovering no longer changes the app
   await page.waitForTimeout(300);
   expect(await bg()).toBe('rgb(241, 235, 225)');
-  await page.locator('.thc[data-thid="ember"]').click();
+  await page.locator('.thp[data-thid="ember"]').click();
   expect(await page.evaluate(() => S.cfg.darkTheme)).toBe('ember');
   await page.evaluate(() => setCfg('theme', 'dark'));
   await expect.poll(bg).toBe('rgb(20, 17, 15)');

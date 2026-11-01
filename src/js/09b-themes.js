@@ -36,22 +36,16 @@ function themeMeta(){
 }
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>setTimeout(themeMeta,0));
 /* the picker: a tiny drawing of the board in each look */
-function themeCard(mode,t,on){
-  const v=t.v;
-  return `<button class="thc${on?' on':''}" type="button" data-thm="${mode}" data-thid="${t.id}" aria-pressed="${on}" aria-label="${t.name} ${mode} theme">
-    <span class="thc-pv" style="background:${v.bg};box-shadow:inset 0 0 0 1px ${v.line}">
-      <span class="thc-sd" style="background:${v.side};border-right:1px solid ${v.line}"><i style="background:${v.text}"></i><i style="background:${v.muted}"></i><i style="background:${v.muted}"></i></span>
-      <span class="thc-bd">${['backlog','week','today','done'].map(k=>`<span class="thc-c${k==='today'?' td':''}" style="${k==='today'?`background:color-mix(in srgb,${v.today} 10%,${v.bg});box-shadow:inset 0 0 0 1px color-mix(in srgb,${v.today} 35%,transparent)`:''}"><b style="background:${v[k]}"></b><i style="background:${v.surface};box-shadow:0 0 0 1px ${v.line}"></i><i style="background:${v.surface};box-shadow:0 0 0 1px ${v.line}"></i>${k==='today'?`<em style="background:${v.today}"></em>`:''}</span>`).join('')}</span>
-    </span>
-    <span class="thc-n"><b>${t.name}</b><small>${t.sub}</small></span>
-    <span class="thc-ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-  </button>`;
+/* a theme is a small pill: two swatches (page and card colour, with the Today accent) and its name (0.269) */
+function themeCard(mode,t,on){const v=t.v;
+  return `<button class="thp${on?' on':''}" type="button" data-thm="${mode}" data-thid="${t.id}" aria-pressed="${on}" aria-label="${t.name} ${mode} theme" title="${t.sub}">
+    <span class="thp-sw" style="background:${v.bg};box-shadow:inset 0 0 0 1px ${v.line}"><i style="background:${v.surface}"></i><b style="background:${v.today}"></b></span>${t.name}</button>`;
 }
 function themesSection(){
   const c=C(),cur=modeNow();
-  const grp=(mode,label)=>`<div class="thg"><div class="thg-h"><span>${label}</span>${cur===mode?'<em>Showing now</em>':`<small>Used when the app is ${mode}</small>`}</div>
-    <div class="thg-row">${THEMES[mode].map(t=>themeCard(mode,t,(mode==='light'?c.lightTheme:c.darkTheme||'default')===t.id||(t.id==='default'&&!(mode==='light'?c.lightTheme:c.darkTheme)))).join('')}</div></div>`;
-  return `<div class="set-sec" id="themesSec"><h3>Themes</h3>${grp('light','Light')}${grp('dark','Dark')}</div>`;
+  const grp=(mode,label)=>`<div class="thg2"><div class="thg2-h">${label}${cur===mode?'<em>Showing now</em>':''}</div>
+    <div class="thg2-row">${THEMES[mode].map(t=>themeCard(mode,t,(mode==='light'?c.lightTheme:c.darkTheme||'default')===t.id||(t.id==='default'&&!(mode==='light'?c.lightTheme:c.darkTheme)))).join('')}</div></div>`;
+  return `<div class="set-sec" id="themesSec"><h3>Themes</h3>${grp('dark','Dark mode')}${grp('light','Light mode')}<p class="thg2-note">Switch between them with the sun / moon button at the top.</p></div>`;
 }
 function themePick(mode,id){
   haptic(6);sfx('toggle');

@@ -217,9 +217,7 @@ function settingsPage(id){
   const c=C(),title=PAGES.find(p=>p.id===id).name;
   const head=`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><span class="pg-eye set-eye">Settings</span><h1 class="sub-h">${title}</h1>`;
   let body='';
-  if(id==='appearance')body=`<div class="set-sec">
-    ${row('Mode',`<div class="segc">${sOpt('theme','system','Auto')}${sOpt('theme','light','Light')}${sOpt('theme','dark','Dark')}</div>`,'Auto follows your device')}</div>
-    ${themesSection()}<div class="set-sec${matchMedia('(min-width:1100px)').matches?' set-empty':''}"><h3>Layout on phones</h3>
+  if(id==='appearance')body=`${themesSection()}<div class="set-sec${matchMedia('(min-width:1100px)').matches?' set-empty':''}"><h3>Layout on phones</h3>
     ${matchMedia('(min-width:1100px)').matches?'':row('On Home show',`<div class="segc">${sOpt('homeShow','spaces','Spaces')}${sOpt('homeShow','lists','Lists')}</div>`,C().homeShow==='lists'?'Every list, grouped by space. One tap opens it.':'Your spaces. Tap one to see its lists.')}
     ${matchMedia('(min-width:1100px)').matches?'':row('Tab bar on phones',`<div class="segc">${sOpt('navStyle','float','Floating')}${sOpt('navStyle','labels','With labels')}</div>`,C().navStyle==='labels'?'A slim bar with names under the icons.':'A floating pill, with the + on its own.')}
     ${matchMedia('(min-width:1100px)').matches||typeof tbPickRow!=='function'?'':tbPickRow()}
