@@ -2,11 +2,13 @@
    One view on phones and computers (replaces Scoreboard / Focus). KPI and OKR cards share one shape:
    eyebrow (KPI coral, OKR violet) · name · big number · bar · footer with "+ Log". Tap a card to open it.
    The page behind is darkened and blurred (13-mx.css + 26-mx-cards.css). */
+/* "10 message" reads wrong: a simple one-word unit gets its plural when the number isn't 1 */
+const mxPlural=(u,n)=>{u=(u||'').trim();return n!==1&&/^[a-z]{3,}$/i.test(u)&&!/(s|ss|x|z|ch|sh)$/i.test(u)?u+'s':u};
 function mxCardKpi(k){const v0=mxKpiNow(k),v=v0??0,p=mxKpiP(k),left=mxDays(mxShift(k.period,mxStart(k.period,Date.now()),1)),t=+k.target;
   const togo=k.better==='down'||k.kind==='last'?'':Math.max(0,t-v);
   return `<div class="mxc kpi${mxLate(k)?' late':''}"><button class="mxc-open" data-mxk="${k.id}" aria-label="Open ${esc(k.name)}"></button>
     <span class="mxc-eye">KPI · ${MX_PER[k.period]||''}</span><b class="mxc-t">${esc(k.name)}</b>
-    <div class="mxc-big"><b>${v0==null&&k.kind==='last'?'—':mxBig(v,k.unit)}</b><span>/ ${mxFmt(t,k.unit)}${mxUw(k.unit)}</span></div>
+    <div class="mxc-big"><b>${v0==null&&k.kind==='last'?'—':mxBig(v,k.unit)}</b><span>/ ${mxFmt(t,k.unit)}${mxUw(mxPlural(k.unit,t))}</span></div>
     <span class="mxc-bar"><i style="width:${(p*100).toFixed(1)}%"></i></span>
     <div class="mxc-f"><small>${togo?`${mxFmt(togo,k.unit)} to go · `:''}${left} ${left===1?'day':'days'} left${mxLate(k)?' · behind pace':''}${k.better==='down'?' · lower is better':''}</small>
       ${k.src==='tasks'?`<button class="mxc-log" data-mxk="${k.id}">Open</button>`:`<button class="mxc-log" data-mxk="${k.id}" data-mxlogfocus>${PLUS_S}Log</button>`}</div></div>`}
@@ -27,4 +29,8 @@ function mxCards(sp,sname){const ks=mxKpis(sp),os=mxOkrs(sp,false),past=mxOkrs(s
 mxBoard=mxCards;mxFocusView=mxCards;
 mxLook=()=>'cards';
 const _mxcHead=mxHead;
-mxHead=function(eye,title,back){return _mxcHead(eye,title,back).replace(/<button class="mx-ib" data-mxlook[\s\S]*?<\/button>/,'')};
+/* the eyebrow says where you are: "Work · Projects" when a list is open (KPIs and OKRs still belong to the space) */
+const mxWhereList=()=>{if(mxSpPick||!S.space||S.list==='all')return null;const l=S.lists.find(x=>x.id===S.list);return l&&String(l.space)===String(S.space)?l:null};
+mxHead=function(eye,title,back){const l=mxWhereList(),sp=spaceOf(S.space);
+  if(l&&sp&&eye===esc(sp.name))eye=`${esc(sp.name)} · ${esc(l.name)}`;
+  return _mxcHead(eye,title,back).replace(/<button class="mx-ib" data-mxlook[\s\S]*?<\/button>/,'')};
