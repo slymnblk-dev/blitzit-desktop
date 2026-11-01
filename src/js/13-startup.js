@@ -66,7 +66,7 @@ $('inDemo').onclick=()=>{
   if(!S.tasks.length||S.tasks.every(t=>DEMO_TITLES.has(t.title))){
     const d=demoSet();S.spaces=d.spaces;S.lists=d.lists;S.tasks=d.tasks;S.arch=[];S.space=null;S.list='all';S.stage='today';
   }
-  S.onboarded=true;closeIntro();applySettings();save();render(0);haptic(12);toast('Demo data loaded. Clear it anytime in Settings');
+  S.demoOn=true;S.onboarded=true;closeIntro();applySettings();save();render(0);haptic(12);tourSoon();
 };
 $('inSignin').onclick=()=>{S.tasks=[];S.onboarded=true;closeIntro();render(0);openSettings();setView='account';drawSettings()};
 $('inDots').onclick=e=>{const i=[...$('inDots').children].indexOf(e.target);if(i>-1){inStep=i;drawIntro()}};
@@ -96,7 +96,7 @@ runCleanup(false);
 if(HANDOFF)showHandoff();else{
 initCloud();
 try{maybeWelcome()}catch(e){}
-if(!S.onboarded)openIntro(false);
+if(!S.onboarded){if(S.demoOn){S.onboarded=true;save();tourSoon()}else openIntro(false)}
 try{const cr=S.classicRun;window.__crHold=false;if(cr&&cr.ids&&!(S.tideRun&&S.tideRun.ids)){
   const q=cr.ids.map(id=>S.tasks.find(t=>t.id===id)).filter(Boolean),ci=q.findIndex(t=>t.id===cr.cid);
   if(ci>=0&&q[ci].stage!=='done')setTimeout(()=>{

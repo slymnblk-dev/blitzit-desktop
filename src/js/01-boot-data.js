@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=254; // bumped with every published update
+const APP_VERSION=255; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -64,8 +64,8 @@ function demoSet(){
   if(typeof S==='object'&&S)S.nid=Math.max(S.nid||0,n);
   return {spaces,lists,tasks,nid:n};
 }
-/* a brand-new Windaday starts with the demo (Work + Personal), and the onboarding intro */
-function freshState(){const d=demoSet();return {tasks:d.tasks,lists:d.lists,spaces:d.spaces,stage:'today',list:'all',theme:null,nid:d.nid,lastDay:today(),onboarded:false}}
+/* a brand-new Windaday starts with the demo (Work + Personal) and the quick tour (12b-onboard.js) */
+function freshState(){const d=demoSet();return {tasks:d.tasks,lists:d.lists,spaces:d.spaces,stage:'today',list:'all',theme:null,nid:d.nid,lastDay:today(),onboarded:false,demoOn:true}}
 const KEY='blitzit-v1';
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}

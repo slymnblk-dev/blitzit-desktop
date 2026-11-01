@@ -72,3 +72,8 @@
 - Beta modes (KPIs & OKRs, Wins, Routines, Plan, Journal) are live behind the folded Beta group; polish them from Suly's feedback before taking the badge off (remove the key from `BETA_MD` in `08zw-beta.js` and its selector in the badge CSS).
 - Needs keys/services Suly manages (not built): a live calendar connection (Google/Outlook sign-in) instead of the .ics import; push reminders when the app is closed (needs a push server).
 - Pin up to 3 lists to Home (design option A on the canvas, "Phone Home · quicker way into a list").
+
+## First time (0.255): demo + Clear chip + quick tour — `src/js/12b-onboard.js`, `src/css/25-onboard.css`
+- New people land on the demo (`S.demoOn=true` in `freshState`); the 3 intro slides now only show after a reset.
+- Home shows "Example tasks · Clear" while demo tasks exist (phone: under the title; computer: in `#mSub`). Clear → "Start fresh" (sheet on phones, centred card on computers): pick spaces; removes demo tasks only, keeps spaces holding your own things; undo works.
+- Quick tour: hello card, then 6 steps you do yourself (open a space → lists → stages → Backlog→My week → My week→Today → open a task). Card follows `openSpace` / `setStage` / `openDetail` (wrapped). Replay: Settings → Help → Quick tour. Automated checks skip the auto-start unless `window.__tourTest`. Tests: `tests/onboard.spec.mjs`.

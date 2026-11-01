@@ -194,7 +194,7 @@ $('setIn').addEventListener('click',e=>{
   if(e.target.closest('#accSync')){reconcile(false);return}
   if(e.target.closest('#accOut')){sb.auth.signOut().catch(()=>{});user=null;onSignedOut();toast('Signed out');return}
   if(setView==='archive'&&arcClick(e))return;
-  if(e.target.closest('#replayIntro')){closeSettings();return setTimeout(()=>openIntro(true),300)}
+  if(e.target.closest('#replayIntro')){closeSettings();if(S.space)goHome();return setTimeout(()=>tourStart(1),350)}
   if(e.target.closest('#subBack')&&setView==='sounds'){setView='appearance';haptic(5);drawSettings();return}
   const sn=e.target.closest('[data-snd]');if(sn){S.cfg.sfxStyle=sn.dataset.snd;S.cfgU=Date.now();sfxTry('done',sn.dataset.snd);haptic(5);save();return drawSettings()}
   const ce=e.target.closest('[data-celeb]');if(ce){S.cfg.celebStyle=ce.dataset.celeb;S.cfgU=Date.now();haptic(5);save();drawSettings();const r=ce.getBoundingClientRect();celebrate(doneToday()||3,r.left+30,r.top+r.height/2,ce.dataset.celeb);return}
@@ -277,7 +277,7 @@ function loadDemo(){
   if(hasData())return toast('Demo tasks can only be added to an empty Windaday');
   // Windaday is empty (no tasks anywhere), so the demo replaces the empty spaces and lists: exactly 2 spaces, 1 list each. Undo brings them back.
   const d=demoSet();
-  commit(()=>{S.spaces=d.spaces;S.lists=d.lists;S.tasks=d.tasks;S.space=null;S.list='all'},'Demo tasks added');
+  commit(()=>{S.spaces=d.spaces;S.lists=d.lists;S.tasks=d.tasks;S.space=null;S.list='all';S.demoOn=true},'Demo tasks added');
   drawSettings();
 }
 function resetAll(){

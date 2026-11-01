@@ -12,13 +12,10 @@ for (const [name, viewport] of [['desktop', { width: 1400, height: 860 }], ['pho
   });
 }
 
-test('first launch shows the welcome screens and can be finished', async ({ page }) => {
+test('first launch lands on the example tasks (no intro slides); a reset still offers the intro', async ({ page }) => {
   const errors = await openApp(page, { skipIntro: false });
-  await expect(page.locator('#intro')).toHaveClass(/on/);
-  await page.locator('#inSkip').click();          // jumps to the last step
-  await page.locator('#inDemo').click();          // "Explore with demo data" finishes it
   await expect(page.locator('#intro')).not.toHaveClass(/on/);
-  expect(await page.evaluate(() => S.onboarded)).toBe(true);
+  expect(await page.evaluate(() => ({ onb: S.onboarded, demo: S.demoOn, n: S.tasks.length }))).toEqual({ onb: true, demo: true, n: 18 });
   noErrors(errors);
 });
 
