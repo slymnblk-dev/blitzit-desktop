@@ -77,3 +77,7 @@
 - New people land on the demo (`S.demoOn=true` in `freshState`); the 3 intro slides now only show after a reset.
 - Home shows "Example tasks · Clear" while demo tasks exist (phone: under the title; computer: in `#mSub`). Clear → "Start fresh" (sheet on phones, centred card on computers): pick spaces; removes demo tasks only, keeps spaces holding your own things; undo works.
 - Quick tour: hello card, then 6 steps you do yourself (open a space → lists → stages → Backlog→My week → My week→Today → open a task). Card follows `openSpace` / `setStage` / `openDetail` (wrapped). Replay: Settings → Help → Quick tour. Automated checks skip the auto-start unless `window.__tourTest`. Tests: `tests/onboard.spec.mjs`.
+
+## Repo visibility (decided 2026-11-01)
+- The repo stays **public** for now (no real users yet). Suly plans to make it **private once real users arrive**.
+- Before going private: the Windows updater (`src-tauri/tauri.conf.json` endpoints) and the download button (`WIN_RELEASES` in `src/js/11-profile.js`) read **public GitHub releases** of this repo. They must move to a separate public "windaday-releases" repo first (needs a token secret Suly adds), ship one desktop update with the new address, and only then go private. Private repos also lose the free github.io test copy and have limited free Actions minutes.
