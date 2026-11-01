@@ -124,7 +124,8 @@ function tourLoop(){
   if(el&&!busy){
     const rs=els.map(x=>x.getBoundingClientRect()),b={left:Math.min(...rs.map(x=>x.left)),top:Math.min(...rs.map(x=>x.top)),right:Math.max(...rs.map(x=>x.right)),bottom:Math.max(...rs.map(x=>x.bottom))};b.width=b.right-b.left;b.height=b.bottom-b.top;
     if(!tourScrolled&&(b.top<60||b.bottom>innerHeight-180)){tourScrolled=true;el.scrollIntoView({block:'center',behavior:'smooth'})}
-    r.style.cssText=`left:${b.left-4}px;top:${b.top-4}px;width:${b.width+8}px;height:${b.height+8}px`;r.classList.add('on');
+    const br=els.length===1?Math.min(parseFloat(getComputedStyle(el).borderTopLeftRadius)||12,b.height/2):12; // the light follows the shape of what it shows
+    r.style.cssText=`left:${b.left-4}px;top:${b.top-4}px;width:${b.width+8}px;height:${b.height+8}px;border-radius:${br+4}px`;r.classList.add('on');
     // keep the card off the thing to tap
     const cb=c.getBoundingClientRect(),hit=b.bottom>cb.top-8&&b.top<cb.bottom+8&&b.right>cb.left&&b.left<cb.right;
     if(hit&&!c.classList.contains('up'))c.classList.add('up');else if(!hit&&c.classList.contains('up')&&b.top<innerHeight*.5)c.classList.remove('up');
