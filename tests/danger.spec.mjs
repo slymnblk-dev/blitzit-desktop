@@ -35,7 +35,7 @@ test('reset needs RESET typed and gives a fresh start (tasks, spaces, lists, set
   await page.locator('#dzIn').fill('reset');
   await page.locator('#dzGo').click();
   const r = await page.evaluate(() => ({ n: S.tasks.length, sp: S.spaces.length, ls: S.lists.length, pri: S.cfg.priStyle, lt: S.cfg.lightTheme, onb: S.onboarded }));
-  expect(r).toEqual({ n: 0, sp: 1, ls: 1, pri: 'bars', lt: 'default', onb: false });
+  expect(r).toEqual({ n: 0, sp: 1, ls: 1, pri: 'bars', lt: 'sand', onb: false });
   noErrors(errors);
 });
 

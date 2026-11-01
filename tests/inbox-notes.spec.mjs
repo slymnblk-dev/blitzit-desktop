@@ -17,6 +17,7 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   await page.keyboard.press('Shift+Enter');
   await page.keyboard.type('A good book');
   await page.keyboard.press('Enter');
+  await expect.poll(() => page.evaluate(() => S.tasks.some(t => t.note))).toBe(true);
   const n = await page.evaluate(() => S.tasks.find(t => t.note));
   expect([n.title, n.notes, n.inbox, n.list]).toEqual(['Gift ideas', 'Gift ideas\nA good book', true, null]);
   await expect(page.locator('#inboxPg .ib-note b')).toHaveText('Gift ideas');

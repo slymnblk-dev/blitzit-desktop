@@ -88,6 +88,7 @@ test('habits: Habits page, evening check-in, Home widget', async ({ page }) => {
 test('habits on a computer: sidebar Habits page, week grid, week navigation', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 860 });
   const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.homeLayout = 'bento'; save(); render(); }); // the Bento Home (Calm column is the default)
   await page.evaluate(() => { S.cfg.habits = true; const sp = S.spaces[0].id; S.habits = [{ id: 'h1', name: 'Walk', e: '🚶', space: sp, days: [0,1,2,3,4,5,6], done: {}, created: Date.now() - 30 * DAY }]; save(); applySettings(); goHome(); });
   await page.locator('#sRhythm').click();
   await expect(page.locator('#rhythmPg .hg-row')).toHaveCount(1);

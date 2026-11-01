@@ -16,7 +16,8 @@ const fill = () => {
 test('bento: today list ticks off, cards for goal, habits, KPI and OKR, spaces open', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 860 });
   const errors = await openApp(page);
-  expect(await page.evaluate(() => C().homeLayout)).toBe('bento');
+  expect(await page.evaluate(() => C().homeLayout)).toBe('calm'); // Calm column is the default (0.268)
+  await page.evaluate(() => { setCfg('homeLayout', 'bento'); });
   // modes off: only Today and spaces
   await expect(page.locator('#dHome .bn-c')).toHaveCount(1);
   await page.evaluate(fill);
@@ -51,6 +52,7 @@ test('bento: today list ticks off, cards for goal, habits, KPI and OKR, spaces o
 test('bento empty states, and the Calm column from settings', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 860 });
   const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.homeLayout = 'bento'; save(); render(); }); // the Bento Home (Calm column is the default)
   await page.evaluate(() => { S.cfg.habits = true; S.cfg.wHabits = true; S.cfg.goals = true; S.cfg.mx = true; S.habits = []; S.goals = []; S.kpis = []; S.okrs = [];
     S.tasks.forEach(t => { if (t.stage === 'today') t.stage = 'week'; }); save(); goHome(); render(); });
   await expect(page.locator('#dHome .bn-c.is-empty')).toHaveCount(5);

@@ -1,0 +1,14 @@
+/* ---------- light / dark button (12e-theme-toggle.js) ---------- */
+.tt-btn{position:relative;overflow:hidden}
+.tt-btn svg{position:absolute;inset:0;margin:auto;width:20px;height:20px;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .3s}
+.tt-btn .tt-sun{opacity:0;transform:rotate(-90deg) scale(.5)}
+.tt-btn .tt-moon{opacity:1;transform:none}
+.tt-btn.is-dark .tt-sun{opacity:1;transform:none;color:var(--week)}
+.tt-btn.is-dark .tt-moon{opacity:0;transform:rotate(90deg) scale(.5)}
+.tt-btn:hover .tt-sun{transform:rotate(45deg)}
+.tt-btn:active{transform:scale(.92)}
+/* the circle reveal: the new look grows over the old one, nothing else moves */
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+.tt-anim::view-transition-old(root){z-index:1}
+.tt-anim::view-transition-new(root){z-index:2}
+@media (prefers-reduced-motion:reduce){.tt-btn svg{transition:none}}

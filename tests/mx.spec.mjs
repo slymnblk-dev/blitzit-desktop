@@ -187,6 +187,7 @@ test('OKR form on a phone: a missing target is shown under the field, the name f
 test('computer Home: the KPI card opens the item, and hides with KPIs on Home off', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.homeLayout = 'bento'; save(); render(); }); // the Bento Home (Calm column is the default)
   await page.evaluate(() => { setCfg('mx', true); const sp = S.spaces[0].id, now = Date.now();
     S.kpis = [{ id: 1, space: sp, name: 'Outreach messages', target: 50, unit: '', period: 'week', better: 'up', src: 'both', kind: 'sum', created: now, log: [{ id: 9, at: now, v: 38 }] }];
     save(); goHome(); render(); });

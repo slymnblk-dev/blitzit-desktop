@@ -7,6 +7,7 @@ for (const [w, h] of [[390, 844], [1400, 900]]) {
   test(`ticking a habit on Home does not flash the page (${w}px)`, async ({ page }) => {
     await page.setViewportSize({ width: w, height: h });
     const errors = await openApp(page);
+    await page.evaluate(() => { S.cfg.homeLayout = 'bento'; save(); render(); });
     await page.evaluate(() => { S.cfg.habits = true; S.cfg.wHabits = true; S.cfg.hwStyle = 'pills'; const sp = S.spaces[0].id;
       S.habits = ['Move', 'Read'].map((n, i) => ({ id: 'h' + i, name: n, e: '', space: sp, days: [0, 1, 2, 3, 4, 5, 6], done: {}, created: Date.now() }));
       save(); render(); goHome(); });
