@@ -12,6 +12,7 @@ function demoChipPlace(){
   document.querySelectorAll('.demo-chip').forEach(x=>x.remove());
   if(S.space||!demoShown())return;
   const ph=document.querySelector('.home-hero .summary');if(ph&&!deskOn())ph.insertAdjacentHTML('afterend',DEMO_CHIP());
+  const cm=document.querySelector('.cm-hd p');if(cm&&deskOn()){cm.insertAdjacentHTML('afterend',DEMO_CHIP());return} // Calm column: under its own line
   const dk=$('mSub');if(dk&&deskOn())dk.insertAdjacentHTML('beforeend',DEMO_CHIP());
 }
 const deskOn=()=>matchMedia('(min-width:1100px)').matches;

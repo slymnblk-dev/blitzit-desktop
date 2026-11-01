@@ -83,6 +83,12 @@
 
 /* ---- Calm column ---- */
 :root[data-view="home"][data-dhome="calm"] .m-left{visibility:hidden}
+/* search and settings sit in the top corner, level with the Windaday logo, not floating beside the column */
+:root[data-view="home"][data-dhome="calm"] .main{position:relative}
+:root[data-view="home"][data-dhome="calm"] .m-head{position:absolute;top:28px;right:40px;left:auto;padding:0;z-index:2}
+:root[data-view="home"][data-dhome="calm"] .m-head .m-left{display:none}
+:root[data-view="home"][data-dhome="calm"] .cm-hd{margin-top:72px}
+.cm-hd .demo-chip{margin-top:14px}
 .cm{max-width:720px;margin:0 auto;padding-bottom:20px;animation:cardIn .45s var(--ease) both}
 .cm-hd{text-align:center;margin:-34px 0 32px}
 .cm-sun{width:44px;height:44px;color:var(--today)}
