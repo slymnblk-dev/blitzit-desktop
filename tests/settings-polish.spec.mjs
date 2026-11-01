@@ -1,11 +1,12 @@
 // Settings home in two groups with icons; Data page shows full values and a danger zone;
 // search filters only where there is a board; a blank new space shows a soft + and "Auto".
 import { test, expect } from '@playwright/test';
-import { openApp, noErrors } from './helpers.mjs';
+import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
 test('settings groups, data danger zone, search filters only on a board, blank new space', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
+  await detailsOn(page);
   await page.evaluate(() => openSettings());
   await expect(page.locator('#setIn .cat-cap')).toHaveText(['App', 'Organise', 'Help']);
   await expect(page.locator('#setIn .cat-ic')).toHaveCount(0);

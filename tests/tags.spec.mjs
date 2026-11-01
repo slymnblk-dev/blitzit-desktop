@@ -1,9 +1,10 @@
 // Deleting a task asks first; tags live in list settings and show on tasks.
 import { test, expect } from '@playwright/test';
-import { openApp, noErrors } from './helpers.mjs';
+import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
 test('deleting a task asks Yes / No first', async ({ page }) => {
   const errors = await openApp(page);
+  await detailsOn(page);
   const t = await page.evaluate(() => { const t = S.tasks.find(x => !x.archived); openDetail(t.id); return { id: t.id, n: S.tasks.length }; });
   await page.locator('#dMore').click();
   await page.locator('#dDel').click();
@@ -22,6 +23,7 @@ test('deleting a task asks Yes / No first', async ({ page }) => {
 test('tags: add in a task, shown on the row, managed in list settings, survive a reload', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   const errors = await openApp(page);
+  await detailsOn(page);
   const id = await page.evaluate(() => { const t = S.tasks.find(x => !x.archived && x.stage === 'today'); S.list = t.list; S.space = listOf(t.list).space; render(); openDetail(t.id); return t.id; });
   await page.locator('.pill[data-p="tags"]').click();
   await page.locator('#dTagIn').fill('#Design');
@@ -57,6 +59,7 @@ test('tags: add in a task, shown on the row, managed in list settings, survive a
 
 test('moving a task to another list brings its tags along', async ({ page }) => {
   const errors = await openApp(page);
+  await detailsOn(page);
   const r = await page.evaluate(() => {
     const t = S.tasks.find(x => !x.archived), other = S.lists.find(l => l.id !== t.list);
     listOf(t.list).tags = ['focus']; t.tags = ['focus']; openDetail(t.id);

@@ -1,10 +1,11 @@
 // The Lists sheet header uses one ⋯ menu (Edit lists / Edit space); there are 10 list colours.
 import { test, expect } from '@playwright/test';
-import { openApp, noErrors } from './helpers.mjs';
+import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
 test('lists sheet: ⋯ menu opens edit mode, Done closes it; 10 colours', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   const errors = await openApp(page);
+  await detailsOn(page);
   expect(await page.evaluate(() => PALETTE.length)).toBe(10);
   await page.evaluate(() => { editing = false; nl = null; drawLists(); openSheet('listSheet'); });
   await expect(page.locator('#editLists')).toBeHidden();
@@ -26,6 +27,7 @@ test('lists sheet: ⋯ menu opens edit mode, Done closes it; 10 colours', async 
 test('list editor folds smoothly: one section at a time, colour/space change, space sheet folds too', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
+  await detailsOn(page);
   const id = await page.evaluate(() => { const l = S.lists[0]; editing = true; nl = null; leOpen = null; drawLists(); openSheet('listSheet'); return l.id; });
   await page.locator(`.le-row[data-le="${id}"]`).click();
   await expect(page.locator('#picks .le-coll')).toHaveCount(1);

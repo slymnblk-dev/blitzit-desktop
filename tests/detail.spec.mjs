@@ -1,9 +1,10 @@
 // Task details: step names can be edited; focus view opens the task big in the middle.
 import { test, expect } from '@playwright/test';
-import { openApp, noErrors } from './helpers.mjs';
+import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
 test('click a step name to rename it; only the circle ticks it', async ({ page }) => {
   const errors = await openApp(page);
+  await detailsOn(page);
   const id = await page.evaluate(() => { const t = S.tasks.find(x => !x.archived); t.subs = [{ id: 1, t: 'eleven', done: false }]; openDetail(t.id); return t.id; });
   const name = page.locator('#dSubs .s-t').first();
   await name.click();
@@ -21,6 +22,7 @@ test('click a step name to rename it; only the circle ticks it', async ({ page }
 test('focus view: task opens big in the middle and is remembered', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
+  await detailsOn(page);
   await page.evaluate(() => openDetail(S.tasks.find(x => !x.archived).id));
   await page.locator('#dWide').click();
   await expect(page.locator('#detailSheet')).toHaveClass(/wide/);
@@ -36,6 +38,7 @@ test('focus view: task opens big in the middle and is remembered', async ({ page
 
 test('deleting a step asks first', async ({ page }) => {
   const errors = await openApp(page);
+  await detailsOn(page);
   const id = await page.evaluate(() => { const t = S.tasks.find(x => !x.archived); t.subs = [{ id: 1, t: 'one', done: false }, { id: 2, t: 'two', done: false }]; openDetail(t.id); return t.id; });
   await page.locator('#dSubs .sx').first().click();
   await expect(page.locator('#dlg')).toHaveClass(/on/);
@@ -49,6 +52,7 @@ test('deleting a step asks first', async ({ page }) => {
 
 test('priority: set High from task details, shows on the row, can be cleared', async ({ page }) => {
   const errors = await openApp(page);
+  await detailsOn(page);
   const id = await page.evaluate(() => { const t = S.tasks.find(x => x.stage !== 'done'); openDetail(t.id); return t.id; });
   await expect(page.locator('#dPills [data-p="pri"]')).toContainText('Priority');
   await page.locator('#dPills [data-p="pri"]').click();

@@ -33,3 +33,6 @@ export async function openApp(page, { desk = null, storage = null, url = '/index
 }
 
 export const noErrors = errors => expect(errors, errors.join('\n')).toEqual([]);
+
+/** Priorities, Impact and Tags start off (0.260); tests about them switch them on first. */
+export const detailsOn = page => page.evaluate(() => { ['pri', 'imp', 'tags'].forEach(k => { S.cfg[k] = true; }); save(); applySettings(); render(); });

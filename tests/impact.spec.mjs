@@ -1,11 +1,12 @@
 // Impact: how much a task matters once it's done (Settings → Tasks: Off, Small · Medium · Big, or 1 to 5).
 // The biggest impact goes to the top of every list on its own, leads Focus and Home, and shows up in Wins.
 import { test, expect } from '@playwright/test';
-import { openApp, noErrors } from './helpers.mjs';
+import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
 test('pick Small · Medium · Big in task details; the list sorts itself, Big gets sparks, an edge and Quick win', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
+  await detailsOn(page);
   const id = await page.evaluate(() => {
     const sp = S.spaces[0]; openSpace(sp.id); S.stage = 'today'; render();
     const ts = visible().filter(t => t.stage === 'today'); const last = ts[ts.length - 1];
@@ -38,6 +39,7 @@ test('pick Small · Medium · Big in task details; the list sorts itself, Big ge
 test('1 to 5 shows five circles and a number; Off hides it all and keeps your order', async ({ page }) => {
   await page.setViewportSize({ width: 1300, height: 860 });
   const errors = await openApp(page);
+  await detailsOn(page);
   await page.evaluate(() => { setCfg('impStyle', 'num'); openSpace(S.spaces[0].id); });
   const ids = await page.evaluate(() => {
     const ts = S.tasks.filter(t => t.stage === 'today' && shown(t) && listOf(t.list).space === S.space); ts.forEach(t => delete t.pri);
@@ -69,6 +71,7 @@ test('1 to 5 shows five circles and a number; Off hides it all and keeps your or
 test('big-impact tasks are highlights in Wins, and Impact travels with a repeating task', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
+  await detailsOn(page);
   await page.evaluate(() => {
     S.cfg.wins = true; const t = S.tasks.find(x => x.stage === 'today' && !x.inbox);
     t.imp = 5; t.repeat = 'daily'; setStage(t, 'done'); save(); applySettings(); goHome();

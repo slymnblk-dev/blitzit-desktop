@@ -1,6 +1,6 @@
 // Search & filter: find tasks everywhere; filter the board by priority / tags; can be turned off.
 import { test, expect } from '@playwright/test';
-import { openApp, noErrors } from './helpers.mjs';
+import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
 const seed = page => page.evaluate(() => {
   const sp = S.spaces[0], l = S.lists.find(x => x.space === sp.id), other = S.lists.find(x => x.space !== sp.id);
@@ -14,6 +14,7 @@ const seed = page => page.evaluate(() => {
 test('desktop: search finds tasks in every space and opens one', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
+  await detailsOn(page);
   const ids = await seed(page);
   await page.locator('.m-right .srch-btn').click();
   await expect(page.locator('#srch')).toHaveClass(/on/);
@@ -30,6 +31,7 @@ test('desktop: search finds tasks in every space and opens one', async ({ page }
 test('filters narrow the board, show a chip, and clear', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
+  await detailsOn(page);
   const ids = await seed(page);
   await page.keyboard.press('/');
   await expect(page.locator('#srch')).toHaveClass(/on/);
@@ -51,6 +53,7 @@ test('filters narrow the board, show a chip, and clear', async ({ page }) => {
 test('phone: search button sits left of the profile; setting hides it', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
+  await detailsOn(page);
   await seed(page);
   const btn = page.locator('.top-r .srch-btn');
   await expect(btn).toBeVisible();

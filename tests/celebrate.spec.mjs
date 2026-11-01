@@ -1,9 +1,10 @@
 // Priority looks and celebrations (both chosen in Settings → Tasks).
 import { test, expect } from '@playwright/test';
-import { openApp, noErrors } from './helpers.mjs';
+import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
 test('priority look: Label, Dot, Ring', async ({ page }) => {
   const errors = await openApp(page);
+  await detailsOn(page);
   await page.setViewportSize({ width: 390, height: 844 });
   const id = await page.evaluate(() => { const l = S.lists.find(x => x.space === S.spaces[0].id); const t = newTask('Pri test', 'week', l.id, 15); t.pri = 'high'; S.tasks.unshift(t); S.space = S.spaces[0].id; S.list = 'all'; S.stage = 'week'; render(); return t.id; });
   const row = page.locator(`#list .row[data-id="${id}"]`);
@@ -20,6 +21,7 @@ test('priority look: Label, Dot, Ring', async ({ page }) => {
 
 test('celebrations: off by default; every 3rd finished task shows one, with its sound', async ({ page }) => {
   const errors = await openApp(page);
+  await detailsOn(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => { window.__sfxLog = []; S.tasks.forEach(t => { if (t.doneAt) t.doneAt = Date.now() - 3 * 864e5 });
     const l = S.lists.find(x => x.space === S.spaces[0].id); for (let i = 0; i < 4; i++) S.tasks.unshift(newTask('C' + i, 'week', l.id, 15));
@@ -46,6 +48,7 @@ test('celebrations: off by default; every 3rd finished task shows one, with its 
 test('priority sort: High, Medium, Low, then the rest; a drag against it explains why', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
+  await detailsOn(page);
   const ids = await page.evaluate(() => { const sp = S.spaces[0], l = S.lists.find(x => x.space === sp.id);
     S.tasks = S.tasks.filter(t => !(listOf(t.list).space === sp.id && t.stage === 'week'));
     const mk = (n, p) => { const t = newTask(n, 'week', l.id, 15); if (p) t.pri = p; S.tasks.push(t); return t.id; };

@@ -1,12 +1,13 @@
 // Plan (optional mode): today's tasks as time blocks. Auto-plan fits them around busy time, biggest impact first.
 import { test, expect } from '@playwright/test';
-import { openApp, noErrors } from './helpers.mjs';
+import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
 const freeDay = () => { S.cfg.planFrom = 0; S.cfg.planTo = 1440; };
 
 test('phone: off by default; auto-plan, busy time, move and take off, clear with undo', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
+  await detailsOn(page);
   await expect(page.locator('#tabBar [data-tab="plan"]')).toHaveCount(0);
   await page.evaluate(() => { S.cfg.plan = true; S.cfg.planFrom = 0; S.cfg.planTo = 1440; S.cfg.tabs = ['plan']; save(); applySettings(); goHome(); });
   await page.locator('#tabBar [data-tab="plan"]').click();
@@ -57,6 +58,7 @@ test('phone: off by default; auto-plan, busy time, move and take off, clear with
 test('computer: sidebar opens Plan; drag a task onto the day; tap an empty hour to place one; Settings card', async ({ page }) => {
   await page.setViewportSize({ width: 1300, height: 900 });
   const errors = await openApp(page);
+  await detailsOn(page);
   await page.evaluate(() => { S.cfg.plan = true; S.cfg.planFrom = 0; S.cfg.planTo = 1440; save(); applySettings(); goHome(); });
   const n = await page.evaluate(() => pnToPlace().length);
   await expect(page.locator('#sPlan .n')).toHaveText(String(n));
