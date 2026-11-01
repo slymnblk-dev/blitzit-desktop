@@ -12,7 +12,9 @@ test('phone: off by default; auto-plan, busy time, move and take off, clear with
   await page.evaluate(() => { S.cfg.plan = true; S.cfg.planFrom = 0; S.cfg.planTo = 1440; S.cfg.tabs = ['plan']; save(); applySettings(); goHome(); });
   await page.locator('#tabBar [data-tab="plan"]').click();
   await expect(page.locator('#planPg')).toHaveClass(/on/);
-  const n = await page.evaluate(() => pnToPlace().length);
+  // short tasks, so they fit in what is left of today; too close to midnight, there's no room to test this
+  const n = await page.evaluate(() => { pnToPlace().forEach(t => { t.est = 5; }); save(); drawPlan(); return pnToPlace().length; });
+  test.skip(await page.evaluate(n => 1440 - pnStart() < n * PN_STEP + 30, n), 'too close to midnight to plan the rest of today');
   expect(n).toBeGreaterThan(1);
   await expect(page.locator('#planPg .pn-tray .pn-chip')).toHaveCount(n);
   // a big-impact task goes first

@@ -45,10 +45,12 @@ function drawStats(){
 }
 /* ---------- settings ---------- */
 const STAGE_PALETTE=['#9C95FF','#5AB8F5','#34D399','#A3E635','#FFB547','#F5A35A','#FF5B47','#F472B6','#E879C8','#C4B5FD'];
-const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,impStyle:'levels',pri:false,imp:false,tags:false,rtHome:true,jRemAt:'21:00',ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'default',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
+const DEF_CFG={fullWidth:true,lightTheme:'default',darkTheme:'default',trayKeep:true,welcome:true,priSort:true,impStyle:'levels',pri:false,imp:false,tags:false,rtHome:true,jRemAt:'21:00',ambShow:true,ambSound:'off',ambVol:.6,search:true,idleHide:true,priStyle:'bars',celebrate:false,celebEvery:3,celebStyle:'halo',uiSounds:true,sfxStyle:'glass',sfxVol:'normal',doneFold:false,doneOpen:false,sections:false,collapseLong:false,collapseAt:5,theme:'system',size:'large',density:'comfortable',motion:true,haptics:true,showEst:true,checkin:true,weekStart:1,addTo:'top',
   defEst:30,defList:null,backupRemind:true,pipFade:true,todayGlint:true,fsShow:'1',homeLayout:'bento',sideN:true,homeAlso:'switch',navStyle:'float',homeShow:'spaces',inbox:true,ibBadge:true,mx:false,mxPh:'focus',mxDk:'board',wMx:true,mxHw:'auto',review:true,reviewDay:0,habits:false,goals:false,gView:'climb',hbView:'grid',hwStyle:'auto',wStar:true,closeDay:false,moments:true,hbChains:false,hbCi:true,hbCiAt:19,wHabits:false,bars:'tabs',showDone:true,cleanup:'never',cleanupAfter:7,focusMode:'free',focusStyle:'classic',pipMode:'compact',tideMin:25,focusColor:'red',focusShuffle:true,pomoWork:25,pomoBreak:5,wake:true,sound:true,
   names:{backlog:'Backlog',week:'My week',today:'Today',done:'Done'},colors:{backlog:null,week:null,today:null,done:null}};
 S.cfg=Object.assign({},DEF_CFG,S.cfg||{});
+/* 0.267: text is always large and spacing always roomy (the two settings are gone) */
+S.cfg.size='large';S.cfg.density='comfortable';
 /* Impact used to be switched off with impStyle 'off'; now it has its own switch (cfg.imp) and impStyle is only the scale */
 if(S.cfg.impStyle==='off'){S.cfg.imp=false;S.cfg.impStyle='levels'}
 /* 0.260: Priorities, Impact and Tags start off for everyone (once); after that your own choice is kept */
@@ -175,7 +177,7 @@ function pageSummary(id){
   return {
     account:!CLOUD?'Preview here, works in the installed app':user?esc(user.email||'Signed in'):'Sign in to sync your devices',
     stats:`${wk} done in the last 7 days`,
-    appearance:`${{system:'Auto',light:'Light',dark:'Dark'}[c.theme]} · ${themeOf(modeNow(),modeNow()==='light'?c.lightTheme:c.darkTheme).name} look, ${c.size==='large'?'large':'default'} text`,
+    appearance:`${{system:'Auto',light:'Light',dark:'Dark'}[c.theme]} · ${themeOf(modeNow(),modeNow()==='light'?c.lightTheme:c.darkTheme).name} look`,
     stages:`<span class="cat-dots">${STAGES.map(s=>`<i style="background:var(--${s.id})"></i>`).join('')}</span>`,
     tasks:`${fmt(c.defEst)} default, new tasks on ${c.addTo}`,
     focus:`${c.focusMode==='pomo'?'Pomodoro':'Free timer'}, ${c.pomoWork} / ${c.pomoBreak} min`,
@@ -215,9 +217,7 @@ function settingsPage(id){
   let body='';
   if(id==='appearance')body=`<div class="set-sec">
     ${row('Mode',`<div class="segc">${sOpt('theme','system','Auto')}${sOpt('theme','light','Light')}${sOpt('theme','dark','Dark')}</div>`,'Auto follows your device')}</div>
-    ${themesSection()}<div class="set-sec"><h3>Text and layout</h3>
-    ${row('Text size',`<div class="segc">${sOpt('size','default','Default')}${sOpt('size','large','Large')}</div>`)}
-    ${row('Density',`<div class="segc">${sOpt('density','comfortable','Roomy')}${sOpt('density','compact','Compact')}</div>`)}
+    ${themesSection()}<div class="set-sec${matchMedia('(min-width:1100px)').matches?' set-empty':''}"><h3>Layout on phones</h3>
     ${matchMedia('(min-width:1100px)').matches?'':row('On Home show',`<div class="segc">${sOpt('homeShow','spaces','Spaces')}${sOpt('homeShow','lists','Lists')}</div>`,C().homeShow==='lists'?'Every list, grouped by space. One tap opens it.':'Your spaces. Tap one to see its lists.')}
     ${matchMedia('(min-width:1100px)').matches?'':row('Tab bar on phones',`<div class="segc">${sOpt('navStyle','float','Floating')}${sOpt('navStyle','labels','With labels')}</div>`,C().navStyle==='labels'?'A slim bar with names under the icons.':'A floating pill, with the + on its own.')}
     ${matchMedia('(min-width:1100px)').matches||typeof tbPickRow!=='function'?'':tbPickRow()}
