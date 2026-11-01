@@ -7,29 +7,28 @@ test('inbox: add tasks and notes, filter, edit, pin, turn into a task, delete', 
   await page.setViewportSize({ width: 1300, height: 860 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.inbox = true; S.tasks = S.tasks.filter(t => !t.inbox); save(); openInbox(); });
-  // a task, as before
+  // a task: its own add line on the left
   await page.fill('#ibNew', 'Call the bank');
-  await expect(page.locator('#inboxPg .ib-cap')).toHaveClass(/typed/); // the ↑ shows once there is text
   await page.keyboard.press('Enter');
   await expect(page.locator('#inboxPg .ib-list .row')).toHaveCount(1);
-  // a note: Enter makes a new line, Ctrl+Enter adds it
-  await page.locator('#inboxPg [data-ibswap]').click(); // Task | Note inside the capture bar
-  await expect(page.locator('#inboxPg textarea#ibNew')).toBeFocused();
+  // a note: its own add line on the right; Shift+Enter makes a new line, Enter adds it
+  await page.locator('#ibNewN').click();
   await page.keyboard.type('Gift ideas');
-  await page.keyboard.press('Enter');
+  await page.keyboard.press('Shift+Enter');
   await page.keyboard.type('A good book');
-  await page.keyboard.press('Control+Enter');
+  await page.keyboard.press('Enter');
   const n = await page.evaluate(() => S.tasks.find(t => t.note));
   expect([n.title, n.notes, n.inbox, n.list]).toEqual(['Gift ideas', 'Gift ideas\nA good book', true, null]);
   await expect(page.locator('#inboxPg .ib-note b')).toHaveText('Gift ideas');
   expect(await page.evaluate(() => [inboxItems().length, inboxNotes().length, S.tasks.filter(t => t.note && shown(t)).length])).toEqual([1, 1, 0]);
-  // filter chips with counts; Tasks and Notes each have a quiet header with a count
-  await expect(page.locator('#inboxPg .ib-fc')).toHaveText(['All2', 'Tasks1', 'Notes1']);
-  await expect(page.locator('#inboxPg .ib-count')).toHaveText(['Tasks1', 'Notes1']);
-  await page.locator('#inboxPg [data-ibtab2="notes"]').click();
-  await expect(page.locator('#inboxPg .ib-count')).toHaveText(['Notes1']);
-  await page.locator('#inboxPg [data-ibtab2="all"]').click();
-  await expect(page.locator('#inboxPg .ib-cap')).not.toHaveClass(/typed/); // the ↑ hides while the line is empty
+  // two halves, no tabs and no Sort; grouped by the day they were added, and a day folds away
+  await expect(page.locator('#inboxPg .ib2-cap')).toHaveText(['To sort1', 'Notes1']);
+  await expect(page.locator('#inboxPg .ib-fc, #inboxPg [data-ibsort]')).toHaveCount(0);
+  await expect(page.locator('#inboxPg .ib2-day[data-ibfold]')).toHaveCount(2);
+  await page.locator('#inboxPg .ib2-day[data-ibfold^="t:"]').click();
+  await expect(page.locator('#inboxPg .ib-list .row')).toHaveCount(0);
+  await page.locator('#inboxPg .ib2-day[data-ibfold^="t:"]').click();
+  await expect(page.locator('#inboxPg .ib-list .row')).toHaveCount(1);
   // edit in the popup: it saves as you type; pin it
   await page.locator('#inboxPg .ib-note').click();
   await expect(page.locator('#nbEd')).toHaveClass(/on/);

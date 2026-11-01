@@ -1,0 +1,30 @@
+/* ---------- Inbox: two quiet halves (12d-inbox-c.js) ---------- */
+@media (min-width:1100px){#inboxPg .ib-in{max-width:1080px}}
+.ib2{display:flex;flex-direction:column;gap:34px;margin-top:26px}
+@media (min-width:900px){.ib2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:48px;align-items:start}}
+.ib2-half{min-width:0}
+.ib2-cap{display:flex;align-items:baseline;gap:8px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ib2-cap.note{color:color-mix(in srgb,var(--week) 80%,var(--text))}
+.ib2-cap small{font-size:12px;font-weight:600;letter-spacing:0;opacity:.8}
+.ib2-g{margin-top:14px}
+.ib2-day{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:0;color:var(--muted);font-size:13px;font-weight:600;text-align:left}
+.ib2-day span{color:color-mix(in srgb,var(--text) 72%,var(--muted))}
+.ib2-day small{font-size:12px;color:var(--muted)}
+.ib2-day svg{width:14px;height:14px;margin-left:auto;transform:rotate(90deg);transition:transform .25s var(--ease),opacity .2s;opacity:.55}
+.ib2-day.folded svg{transform:rotate(0deg)}
+.ib2-day:hover svg{opacity:1}.ib2-day:hover span{color:var(--text)}
+.ib2-day.pin{cursor:default}
+.ib2 .ib-list{margin:0}
+.ib2-notes{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.ib2-notes .ib-nw{margin:0}
+.ib2-notes .ib-nw:nth-child(odd) .ib-note{transform:rotate(-.6deg)}
+.ib2-notes .ib-nw:nth-child(even) .ib-note{transform:rotate(.5deg)}
+.ib2-notes .ib-nw .ib-note:hover{transform:none}
+.ib2-none{margin:12px 0 0;font-size:15px;line-height:1.45;color:var(--muted)}
+.ib2-add{display:flex;align-items:flex-start;gap:12px;min-height:48px;margin-top:10px;padding:0 4px;border-radius:14px;cursor:text;color:var(--muted);transition:background .2s}
+.ib2-add b{font-size:20px;font-weight:600;line-height:48px;width:22px;text-align:center;color:var(--today)}
+.ib2-add.note b{color:var(--week)}
+.ib2-add input,.ib2-add textarea{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--text);font:inherit;font-size:15px;padding:14px 0;resize:none;line-height:1.35}
+.ib2-add input::placeholder,.ib2-add textarea::placeholder{color:var(--muted)}
+.ib2-add:focus-within{background:var(--surface)}
+.ib2-add:hover b{opacity:1}
