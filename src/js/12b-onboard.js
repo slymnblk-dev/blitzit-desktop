@@ -104,7 +104,7 @@ function tourDraw(){
   const c=$('tourCard');if(!tour||!c)return;const i=tour.i;
   if(i===0){c.innerHTML=`<div class="tour-top"><span class="tour-eye">Welcome to Windaday</span><button class="tour-x" data-tx aria-label="Close">${X}</button></div>
     <b class="tour-t">Here are some example tasks</b><p>Try things out safely. Want a 1-minute tour of the basics?</p>
-    <div class="tour-b"><button class="secondary" data-tx>Not now</button><button class="primary" data-tstart>Start the tour</button></div>
+    <div class="tour-b"><button class="primary" data-tstart>Start the tour</button></div>
     ${CLOUD?`<button class="tour-link" data-tsign>I already have an account</button>`:''}`}
   else{const s=TOUR[i-1],last=i===TOUR.length;if(s.prep)try{s.prep()}catch(e){}
     c.innerHTML=`<div class="tour-top"><span class="tour-eye">${last?'Quick tour · done':`Quick tour · ${i} of ${TOUR.length-1}`}</span><button class="tour-x" data-tx aria-label="End the tour">${X}</button></div>

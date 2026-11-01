@@ -55,7 +55,7 @@ function openDetail(id){
   $('detailSheet').classList.remove('full');$('dScroll').scrollTop=0;
   $('dTitle').value=cur.title;$('dNotes').value=cur.notes;$('dSubIn').value='';
   drawDetail();openSheet('detailSheet');
-  requestAnimationFrame(()=>{grow($('dTitle'));grow($('dNotes'))});
+  requestAnimationFrame(()=>{grow($('dTitle'));grow($('dNotes'))});setTimeout(()=>grow($('dTitle')),380); // again once the sheet has opened and the font is in
   onSheetClose=()=>{if(cur&&!cur.title.trim())cur.title='Untitled';cur=null;$('detailSheet').classList.remove('full');render()};
 }
 /* ---------- tags: each list keeps its own tags (list settings); a task picks from its list's tags ---------- */

@@ -60,3 +60,9 @@ body:not(.tabs-on) .tour{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 }
 /* toasts sit above the tour card on phones */
 @media (max-width:1099px){body.tour-low .toast{bottom:calc(var(--tour-h,0px) + 112px + env(safe-area-inset-bottom,0px))}}
+/* TRY: highlight styles */
+.tour-ring.s-a.on{animation:none;border-radius:16px;box-shadow:0 0 0 9999px rgba(4,5,7,.62)}
+.tour-ring.s-b.on{animation:tourBreath 2s ease-in-out infinite;border-radius:16px;box-shadow:0 0 0 2px var(--text)}
+@keyframes tourBreath{50%{box-shadow:0 0 0 2px color-mix(in srgb,var(--text) 35%,transparent)}}
+.tour-ring.s-c.on{animation:none;box-shadow:none;border-radius:16px;background:color-mix(in srgb,var(--text) 7%,transparent)}
+.tour-ring.s-c.on::after{content:'';position:absolute;left:50%;bottom:-14px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--today);box-shadow:0 0 0 4px color-mix(in srgb,var(--today) 25%,transparent)}

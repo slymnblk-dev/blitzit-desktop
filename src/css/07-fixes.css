@@ -2,6 +2,7 @@
 .sheet{visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s linear .36s}
 .sheet.on{visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s}
 .title,.f-title,.d-title,.pv-t{overflow-wrap:anywhere}
+.d-title{overflow:hidden;scrollbar-width:none} /* it grows with the text, so never a scrollbar */
 .s-list .s-name{flex:1;min-width:0}.s-list .n{flex:none}
 .focus.sum .fsw,.focus.sum .pip-btn{visibility:hidden}
 .in-step{touch-action:pan-y}
