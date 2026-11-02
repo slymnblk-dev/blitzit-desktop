@@ -26,7 +26,7 @@ test('inbox badge on the phone tab can be hidden in Settings', async ({ page }) 
   const errors = await openApp(page);
   await page.evaluate(() => { S.tasks.push({ id: 777, title: 'Loose', stage: 'week', inbox: true, est: 30, subs: [], notes: '', repeat: 'none' }); save(); render(); goHome(); });
   await expect(page.locator('#tbInbox .tb-n')).toBeVisible();
-  await page.evaluate(() => { openSettings(); setView = 'tasks'; drawSettings(); });
+  await page.evaluate(() => { openSettings(); setView = 'modes'; drawSettings(); }); // the Inbox card in Modes
   await page.locator('#setIn [data-tg="ibBadge"]').click();
   await expect.poll(() => page.evaluate(() => S.cfg.ibBadge)).toBe(false);
   await page.evaluate(() => closeSettings());

@@ -217,24 +217,19 @@ function settingsPage(id){
   const c=C(),title=PAGES.find(p=>p.id===id).name;
   const head=`<div class="set-top"><button class="icon-btn" id="subBack" aria-label="Back">${BACK_SVG}</button></div><span class="pg-eye set-eye">Settings</span><h1 class="sub-h">${title}</h1>`;
   let body='';
-  if(id==='appearance')body=`${themesSection()}<div class="set-sec${matchMedia('(min-width:1100px)').matches?' set-empty':''}"><h3>Layout on phones</h3>
-    ${matchMedia('(min-width:1100px)').matches?'':row('On Home show',`<div class="segc">${sOpt('homeShow','spaces','Spaces')}${sOpt('homeShow','lists','Lists')}</div>`,C().homeShow==='lists'?'Every list, grouped by space. One tap opens it.':'Your spaces. Tap one to see its lists.')}
-    ${matchMedia('(min-width:1100px)').matches?'':row('Tab bar on phones',`<div class="segc">${sOpt('navStyle','float','Floating')}${sOpt('navStyle','labels','With labels')}</div>`,C().navStyle==='labels'?'A slim bar with names under the icons.':'A floating pill, with the + on its own.')}
-    ${matchMedia('(min-width:1100px)').matches||typeof tbPickRow!=='function'?'':tbPickRow()}
-    ${matchMedia('(min-width:1100px)').matches?'':row('Also today on phones',`<div class="segc">${sOpt('homeAlso','switch','Switch')}${sOpt('homeAlso','tiles','Tiles')}${sOpt('homeAlso','list','One card')}</div>`,{tiles:'Goal and habits side by side, KPIs below.',list:'Everything in one card.'}[c.homeAlso]||'One card. Pills on top switch between habits, goal and KPIs.')}
-    </div>${(matchMedia('(min-width:1100px)').matches||DESK())?`<div class="set-sec"><h3>Layout on computers</h3>
-    ${row('Home',`<div class="segc"><button data-k="homeLayout" data-v="bento" class="${c.homeLayout==='calm'?'':'on'}">Bento</button>${sOpt('homeLayout','calm','Calm column')}</div>`,c.homeLayout==='calm'?'One calm column: Up next, a few quiet rows, then spaces.':'Today beside small cards for your goal, habits and KPIs.')}
-    ${row('Counts in the sidebar',tg('sideN'),'The numbers next to Inbox, Habits, Goals, spaces and lists')}
+  if(id==='appearance'){const dk=matchMedia('(min-width:1100px)').matches,comp=dk||DESK();
+    const homeRows=(comp?row('Style on computers',`<div class="segc"><button data-k="homeLayout" data-v="bento" class="${c.homeLayout==='calm'?'':'on'}">Bento</button>${sOpt('homeLayout','calm','Calm column')}</div>`,c.homeLayout==='calm'?'One calm column: Up next, a few quiet rows, then spaces.':'Cards for today, your goal, habits and numbers.'):'')
+      +(dk?'':row('On Home show',`<div class="segc">${sOpt('homeShow','spaces','Spaces')}${sOpt('homeShow','lists','Lists')}</div>`,C().homeShow==='lists'?'Every list, grouped by space. One tap opens it.':'Your spaces. Tap one to see its lists.'))
+      +(dk?'':row('Also today on phones',`<div class="segc">${sOpt('homeAlso','switch','Switch')}${sOpt('homeAlso','tiles','Tiles')}${sOpt('homeAlso','list','One card')}</div>`,{tiles:'Goal and habits side by side, KPIs below.',list:'Everything in one card.'}[c.homeAlso]||'One card. Pills on top switch between habits, goal and KPIs.'));
+    const phoneLay=dk?'':row('Tab bar on phones',`<div class="segc">${sOpt('navStyle','float','Floating')}${sOpt('navStyle','labels','With labels')}</div>`,C().navStyle==='labels'?'A slim bar with names under the icons.':'A floating pill, with the + on its own.')+(typeof tbPickRow==='function'?tbPickRow():'');
+    const compLay=comp?`${row('Counts in the sidebar',tg('sideN'),'The numbers next to Inbox, Habits, Goals, spaces and lists')}
     <div class="lay-pick">${[[0,'With sidebar','Spaces and lists on the left.'],[1,'Full width','Hides the sidebar inside a space. Switch spaces and lists from the top.']].map(([v,n,d])=>`<button class="lay ${!!c.fullWidth===!!v?'on':''}" data-fw="${v}">
       <span class="lay-th ${v?'full':''}"><i class="lt-side"></i><span class="lt-main"><i class="lt-top"></i><span class="lt-cols"><i></i><i></i><i></i><i></i></span></span></span>
-      <b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`:''}<div class="set-sec"><h3>Feel</h3>
-    ${row('Animations',tg('motion'))}
-    ${row('Welcome animation',`<div class="wl-set">${tg('welcome')}<button class="ghost-btn wl-replay" id="wlPlay" type="button">Play</button></div>`,DESK()?'The sunrise splash each time you open Windaday':'The sunrise logo, once a day when you open Windaday')}
-    ${HAS_KEYS()?row('Today highlight',tg('todayGlint'),'A light runs around Today when you open Home or a space'):''}
-    ${HAS_KEYS()?row('Quiet when idle',tg('idleHide'),'After 5 seconds without moving, the day’s summary and Add task fade away. Move the mouse to bring them back.'):''}
-    ${row('Sounds',tg('uiSounds'),'Soft sounds when you add, move or finish tasks')}
-    <button class="link-row" data-page="sounds">Sound style<span class="hint">${esc(sfxStyle().name)}${CHEV}</span></button>
-    ${row('Haptics',tg('haptics'),'Vibration on Android')}</div>`;
+      <b>${n}</b><small>${d}</small></button>`).join('')}</div>`:'';
+    body=`${themesFold()}
+    <div class="md-list set-cards"><div class="md-card on"><div class="md-head"><span class="md-ic">${HOME_I}</span><span class="md-t"><b>Home</b><small>What your first screen shows</small></span></div><div class="md-body">${homeRows}</div></div></div>
+    <div class="set-sec"><h3>Layout</h3>${phoneLay}${compLay}</div>
+    ${HAS_HAPTIC()?`<div class="set-sec"><h3>Feel</h3>${row('Haptics',tg('haptics'),'Vibration on Android')}</div>`:''}`}
   if(id==='stages')body=`<p class="sub-p">Tap a colour to change it. Tap a name to rename it.</p><div class="set-sec">
     ${STAGES.map(s=>`<div class="stg"><button class="stg-dot" data-sw="${s.id}" style="background:var(--${s.id})" aria-label="Change colour"></button>
       <input data-name="${s.id}" value="${esc(s.name)}" maxlength="12" aria-label="Stage name"></div>
@@ -244,43 +239,30 @@ function settingsPage(id){
       </div>`).join('')}</div>
     <button class="ghost-btn" id="stReset">Reset to default</button>`;
   if(id==='tasks')body=`<div class="set-sec"><h3>New tasks</h3>
-    ${row('Inbox',tg('inbox'),'A calm place for loose tasks and notes. Send a task to a list when you’re ready.')}
-    ${c.inbox!==false?row('Inbox badge',tg('ibBadge'),'Show the number of waiting items on the Inbox tab.'):''}
-    ${row('Weekly review',tg('review'),'A short card on Home once a week: see what you finished and tidy My week.')}
-    ${c.review!==false?row('Review day',`<div class="segc">${REVIEW_DAYS.map(([v,n])=>sOpt('reviewDay',v,n)).join('')}</div>`)+`<button class="link-row" id="rvStart">Start a review now</button>`:''}
     ${row('Default estimate',`<div class="segc">${[15,30,60,120].map(m=>sOpt('defEst',m,fmt(m))).join('')}</div>`)}
-    ${row('Add to',`<div class="segc">${sOpt('addTo','top','Top')}${sOpt('addTo','bottom','Bottom')}</div>`)}
-    ${row('Default list',`<div class="chips">${[{id:'',name:'First list'},...S.lists].map(l=>`<button class="opt ${(c.defList||'')===l.id?'on':''}" data-deflist="${l.id}">${l.c?`<i style="background:${l.c}"></i>`:''}${esc(l.name)}</button>`).join('')}</div>`)}
     </div><div class="set-sec"><h3>Display</h3>
     ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
     ${row('Search & filter',tg('search'),'A search button at the top. Find any task'+(c.pri!==false||c.tags!==false?` and filter the board by ${[c.pri!==false?'priority':'',c.tags!==false?'tags':''].filter(Boolean).join(' or ')}`:'')+'.')}
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
-    ${row('Fold long columns',tg('collapseLong'),'Show only the first few tasks. The rest wait under “more”.')}
-    ${c.collapseLong?row('Show first',`<div class="segc">${[3,5,7,10].map(n=>sOpt('collapseAt',n,String(n))).join('')}</div>`):''}
     ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}
     </div><div class="set-sec"><h3>Task details</h3><p class="sub-p">Extras you can add to a task. Turn one off and it disappears everywhere. What you set stays safe and comes back when you turn it on again.</p>
     <div class="md-list">${tfCards()}</div>
     </div><div class="set-sec"><h3>Celebrations</h3>
-    ${row('Celebrate finished tasks',tg('celebrate'),'A short, quiet moment, with a sound if sounds are on.')}
+    ${row('Celebrate finished tasks',tg('celebrate'),'A short, quiet moment, with a sound.')}
     ${c.celebrate?row('Every',`<div class="segc">${sOpt('celebEvery',1,'1 task')}${sOpt('celebEvery',3,'3 tasks')}</div>`):''}
     ${c.celebrate?`<p class="sub-p snd-p">Tap a style to see it.</p><div class="snd-list">${CELEBS.map(s=>`<button class="snd ${s.id===celebOf().id?'on':''}" data-celeb="${s.id}"><span class="snd-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></span><span class="snd-t"><b>${s.name}</b><small>${s.d}</small></span><span class="snd-ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>`).join('')}</div>`:''}
-    </div><div class="set-sec"><h3>Daily</h3>
-    ${row('Morning check-in',tg('checkin'),'Ask about leftover tasks each day')}</div>
+    </div>
     <div class="set-sec"><h3>Finished tasks</h3>
     ${row('Show Done',tg('showDone'),'Hide it to keep your board focused')}
-    ${row('Tuck away finished tasks',tg('doneFold'),'Keep finished tasks under one “Completed” section in Done.')}
     ${row('Clean up',`<div class="segc">${sOpt('cleanup','never','Never')}${sOpt('cleanup','archive','Archive')}${sOpt('cleanup','delete','Delete')}</div>`,c.cleanup==='delete'?'Deleted tasks also leave your analytics':c.cleanup==='archive'?'Archived tasks still count in analytics':'')}
     ${c.cleanup!=='never'?row('After',`<div class="segc">${[1,7,30].map(d=>sOpt('cleanupAfter',d,d===1?'1 day':d+' days')).join('')}</div>`):''}
     ${(()=>{const n=S.tasks.filter(t=>t.archived).length;return n||c.cleanup==='archive'?`<button class="link-row" data-page="archive" data-arct="tasks">Archived tasks<span class="hint">${n}</span></button>`:''})()}
     </div>`;
-  if(id==='focus')body=`<div class="set-sec"><h3>Timer</h3>
-    ${row('Default timer',`<div class="segc">${sOpt('focusMode','free','Free')}${sOpt('focusMode','pomo','Pomodoro')}</div>`)}
-    ${row('Focus length',`<div class="segc">${[15,25,45,50].map(m=>sOpt('pomoWork',m,m+'m')).join('')}</div>`)}
-    ${row('Break length',`<div class="segc">${[5,10,15].map(m=>sOpt('pomoBreak',m,m+'m')).join('')}</div>`)}
+  if(id==='focus')body=`<div class="set-sec">
+    ${timerRow()}
     </div><div class="set-sec"><h3>Style</h3>
     ${row('Focus sounds',tg('ambShow'),'A 🎧 button in focus mode with calm sounds: rain, ocean, café, fireplace or brown noise.')}
-    ${row('Steps',`<div class="segc">${sOpt('fsShow','1','One at a time')}${sOpt('fsShow','3','Three at a time')}</div>`,'How many of a task\'s steps show in focus')}
     ${row('Timer look',`<div class="segc">${sOpt('focusStyle','classic','Digits')}${sOpt('focusStyle','tide','Wave')}</div>`,(c.focusStyle||'classic')==='tide'?'A circle that fills like a wave as time runs.':'Big clear numbers, with your task steps.')}
     </div><div class="set-sec"><h3>Look</h3>
     <div class="fc-prev ${(c.focusStyle||'classic')==='tide'?'wave':''}" style="--pb:${(FOCUS_COLORS[c.focusColor]||{}).bg||'var(--today)'};--pi:${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).ink}">${(c.focusStyle||'classic')==='tide'
@@ -289,11 +271,8 @@ function settingsPage(id){
     <div class="fc-sw">${Object.entries(FOCUS_COLORS).map(([k,f])=>`<button data-fcol="${k}" class="${(c.focusColor||'red')===k?'on':''}" style="--sb:${f.bg||'var(--today)'}" aria-label="${f.n}" title="${f.n}"></button>`).join('')}</div>
     <p class="fc-name">${(FOCUS_COLORS[c.focusColor]||FOCUS_COLORS.red).n}${(c.focusColor||'red')==='red'?' (default)':''}${c.focusShuffle?' · starting colour':''}</p>
     ${row('Shuffle colours',tg('focusShuffle'),'New colour after each finished step')}
-    </div>${HAS_KEYS()?`<div class="set-sec"><h3>Pop-out window</h3>
-    ${row('Size',`<div class="segc">${sOpt('pipMode','compact','Compact')}${sOpt('pipMode','mini','Timer only')}</div>`,(c.pipMode||'compact')==='mini'?'Just the countdown, very small.':'Task name and timer.')}
-    ${DESK()?row('See-through while working',tg('pipFade'),'The mini timer turns solid when you point at it'):''}</div>`:''}<div class="set-sec"><h3>During a session</h3>
-    ${row('Sound at end of round',tg('sound'))}
-    ${row('Keep screen awake',tg('wake'))}</div>`;
+    </div>${HAS_KEYS()&&DESK()?`<div class="set-sec"><h3>Pop-out window</h3>
+    ${DESK()?row('See-through while working',tg('pipFade'),'The mini timer turns solid when you point at it'):''}</div>`:''}`;
   if(id==='archive')body=archivePage();
   if(id==='modes')body=modesPage();
   if(id==='habits')body=habitsSetPage();

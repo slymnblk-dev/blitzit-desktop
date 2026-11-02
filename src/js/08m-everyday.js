@@ -174,7 +174,7 @@ gSetWin=function(g,on){const was=!!g.done;_moWin(g,on);try{if(on&&!was&&g.done)s
 
 /* ---------- Settings → Modes: one card per mode; turning a mode on unfolds its own options inside its card ---------- */
 var mdJust=null;
-document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','mx','closeDay','pri','imp','tags'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
+document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','mx','closeDay','pri','imp','tags','inbox','review','checkin'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
 const MD_GOAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
 modesPage=function(){
   const c=C(),hOn=habitsOn(),gOn=goalsOn(),n=hbAll().length,gn=gAll().length;
@@ -184,6 +184,8 @@ modesPage=function(){
   const ev=c.closeDay||(hOn&&c.hbCi!==false);
   const html=`<p class="sub-p">Extra ways to use Windaday. Turn a mode off and it disappears everywhere. Your data stays safe and comes back when you turn it on again.</p>
   <div class="md-list">
+  ${card('inbox',IB_ICON,'Inbox','A calm place for loose tasks and notes',c.inbox!==false,
+    `${row('Badge on the Inbox',tg('ibBadge'),'Show how many items are waiting')}`)}
   ${card('habits',RH_ICON,'Habits','Small daily wins with gentle sunrise streaks',hOn,
     `${hbStarters()}${link('habits','Your habits',n?`${n} of ${HB_MAX}`:'None yet')}
      ${row('Page view',`<div class="segc">${sOpt('hbView','grid','Week grid')}${sOpt('hbView','sun','Sunrise')}</div>`)}
@@ -203,5 +205,8 @@ modesPage=function(){
   ${card('closeDay',RH_ICON.replace('M24 9v7','M24 9v0'),'Close the day','Last habits and tomorrow’s first task',!!c.closeDay,'')}
   ${ev?`<div class="md-card md-plain">${row('Evening starts at',`<div class="segc">${[17,19,21].map(x=>sOpt('hbCiAt',x,`${x-12} pm`)).join('')}</div>`,'When evening cards appear on Home')}</div>`:''}
   ${card('moments','<span class="md-emo">☀️</span>','Moments','A calm full-screen moment for a 7-day sun or a goal reached',false,'')}
+  ${card('review',RV_I,'Weekly review','See what you finished and tidy My week',c.review!==false,
+    `${row('Review day',`<div class="segc">${REVIEW_DAYS.map(([v,n])=>sOpt('reviewDay',v,n)).join('')}</div>`)}<button class="link-row md-link" id="rvStart">Start a review now<span class="hint">${CHEV}</span></button>`)}
+  ${card('checkin',CI_I,'Morning check-in','Ask about leftover tasks each day',c.checkin!==false,'')}
   </div></div>`;
   mdJust=null;return html};

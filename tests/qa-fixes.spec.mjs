@@ -151,7 +151,7 @@ test('search finds tasks, notes, goals and habits, grouped', async ({ page }) =>
   noErrors(errors);
 });
 
-test('focus steps, one at a time (or three): tick, undo, add, keys never end the task; the timer never moves', async ({ page }) => {
+test('focus steps, one at a time: tick, undo, add, keys never end the task; the timer never moves', async ({ page }) => {
   await page.setViewportSize({ width: 1300, height: 860 });
   const errors = await openApp(page);
   await page.evaluate(() => {
@@ -188,13 +188,8 @@ test('focus steps, one at a time (or three): tick, undo, add, keys never end the
   await page.keyboard.press('Escape'); // closes the field, not focus
   await expect(page.locator('#fsIn')).toHaveCount(0);
   expect(await page.evaluate(() => [F.on, S.tasks[0].subs.map(s => s.t)])).toEqual([true, ['Flag urgent', 'Reply to Sara', 'Archive the rest', 'Clear the spam folder']]);
-  // three at a time
-  await page.evaluate(() => { setCfg('fsShow', '3'); drawSteps(); });
-  await expect(rows).toHaveCount(2);
-  const top3 = await timerTop(); // a taller card for three steps: the centred block settles once, then stays put
-  await rows.first().click(); await expect(page.locator('#fsN')).toHaveText('3 of 4'); await rows.first().click();
-  await expect(page.locator('#fSteps .fs-all')).toContainText('All 4 steps done');
-  expect(await timerTop()).toBe(top3);
+  // always one at a time (the setting is gone, 0.270)
+  expect(await page.evaluate(() => { setCfg('fsShow', '3'); return C().fsShow; })).toBe('1');
   noErrors(errors);
 });
 

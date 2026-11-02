@@ -81,3 +81,8 @@
 ## Repo visibility (decided 2026-11-01)
 - The repo stays **public** for now (no real users yet). Suly plans to make it **private once real users arrive**.
 - Before going private: the Windows updater (`src-tauri/tauri.conf.json` endpoints) and the download button (`WIN_RELEASES` in `src/js/11-profile.js`) read **public GitHub releases** of this repo. They must move to a separate public "windaday-releases" repo first (needs a token secret Suly adds), ship one desktop update with the new address, and only then go private. Private repos also lose the free github.io test copy and have limited free Actions minutes.
+
+## Settings trimmed (0.270) — `src/js/12f-settings-trim.js`
+- Always on, settings removed (forced in `TRIM_ON`, re-applied in `applySettings`): animations, welcome, Today highlight, sounds (Glass), new tasks on top, fold columns after 5, tuck away finished, quiet when idle (5 s), compact pop-out, sound at end of round, keep awake, one focus step at a time. New tasks default to the last-used list.
+- Appearance: Themes fold away (`themesFold`), Home has its own card, then Layout. Modes: new Inbox card, Everyday holds Weekly review + Morning check-in. Focus: one compact timer row (`timerRow`).
+- Also 0.268–0.269: dark Ember / light Sand / Calm column defaults, sun/moon button (`12e-theme-toggle.js`), Mode row removed, themes as pills.

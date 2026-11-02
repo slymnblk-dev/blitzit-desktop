@@ -1,0 +1,20 @@
+/* ---------- Settings, trimmed (12f-settings-trim.js) ---------- */
+.th-fold{padding:0}
+.th-fh{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:12px 18px;border-radius:20px;background:var(--surface);text-align:left;color:var(--text);transition:background .2s}
+.th-fh:hover{background:var(--surface2)}
+.th-fh span{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.th-fh b{font-size:17px;font-weight:600}
+.th-fh small{font-size:13px;color:var(--muted)}
+.th-fh svg{width:16px;height:16px;color:var(--muted);transform:rotate(90deg);transition:transform .25s var(--ease)}
+.th-fold.open .th-fh svg{transform:rotate(-90deg)}
+.th-fold.open #themesSec{padding:4px 4px 6px;animation:pgIn .3s var(--ease) both}
+.set-cards{margin:18px 0 6px}
+/* focus timer, compact */
+.tmr-row{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0 14px}
+.tmr-st{display:inline-flex;align-items:center;gap:2px;height:44px;padding:0 6px 0 14px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.tmr-l{font-size:13px;color:var(--muted);margin-right:4px}
+.tmr-st b{min-width:38px;text-align:center;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.tmr-st b small{font-size:13px;font-weight:600;color:var(--muted);margin-left:1px}
+.tmr-st button{width:32px;height:32px;border-radius:50%;background:var(--surface2);color:var(--text);font-size:18px;font-weight:600;line-height:1;display:grid;place-items:center}
+.tmr-st button:hover:not(:disabled){background:color-mix(in srgb,var(--today) 20%,var(--surface2))}
+.tmr-st button:disabled{opacity:.35;cursor:default}

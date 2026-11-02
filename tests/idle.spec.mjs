@@ -2,21 +2,18 @@
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
-test('quiet when idle: on by default, hides after 5s, mouse move brings it back, can be turned off', async ({ page }) => {
+test('quiet when idle: always on, hides after 5s (not 3), mouse move brings it back', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
   await page.evaluate(() => openSpaceSide(S.spaces[0].id));
   await page.mouse.move(600, 600);
   expect(await page.evaluate(() => S.cfg.idleHide)).toBe(true);
   await expect(page.locator('body')).not.toHaveClass(/idle/);
-  await page.waitForTimeout(5600);
+  await page.waitForTimeout(3600);
+  await expect(page.locator('body')).not.toHaveClass(/idle/);                  // still there after 3s
+  await page.waitForTimeout(2000);
   await expect(page.locator('body')).toHaveClass(/idle/);
   await page.mouse.move(640, 620);
-  await expect(page.locator('body')).not.toHaveClass(/idle/);
-  await page.evaluate(() => { openSettings(); setView = 'appearance'; drawSettings(); });
-  await page.locator('[data-tg="idleHide"]').click();
-  await page.evaluate(() => closeSettings());
-  await page.waitForTimeout(5600);
   await expect(page.locator('body')).not.toHaveClass(/idle/);
   noErrors(errors);
 });

@@ -9,6 +9,7 @@ test('themes: pick Sand, hovering changes nothing, Ember for dark', async ({ pag
   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(await bg()).toBe('rgb(244, 244, 240)');
   await page.evaluate(() => { openSettings(); setView = 'appearance'; drawSettings(); });
+  await page.locator('[data-thfold]').click(); // themes fold away now
   await page.locator('.thp[data-thid="sand"]').click();
   await expect.poll(bg).toBe('rgb(241, 235, 225)');
   expect(await page.evaluate(() => S.cfg.lightTheme)).toBe('sand');

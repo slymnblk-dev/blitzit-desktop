@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
-test('welcome: plays once a day, skips on click, off switch works, Play replays', async ({ page }) => {
+test('welcome: always on, plays once a day, skips on click', async ({ page }) => {
   await page.addInitScript(() => { window.__wlTest = true; });
   const errors = await openApp(page);
   expect(await page.evaluate(() => S.cfg.welcome)).toBe(true);
@@ -15,17 +15,8 @@ test('welcome: plays once a day, skips on click, off switch works, Play replays'
   await page.reload();
   await page.waitForTimeout(600);
   await expect(page.locator('#welcome')).toHaveCount(0);
-  // Play button in Settings → Appearance
+  // always on: no switch and no Play button in Settings any more (0.270)
   await page.evaluate(() => { openSettings(); setView = 'appearance'; drawSettings(); });
-  await page.locator('#wlPlay').click();
-  await expect(page.locator('#welcome')).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(page.locator('#welcome')).toHaveCount(0);
-  // turned off: no welcome on a new day
-  await page.evaluate(() => { openSettings(); setView = 'appearance'; drawSettings(); });
-  await page.locator('[data-tg="welcome"]').click();
-  await expect.poll(() => page.evaluate(() => S.cfg.welcome)).toBe(false);
-  await page.evaluate(() => { localStorage.removeItem('welcomeDay'); closeSettings(); maybeWelcome(); });
-  await expect(page.locator('#welcome')).toHaveCount(0);
+  await expect(page.locator('#wlPlay, [data-tg="welcome"]')).toHaveCount(0);
   noErrors(errors);
 });
