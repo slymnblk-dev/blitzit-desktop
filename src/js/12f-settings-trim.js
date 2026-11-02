@@ -2,10 +2,10 @@
    Fewer switches, good defaults. These are always on now (their settings are gone): animations, the welcome
    sunrise, the Today highlight, sounds (Glass), new tasks on top, folding long columns after 5, finished tasks
    tucked under "Completed", quiet when idle (after 5 s), compact pop-out, sound at the end of a round,
-   keeping the screen awake, one step at a time in focus. New tasks go to the list you used last.
+   keeping the screen awake, one step at a time in focus, simple stage tabs on phones (0.271). New tasks go to the list you used last.
    Appearance: themes fold away; Home has its own card. Focus: one compact timer row. */
 const TRIM_ON={motion:true,welcome:true,todayGlint:true,uiSounds:true,sfxStyle:'glass',addTo:'top',collapseLong:true,collapseAt:5,
-  doneFold:true,idleHide:true,pipMode:'compact',sound:true,wake:true,fsShow:'1'};
+  doneFold:true,idleHide:true,pipMode:'compact',sound:true,wake:true,fsShow:'1',bars:'tabs'};
 Object.assign(S.cfg,TRIM_ON);
 const HOME_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg>';
 const RV_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg>';

@@ -241,7 +241,6 @@ function settingsPage(id){
   if(id==='tasks')body=`<div class="set-sec"><h3>New tasks</h3>
     ${row('Default estimate',`<div class="segc">${[15,30,60,120].map(m=>sOpt('defEst',m,fmt(m))).join('')}</div>`)}
     </div><div class="set-sec"><h3>Display</h3>
-    ${row('Stage bars',`<div class="segc">${sOpt('bars','tabs','Tabs')}${sOpt('bars','today','Progress')}${sOpt('bars','load','Workload')}</div>`,{tabs:'Simple tabs to switch stages. Shown on phones.',today:'The Today bar fills up as you finish today’s tasks.',load:'Bars show how full each stage is, with task counts.'}[c.bars||'tabs'])}
     ${row('Show time estimates',tg('showEst'))}
     ${row('Search & filter',tg('search'),'A search button at the top. Find any task'+(c.pri!==false||c.tags!==false?` and filter the board by ${[c.pri!==false?'priority':'',c.tags!==false?'tags':''].filter(Boolean).join(' or ')}`:'')+'.')}
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
