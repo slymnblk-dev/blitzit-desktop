@@ -244,7 +244,6 @@ function settingsPage(id){
     ${row('Show time estimates',tg('showEst'))}
     ${row('Search & filter',tg('search'),'A search button at the top. Find any task'+(c.pri!==false||c.tags!==false?` and filter the board by ${[c.pri!==false?'priority':'',c.tags!==false?'tags':''].filter(Boolean).join(' or ')}`:'')+'.')}
     ${row('Sections',tg('sections'),'Group tasks into named sections you can fold away.')}
-    ${row('Week starts on',`<div class="segc">${sOpt('weekStart',1,'Monday')}${sOpt('weekStart',0,'Sunday')}</div>`)}
     </div><div class="set-sec"><h3>Task details</h3><p class="sub-p">Extras you can add to a task. Turn one off and it disappears everywhere. What you set stays safe and comes back when you turn it on again.</p>
     <div class="md-list">${tfCards()}</div>
     </div><div class="set-sec"><h3>Celebrations</h3>
