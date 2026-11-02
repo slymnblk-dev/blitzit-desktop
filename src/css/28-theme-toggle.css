@@ -25,3 +25,5 @@
 .thp-sw i{position:absolute;right:0;top:0;bottom:0;width:50%}
 .thp-sw b{position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%}
 .thg2-note{margin:14px 0 0;font-size:13px;color:var(--muted)}
+/* only on Home: inside a space or list the mode you picked simply carries on (0.274) */
+:root:not([data-view="home"]) .tt-btn{display:none}

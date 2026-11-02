@@ -30,6 +30,11 @@ test('starts dark (Ember); the sun/moon button switches to light (Sand) and it i
   expect(await page.evaluate(() => [C().theme, C().darkTheme, C().lightTheme, C().homeLayout, modeNow()])).toEqual(['dark', 'ember', 'sand', 'calm', 'dark']);
   await page.locator('[data-tt]:visible').click();
   await expect.poll(() => page.evaluate(() => modeNow())).toBe('light');
+  await page.evaluate(() => openSpaceSide(S.spaces[0].id));
+  await expect(page.locator('[data-tt]:visible')).toHaveCount(0);            // only on Home
+  expect(await page.evaluate(() => modeNow())).toBe('light');                // the choice carries on
+  await page.evaluate(() => goHome());
+  await expect(page.locator('[data-tt]:visible')).toHaveCount(1);
   await page.reload();
   await page.waitForFunction(() => { try { return typeof S === 'object'; } catch { return false; } });
   expect(await page.evaluate(() => [C().theme, modeNow(), document.querySelector('[data-tt]:not([hidden])').getAttribute('aria-label')])).toEqual(['light', 'light', 'Switch to dark mode']);
