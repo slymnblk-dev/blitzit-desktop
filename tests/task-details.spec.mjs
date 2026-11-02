@@ -10,16 +10,17 @@ for (const [name, size] of [['phone', { width: 390, height: 844 }], ['computer',
     await detailsOn(page);
     const id = await page.evaluate(() => { const t = S.tasks.find(x => x.stage === 'today'); t.pri = 'high'; t.imp = 5; t.tags = ['calls']; const l = listOf(t.list); l.tags = ['calls']; save(); openSpace(listOf(t.list).space); S.stage = 'today'; render(); return t.id; });
     const row = page.locator(`li.row[data-id="${id}"]`).locator('visible=true').first();
-    await expect(row.locator('.mi.pri')).toHaveCount(1);
+    await expect(row).toHaveClass(/pr-high/); // Ring: the circle takes the colour
     await expect(row.locator('.mi.imp')).toHaveCount(1);
     await expect(row.locator('.ttag')).toHaveCount(1);
     // the settings: three cards with their own settings inside
     await page.evaluate(() => { openSettings(); setView = 'tasks'; drawSettings(); });
     for (const k of ['pri', 'imp', 'tags']) await expect(page.locator(`#setIn .md-card[data-md="${k}"].on .md-body`)).toHaveCount(1);
-    await expect(page.locator('#setIn .md-card[data-md="pri"] .prp')).toHaveCount(5);
+    await expect(page.locator('#setIn .md-card[data-md="pri"] [data-k="priStyle"]')).toHaveCount(2); // Ring or Tint
     for (const k of ['pri', 'imp', 'tags']) { await page.locator(`#setIn .md-card[data-md="${k}"] [data-tg="${k}"]`).click(); await expect(page.locator(`#setIn .md-card[data-md="${k}"] .md-body`)).toHaveCount(0); }
     await page.evaluate(() => closeSettings());
-    await expect(row.locator('.mi.pri, .mi.imp, .ttag, .pri-mk')).toHaveCount(0);
+    await expect(row.locator(".mi.pri, .mi.imp, .ttag, .pri-mk")).toHaveCount(0);
+    await expect(row).not.toHaveClass(/pr-high/);
     await page.evaluate(id => openDetail(id), id);
     for (const k of ['pri', 'imp', 'tags']) await expect(page.locator(`#dPills .pill[data-p="${k}"]`)).toHaveCount(0);
     await page.evaluate(() => closeSheets());
@@ -30,7 +31,7 @@ for (const [name, size] of [['phone', { width: 390, height: 844 }], ['computer',
     // the data is still there, and comes back
     expect(await page.evaluate(id => { const t = S.tasks.find(x => x.id === id); return [t.pri, t.imp, t.tags.join()]; }, id)).toEqual(['high', 5, 'calls']);
     await page.evaluate(() => { ['pri', 'imp', 'tags'].forEach(k => setCfg(k, true)); });
-    await expect(row.locator('.mi.pri')).toHaveCount(1);
+    await expect(row).toHaveClass(/pr-high/);
     await expect(row.locator('.mi.imp')).toHaveCount(1);
     await expect(row.locator('.ttag')).toHaveCount(1);
     noErrors(errors);

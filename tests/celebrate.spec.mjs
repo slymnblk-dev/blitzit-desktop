@@ -2,20 +2,21 @@
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors, detailsOn } from './helpers.mjs';
 
-test('priority look: Label, Dot, Ring', async ({ page }) => {
+test('priority look: Ring by default, or Tint (the only two)', async ({ page }) => {
   const errors = await openApp(page);
   await detailsOn(page);
   await page.setViewportSize({ width: 390, height: 844 });
   const id = await page.evaluate(() => { const l = S.lists.find(x => x.space === S.spaces[0].id); const t = newTask('Pri test', 'week', l.id, 15); t.pri = 'high'; S.tasks.unshift(t); S.space = S.spaces[0].id; S.list = 'all'; S.stage = 'week'; render(); return t.id; });
   const row = page.locator(`#list .row[data-id="${id}"]`);
-  await expect(row.locator('.mi.pri.high')).toHaveCount(1);
-  for (const [v, sel] of [['marks', '.pri-mk.high'], ['ring', null]]) {
-    await page.evaluate(() => { openSettings(); setView = 'tasks'; drawSettings(); });
-    await page.locator(`.prp[data-v="${v}"]`).click();
-    await page.evaluate(() => closeSettings());
-    await expect(row.locator('.mi.pri')).toHaveCount(0);
-    if (sel) await expect(row.locator(sel)).toHaveCount(1); else await expect(row).toHaveClass(/pr-high/);
-  }
+  await expect(row).toHaveClass(/pr-high/);                                  // Ring: the circle takes the colour
+  await page.evaluate(() => { openSettings(); setView = 'tasks'; drawSettings(); });
+  await expect(page.locator('#setIn [data-k="priStyle"]')).toHaveText(['Ring', 'Tint']);
+  await expect(page.locator('#setIn [data-tg="priSort"]')).toHaveCount(0);  // sorting by priority is always on
+  await page.locator('#setIn [data-k="priStyle"][data-v="tint"]').click();
+  await page.evaluate(() => closeSettings());
+  await expect(row).toHaveClass(/pt-high/);
+  await page.evaluate(() => { setCfg('priStyle', 'marks'); });               // old looks fall back to Ring
+  expect(await page.evaluate(() => C().priStyle)).toBe('ring');
   noErrors(errors);
 });
 
@@ -65,8 +66,5 @@ test('priority sort: High, Medium, Low, then the rest; a drag against it explain
   await page.waitForTimeout(500);
   expect(await order()).toEqual([ids.high, ids.med, ids.low, ids.none]);
   await expect(page.locator('#toastMsg')).toContainText('Sorted by priority');
-  // turn it off: manual order wins
-  await page.evaluate(() => { S.cfg.priSort = false; render(); });
-  expect((await order())[0]).not.toBe(ids.high);
   noErrors(errors);
 });

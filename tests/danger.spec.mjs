@@ -27,7 +27,7 @@ test('delete all tasks needs DELETE typed; demo only appears when empty and adds
 
 test('reset needs RESET typed and gives a fresh start (tasks, spaces, lists, settings)', async ({ page }) => {
   const errors = await openApp(page);
-  await page.evaluate(() => { S.cfg.priStyle = 'ring'; S.cfg.lightTheme = 'sand'; save(); });
+  await page.evaluate(() => { S.cfg.priStyle = 'tint'; S.cfg.lightTheme = 'porcelain'; save(); });
   await toData(page);
   await page.locator('#resetAll').click();
   await page.locator('#dzIn').fill('DELETE');
@@ -35,7 +35,7 @@ test('reset needs RESET typed and gives a fresh start (tasks, spaces, lists, set
   await page.locator('#dzIn').fill('reset');
   await page.locator('#dzGo').click();
   const r = await page.evaluate(() => ({ n: S.tasks.length, sp: S.spaces.length, ls: S.lists.length, pri: S.cfg.priStyle, lt: S.cfg.lightTheme, onb: S.onboarded }));
-  expect(r).toEqual({ n: 0, sp: 1, ls: 1, pri: 'bars', lt: 'sand', onb: false });
+  expect(r).toEqual({ n: 0, sp: 1, ls: 1, pri: 'ring', lt: 'sand', onb: false });
   noErrors(errors);
 });
 

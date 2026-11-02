@@ -5,7 +5,7 @@
    keeping the screen awake, one step at a time in focus, simple stage tabs on phones (0.271). New tasks go to the list you used last.
    Appearance: themes fold away; Home has its own card. Focus: one compact timer row. */
 const TRIM_ON={motion:true,welcome:true,todayGlint:true,uiSounds:true,sfxStyle:'glass',addTo:'top',collapseLong:true,collapseAt:5,
-  doneFold:true,idleHide:true,pipMode:'compact',sound:true,wake:true,fsShow:'1',bars:'tabs',weekStart:1};
+  doneFold:true,idleHide:true,pipMode:'compact',sound:true,wake:true,fsShow:'1',bars:'tabs',weekStart:1,priSort:true};
 Object.assign(S.cfg,TRIM_ON);
 const HOME_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg>';
 const RV_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg>';
@@ -38,4 +38,4 @@ render=function(d){_trimRender(d);try{let top=null;for(const t of S.tasks)if(t.l
   if(top&&top.id>trimSeen){if(trimSeen&&S.cfg.defList!==top.list){S.cfg.defList=top.list}trimSeen=top.id}}catch(e){}};
 /* these stay on even if a synced older setting says otherwise */
 const _trimApply=applySettings;
-applySettings=function(){Object.assign(S.cfg,TRIM_ON);return _trimApply.apply(this,arguments)};
+applySettings=function(){Object.assign(S.cfg,TRIM_ON);if(!['ring','tint'].includes(S.cfg.priStyle))S.cfg.priStyle='ring'; /* priorities: Ring (default) or Tint (0.273) */return _trimApply.apply(this,arguments)};

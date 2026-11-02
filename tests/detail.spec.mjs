@@ -59,7 +59,7 @@ test('priority: set High from task details, shows on the row, can be cleared', a
   expect(await page.evaluate(id => S.tasks.find(t => t.id === id).pri, id)).toBe('high');
   await expect(page.locator('#dPills [data-p="pri"]')).toContainText('High');
   await page.evaluate(() => closeSheets());
-  await expect(page.locator(`.row[data-id="${id}"] .pri.high`).first()).toBeAttached();
+  await expect(page.locator(`.row[data-id="${id}"]`).first()).toHaveClass(/pr-high/); // Ring look
   await page.evaluate(id => openDetail(id), id);
   await page.locator('#dPills [data-p="pri"]').click();
   await page.locator('#dPicker .pk', { hasText: 'None' }).click();
