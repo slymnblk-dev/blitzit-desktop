@@ -42,7 +42,7 @@ $('newTitle').onkeydown=e=>{if(e.key==='Enter'&&e.target.value.trim())$('saveBtn
 let addLock=0;
 $('saveBtn').onclick=()=>{
   if(Date.now()-addLock<700)return;addLock=Date.now(); // ignore accidental double taps
-  if(!canPut(draft.list,draft.stage))return;
+  if(!canPut(draft.list,draft.stage,null,{title:$('newTitle').value.trim(),after:()=>closeSheets()}))return;
   const nt=newTask($('newTitle').value.trim(),draft.stage,draft.list,draft.est);addTask(nt);enterId=nt.id;haptic(8);
   closeSheets();const d=idx(draft.stage)-idx(S.stage);S.stage=draft.stage;render(d||undefined);
   if(!inSpaceMode()){const sp=spaceOf(draft.space);if(sp)toast(`Added to ${sp.name}`);else if(draft.space===''&&S.list!==draft.list)toast(`Added to ${listOf(draft.list).name}`)}
