@@ -23,7 +23,7 @@ function drawAdd(){
   $('saveBtn').style.background=color(draft.stage);
 }
 $('addBtn').onclick=()=>{
-  const dl=defaultList(),sp0=inSpaceMode()?S.space:(S.space==='all'?listOf(dl).space:orderedSpaces()[0].id);
+  const dl=defaultList(),sp0=inSpaceMode()?S.space:listOf(dl).space; // on Home too: the list you used last (0.276)
   const first=S.lists.find(l=>l.space===sp0);
   draft={stage:!S.space||S.stage==='done'?'today':S.stage,space:sp0,list:listOf(dl).space===sp0?dl:(first||{}).id,est:S.cfg.defEst};
   $('newTitle').value='';$('saveBtn').disabled=true;drawAdd();openSheet('addSheet');

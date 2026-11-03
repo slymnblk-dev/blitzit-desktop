@@ -106,3 +106,22 @@ test('phone: Home shows a Lists card; holding + opens the menu, a tap still adds
   await expect(page.locator('#listName')).toHaveText('Groceries');
   noErrors(errors);
 });
+
+test('adding a task from Home goes to the list you used last, also one with no space or in your second space', async ({ page }) => {
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.lists.push({ id: 'lgro', name: 'Groceries', c: '#F5A35A', space: '', loose: true }); save(); });
+  const addFromHome = async (title) => {
+    await page.evaluate(() => { goHome(); document.getElementById('addBtn').click(); });
+    await page.locator('#newTitle').fill(title);
+    await page.locator('#saveBtn').click();
+    await page.waitForTimeout(250);
+    return page.evaluate(t => listOf(S.tasks.find(x => x.title === t).list).name, title);
+  };
+  // used Groceries last → a task from Home lands there
+  await page.evaluate(() => { openLoose('lgro'); });
+  expect(await addFromHome('Eggs')).toBe('Groceries');
+  // used a list in the second space last → it lands there, not in the first space
+  const second = await page.evaluate(() => { const sp = orderedSpaces()[1], l = S.lists.find(x => x.space === sp.id); openSpace(sp.id); S.list = l.id; render(); return l.name; });
+  expect(await addFromHome('Call mum')).toBe(second);
+  noErrors(errors);
+});
