@@ -11,10 +11,14 @@ function vtRun(dir,fn){
   vtIn=true;vtWait=true;root.dataset.vt=dir;let t;
   /* a jump to the top asked for now waits until the new page is drawn, so the old picture stays where you were */
   const so=window.scrollTo;let q=null;window.scrollTo=function(){q=arguments};const back=()=>{if(window.scrollTo!==so)window.scrollTo=so};
-  try{t=document.startViewTransition(()=>{vtWait=false;back();fn();if(vtArgs){const a=vtArgs;vtArgs=null;_vtRender.apply(null,a)}if(q)so.apply(window,q)})}
+  try{t=document.startViewTransition(()=>{vtWait=false;back();fn();if(vtArgs){const a=vtArgs;vtArgs=null;_vtRender.apply(null,a)}if(q)so.apply(window,q);vtSettle()})}
   catch(e){back();vtIn=false;vtWait=false;delete root.dataset.vt;fn();if(q)so.apply(window,q);return}
   t.finished.catch(()=>{}).finally(()=>{back();vtIn=false;vtWait=false;delete root.dataset.vt});
 }
+/* the new page's own little entrance moves (title slide, cards rising) jump to their end: the page already moves as one,
+   and letting them run (or holding them back with CSS) made titles show twice or pop in again after the slide (0.283) */
+function vtSettle(){try{document.getAnimations().forEach(a=>{if(typeof CSSAnimation!=='undefined'&&!(a instanceof CSSAnimation))return;
+  const tm=a.effect&&a.effect.getComputedTiming?a.effect.getComputedTiming():null;if(!tm||tm.iterations===Infinity||a.playState==='finished')return;a.finish()})}catch(e){}}
 /* where you are, for render: Home, a space (and list), or a stage inside it */
 const vtWhere=()=>S.space?`s:${S.space}:${S.list}`:'home';
 const _vtRender=render;

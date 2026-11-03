@@ -14,6 +14,11 @@ test('with page motion on, every page change lands on the right page and the mot
   await page.locator(`.sp-row[data-space="${sp}"]`).click();
   await settle();
   expect(await page.evaluate(() => [S.space, document.documentElement.dataset.view])).toEqual([sp, 'space']);
+  // the title moves once, with the page: nothing replays after the slide (0.283)
+  const moving = () => page.evaluate(() => document.getAnimations().filter(x => x.playState === 'running' && x.effect && x.effect.target && x.effect.target.closest && x.effect.target.closest('.hero,.home-hero')).length);
+  expect(await moving()).toBe(0);
+  await page.waitForTimeout(300);
+  expect(await moving()).toBe(0);
   // stage change
   await page.evaluate(() => go('week'));
   await settle();
@@ -22,6 +27,8 @@ test('with page motion on, every page change lands on the right page and the mot
   // a list without a space: opening it sets the space and the list together, even though drawing waits a frame
   await page.evaluate(() => goHome());
   await settle();
+  await page.waitForTimeout(300);
+  expect(await moving()).toBe(0);                                                // Home's title doesn't pop in again
   await page.locator('.lo-row[data-loose="lgro"]').click();
   await settle();
   expect(await page.evaluate(() => [S.space, S.list])).toEqual(['all', 'lgro']);
