@@ -287,3 +287,14 @@ test('phone Habits: plain arrows on top, the week reads under the title (no sque
   await expect(page.locator('#rhythmPg .hp-subwk')).toContainText('Last week');
   noErrors(errors);
 });
+
+test('computer Sunrise view: no label above the title, a Today pill, and ⋯ lines up with the habit list', async ({ page }) => {
+  await page.setViewportSize({ width: 1913, height: 924 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.habits = true; S.cfg.hbView = 'sun'; S.habits = [{ id: 'h1', name: 'Stretch', e: '', space: null, days: [0, 1, 2, 3, 4, 5, 6], done: {}, created: Date.now() }]; save(); applySettings(); openRhythm(); });
+  await expect(page.locator('#rhythmPg .hp-head .hp-eye')).toHaveCount(0);
+  await expect(page.locator('#rhythmPg .hp-day .hp-wkl')).toContainText('Today');
+  const r = await page.evaluate(() => { const a = document.querySelector('#rhIn .hp-acts').getBoundingClientRect(), b = document.querySelector('#rhIn .hs').getBoundingClientRect(); return Math.abs(a.right - b.right); });
+  expect(r).toBeLessThan(2);
+  noErrors(errors);
+});

@@ -84,10 +84,11 @@ function drawRhythm(){
     body=hpGrid(hs)}
   else{const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt});
     hpMeta=`${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}${due.length?'':' · Rest day'}`; // the big number under the sun already counts
-    head=`<span class="hp-eye">Today · ${longDate()}</span><h1 class="hp-h">Habits</h1><span class="hp-sub">${due.length?`<b>${due.filter(h=>hbStats(h).dt).length} of ${due.length}</b> done`:'Rest day'}</span>`;body=hpSun(hs)}
+    head=`<h1 class="hp-h">Habits</h1><span class="hp-sub"><span class="hp-subwk">${longDate()} · </span>${due.length?`<b>${due.filter(h=>hbStats(h).dt).length} of ${due.length}</b> done`:'Rest day'}</span>`;body=hpSun(hs)}
   /* the week sits between its arrows (0.288): the dates live with the buttons that change them; tap it to jump back to this week */
   const wkDays=v==='grid'?hpWeekDays(hpWeek):null,wf=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'}),wkName=hpWeek===0?'This week':hpWeek===-1?'Last week':`${-hpWeek} weeks ago`;
-  const nav=hs.length&&v==='grid'?`<div class="hp-nav hp-wk"><button class="pm-btn" data-hpw="-1" aria-label="Previous week">${ARR_L}</button><button class="hp-wkl" ${hpWeek===0?'disabled':'data-hpw0'} aria-label="${wkName}, ${wf(wkDays[0])} to ${wf(wkDays[6])}${hpWeek===0?'':'. Back to this week'}"><b>${wkName}</b><small>${wf(wkDays[0])} – ${wf(wkDays[6])}</small></button><button class="pm-btn" data-hpw="1" aria-label="Next week" ${hpWeek>=0?'disabled':''}>${ARR_R}</button></div>`:'';
+  const dayNav=hs.length&&v!=='grid'?`<div class="hp-nav hp-wk hp-day"><span class="hp-wkl"><b>Today</b><small>${new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</small></span></div>`:''; // Sunrise: the day, styled like the week pill (0.290)
+  const nav=hs.length&&v!=='grid'?dayNav:hs.length&&v==='grid'?`<div class="hp-nav hp-wk"><button class="pm-btn" data-hpw="-1" aria-label="Previous week">${ARR_L}</button><button class="hp-wkl" ${hpWeek===0?'disabled':'data-hpw0'} aria-label="${wkName}, ${wf(wkDays[0])} to ${wf(wkDays[6])}${hpWeek===0?'':'. Back to this week'}"><b>${wkName}</b><small>${wf(wkDays[0])} – ${wf(wkDays[6])}</small></button><button class="pm-btn" data-hpw="1" aria-label="Next week" ${hpWeek>=0?'disabled':''}>${ARR_R}</button></div>`:'';
   const html=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>
     ${hpMeta?`<div class="hp-meta">${hpMeta}</div>`:''}<div class="hp-head"><div class="hp-tt">${head}</div><div class="hp-acts">${nav}${hpMenuHTML()}</div></div><div class="hp-body${anim?' anim':''}">${body}</div>`;
   $('rhIn').dataset.v=v;$('rhIn').dataset.fresh='';
