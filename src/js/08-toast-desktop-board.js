@@ -61,8 +61,8 @@ function renderDesk(){
   document.querySelectorAll('.col').forEach(col=>{
     const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);
     const cn=col.querySelector('.col-n'),one=inSpaceMode()&&S.list!=='all'&&sid!=='done';
-    const mini=S.colFocus&&S.colFocus!==sid; // folded side columns show just the count (0.296)
-    cn.textContent=one&&!mini?`${here.length}/${STAGE_MAX}`:here.length;cn.classList.toggle('full',one&&here.length>=STAGE_MAX);cn.classList.toggle('over',one&&here.length>STAGE_MAX);
+    /* just the count (0.297); when a list's column is full it turns the "full" colour and says so on hover */
+    cn.textContent=here.length;cn.title=one&&here.length>=STAGE_MAX?`Full · ${STAGE_MAX} is the most per column`:'';cn.classList.toggle('full',one&&here.length>=STAGE_MAX);cn.classList.toggle('over',one&&here.length>STAGE_MAX);
     const sum=col.querySelector('.col-sum'),ul=col.querySelector('.col-list');
     if(sid==='done'){
       sum.innerHTML=here.length?`<span><b>${here.length}</b> finished</span>`:'';
