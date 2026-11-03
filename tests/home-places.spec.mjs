@@ -34,3 +34,15 @@ test('no lists without a space: just the spaces, no divider; nothing at all: no 
   expect(await page.evaluate(() => { const keep = S.spaces; S.spaces = []; const h = hmPlaces(); S.spaces = keep; return h; })).toBe('');
   noErrors(errors);
 });
+
+test('no "New space" buttons left: sidebar and phone Home; the + still makes spaces', async ({ page }) => {
+  const errors = await openApp(page);
+  await page.evaluate(() => goHome());
+  await expect(page.locator('#sNewSp')).toBeHidden();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => render());
+  await expect(page.locator('#homeView .sp-row-new')).toBeHidden();
+  await page.locator('#tbAdd:visible, #addBtn:visible').first().click();
+  await expect(page.locator('#nwMenu [data-nwk="space"]')).toBeVisible();
+  noErrors(errors);
+});

@@ -19,3 +19,5 @@
 .hp-ls:hover{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 22%,transparent)}
 .hp-sp:focus-visible,.hp-ls:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.hp-sp,.hp-ls{transition:none}.hp-sp:hover,.hp-ls:hover{transform:none}}
+/* "New space" buttons are gone (0.285): the + (New → Space) does it everywhere. Sidebar row and the phone Home spaces card's last row. */
+#sNewSp,#homeView .sp-row-new,#homeView .hl2-new{display:none!important}
