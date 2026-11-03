@@ -1,0 +1,40 @@
+/* ---------- Goals page (0.295) — 12g8-goals-page.js ---------- */
+.ga-head{margin-bottom:24px}
+.ga-list{display:grid;gap:14px}
+.ga-cw{position:relative;background:var(--surface);border-radius:24px;padding:18px 20px 16px;transition:box-shadow .2s,transform .2s cubic-bezier(.2,.8,.2,1)}
+.ga-cw.star{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--week) 45%,transparent)}
+.ga-cw:hover{transform:translateY(-1px)}
+.ga-card{display:block;width:100%;text-align:left;font:inherit;color:inherit;padding:0}
+.ga-top{display:flex;align-items:center;gap:14px;padding-right:34px}
+.ga-ic{width:48px;height:48px;border-radius:15px;background:var(--surface2);display:grid;place-items:center;font-size:24px;flex:none}
+.ga-ic svg{width:22px;height:22px}
+.ga-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ga-tx b{display:flex;align-items:center;gap:7px;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.ga-star{display:inline-grid;color:var(--week)}.ga-star svg{width:15px;height:15px}
+.ga-tx small{display:flex;flex-wrap:wrap;gap:0 4px;font-size:13px;color:var(--muted)}
+.ga-tx small .ga-days::before{content:'· ';}
+.ga-top .pc{flex:none}
+.ga-card .ns-bar{display:block;margin-top:14px}
+.ga-next{display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:8px 8px 8px 12px;border-radius:14px;background:color-mix(in srgb,var(--bg) 45%,transparent);font:inherit;color:inherit;text-align:left;min-height:46px;box-sizing:border-box}
+.ga-nl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--week-ink,var(--week));flex:none}
+.ga-nt{flex:1;min-width:0;font:inherit;font-size:14px;font-weight:600;color:var(--text);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0}
+button.ga-next>svg,.ga-op svg{width:15px;height:15px;color:var(--muted);flex:none;margin-right:4px}
+.ga-go{flex:none;height:32px;padding:0 14px;border-radius:10px;background:var(--today);color:#fff;font:inherit;font-size:13px;font-weight:800;transition:filter .15s,transform .15s}
+.ga-go:hover{filter:brightness(1.06)}.ga-go:active{transform:scale(.96)}
+.ga-op{display:grid;place-items:center;width:32px;height:32px;border-radius:10px}
+.ga-cw>.gm-more{position:absolute;top:16px;right:12px}
+.ga-first{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;background:var(--surface);font:inherit;font-weight:700;color:var(--text)}
+.ga-first svg{width:15px;height:15px}
+/* phones: milestones on one line, days left on the line under it */
+@media (max-width:699px){
+  .ga-cw{padding:16px 16px 14px;border-radius:22px}
+  .ga-ic{width:44px;height:44px;font-size:22px}
+  .ga-tx b{font-size:17px}
+  .ga-tx small{flex-direction:column;gap:1px}
+  .ga-tx small .ga-days::before{content:none}
+}
+@media (min-width:1100px){.gl-pg .ib-in{max-width:880px}}
+@media (prefers-reduced-motion:reduce){.ga-cw{transition:none}.ga-cw:hover{transform:none}}
+.ga-top .pc{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:800;background:color-mix(in srgb,var(--text) 8%,transparent)}
+.ga-top .pc-ahead{background:color-mix(in srgb,var(--done) 18%,transparent);color:var(--done)!important}
+.ga-top .pc-behind{background:color-mix(in srgb,var(--week) 18%,transparent)}

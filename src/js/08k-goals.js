@@ -134,11 +134,7 @@ function openGoals(){
   glOn=true;drawGoals();$('goalsPg').classList.add('on');$('goalsPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();
 }
 function closeGoals(){if(!glOn)return;glOn=false;$('goalsPg').classList.remove('on');const a=document.activeElement;if(a&&a.closest&&a.closest('#goalsPg'))a.blur();if(typeof renderDesk==='function')renderDesk()}
-function drawGoals(){const y=$('goalsPg').scrollTop,gs=gAll();
-  $('glIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="glBack" aria-label="Back">${BACK_SVG}</button></div>
-    <div class="hb-head"><span class="eye">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</span><h1 class="hb-h">Goals</h1>${gs.length?`<div class="hb-sub">${gSubLine(gs)}</div>`:''}</div>
-    ${goalsBlock(gs,'',matchMedia('(min-width:1100px)').matches)}`;
-  $('goalsPg').scrollTop=y}
+function drawGoals(){gaDraw()} /* the page itself: 12g8-goals-page.js (0.295) */
 $('goalsPg').addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('.sheet.on')&&!gdOn){e.stopPropagation();closeGoals()}});
 
 /* ---------- goal page ---------- */

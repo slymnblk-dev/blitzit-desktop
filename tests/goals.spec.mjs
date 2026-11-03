@@ -101,19 +101,19 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await page.evaluate(() => { S.goals.push({ id: 'g2', name: 'Read 12 books', e: '', space: S.goals[0].space, why: '', due: '', created: Date.now(), star: false, ms: [] }); save(); render(); });
   await page.locator('#tbGoals').click();
   await expect(page.locator('#goalsPg')).toHaveClass(/on/);
-  await expect(page.locator('#goalsPg .g-card')).toHaveCount(2);
+  await expect(page.locator('#goalsPg .ga-card')).toHaveCount(2);
   await page.evaluate(() => { S.goals = S.goals.filter(x => x.id !== 'g2'); save(); render(); });
-  await expect(page.locator('#goalsPg .g-card')).toHaveCount(1);
+  await expect(page.locator('#goalsPg .ga-card')).toHaveCount(1);
 
   // mark achieved from the goal page menu: leaves Home and the active list
-  await page.locator('#goalsPg .g-card').click();
+  await page.locator('#goalsPg .ga-card').click();
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gm="win"]').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].done)).toBe(true);
   expect(await page.evaluate(() => nsCard())).toBe('');
   await page.locator('#moGo').click().catch(() => {});
   await page.locator('#tbGoals').click(); // phones: the Goals tab goes back
-  await expect(page.locator('#goalsPg .g-card')).toHaveCount(0);
+  await expect(page.locator('#goalsPg .ga-card')).toHaveCount(0);
   await expect(page.locator('#goalsPg .g-wrow')).toHaveCount(1);
   await expect(page.locator('#glBack')).toBeHidden(); // tab pages have no Back on phones, like Inbox and Habits
   await page.locator('#tbHome').click();
@@ -155,21 +155,19 @@ test('goals: one north star, limit of 3, sync/backup/undo, desktop layout', asyn
   await expect.poll(() => page.evaluate(() => S.goals.length)).toBe(2);
   await page.locator('#undoBtn').click();
   await expect.poll(() => page.evaluate(() => S.goals.length)).toBe(3);
-  // computers: no Goals page; "Goals" in the sidebar folds open to list every goal, a goal opens its page, no back button
-  await page.evaluate(() => { closeGoal(); goHome(); S.gSideOpen = false; save(); renderDesk(); });
+  // computers (0.295): "Goals" in the sidebar opens the Goals page (no fold); a goal opens from its card
+  await page.evaluate(() => { closeGoal(); goHome(); renderDesk(); });
   await page.locator('#sGoals').click();
-  await expect(page.locator('#goalsPg')).not.toHaveClass(/on/);
-  await expect(page.locator('#sLists [data-sgoal]')).toHaveCount(3);
-  await page.locator('#sLists [data-sgoal="g3"]').click();
+  await expect(page.locator('#goalsPg')).toHaveClass(/on/);
+  await expect(page.locator('#sLists [data-sgoal]')).toHaveCount(0);
+  await expect(page.locator('#goalsPg .ga-card')).toHaveCount(3);
+  await page.locator('#goalsPg .ga-card[data-gopen="g3"]').click();
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
   expect(await page.evaluate(() => gdId)).toBe('g3');
-  await expect(page.locator('#sLists [data-sgoal="g3"]')).toHaveClass(/on/);
-  await expect(page.locator('#gdBack')).toBeHidden();
-  await page.locator('#sGoals').click(); // folds closed again
-  await expect(page.locator('#sLists [data-sgoal]')).toHaveCount(0);
-  await page.evaluate(() => { closeGoal(); openGoals(); }); // asking for the Goals page opens the fold and a goal instead
-  await expect(page.locator('#goalsPg')).not.toHaveClass(/on/);
-  await expect(page.locator('#sLists [data-sgoal]')).toHaveCount(3);
+  await expect(page.locator('#sGoals')).toHaveClass(/on/);                       // Goals stays lit while a goal is open
+  await page.locator('#sGoals').click();                                            // and takes you back to the Goals page
+  await expect(page.locator('#gdPg')).not.toHaveClass(/on/);
+  await expect(page.locator('#goalsPg')).toHaveClass(/on/);
   noErrors(errors);
 });
 
@@ -460,7 +458,7 @@ test('goal page and Goals page: ⋯ menus to rename, move, add subtasks, delete;
   await page.evaluate(() => { closeGoal(); openGoals(); });
   await menu('#goalsPg [data-gcm="g1"]', 'Make it my north star');
   expect(await page.evaluate(() => S.goals[0].star)).toBe(true);
-  await expect(page.locator('#goalsPg .g-card small').first()).toHaveText('No date set');
+  await expect(page.locator('#goalsPg .ga-days').first()).toHaveText('No date set');
   await menu('#goalsPg [data-gcm="g1"]', 'Delete goal');
   await page.locator('#dlgYes').click();
   expect(await page.evaluate(() => S.goals.length)).toBe(0);

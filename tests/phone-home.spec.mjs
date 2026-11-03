@@ -52,7 +52,7 @@ test('phone Home: Also today card, Spaces, tab bar that moves between pages', as
   await page.evaluate(() => closeSheets());
   await page.waitForTimeout(300);
   // a goal page sits under Goals; tapping Goals again goes back to all goals
-  await page.locator('#goalsPg .g-card').first().click();
+  await page.locator('#goalsPg .ga-card').first().click();
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
   await expect(page.locator('#tbGoals')).toHaveAttribute('aria-current', 'page');
   await page.locator('#tbGoals').click();
