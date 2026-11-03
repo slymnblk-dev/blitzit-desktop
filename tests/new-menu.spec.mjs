@@ -77,28 +77,25 @@ test('lists can move out of a space and back (Edit lists)', async ({ page }) => 
   noErrors(errors);
 });
 
-test('phone: Home shows a Lists card; holding + opens the menu, a tap still adds a task', async ({ page }) => {
+test('phone: Home shows a Lists card; a tap on + opens the menu', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.lists.push({ id: 'lgro', name: 'Groceries', c: '#F5A35A', space: '', loose: true }); save(); goHome(); });
   const card = page.locator('.lo-row[data-loose="lgro"]');
   await expect(card).toBeVisible();
   await expect(page.locator('#nwFab')).toBeHidden();
-  // hold the +
+  // a tap on the + opens the menu (like the computer); × closes it
   const plus = page.locator('#tbAdd:visible, #addBtn:visible').first();
-  const box = await plus.boundingBox();
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await page.mouse.down(); await page.waitForTimeout(600); await page.mouse.up();
-  await expect(page.locator('#nwMenu.on')).toBeVisible();
-  await expect(page.locator('#addSheet.on')).toHaveCount(0);
-  await page.locator('#nwMenu [data-nwk="list"]').click();
-  await expect(page.locator('#addSheet')).toHaveAttribute('data-kind', 'list');
-  await page.evaluate(() => closeSheets());
-  // a plain tap: the task card
-  await page.waitForTimeout(400);
   await plus.click();
+  await expect(page.locator('#nwMenu.on')).toBeVisible();
+  await expect(page.locator('#nwX.on')).toBeVisible();
+  await expect(page.locator('#addSheet.on')).toHaveCount(0);
+  await page.locator('#nwX').click();
+  await expect(page.locator('#nwMenu.on')).toHaveCount(0);
+  await plus.click();
+  await page.locator('#nwMenu [data-nwk="list"]').click();
   await expect(page.locator('#addSheet.on')).toBeVisible();
-  await expect(page.locator('#addSheet')).toHaveAttribute('data-kind', 'task');
+  await expect(page.locator('#addSheet')).toHaveAttribute('data-kind', 'list');
   await page.evaluate(() => closeSheets());
   await page.waitForTimeout(400);
   await card.click();

@@ -2,7 +2,7 @@
    A list can live on its own (l.loose=true, l.space=''). It shows in a "Lists" group: the computer sidebar
    (above Spaces), the phone Home (above Spaces) and the computer Home chips. Opening one shows its board
    (it uses the "All tasks" board, narrowed to that list).
-   "+ New": on computers a round + floats at the bottom right of Home; on phones you hold the big +.
+   "+ New": on computers a round + floats at the bottom right of Home; on phones a tap on the big + (0.278).
    Both open a small menu: Task, Note (only when the Inbox is on), List, Space (+ Habit and Goal when those
    modes are on). Each opens the add card, where tabs switch between them. Keys: T, N, L, S, H, G. */
 const isLooseView=()=>S.space==='all'&&S.list!=='all'&&!!(S.lists.find(l=>l.id===S.list)||{}).loose;
@@ -97,6 +97,7 @@ $('saveBtn').onclick=()=>{
 const NW_COL={task:'var(--today)',note:'var(--week)',list:'#5AB8F5',space:'var(--backlog)',habit:'var(--done)',goal:'#F5A35A'};
 const NW_KEY={task:'T',note:'N',list:'L',space:'S',habit:'H',goal:'G'};
 document.body.insertAdjacentHTML('beforeend',`<div class="nw-scrim" id="nwScrim"></div><div class="nw-menu" id="nwMenu" role="menu" aria-label="Add new"></div>
+  <button class="nw-x" id="nwX" aria-label="Close" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
   <button class="nw-fab" id="nwFab" aria-label="Add new" aria-haspopup="menu" aria-expanded="false" title="Add new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>`);
 var nwOn=false,nwFromFab=false;
 function nwFabPaint(){const f=$('nwFab');if(!f)return;const sheet=$('addSheet').classList.contains('on')&&$('addSheet').classList.contains('nw-fab-on');
@@ -106,15 +107,15 @@ function openNw(anchor){
   const m=$('nwMenu');m.innerHTML=[...ks].reverse().map(([k,l])=>`<button role="menuitem" data-nwk="${k}"><span class="nw-l">${esc(l)}<kbd>${NW_KEY[k]||''}</kbd></span><span class="nw-i" style="--nc:${NW_COL[k]||'var(--text)'}">${AK_IC[k]||''}</span></button>`).join('');
   const r=anchor.getBoundingClientRect();m.style.right=Math.max(12,innerWidth-r.right)+'px';m.style.bottom=(innerHeight-r.top+14)+'px';
   m.style.setProperty('--iw',Math.min(r.width,56)+'px');
-  m.classList.add('on');$('nwScrim').classList.add('on');haptic([6,30,6]);try{sfx('fold')}catch(e){}nwFabPaint();
+  m.classList.add('on');$('nwScrim').classList.add('on');const x=$('nwX');if(!nwFromFab){Object.assign(x.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});x.classList.add('on')}haptic([6,30,6]);try{sfx('fold')}catch(e){}nwFabPaint();
   if(matchMedia('(min-width:1100px)').matches)setTimeout(()=>{const b=m.querySelector('[data-nwk="task"]');if(b)b.focus({preventScroll:true})},60)}
-function closeNw(){if(!nwOn)return;nwOn=false;$('nwMenu').classList.remove('on');$('nwScrim').classList.remove('on');nwFabPaint()}
-function nwPick(k){nwHeld=false;const fab=nwFromFab&&matchMedia('(min-width:1100px)').matches;closeNw();
+function closeNw(){if(!nwOn)return;nwOn=false;$('nwMenu').classList.remove('on');$('nwX').classList.remove('on');$('nwScrim').classList.remove('on');nwFabPaint()}
+function nwPick(k){const fab=nwFromFab&&matchMedia('(min-width:1100px)').matches;closeNw();
   const sh=$('addSheet');sh.classList.toggle('nw-fab-on',fab);void sh.offsetWidth;addKindNext=k;$('addBtn').click();nwFabPaint()}
 $('nwFab').addEventListener('click',e=>{e.stopPropagation();
   if($('addSheet').classList.contains('on')){closeSheets();return}
   if(nwOn)return closeNw();nwFromFab=true;openNw($('nwFab'))});
-$('nwScrim').addEventListener('click',closeNw);
+$('nwScrim').addEventListener('click',closeNw);$('nwX').addEventListener('click',e=>{e.stopPropagation();closeNw()});
 $('nwMenu').addEventListener('click',e=>{const b=e.target.closest('[data-nwk]');if(b){e.stopPropagation();nwPick(b.dataset.nwk)}});
 document.addEventListener('keydown',e=>{if(!nwOn)return;
   if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();return closeNw()}
@@ -123,13 +124,10 @@ document.addEventListener('keydown',e=>{if(!nwOn)return;
   if(k&&addKinds().some(x=>x[0]===k)){e.preventDefault();e.stopImmediatePropagation();nwPick(k)}},true);
 const _nwShut=closeSheets;
 closeSheets=function(){const r=_nwShut.apply(this,arguments);setTimeout(()=>{if(!$('addSheet').classList.contains('on'))$('addSheet').classList.remove('nw-fab-on');nwFabPaint()},380);nwFabPaint();return r};
-/* phones: hold the + for the menu; a normal tap still adds a task */
-let nwHold=null,nwHeld=false;
-document.addEventListener('pointerdown',e=>{const b=e.target.closest('#addBtn,#tbAdd');if(!b||e.button>0)return;nwHeld=false;clearTimeout(nwHold);
-  nwHold=setTimeout(()=>{nwHeld=true;nwFromFab=false;openNw(b)},430)},true);
-let nwX=0,nwY=0;document.addEventListener('pointerdown',e=>{nwX=e.clientX;nwY=e.clientY},true);
-['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{clearTimeout(nwHold);if(nwHeld)setTimeout(()=>{nwHeld=false},60)},true));
-document.addEventListener('pointermove',e=>{if(Math.hypot(e.clientX-nwX,e.clientY-nwY)>12)clearTimeout(nwHold)},true);
-document.addEventListener('click',e=>{if(nwHeld&&e.target.closest('#addBtn,#tbAdd')){e.preventDefault();e.stopImmediatePropagation();nwHeld=false}},true);
-document.addEventListener('contextmenu',e=>{if(e.target.closest('#addBtn,#tbAdd'))e.preventDefault()});
+/* phones (0.278): a tap on the + opens the same menu as the computer's floating +.
+   Pages with their own kind keep their direct add: Habits (+ habit), Goals (+ goal), and Wins / Routines / Journal (their own handlers run first).
+   Code that "clicks" the + itself (N key, "Add a task" buttons, a menu pick) still opens the task card straight away. */
+document.addEventListener('click',e=>{const b=e.target.closest('#addBtn,#tbAdd');if(!b||!e.isTrusted)return;
+  if((typeof rhOn!=='undefined'&&rhOn)||(typeof glOn!=='undefined'&&glOn&&!(typeof gdOn!=='undefined'&&gdOn)))return;
+  e.preventDefault();e.stopImmediatePropagation();if(nwOn)return closeNw();nwFromFab=false;openNw(b)},true);
 nwFabPaint();

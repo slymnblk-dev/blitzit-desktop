@@ -22,6 +22,10 @@
 .nw-fab.open{z-index:24;background:var(--surface2);color:var(--text)}
 .nw-fab.open svg{transform:rotate(45deg)}
 @media (min-width:1100px){:root[data-view="home"] .nw-fab{display:grid}}
+/* phones: the + turns into a × above the dimmed page while the menu is open */
+.nw-x{position:fixed;z-index:24;display:grid;place-items:center;border-radius:999px;background:var(--surface2);color:var(--text);opacity:0;pointer-events:none;transition:opacity .15s}
+.nw-x svg{width:24px;height:24px;transform:rotate(45deg)}
+.nw-x.on{opacity:1;pointer-events:auto}
 /* the menu: big round icons with a label, stacked above the button */
 .nw-scrim{position:fixed;inset:0;z-index:22;background:rgba(3,4,6,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .22s}
 .nw-scrim.on{opacity:1;pointer-events:auto}
