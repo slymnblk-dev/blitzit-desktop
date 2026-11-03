@@ -80,7 +80,7 @@ function drawRhythm(){
     body=`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`}
   else if(v==='grid'){const days=hpWeekDays(hpWeek),c=hpWeekCount(hs),f=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
     hpMeta=`${f(days[0])} – ${f(days[6])} · <b>${c.dn} of ${c.due}</b> kept`;
-    head=`<h1 class="hp-h">Habits</h1><span class="hp-sub"><b>${c.dn} of ${c.due}</b> kept${hpWeek===0?' so far':''}</span>`;
+    head=`<h1 class="hp-h">Habits</h1><span class="hp-sub"><span class="hp-subwk">${hpWeek===0?'This week':hpWeek===-1?'Last week':`${-hpWeek} weeks ago`} · ${f(days[0])} – ${f(days[6])} · </span><b>${c.dn} of ${c.due}</b> kept${hpWeek===0?' so far':''}</span>`;
     body=hpGrid(hs)}
   else{const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt});
     hpMeta=`${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}${due.length?'':' · Rest day'}`; // the big number under the sun already counts

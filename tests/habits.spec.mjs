@@ -276,3 +276,14 @@ test('habits: Edit habits popup adds, renames, opens settings and deletes', asyn
   await expect(page.locator('#hbSheet')).toHaveClass(/on/);
   noErrors(errors);
 });
+
+test('phone Habits: plain arrows on top, the week reads under the title (no squeezed pill)', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.habits = true; S.habits = [{ id: 'h1', name: 'Stretch', e: '', space: null, days: [0, 1, 2, 3, 4, 5, 6], done: {}, created: Date.now() }]; save(); applySettings(); openRhythm(); });
+  await expect(page.locator('#rhythmPg .hp-wkl')).toBeHidden();
+  await expect(page.locator('#rhythmPg .hp-subwk')).toContainText('This week');
+  await page.locator('#rhythmPg [data-hpw="-1"]').click();
+  await expect(page.locator('#rhythmPg .hp-subwk')).toContainText('Last week');
+  noErrors(errors);
+});

@@ -926,3 +926,11 @@ button.hg-c:active{transform:scale(.88)}
 .hp-wkl small{font-size:12px;color:var(--muted);white-space:nowrap}
 .hp-wkl[data-hpw0]{cursor:pointer}.hp-wkl[data-hpw0]:hover{background:var(--surface2)}
 .hp-wkl:disabled{cursor:default;opacity:1}
+/* phones: the week pill would squeeze the top bar, so the arrows stay plain and the week reads under the title (0.289) */
+.hp-subwk{display:none}
+@media (max-width:1099px){
+  .hp-wk{background:none;padding:0;gap:6px}
+  .hp-wk .hp-wkl{display:none}
+  .hp-wk .pm-btn{background:var(--surface)}
+  .hp-subwk{display:inline}
+}
