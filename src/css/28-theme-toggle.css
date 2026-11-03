@@ -5,7 +5,8 @@
 .tt-btn .tt-moon{opacity:1;transform:none}
 .tt-btn.is-dark .tt-sun{opacity:1;transform:none;color:var(--week)}
 .tt-btn.is-dark .tt-moon{opacity:0;transform:rotate(90deg) scale(.5)}
-.tt-btn:hover .tt-sun{transform:rotate(45deg)}
+.tt-btn.is-dark:hover .tt-sun{transform:rotate(45deg)}
+.tt-btn:not(.is-dark):hover .tt-moon{transform:rotate(-22deg) scale(1.06)}   /* the moon tilts, like the sun turns (0.291) */
 .tt-btn:active{transform:scale(.92)}
 /* the circle reveal: the new look grows over the old one, nothing else moves */
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
