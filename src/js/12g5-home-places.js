@@ -5,14 +5,14 @@
 function hmPlaces(){
   const sps=orderedSpaces(),lo=looseLists();if(!sps.length&&!lo.length)return '';
   const tile=sp=>{const st=spaceStats(sp),n=st.lists;
-    return `<button class="hp-sp" data-space="${sp.id}" style="--sc:${sp.c}" data-tip="Space"><span class="hp-ic">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><small>${st.today?`${st.today} today`:`${st.open} open`} · ${n} ${n===1?'list':'lists'}</small></button>`};
-  const pill=l=>`<button class="hp-ls" data-loose="${l.id}" data-tip="List"><i style="background:${l.c}"></i><b>${esc(l.name)}</b><small>${nwOpenN(l.id)} open</small></button>`;
-  return `<div class="hp"><div class="hp-row">${sps.map(tile).join('')}${sps.length&&lo.length?'<span class="hp-dv" aria-hidden="true"></span>':''}${lo.map(pill).join('')}</div></div>`;
+    return `<button class="hm-sp" data-space="${sp.id}" style="--sc:${sp.c}" data-tip="Space"><span class="hm-ic">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><small>${st.today?`${st.today} today`:`${st.open} open`} · ${n} ${n===1?'list':'lists'}</small></button>`};
+  const pill=l=>`<button class="hm-ls" data-loose="${l.id}" data-tip="List"><i style="background:${l.c}"></i><b>${esc(l.name)}</b><small>${nwOpenN(l.id)} open</small></button>`;
+  return `<div class="hm"><div class="hm-row">${sps.map(tile).join('')}${sps.length&&lo.length?'<span class="hm-dv" aria-hidden="true"></span>':''}${lo.map(pill).join('')}</div></div>`;
 }
 const _hpRender=render;
 render=function(){const r=_hpRender.apply(this,arguments);
   try{document.querySelectorAll('#dHome .cm-sps,#dHome .bn-sps').forEach(el=>{el.outerHTML=hmPlaces()});hpDivider()}catch(e){}return r};
 /* the thin divider only shows between a space and a list on the same line; when the lists wrap to a new line it hides */
-function hpDivider(){document.querySelectorAll('#dHome .hp-dv').forEach(d=>{d.style.display='';const p=d.previousElementSibling,n=d.nextElementSibling;
+function hpDivider(){document.querySelectorAll('#dHome .hm-dv').forEach(d=>{d.style.display='';const p=d.previousElementSibling,n=d.nextElementSibling;
   const mid=e=>{const r=e.getBoundingClientRect();return r.top+r.height/2};d.style.display=p&&n&&Math.abs(mid(p)-mid(n))<16?'':'none'})}
 addEventListener('resize',()=>{try{hpDivider()}catch(e){}});

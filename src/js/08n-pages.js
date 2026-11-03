@@ -80,12 +80,14 @@ function drawRhythm(){
     body=`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`}
   else if(v==='grid'){const days=hpWeekDays(hpWeek),c=hpWeekCount(hs),f=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
     hpMeta=`${f(days[0])} – ${f(days[6])} · <b>${c.dn} of ${c.due}</b> kept`;
-    head=`<span class="hp-eye">${hpWeek===0?'This week':hpWeek===-1?'Last week':`${-hpWeek} weeks ago`} · ${f(days[0])} – ${f(days[6])}</span><h1 class="hp-h">Habits</h1><span class="hp-sub"><b>${c.dn} of ${c.due}</b> kept${hpWeek===0?' so far':''}</span>`;
+    head=`<h1 class="hp-h">Habits</h1><span class="hp-sub"><b>${c.dn} of ${c.due}</b> kept${hpWeek===0?' so far':''}</span>`;
     body=hpGrid(hs)}
   else{const due=hs.filter(h=>{const s=hbStats(h);return s.due||s.dt});
     hpMeta=`${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}${due.length?'':' · Rest day'}`; // the big number under the sun already counts
     head=`<span class="hp-eye">Today · ${longDate()}</span><h1 class="hp-h">Habits</h1><span class="hp-sub">${due.length?`<b>${due.filter(h=>hbStats(h).dt).length} of ${due.length}</b> done`:'Rest day'}</span>`;body=hpSun(hs)}
-  const nav=hs.length&&v==='grid'?`<div class="hp-nav"><button class="pm-btn" data-hpw="-1" aria-label="Previous week">${ARR_L}</button><button class="pm-btn" data-hpw="1" aria-label="Next week" ${hpWeek>=0?'disabled':''}>${ARR_R}</button></div>`:'';
+  /* the week sits between its arrows (0.288): the dates live with the buttons that change them; tap it to jump back to this week */
+  const wkDays=v==='grid'?hpWeekDays(hpWeek):null,wf=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'}),wkName=hpWeek===0?'This week':hpWeek===-1?'Last week':`${-hpWeek} weeks ago`;
+  const nav=hs.length&&v==='grid'?`<div class="hp-nav hp-wk"><button class="pm-btn" data-hpw="-1" aria-label="Previous week">${ARR_L}</button><button class="hp-wkl" ${hpWeek===0?'disabled':'data-hpw0'} aria-label="${wkName}, ${wf(wkDays[0])} to ${wf(wkDays[6])}${hpWeek===0?'':'. Back to this week'}"><b>${wkName}</b><small>${wf(wkDays[0])} – ${wf(wkDays[6])}</small></button><button class="pm-btn" data-hpw="1" aria-label="Next week" ${hpWeek>=0?'disabled':''}>${ARR_R}</button></div>`:'';
   const html=`<div class="set-top ib-top"><button class="icon-btn" id="rhBack" aria-label="Back">${BACK_SVG}</button></div>
     ${hpMeta?`<div class="hp-meta">${hpMeta}</div>`:''}<div class="hp-head"><div class="hp-tt">${head}</div><div class="hp-acts">${nav}${hpMenuHTML()}</div></div><div class="hp-body${anim?' anim':''}">${body}</div>`;
   $('rhIn').dataset.v=v;$('rhIn').dataset.fresh='';
@@ -116,6 +118,7 @@ $('rhythmPg').addEventListener('click',e=>{
   const pop=$('hpPop');if(hpMenu&&!e.target.closest('#hpPop,#hpMore')){hpMenu=false;if(pop)pop.classList.remove('on')}
   if(e.target.closest('#hpMore')){e.stopPropagation();hpMenu=!hpMenu;haptic(5);pop.classList.toggle('on',hpMenu);$('hpMore').setAttribute('aria-expanded',hpMenu);return}
   const v=e.target.closest('[data-hpv]');if(v){hpMenu=false;haptic(5);setCfg('hbView',v.dataset.hpv);return}
+  if(e.target.closest('[data-hpw0]')){hpWeek=0;haptic(4);$('rhIn').dataset.fresh='1';drawRhythm();return}
   const w=e.target.closest('[data-hpw]');if(w&&!w.disabled){hpWeek=Math.min(0,hpWeek+(+w.dataset.hpw));haptic(4);$('rhIn').dataset.fresh='1';drawRhythm();return}
   const c=e.target.closest('[data-hgd]');if(c){const [id,k]=c.dataset.hgd.split('|');return hpSetDay(id,k)}
   const s=e.target.closest('[data-hst]');if(s)return hpSunTick(s.dataset.hst);

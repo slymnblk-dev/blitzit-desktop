@@ -916,3 +916,13 @@ button.hg-c:active{transform:scale(.88)}
 @media (prefers-reduced-motion:reduce){.gpp-done.gpp-mk.on .gpp-dk{animation:none}}
 .gpp-fb,.gpp-done.gpp-rs{white-space:nowrap}
 @media (max-width:699px){.gpp-fin{gap:8px}.gpp-fb{padding:0 12px;gap:8px;font-size:15px}.gpp-done.gpp-rs{padding:0 14px;font-size:15px;gap:6px}}
+
+/* Habits: the week between its arrows (0.288) */
+.hp-wk{align-items:center;gap:4px;padding:3px;border-radius:999px;background:var(--surface)}
+.hp-wk .pm-btn{background:none}
+.hp-wk .pm-btn:not(:disabled):hover{background:var(--surface2)}
+.hp-wkl{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:112px;padding:3px 8px;border-radius:12px;font:inherit;color:inherit;line-height:1.15;transition:background .15s}
+.hp-wkl b{font-size:14px;font-weight:700}
+.hp-wkl small{font-size:12px;color:var(--muted);white-space:nowrap}
+.hp-wkl[data-hpw0]{cursor:pointer}.hp-wkl[data-hpw0]:hover{background:var(--surface2)}
+.hp-wkl:disabled{cursor:default;opacity:1}

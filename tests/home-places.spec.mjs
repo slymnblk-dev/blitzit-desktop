@@ -7,22 +7,22 @@ test.use({ viewport: { width: 1440, height: 900 } });
 test('Home shows space tiles (with list count) and only lists without a space, and no New space pill', async ({ page }) => {
   const errors = await openApp(page);
   await page.evaluate(() => { S.lists.push({ id: 'lgro', name: 'Groceries', c: '#F5A35A', space: '', loose: true }); save(); goHome(); });
-  await expect(page.locator('#dHome .hp-sp')).toHaveCount(await page.evaluate(() => S.spaces.length));
-  await expect(page.locator('#dHome .hp-ls')).toHaveCount(1);                 // only the list without a space
-  await expect(page.locator('#dHome .hp-ls')).toContainText('Groceries');
+  await expect(page.locator('#dHome .hm-sp')).toHaveCount(await page.evaluate(() => S.spaces.length));
+  await expect(page.locator('#dHome .hm-ls')).toHaveCount(1);                 // only the list without a space
+  await expect(page.locator('#dHome .hm-ls')).toContainText('Groceries');
   const n = await page.evaluate(() => S.lists.filter(l => l.space === S.spaces[0].id).length);
-  await expect(page.locator('#dHome .hp-sp').first()).toContainText(`${n} ${n === 1 ? 'list' : 'lists'}`);
+  await expect(page.locator('#dHome .hm-sp').first()).toContainText(`${n} ${n === 1 ? 'list' : 'lists'}`);
   await expect(page.locator('#dHome #spNew, #dHome .cm-sp.new, #dHome .bn-sp.new')).toHaveCount(0);
-  await expect(page.locator('#dHome .hp-eye')).toHaveCount(0);                // no label (0.287)
-  await expect(page.locator('#dHome .hp-sp').first()).toHaveAttribute('data-tip', 'Space');
-  await expect(page.locator('#dHome .hp-ls').first()).toHaveAttribute('data-tip', 'List');
-  await expect(page.locator('#dHome .hp-dv')).toBeVisible();                 // the divider shows when spaces and lists share a line
+  await expect(page.locator('#dHome .hm-eye')).toHaveCount(0);                // no label (0.287)
+  await expect(page.locator('#dHome .hm-sp').first()).toHaveAttribute('data-tip', 'Space');
+  await expect(page.locator('#dHome .hm-ls').first()).toHaveAttribute('data-tip', 'List');
+  await expect(page.locator('#dHome .hm-dv')).toBeVisible();                 // the divider shows when spaces and lists share a line
   // clicks: a list opens its board, a space opens the space
-  await page.locator('#dHome .hp-ls').click();
+  await page.locator('#dHome .hm-ls').click();
   expect(await page.evaluate(() => [S.space, S.list])).toEqual(['all', 'lgro']);
   await page.evaluate(() => goHome());
   const sp = await page.evaluate(() => S.spaces[0].id);
-  await page.locator(`#dHome .hp-sp[data-space="${sp}"]`).click();
+  await page.locator(`#dHome .hm-sp[data-space="${sp}"]`).click();
   await expect.poll(() => page.evaluate(() => S.space || spPage)).toBe(sp);
   noErrors(errors);
 });
@@ -30,8 +30,8 @@ test('Home shows space tiles (with list count) and only lists without a space, a
 test('no lists without a space: just the spaces, no divider; nothing at all: no label, no empty state', async ({ page }) => {
   const errors = await openApp(page);
   await page.evaluate(() => goHome());
-  await expect(page.locator('#dHome .hp-ls')).toHaveCount(0);
-  await expect(page.locator('#dHome .hp-dv')).toHaveCount(0);
+  await expect(page.locator('#dHome .hm-ls')).toHaveCount(0);
+  await expect(page.locator('#dHome .hm-dv')).toHaveCount(0);
   // no spaces and no lists to show (state forced for the check): the whole section disappears
   expect(await page.evaluate(() => { const keep = S.spaces; S.spaces = []; const h = hmPlaces(); S.spaces = keep; return h; })).toBe('');
   noErrors(errors);
