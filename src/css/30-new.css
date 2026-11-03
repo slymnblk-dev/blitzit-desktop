@@ -52,3 +52,10 @@
   .sheet.nw-fab-on .grab{display:none}
 }
 @media (prefers-reduced-motion:reduce){.nw-menu button,.nw-fab,.nw-fab svg,.sheet.nw-fab-on{transition:none}}
+
+/* the task card's one List row (0.279): "💼 Work · Projects" */
+.al-opt{white-space:nowrap}
+.al-opt .sp-mini{margin-right:2px}
+.al-sp{color:var(--muted);font-weight:600}
+.opt.on .al-sp{color:inherit;opacity:.65}
+.al-dv{opacity:.45;margin:0 1px}

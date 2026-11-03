@@ -12,12 +12,13 @@ const opt=(on,v,label,dot)=>`<button class="opt ${on?'on':''}" data-v="${v}">${d
 /* add sheet */
 let draft;
 function drawAdd(){
-  const pickSpace=!inSpaceMode()&&(S.spaces.length>1||looseLists().length>0);
-  $('addSpaceWrap').hidden=!pickSpace;
-  if(pickSpace)$('optSpace').innerHTML=(looseLists().length?`<button class="opt sp-opt ${draft.space===''?'on':''}" data-v="">No space</button>`:'')+orderedSpaces().map(sp=>`<button class="opt sp-opt ${draft.space===sp.id?'on':''}" data-v="${sp.id}"><span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>${esc(sp.name)}</button>`).join('');
-  const ls=S.lists.filter(l=>l.space===draft.space);
-  $('addListWrap').hidden=ls.length<2;
-  $('optList').innerHTML=ls.map(l=>opt(draft.list===l.id,l.id,l.name,l.c)).join('');
+  /* one "List" row, always shown, so you always see where the task goes (0.279).
+     Outside a space: lists without a space first, then "Space · List" for each space. Inside a space: just its lists. */
+  $('addSpaceWrap').hidden=true;$('addListWrap').hidden=false;
+  const ls=inSpaceMode()?S.lists.filter(l=>l.space===S.space):[...looseLists(),...orderedSpaces().flatMap(sp=>S.lists.filter(l=>l.space===sp.id))];
+  $('optList').innerHTML=ls.map(l=>{const sp=!inSpaceMode()&&spaceOf(l.space);
+    return `<button class="opt al-opt${!inSpaceMode()&&spaceOf(l.space)?" sp-opt":""} ${draft.list===l.id?'on':''}" data-v="${l.id}">${sp?`<span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><span class="al-sp">${esc(sp.name)}</span><span class="al-dv">·</span>`:`<i style="background:${l.c}"></i>`}${esc(l.name)}</button>`}).join('');
+  requestAnimationFrame(()=>{const w=$('optList'),on=w.querySelector('.on');if(on&&(on.offsetLeft<w.scrollLeft||on.offsetLeft+on.offsetWidth>w.scrollLeft+w.clientWidth))w.scrollLeft=on.offsetLeft-16});
   $('optStage').innerHTML=STAGES.filter(s=>s.id!=='done').map(s=>opt(draft.stage===s.id,s.id,s.name,color(s.id))).join('');
   $('optEst').innerHTML=[...new Set([15,30,60,120,draft.est])].filter(m=>m>0).sort((a,b)=>a-b).map(m=>opt(draft.est===m,m,fmt(m))).join(''); // a typed time (e.g. 45m) shows as its own chip
   $('saveBtn').style.background=color(draft.stage);
@@ -32,7 +33,7 @@ $('addBtn').onclick=()=>{
 $('optSpace').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;draft.space=b.dataset.v;
   const ls=S.lists.filter(l=>l.space===draft.space),d=S.cfg.defList;draft.list=(ls.find(l=>l.id===d)||ls[0]||{}).id;haptic(5);drawAdd()};
 $('optStage').onclick=e=>{const b=e.target.closest('.opt');if(b){draft.stage=b.dataset.v;drawAdd()}};
-$('optList').onclick=e=>{const b=e.target.closest('.opt');if(b){draft.list=b.dataset.v;drawAdd()}};
+$('optList').onclick=e=>{const b=e.target.closest('.opt');if(b){draft.list=b.dataset.v;draft.space=listOf(draft.list).space;haptic(4);drawAdd()}};
 $('optEst').onclick=e=>{const b=e.target.closest('.opt');if(b){draft.est=+b.dataset.v;drawAdd()}};
 $('newTitle').oninput=e=>$('saveBtn').disabled=!e.target.value.trim();
 $('newTitle').onkeydown=e=>{if(e.key==='Enter'&&e.target.value.trim())$('saveBtn').click()};
