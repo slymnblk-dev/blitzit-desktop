@@ -34,8 +34,10 @@ test('computer: pick Focus in the ⋯ menu; Up next shows the next task and its 
   // Today moves the task to Today
   await page.locator('[data-gftoday="9001"]').click();
   await expect.poll(() => page.evaluate(() => S.tasks.find(t => t.id === 9001).stage)).toBe('today');
-  await expect(page.locator('.gf-sec.on')).toHaveText('In Today');
-  // After that lists the rest
+  await expect(page.locator('[data-gftoday]')).toHaveCount(0);                 // already in Today: the button goes away
+  // "Then in …" lists the other open tasks; done ones fold under "1 done"
+  await expect(page.locator('.gf-after .gm-t')).toHaveCount(1);
+  await page.locator('[data-gfdone="m2"]').click();
   await expect(page.locator('.gf-after .gm-t')).toHaveCount(2);
   // the strip: look at another milestone
   await page.locator('.gf-seg[data-gsel="m3"]').click();
@@ -78,5 +80,33 @@ test('empty cases: no milestones asks for the first one; all tasks done offers M
   await page.evaluate(() => { S.goals[0].ms = []; save(); drawGoal(); });
   await expect(page.locator('.gf-card #gMsIn')).toBeVisible();
   await expect(page.locator('.gf-strip')).toHaveCount(0);
+  noErrors(errors);
+});
+
+test('phone: Mark task done works for a task that lives only in the goal, and the next one moves up (0.293 fix)', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.goals = true;
+    S.goals = [{ id: 'gy', name: 'Learn Spanish', e: '', space: null, due: '2027-02-01', created: Date.now(), view: 'focus',
+      ms: [{ id: 'a', t: 'Learn 100 words', items: [{ id: 1, t: 'Install an app', done: false }, { id: 2, t: '10 words a day', done: false }] }, { id: 'b', t: 'Chat', items: [] }] }];
+    save(); applySettings(); openGoal('gy'); });
+  await expect(page.locator('.gf-card .gf-tt')).toHaveText('Install an app');
+  await page.locator('.gf-card .gf-go').click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].items[0].done)).toBe(true);
+  await expect(page.locator('.gf-card .gf-tt')).toHaveText('10 words a day');
+  await page.locator('.gf-card .gf-go').click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);   // last task done: the milestone is done
+  await expect(page.locator('.gf-seg.sel')).toContainText('Chat', { timeout: 4000 }); // and it moves on to the next one
+  noErrors(errors);
+});
+
+test('Start is the main action for a task; once every step is ticked, Mark task done takes its place', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await seed(page, 'focus');
+  await expect(page.locator('.gf-card .gf-go')).toContainText('Start');
+  await page.locator('.gf-card [data-gsub="t9001|2"]').click();
+  await expect(page.locator('.gf-card .gf-go')).toContainText('Mark task done');
+  await expect(page.locator('.gf-sh small')).toHaveText('2 of 2');
   noErrors(errors);
 });

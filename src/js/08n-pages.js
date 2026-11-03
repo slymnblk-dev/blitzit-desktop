@@ -548,7 +548,7 @@ $('gdPg').addEventListener('click',e=>{
   const su=e.target.closest('[data-gsub]');if(su){const [k,sid]=su.dataset.gsub.split('|'),r=gKid(g,k),s=r&&r.subs.find(x=>String(x.id)===sid);if(!s)return;
     s.done=!s.done;haptic(s.done?[6,20,8]:5);try{sfx(s.done?'done':'undone')}catch(err){}su.classList.toggle('on',s.done);save();render();return}
   const mt=e.target.closest('[data-gmt]');if(mt){const r=gKid(g,mt.dataset.gmt),bk=mt.dataset.gmt;if(!r||gTickBusy.has(bk))return;gTickBusy.add(bk);const m=r.m;
-    if(m)gSelId=m.id;mt.closest('.gm-t').classList.toggle('on');
+    if(m)gSelId=m.id;const row=mt.closest('.gm-t,.gf-card');if(row)row.classList.toggle('on'); /* the Focus card's Mark done has no row (0.293) */
     setTimeout(()=>{try{const r2=gKid(g,mt.dataset.gmt);if(r2)gKidToggle(g,r2);
       // the milestone just finished: let the moment show, then move on to the next one
       if(m&&m.done)setTimeout(()=>{if(gdOn&&gSelId===m.id){gSelId=null;drawGoal()}},1200)}finally{setTimeout(()=>gTickBusy.delete(bk),250)}},180);return}

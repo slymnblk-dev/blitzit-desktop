@@ -55,3 +55,13 @@ button.gf-tt:hover{text-decoration:underline;text-decoration-thickness:2px;text-
   .gf-strip{gap:6px;margin-top:18px}.gf-sl{font-size:12px}
 }
 @media (prefers-reduced-motion:reduce){.gf-bar i,.gf-prog i,.gf-sk{transition:none}}
+/* 0.293: clearer card — Steps heading, one main action, quiet Done / Today; done tasks fold under "N done" */
+.gf-sh{display:flex;align-items:baseline;justify-content:space-between;margin-top:18px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.gf-sh small{font-size:13px;letter-spacing:0;font-weight:600;text-transform:none}
+.gf-sh+.gf-prog{margin-top:8px}
+.gf-acts .gf-sec{gap:6px}.gf-acts .gf-sec svg{width:15px;height:15px}
+.gf-dn{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;font:inherit;font-size:14px;color:var(--muted);text-align:left}
+.gf-dn svg{width:14px;height:14px}.gf-dn svg:last-child{margin-left:auto;transition:transform .2s}
+.gf-dn[aria-expanded="true"] svg:last-child{transform:rotate(90deg)}
+.gf-dn+.gm-t,.gf-list>.gm-t+.gf-dn{border-top:1px solid var(--line)}
+@media (max-width:699px){.gf-acts{flex-wrap:wrap}.gf-acts .gf-go{flex:1 1 100%}.gf-acts .gf-sec{flex:1;justify-content:center}}
