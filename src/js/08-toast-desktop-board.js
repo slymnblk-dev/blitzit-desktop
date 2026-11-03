@@ -61,7 +61,8 @@ function renderDesk(){
   document.querySelectorAll('.col').forEach(col=>{
     const sid=col.dataset.s;let here=vis.filter(t=>t.stage===sid);if(sid!=='done')here=priSorted(here);
     const cn=col.querySelector('.col-n'),one=inSpaceMode()&&S.list!=='all'&&sid!=='done';
-    cn.textContent=one?`${here.length}/${STAGE_MAX}`:here.length;cn.classList.toggle('full',one&&here.length>=STAGE_MAX);cn.classList.toggle('over',one&&here.length>STAGE_MAX);
+    const mini=S.colFocus&&S.colFocus!==sid; // folded side columns show just the count (0.296)
+    cn.textContent=one&&!mini?`${here.length}/${STAGE_MAX}`:here.length;cn.classList.toggle('full',one&&here.length>=STAGE_MAX);cn.classList.toggle('over',one&&here.length>STAGE_MAX);
     const sum=col.querySelector('.col-sum'),ul=col.querySelector('.col-list');
     if(sid==='done'){
       sum.innerHTML=here.length?`<span><b>${here.length}</b> finished</span>`:'';
