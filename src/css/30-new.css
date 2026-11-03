@@ -53,3 +53,6 @@
 }
 @media (prefers-reduced-motion:reduce){.nw-menu button,.nw-fab,.nw-fab svg,.sheet.nw-fab-on{transition:none}}
 
+
+/* tapping the dimmed page closes the menu / card; a pointer cursor also makes older phone browsers send the tap (0.281) */
+.nw-scrim,.scrim.on{cursor:pointer;-webkit-tap-highlight-color:transparent}

@@ -146,3 +146,22 @@ test('task card: pick the space first, then its lists; "No space" holds lists wi
   expect(await page.locator('#optList .opt').count()).toBe(await page.evaluate(() => S.lists.filter(l => l.space === S.spaces[0].id).length));
   noErrors(errors);
 });
+
+test.describe('touch', () => {
+  test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+  test('phone: tapping the dimmed page closes the + menu and the add card', async ({ page }) => {
+    const errors = await openApp(page);
+    await page.evaluate(() => goHome());
+    const plus = page.locator('#tbAdd:visible, #addBtn:visible').first();
+    await plus.tap();
+    await expect(page.locator('#nwMenu.on')).toBeVisible();
+    await page.touchscreen.tap(60, 300);
+    await expect(page.locator('#nwMenu.on')).toHaveCount(0);
+    await plus.tap();
+    await page.locator('#nwMenu [data-nwk="list"]').tap();
+    await expect(page.locator('#addSheet.on')).toBeVisible();
+    await page.touchscreen.tap(195, 120);
+    await expect(page.locator('#addSheet.on')).toHaveCount(0);
+    noErrors(errors);
+  });
+});

@@ -115,7 +115,10 @@ function nwPick(k){const fab=nwFromFab&&matchMedia('(min-width:1100px)').matches
 $('nwFab').addEventListener('click',e=>{e.stopPropagation();
   if($('addSheet').classList.contains('on')){closeSheets();return}
   if(nwOn)return closeNw();nwFromFab=true;openNw($('nwFab'))});
-$('nwScrim').addEventListener('click',closeNw);$('nwX').addEventListener('click',e=>{e.stopPropagation();closeNw()});
+$('nwScrim').addEventListener('click',closeNw);
+/* some phone browsers (and in-app viewers) don't send a click for taps on a plain dimmed layer: close on the touch itself (0.281) */
+[['nwScrim',()=>closeNw()],['scrim',()=>$('scrim').onclick&&$('scrim').onclick()]].forEach(([id,go])=>{const el=$(id);if(!el)return;
+  el.addEventListener('touchend',e=>{if(e.target!==el||e.changedTouches.length!==1)return;e.preventDefault();go()},{passive:false})});$('nwX').addEventListener('click',e=>{e.stopPropagation();closeNw()});
 $('nwMenu').addEventListener('click',e=>{const b=e.target.closest('[data-nwk]');if(b){e.stopPropagation();nwPick(b.dataset.nwk)}});
 document.addEventListener('keydown',e=>{if(!nwOn)return;
   if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();return closeNw()}
