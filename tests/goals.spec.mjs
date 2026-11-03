@@ -66,9 +66,9 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[1].done)).toBe(true);
   await expect(page.locator('#gdPg [data-gwin]')).toBeVisible(); // summit reached → offer to mark achieved
 
-  // phones: Sunrise only, so the ⋯ menu has no View section
+  // phones: Sunrise or Focus (0.292), so the ⋯ menu has a small View section with just those two
   await page.locator('#gdMore').click();
-  await expect(page.locator('#gdPop [data-gview]')).toHaveCount(0);
+  await expect(page.locator('#gdPop [data-gview]')).toHaveCount(2);
   await page.keyboard.press('Escape');
   await expect(page.locator('#gdPg .gpp-bar')).toBeVisible();
   await expect(page.locator('#gdPg .gpp-st')).toHaveCount(2);
@@ -545,7 +545,7 @@ test('phone Path: a milestone with no tasks can be marked done (and reopened) fr
   // phones: one ⋯ menu in two parts (this milestone, then the goal); no milestone ⋯ on the page; no why / north star here
   await expect(page.locator('#gdPg .gpp [data-gmm]')).toHaveCount(0);
   await page.locator('#gdMore').click();
-  await expect(page.locator('#gdPop .pm-lbl')).toHaveText([/Milestone/, 'Goal']);
+  await expect(page.locator('#gdPop .pm-lbl')).toHaveText([/Milestone/, 'View', 'Goal']);
   await expect(page.locator('#gdPop [data-gm="why"], #gdPop [data-gm="star"]')).toHaveCount(0);
   await page.locator('#gdPop [data-gmx="tk"]').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(1);

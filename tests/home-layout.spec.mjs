@@ -44,7 +44,7 @@ test('bento: today list ticks off, cards for goal, habits, KPI and OKR, spaces o
   await expect(page.locator('#mxPg')).toHaveClass(/on/);
   await page.keyboard.press('Escape'); await page.keyboard.press('Escape');
   // spaces open
-  await page.locator('#dHome .hp-sp[data-space]').first().click();
+  await page.locator('#dHome .hm-sp[data-space]').first().click();
   expect(await page.evaluate(() => !!S.space)).toBe(true);
   noErrors(errors);
 });
