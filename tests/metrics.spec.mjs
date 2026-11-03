@@ -50,7 +50,7 @@ test('computer: Metrics in the sidebar only with the mode on; KPIs and OKRs, fil
   await page.locator('#metricsPg [data-mtview="space"]').click();
   await expect(page.locator('#metricsPg .mt2-sp')).toHaveCount(await page.evaluate(() => S.spaces.length));
   await page.locator('#metricsPg [data-mtview="list"]').click();
-  await expect(page.locator('#sLists .s-lbl2').first()).toHaveText('Modes');
+  await expect(page.locator('#sLists .s-lbl2 .s-name').first()).toHaveText('Modes');
   // Home closes it; turning the mode off removes it
   await page.locator('#sHome').click();
   await expect(page.locator('#metricsPg')).not.toHaveClass(/on/);
