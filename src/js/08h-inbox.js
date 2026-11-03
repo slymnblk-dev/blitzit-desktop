@@ -126,7 +126,8 @@ $('nbEd').addEventListener('keydown',e=>{if(e.key==='Escape'){if($('dlg').classL
 
 /* the "Send to a list" picker in the details sheet: lists grouped by space, with how full each Backlog is */
 function ibListPicks(){
-  return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);if(!ls.length)return '';
+  const lo=looseLists(),pk=l=>{const n=stageCount(l.id,'backlog'),full=n>=STAGE_MAX;return `<button class="pk${full?' full':''}" data-v="${l.id}"><i style="background:${l.c}"></i>${esc(l.name)}<small>${n}/${STAGE_MAX}</small></button>`};
+  return (lo.length?`<span class="pk-lbl">Lists</span>`+lo.map(pk).join(''):'')+orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);if(!ls.length)return '';
     return `<span class="pk-lbl">${sp.e?esc(sp.e)+' ':''}${esc(sp.name)}</span>`+ls.map(l=>{const n=stageCount(l.id,'backlog'),full=n>=STAGE_MAX;
       return `<button class="pk${full?' full':''}" data-v="${l.id}"><i style="background:${l.c}"></i>${esc(l.name)}<small>${n}/${STAGE_MAX}</small></button>`}).join('')}).join('');
 }

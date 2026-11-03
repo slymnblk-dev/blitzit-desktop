@@ -96,7 +96,7 @@ test('add sheet: "#space 45m" sets space and time; a goal goes straight to its m
   const errors = await openApp(page);
   const sp = await page.evaluate(() => { S.cfg.habits = true; S.cfg.goals = true; S.goals = []; goHome(); save(); render(); return S.spaces[1]; });
   await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
-  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(4);
+  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(6);
   await expect(page.locator('.ak-tip')).toContainText('#space');
   await page.fill('#newTitle', `Write report #${sp.name.toLowerCase()} 45m`);
   await expect(page.locator('#optSpace .opt.on')).toContainText(sp.name);

@@ -12,9 +12,9 @@ const opt=(on,v,label,dot)=>`<button class="opt ${on?'on':''}" data-v="${v}">${d
 /* add sheet */
 let draft;
 function drawAdd(){
-  const pickSpace=!inSpaceMode()&&S.spaces.length>1;
+  const pickSpace=!inSpaceMode()&&(S.spaces.length>1||looseLists().length>0);
   $('addSpaceWrap').hidden=!pickSpace;
-  if(pickSpace)$('optSpace').innerHTML=orderedSpaces().map(sp=>`<button class="opt sp-opt ${draft.space===sp.id?'on':''}" data-v="${sp.id}"><span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>${esc(sp.name)}</button>`).join('');
+  if(pickSpace)$('optSpace').innerHTML=(looseLists().length?`<button class="opt sp-opt ${draft.space===''?'on':''}" data-v="">No space</button>`:'')+orderedSpaces().map(sp=>`<button class="opt sp-opt ${draft.space===sp.id?'on':''}" data-v="${sp.id}"><span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>${esc(sp.name)}</button>`).join('');
   const ls=S.lists.filter(l=>l.space===draft.space);
   $('addListWrap').hidden=ls.length<2;
   $('optList').innerHTML=ls.map(l=>opt(draft.list===l.id,l.id,l.name,l.c)).join('');
@@ -42,7 +42,7 @@ $('saveBtn').onclick=()=>{
   if(!canPut(draft.list,draft.stage))return;
   const nt=newTask($('newTitle').value.trim(),draft.stage,draft.list,draft.est);addTask(nt);enterId=nt.id;haptic(8);
   closeSheets();const d=idx(draft.stage)-idx(S.stage);S.stage=draft.stage;render(d||undefined);
-  if(!inSpaceMode()){const sp=spaceOf(draft.space);if(sp)toast(`Added to ${sp.name}`)}
+  if(!inSpaceMode()){const sp=spaceOf(draft.space);if(sp)toast(`Added to ${sp.name}`);else if(draft.space===''&&S.list!==draft.list)toast(`Added to ${listOf(draft.list).name}`)}
 };
 
 /* detail sheet */
@@ -94,7 +94,7 @@ function drawDetail(){
   if(pickOpen){
     pick.dataset.k=pickOpen;
     pick.innerHTML={stage:()=>STAGES.map(s=>pk(t.stage===s.id,s.id,s.name,color(s.id))).join(''),
-      list:()=>t.inbox?ibListPicks():S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?`${(spaceOf(x.space)||{}).name} › ${x.name}`:x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
+      list:()=>t.inbox?ibListPicks():S.lists.map(x=>pk(t.list===x.id,x.id,S.spaces.length>1&&!inSpaceMode()?(spaceOf(x.space)?`${spaceOf(x.space).name} › ${x.name}`:x.name):x.name,x.c)).filter((h,i)=>!inSpaceMode()||S.lists[i].space===S.space||S.lists[i].id===t.list).join(''),
       est:()=>ESTS.map(m=>pk(t.est===m,m,fmt(m))).join(''),
       repeat:()=>REPEATS.map(r=>pk(t.repeat===r.id,r.id,r.name)).join(''),
       pri:()=>pk(!priOf(t),'','None')+PRIS.map(p=>`<button class="pk pk-pri ${t.pri===p.id?'on':''}" data-v="${p.id}">${priIcon(p.n)}${p.name}</button>`).join(''),
@@ -266,13 +266,13 @@ const LX_CHEV='<svg class="lx-chev" viewBox="0 0 24 24" fill="none" stroke="curr
 const lxRow=(key,label,value,body,open)=>`<div class="lx${open?' on':''}" data-lx="${key}"><button class="lx-h" type="button" data-lxt="${key}" aria-expanded="${!!open}"><span class="lx-l">${label}</span><span class="lx-v">${value}</span>${LX_CHEV}</button><div class="lx-b"><div class="lx-in"><div class="lx-pad">${body}</div></div></div></div>`;
 const spMini=x=>`<span class="sp-mini" style="background:${x.c}">${x.e?esc(x.e):esc((x.name[0]||'?').toUpperCase())}</span>`;
 function lePanel(l,only,anim){
-  const sp=spaceOf(l.space)||{name:'',c:'#888'},tg=ltags(l);
+  const sp=spaceOf(l.space)||{name:'No space',c:'#8A8178',e:''},tg=ltags(l);
   return `<div class="le-coll${anim?' anim':''}" data-lec="${l.id}"><div class="le-panel">
     <div class="le-card">
       <label class="le-nm"><span class="le-cap">Name</span><input class="le-name" data-ren="${l.id}" value="${esc(l.name)}" maxlength="40" placeholder="List name" enterkeyhint="done" autocomplete="off" aria-label="List name">${PEN_S}</label>
       ${lxRow('c','Colour',`<i class="lx-dot" style="background:${l.c}"></i>`,`<div class="sw">${PALETTE.map(c=>`<button data-lc="${c}" class="${l.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>`,leSub==='c')}
-      ${S.spaces.length>1?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name)}</span>`,
-        `<div class="lx-list">${S.spaces.map(x=>`<button class="lx-opt${l.space===x.id?' on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}>${spMini(x)}<span>${esc(x.name)}</span>${l.space===x.id?tick():''}</button>`).join('')}</div>${only?`<p class="le-note">It’s the only list in ${esc(sp.name)}, so it stays here.</p>`:''}`,leSub==='s'):''}
+      ${S.spaces.length>1||l.loose||S.spaces.length?lxRow('s','Space',`${spMini(sp)}<span class="lx-t">${esc(sp.name)}</span>`,
+        `<div class="lx-list"><button class="lx-opt${l.loose?' on':''}" data-ls="" ${only?'disabled':''}><span class="sp-mini" style="background:#8A8178">–</span><span>No space</span>${l.loose?tick():''}</button>${S.spaces.map(x=>`<button class="lx-opt${l.space===x.id?' on':''}" data-ls="${x.id}" ${only&&l.space!==x.id?'disabled':''}>${spMini(x)}<span>${esc(x.name)}</span>${l.space===x.id?tick():''}</button>`).join('')}</div>${only?`<p class="le-note">It’s the only list in ${esc(sp.name)}, so it stays here.</p>`:''}`,leSub==='s'):''}
       ${tagsOn()?lxRow('t','Tags',tg.length?`${tg.length} ${tg.length===1?'tag':'tags'}`:'None',`<div class="le-tags">${tg.map((n,i)=>`<span class="le-tg"><input data-tren="${i}" value="${esc(n)}" maxlength="24" size="${Math.max(2,n.length)}" aria-label="Tag name" autocomplete="off"><button data-tdel="${i}" aria-label="Remove tag">${X}</button></span>`).join('')}
           <input class="le-tg-new" id="leTagIn" maxlength="24" placeholder="+ Add tag" enterkeyhint="done" autocomplete="off"></div>`,leSub==='t'):''}
     </div>
@@ -294,7 +294,7 @@ function leToggle(id){
   if(leOpen===id){leOpen=null;leSub=null;return}
   leOpen=id;leSub=null;
   const row=pk.querySelector(`.le-row[data-le="${id}"]`),l=S.lists.find(x=>x.id===id);if(!row||!l){drawLists();return}
-  row.classList.add('open');row.insertAdjacentHTML('afterend',lePanel(l,S.lists.filter(x=>x.space===l.space).length<2,true));
+  row.classList.add('open');row.insertAdjacentHTML('afterend',lePanel(l,onlyList(l),true));
 }
 /* Settings → Lists shows the same list editor inside the settings page, grouped by space */
 let listsInSet=false;
@@ -310,7 +310,7 @@ function drawLists(){
   let out='';
   if(!editing)out+=`<button class="pick" data-l="all"><span class="stack">${LH.slice(0,4).map(x=>`<span style="background:${x.c};border-color:var(--surface)"></span>`).join('')}</span>All lists<span class="n">${open('all')} open</span>${S.list==='all'?tick():''}</button>`;
   out+=LH.map(l=>editing
-    ?(()=>{const n=S.tasks.filter(t=>t.list===l.id&&!t.archived).length,on=leOpen===l.id,only=S.lists.filter(x=>x.space===l.space).length<2;
+    ?(()=>{const n=S.tasks.filter(t=>t.list===l.id&&!t.archived).length,on=leOpen===l.id,only=onlyList(l);
       return `<button class="pick le-row ${on?'open':''}" data-l="${l.id}" data-le="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${n} ${n===1?'task':'tasks'}</span>${CHEV}</button>`+
       (on?lePanel(l,only):'')})()
     :`<button class="pick" data-l="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${open(l.id)} open</span>${S.list===l.id?tick():''}</button>`).join('');
@@ -323,7 +323,13 @@ function drawLists(){
   $('picks').innerHTML=out;
 }
 function listsGrouped(){
-  return orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);
+  const lo=looseLists(),loG=(lo.length||(nl&&nl.loose))?`<div class="lg" style="--sc:#8A8178"><div class="lg-head"><span class="sp-mini">–</span><b>No space</b><span>${lo.length} ${lo.length===1?'list':'lists'}</span></div><div class="lg-card">`+
+    lo.map(l=>{const n=S.tasks.filter(t=>t.list===l.id&&!t.archived).length,on=leOpen===l.id;
+      return `<button class="pick le-row ${on?'open':''}" data-l="${l.id}" data-le="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${n} ${n===1?'task':'tasks'}</span>${CHEV}</button>`+(on?lePanel(l,false):'')}).join('')+
+    (nl&&nl.loose?`<div class="nl-form"><input id="nlIn" placeholder="List name" enterkeyhint="done" autocomplete="off" value="${esc(nl.name)}">
+        <div class="sw" id="nlSw">${PALETTE.map(c=>`<button data-c="${c}" class="${nl.c===c?'on':''}" style="background:${c}" aria-label="Colour"></button>`).join('')}</div>
+        <button class="primary" id="nlSave" style="background:${nl.c}" ${nl.name.trim()?'':'disabled'}>Create list</button></div>`:`<button class="new-list lg-new" data-nlsp="~">${PLUS_S}New list without a space</button>`)+`</div></div>`:'';
+  return loG+orderedSpaces().map(sp=>{const ls=S.lists.filter(l=>l.space===sp.id);
     return `<div class="lg" style="--sc:${sp.c}"><div class="lg-head"><span class="sp-mini">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><b>${esc(sp.name)}</b><span>${ls.length} ${ls.length===1?'list':'lists'}</span></div><div class="lg-card">`+
       ls.map(l=>{const n=S.tasks.filter(t=>t.list===l.id&&!t.archived).length,on=leOpen===l.id,only=ls.length<2;
         return `<button class="pick le-row ${on?'open':''}" data-l="${l.id}" data-le="${l.id}"><span class="dot" style="background:${l.c}"></span>${esc(l.name)}<span class="n">${n} ${n===1?'task':'tasks'}</span>${CHEV}</button>`+(on?lePanel(l,only):'')}).join('')+
@@ -340,12 +346,13 @@ $('listsMore').onclick=e=>{e.stopPropagation();const p=$('listsPop'),was=p.class
 $('lmEdit').onclick=()=>{editing=true;nl=null;leOpen=null;drawLists()};
 $('picks').addEventListener('click',e=>{
   const lt=e.target.closest('[data-lxt]');if(lt){lxToggle(lt,v=>leSub=v);return}
-  const nb=e.target.closest('#nlBtn,[data-nlsp]');if(nb){nl={name:'',c:PALETTE[S.lists.length%PALETTE.length],space:nb.dataset.nlsp||null};drawLists();try{$('nlIn').focus()}catch(_){}setTimeout(()=>$('nlIn')&&$('nlIn').focus(),50);return}
+  const nb=e.target.closest('#nlBtn,[data-nlsp]');if(nb){nl={name:'',c:PALETTE[S.lists.length%PALETTE.length],space:nb.dataset.nlsp&&nb.dataset.nlsp!=='~'?nb.dataset.nlsp:null,loose:nb.dataset.nlsp==='~'};drawLists();try{$('nlIn').focus()}catch(_){}setTimeout(()=>$('nlIn')&&$('nlIn').focus(),50);return}
   const sw=e.target.closest('#nlSw button');if(sw){nl.c=sw.dataset.c;drawLists();return}
   if(e.target.closest('#nlSave'))return createList();
   const lc=e.target.closest('[data-lc]');if(lc){const l=S.lists.find(x=>x.id===leOpen);if(l){l.c=lc.dataset.lc;haptic(5);drawLists();render()}return}
-  const ls=e.target.closest('[data-ls]');if(ls&&!ls.disabled){const l=S.lists.find(x=>x.id===leOpen);if(l&&l.space!==ls.dataset.ls){
-    const nx=spaceOf(ls.dataset.ls);l.space=nx.id;if(inSpaceMode()&&S.list===l.id)S.list='all';leOpen=inSpaceMode()?null:l.id;haptic(6);drawLists();render();toast(`${l.name} moved to ${nx.name}`)}return}
+  const ls=e.target.closest('[data-ls]');if(ls&&!ls.disabled){const l=S.lists.find(x=>x.id===leOpen);if(l&&(l.space!==ls.dataset.ls||(ls.dataset.ls===''&&!l.loose))){
+    if(ls.dataset.ls===''){l.space='';l.loose=true;if(inSpaceMode()&&S.list===l.id)S.list='all';leOpen=inSpaceMode()?null:l.id;haptic(6);drawLists();render();toast(`${l.name} is now on its own`);return}
+    const nx=spaceOf(ls.dataset.ls);l.space=nx.id;l.loose=false;if(inSpaceMode()&&S.list===l.id)S.list='all';leOpen=inSpaceMode()?null:l.id;haptic(6);drawLists();render();toast(`${l.name} moved to ${nx.name}`)}return}
   const td=e.target.closest('[data-tdel]');if(td){const l=S.lists.find(x=>x.id===leOpen);if(!l)return;const name=ltags(l)[+td.dataset.tdel];if(name==null)return;
     const used=S.tasks.filter(t=>t.list===l.id&&tagsOf(t).some(x=>tagKey(x)===tagKey(name)));
     const go=()=>{commit(()=>{l.tags=ltags(l).filter(x=>x!==name);used.forEach(t=>t.tags=tagsOf(t).filter(x=>tagKey(x)!==tagKey(name)))},`#${name} removed`);drawLists()};
@@ -362,7 +369,7 @@ $('picks').addEventListener('click',e=>{
     const l=S.lists.find(x=>x.id===id);
     if(e.target.closest('[data-le]')){leToggle(id);return}
     if(e.target.closest('[data-mv]')){const i=S.spaces.findIndex(x=>x.id===l.space),nx=S.spaces[(i+1)%S.spaces.length];
-      if(S.lists.filter(x=>x.space===l.space).length<2)return toast('A space needs at least one list');
+      if(onlyList(l))return toast('A space needs at least one list');
       l.space=nx.id;if(inSpaceMode()&&S.list===l.id)S.list='all';haptic(6);drawLists();render();return toast(`${l.name} moved to ${nx.name}`)}
     if(e.target.closest('[data-recolor]')){l.c=PALETTE[(PALETTE.indexOf(l.c)+1)%PALETTE.length];haptic(5);drawLists();render();return}
     if(e.target.closest('[data-dl]')){
@@ -387,7 +394,8 @@ $('picks').addEventListener('keydown',e=>{
 if(e.target.dataset.ren&&e.key==='Enter'){e.target.blur();leToggle(leOpen);render();return}if(e.target.id==='nlIn'&&e.key==='Enter')createList()});
 function createList(){
   if(!nl||!nl.name.trim())return;
-  const l={id:'l'+newId(),name:nl.name.trim(),c:nl.c,space:nl.space||(inSpaceMode()?S.space:S.spaces[0].id)};S.lists.push(l);nl=null;haptic(8);
+  const lo=nl.loose||(!nl.space&&!inSpaceMode()&&S.space==='all'&&S.list!=='all'&&listOf(S.list).loose);
+  const l=lo?{id:'l'+newId(),name:nl.name.trim(),c:nl.c,space:'',loose:true}:{id:'l'+newId(),name:nl.name.trim(),c:nl.c,space:nl.space||(inSpaceMode()?S.space:S.spaces[0].id)};S.lists.push(l);nl=null;haptic(8);
   if(listsInSet){save();render();drawLists();toast(`${l.name} created`);return}
   S.list=l.id;closeSheets();render(0);toast(`${l.name} created`);
 }

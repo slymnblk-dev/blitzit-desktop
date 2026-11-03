@@ -36,7 +36,7 @@ function bnToday(){const {td,dn,m}=dhToday();const MAX=6,list=td.slice(0,MAX),mo
     :dhEmpty(DH_I.task,'hot','Nothing planned yet','Add a task for today, or move a few from your spaces.',dhBtn('data-bnadd','Add a task'))}</section>`;
   const rows=list.map((t,i)=>{const l=listOf(t.list)||{},sp=spaceOf(l.space)||{};
     return `<div class="bn-tk${i===0?' first':''}" data-hft="${t.id}" role="button" tabindex="0"><button class="hf-ck" data-hfdone="${t.id}" aria-label="Complete ${esc(t.title)}"></button>
-      <span class="bn-tt"><b>${esc(t.title)}</b>${i===0?`<small>Up next · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name||'')}</small>`:''}</span><span class="bn-te">${fmt(t.est)}</span></div>`}).join('');
+      <span class="bn-tt"><b>${esc(t.title)}</b>${i===0?`<small>Up next · ${sp.name?(sp.e?esc(sp.e)+' ':'')+esc(sp.name):esc(l.name||'')}</small>`:''}</span><span class="bn-te">${fmt(t.est)}</span></div>`}).join('');
   return `<section class="bn-c bn-today"><span class="hglint hot" aria-hidden="true"><i></i></span>${head}<div class="bn-tl">${rows}${more?`<button class="bn-more" data-bnall>+${more} more</button>`:''}</div>
     <div class="bn-go"><button class="ts-go" data-bngo>${sunIcon()}Win the day</button></div></section>`}
 function bnGoal(g){

@@ -32,7 +32,7 @@ const RV_ARC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 /* calm layout: one summary line, a short finished card, leftovers with two quiet actions, the Inbox as one row */
 function drawReview(){
   const done=weekDone(),fm=weekFocus(),wk=S.tasks.filter(t=>shown(t)&&t.stage==='week'),ib=typeof inboxItems==='function'&&inboxOn()?inboxItems().length:0;
-  const tag=t=>{const l=listOf(t.list),sp=spaceOf(l.space)||{};return `<small><i style="background:${l.c}"></i>${esc(sp.name||'')} · ${esc(l.name)}</small>`};
+  const tag=t=>{const l=listOf(t.list),sp=spaceOf(l.space)||{};return `<small><i style="background:${l.c}"></i>${sp.name?esc(sp.name)+' · ':''}${esc(l.name)}</small>`};
   const stat=(n,label)=>`<span><b>${n}</b> ${label}</span>`;
   $('rvIn').innerHTML=`<div class="set-top"><button class="icon-btn" id="rvBack" aria-label="Close review">${BACK_SVG}</button></div>
     <div class="rv-eye">Weekly review</div>

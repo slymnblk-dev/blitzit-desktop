@@ -1,0 +1,50 @@
+/* ---------- Lists without a space + "+ New" (0.275) ---------- */
+/* sidebar + home rows for lists that have no space */
+.lo-sq{border-radius:50%!important;width:12px!important;height:12px!important;margin:0 1px}
+.lo-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.lo-ico{display:grid;place-items:center}
+.lo-ico i{width:13px;height:13px;border-radius:50%}
+/* the add card: List and Space kinds */
+#addSheet[data-kind="list"] #addListWrap,#addSheet[data-kind="list"] #addSpaceWrap,
+#addSheet[data-kind="space"] #addListWrap,#addSheet[data-kind="space"] #addSpaceWrap{display:none!important}
+.nw-sw{gap:12px;margin:2px 0 4px}
+.nw-sw button{width:28px;height:28px;border-radius:50%}
+.nw-sw button.on{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--text)}
+.nw-ico .opt{min-width:44px;justify-content:center;font-size:18px;padding:0 10px}
+.nw-ico .opt:first-child{font-size:15px;font-weight:800}
+
+/* the floating + (computers, Home only) */
+.nw-fab{display:none;position:fixed;right:40px;bottom:36px;z-index:19;width:60px;height:60px;border-radius:50%;
+  background:var(--text);color:var(--bg);place-items:center;box-shadow:0 14px 36px rgba(0,0,0,.35);transition:transform .25s cubic-bezier(.2,.8,.2,1),background .2s,color .2s}
+.nw-fab svg{width:24px;height:24px;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.nw-fab:hover{transform:scale(1.06)}
+.nw-fab:active{transform:scale(.95)}
+.nw-fab.open{z-index:24;background:var(--surface2);color:var(--text)}
+.nw-fab.open svg{transform:rotate(45deg)}
+@media (min-width:1100px){:root[data-view="home"] .nw-fab{display:grid}}
+/* the menu: big round icons with a label, stacked above the button */
+.nw-scrim{position:fixed;inset:0;z-index:22;background:rgba(3,4,6,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .22s}
+.nw-scrim.on{opacity:1;pointer-events:auto}
+.nw-menu{position:fixed;z-index:23;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}
+.nw-menu button{display:flex;align-items:center;gap:12px;opacity:0;transform:translateY(14px) scale(.9);transition:opacity .2s,transform .3s cubic-bezier(.2,.8,.2,1);padding-right:calc((var(--iw,56px) - 50px)/2)}
+.nw-menu.on{pointer-events:auto}
+.nw-menu.on button{opacity:1;transform:none}
+.nw-menu.on button:nth-last-child(2){transition-delay:.03s}.nw-menu.on button:nth-last-child(3){transition-delay:.06s}
+.nw-menu.on button:nth-last-child(4){transition-delay:.09s}.nw-menu.on button:nth-last-child(5){transition-delay:.12s}.nw-menu.on button:nth-last-child(6){transition-delay:.15s}
+.nw-l{display:flex;align-items:center;gap:10px;height:38px;padding:0 14px;border-radius:12px;background:var(--surface);box-shadow:0 0 0 1px var(--line),0 8px 24px rgba(0,0,0,.25);font-weight:700;font-size:15px;color:var(--text)}
+.nw-l kbd{font:inherit;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.nw-i{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:var(--nc);color:#fff;box-shadow:0 8px 22px rgba(0,0,0,.3);transition:transform .15s}
+.nw-i svg{width:22px;height:22px}
+.nw-menu button:hover .nw-i,.nw-menu button:focus-visible .nw-i{transform:scale(1.08)}
+.nw-menu button:focus-visible{outline:none}
+.nw-menu button:focus-visible .nw-l{box-shadow:0 0 0 2px var(--text)}
+@media (max-width:1099px){.nw-l kbd{display:none}}
+/* opened from the floating +: the add card grows out of the button instead of sliding in from the side */
+@media (min-width:1100px){
+  .sheet.nw-fab-on{top:auto;bottom:112px;right:40px;width:400px;transform:translateY(18px) scale(.94);transform-origin:bottom right;opacity:0;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .2s,visibility 0s linear .32s}
+  .sheet.nw-fab-on.on{transform:none;opacity:1;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .2s,visibility 0s}
+  .sheet.nw-fab-on .sheet-in{height:auto;max-height:calc(100vh - 150px);overflow-y:auto}
+  .sheet.nw-fab-on .grab{display:none}
+}
+@media (prefers-reduced-motion:reduce){.nw-menu button,.nw-fab,.nw-fab svg,.sheet.nw-fab-on{transition:none}}

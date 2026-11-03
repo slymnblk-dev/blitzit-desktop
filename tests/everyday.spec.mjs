@@ -7,13 +7,13 @@ test('one + for everything: Task · Note by default; habit and goal kinds when t
   const errors = await openApp(page);
   await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
   await expect(page.locator('#addSheet')).toHaveClass(/on/);
-  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(2); // Task · Note (the Inbox is on by default)
+  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(4); // Task · Note · List · Space (the Inbox is on by default)
   await expect(page.locator('#saveBtn')).toHaveText('Add task');
   await page.evaluate(() => closeSheets());
   await page.evaluate(() => { S.cfg.inbox = false; save(); render(); });
   await page.waitForTimeout(300);
   await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
-  await expect(page.locator('#addKinds')).toBeHidden(); // everything off: just "Add task"
+  expect(await page.locator('#addKinds [data-ak]').evaluateAll(b => b.map(x => x.dataset.ak))).toEqual(['task', 'list', 'space']); // Inbox off: no Note
   await page.evaluate(() => { closeSheets(); S.cfg.inbox = true; save(); render(); });
 
   await page.evaluate(() => {
@@ -22,7 +22,7 @@ test('one + for everything: Task · Note by default; habit and goal kinds when t
   });
   await page.waitForTimeout(300);
   await page.locator('#tbAdd:visible, #addBtn:visible').first().click(); // the tab bar's + when Inbox, Habits or Goals is on
-  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(3); // Task · Note · Habit
+  await expect(page.locator('#addKinds [data-ak]')).toHaveCount(5); // Task · Note · List · Space · Habit
   // habit
   await page.locator('[data-ak="habit"]').click();
   await expect(page.locator('#saveBtn')).toHaveText('Add habit');

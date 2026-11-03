@@ -19,7 +19,7 @@ function archiveSpace(sp){
 function restoreBundle(b){
   const addTasks=ts=>ts.forEach(t=>{if(!S.tasks.some(x=>x.id===t.id))S.tasks.push(t)});
   if(b.kind==='list'){
-    const l={...b.list},sp=spaceOf(l.space)?l.space:(S.space&&spaceOf(S.space)?S.space:S.spaces[0].id);l.space=sp;
+    const l={...b.list};if(!l.loose){l.space=spaceOf(l.space)?l.space:(S.space&&spaceOf(S.space)?S.space:S.spaces[0].id)}else l.space='';
     if(!S.lists.some(x=>x.id===l.id))S.lists.push(l);addTasks(b.tasks);
   } else {
     if(!S.spaces.some(x=>x.id===b.space.id))S.spaces.push({...b.space});

@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=274; // bumped with every published update
+const APP_VERSION=275; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -143,6 +143,9 @@ let PIP=null; // the floating focus window (desktop Chrome)
 const $=id=>document.getElementById(id);
 const color=st=>`var(--${st})`;
 const listOf=id=>S.lists.find(l=>l.id===id)||{id,name:'No list',c:'#A1A1AA'};
+/* lists can live without a space (0.275): l.loose=true, l.space='' */
+const looseLists=()=>S.lists.filter(l=>l.loose);
+const onlyList=l=>!l.loose&&S.lists.filter(x=>!x.loose&&x.space===l.space).length<2;
 function migrateSpaces(){
   if(!Array.isArray(S.spaces)||!S.spaces.length){
     const used=new Set(S.lists.map(l=>l.space||(SEED_LISTS.find(x=>x.id===l.id)||{}).space||'personal'));
@@ -150,7 +153,7 @@ function migrateSpaces(){
     if(!S.spaces.length)S.spaces=[{...SEED_SPACES[1]}];
   }
   const ids=S.spaces.map(x=>x.id);
-  S.lists.forEach(l=>{if(!ids.includes(l.space)){const sd=SEED_LISTS.find(x=>x.id===l.id);l.space=sd&&ids.includes(sd.space)?sd.space:ids[0]}});
+  S.lists.forEach(l=>{if(l.loose){l.space='';return}if(!ids.includes(l.space)){const sd=SEED_LISTS.find(x=>x.id===l.id);l.space=sd&&ids.includes(sd.space)?sd.space:ids[0]}});
   S.spaces.forEach(x=>{if(x.e===undefined||x.e===''){const a=autoIcon(x.name);if(a&&!x.autoSet){x.e=a;x.autoSet=true}}});
   if(S.space===undefined)S.space=null;
   if(S.space&&S.space!=='all'&&!ids.includes(S.space))S.space=null;

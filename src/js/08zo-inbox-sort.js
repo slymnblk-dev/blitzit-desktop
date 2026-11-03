@@ -4,9 +4,9 @@
    (change it with the list button), or Skip / Delete. A thin line shows how far through you are. Keys: 1 2 3, S, Esc. */
 var I_SORT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h11M4 12h7M4 17h4"/><path d="M17 10v9M14 16l3 3 3-3"/></svg>';
 /* the list quick sends go to: the last one you used, else your default list, else your first list */
-function ibDefList(){const ok=id=>id!=null&&S.lists.some(l=>l.id===id&&spaceOf(l.space));
+function ibDefList(){const ok=id=>id!=null&&S.lists.some(l=>l.id===id&&(l.loose||spaceOf(l.space)));
   return ok(S.cfg.ibLast)?S.cfg.ibLast:ok(S.cfg.defList)?S.cfg.defList:(orderedSpaces().map(sp=>S.lists.find(l=>l.space===sp.id)).find(Boolean)||{}).id}
-const ibListName=id=>{const l=listOf(id)||{},sp=spaceOf(l.space)||{};return `${sp.e?sp.e+' ':''}${sp.name||''} · ${l.name||''}`};
+const ibListName=id=>{const l=listOf(id)||{},sp=spaceOf(l.space)||{};return sp.name?`${sp.e?sp.e+' ':''}${sp.name} · ${l.name||''}`:(l.name||'')};
 const IB_STAGE={today:'Today',week:'This week',backlog:'Later'};
 function ibQaHTML(t){const l=ibDefList();if(l==null)return '';const nm=esc(ibListName(l));
   return `<button class="ib-qb" data-ibq="today" data-ibid2="${t.id}" title="Today, in ${nm}">Today</button><button class="ib-qb" data-ibq="week" data-ibid2="${t.id}" title="This week, in ${nm}">This week</button><button class="ib-qb" data-ibq="list" data-ibid2="${t.id}" title="Choose a list">List ▾</button>`}
