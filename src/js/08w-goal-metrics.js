@@ -74,7 +74,7 @@ function gmxDraw(){if(gfinM)return gfinDraw();const g=gById(gmxG);if(!g)return g
     ${os.length?os.map(o=>row('okr',o,`${gmxRowSp(o.space)}${Math.round(mxOkrP(o)*100)}% · ${esc(mxOkrWhen(o))}`,'okr',GMX_OKR_I)).join(''):`<p class="gmx-none">No OKRs yet.</p>`}
     <div class="gmx-news"><button class="gmx-new kpi" data-gmxnew="kpi">${PLUS_S}New KPI for this goal</button><button class="gmx-new" data-gmxnew="okr">${PLUS_S}New OKR for this goal</button></div>
     <p class="gmx-none">New ones can live in a space, or in no space at all.</p>
-    <div class="mx-foot"><span></span><button class="primary" data-gmxdone>Done</button></div>`}
+    <div class="mx-foot"><span></span><button class="primary" data-gmxdone>Save</button></div>`}
 $('gmxPg').addEventListener('click',e=>{
   if(e.target===$('gmxPg')||e.target.closest('[data-mxx],[data-gmxdone]'))return gmxClose();
   if(e.target.closest('[data-mxback]'))return gmxClose();

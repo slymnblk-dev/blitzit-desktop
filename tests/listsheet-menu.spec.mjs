@@ -14,7 +14,7 @@ test('lists sheet: ⋯ menu opens edit mode, Done closes it; 10 colours', async 
   await page.locator('#lmEdit').click();
   expect(await page.evaluate(() => editing)).toBe(true);
   await expect(page.locator('#listsMore')).toBeHidden();
-  await expect(page.locator('#editLists')).toHaveText('Done');
+  await expect(page.locator('#editLists')).toHaveText('Save');
   await page.locator('#editLists').click();
   expect(await page.evaluate(() => editing)).toBe(false);
   await expect(page.locator('#listsMore')).toBeVisible();

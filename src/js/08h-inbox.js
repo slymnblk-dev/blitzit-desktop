@@ -103,7 +103,7 @@ document.body.insertAdjacentHTML('beforeend',`<div class="dlg gme nb" id="nbEd" 
   <div class="gme-h"><span class="nb-when" id="nbWhen"></span><button class="icon-btn" id="nbPin" aria-label="Pin note"></button><button class="icon-btn gme-x0" id="nbClose" aria-label="Close">${X}</button></div>
   <textarea id="nbText" maxlength="4000" aria-label="Note" placeholder="Write a note…"></textarea>
   <div class="nb-acts"><button class="le-btn" id="nbTask" type="button">${I_TASK2}Turn into a task</button><button class="le-btn warn" id="nbDel" type="button">${BIN_S}Delete</button></div>
-  <button class="primary" id="nbDone">Done</button></div></div>`);
+  <button class="primary" id="nbDone">Save</button></div></div>`);
 let nbT=null;
 function openNote(id){const t=S.tasks.find(x=>x.id===id&&x.note);if(!t)return;nbId=id;$('nbText').value=t.notes||'';nbPaint(t);$('nbEd').classList.add('on');haptic(5);
   setTimeout(()=>{const a=$('nbText');a.focus();a.setSelectionRange(a.value.length,a.value.length)},60)}

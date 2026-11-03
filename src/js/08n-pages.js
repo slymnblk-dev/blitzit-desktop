@@ -145,7 +145,7 @@ document.body.insertAdjacentHTML('beforeend',`<div class="dlg gme" id="gmEd" rol
   <div class="gme-h"><h3 id="gmeT">Milestones</h3><button class="icon-btn gme-x0" id="gmeClose" aria-label="Close">${X}</button></div>
   <p class="gme-tip">Drag to reorder. Click a name to rename it.</p><div class="gme-list" id="gmeList"></div>
   <div class="gme-add" id="gmeAddW"><span class="gm-plus">${PLUS_S}</span><input id="gmeAdd" placeholder="New milestone" maxlength="80" autocomplete="off" enterkeyhint="done" aria-label="New milestone"><button class="gme-addb" id="gmeAddB" type="button">Add</button></div>
-  <button class="primary" id="gmeDone">Done</button></div></div>`);
+  <button class="primary" id="gmeDone">Save</button></div></div>`);
 function openMsEdit(focus){const g=gById(gdId);if(!g)return;gmeOn=true;drawMsEdit();$('gmEd').classList.add('on');haptic(5);
   setTimeout(()=>{if(!gmeOn)return;const i=focus&&$('gmeList').querySelector(`[data-mren="${focus}"]`);if(i){i.focus();i.select()}else if(!g.ms.length)$('gmeAdd').focus()},60)}
 function gmeAddNow(){const g=gById(gdId),i=$('gmeAdd'),v=i.value.trim();if(!g||!v){i.focus();return}if(g.ms.length>=MS_MAX){toast(`Up to ${MS_MAX} milestones. Keep them big.`);return}
@@ -183,7 +183,7 @@ document.body.insertAdjacentHTML('beforeend',`<div class="dlg gme" id="hbEd" rol
   <div class="gme-h"><h3 id="hbeT">Habits</h3><button class="icon-btn gme-x0" id="hbeClose" aria-label="Close">${X}</button></div>
   <p class="gme-tip">Drag to reorder: the first ones show on Home. Click a name to rename it.</p><div class="gme-list" id="hbeList"></div>
   <div class="gme-add" id="hbeAddW"><span class="gm-plus">${PLUS_S}</span><input id="hbeAdd" placeholder="New habit, e.g. Read 10 pages" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="New habit"><button class="gme-addb" id="hbeAddB" type="button">Add</button></div>
-  <button class="primary" id="hbeDone">Done</button></div></div>`);
+  <button class="primary" id="hbeDone">Save</button></div></div>`);
 function openReorder(){if(!habitsOn())return;hbeOn=true;drawHbEdit();$('hbEd').classList.add('on');haptic(5);setTimeout(()=>{if(hbeOn&&!hbAll().length)$('hbeAdd').focus()},60)}
 function closeHbEdit(){if(!hbeOn)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#hbEd'))a.blur();hbeOn=false;$('hbEd').classList.remove('on');render()}
 function drawHbEdit(focus){const hs=hbAll();
