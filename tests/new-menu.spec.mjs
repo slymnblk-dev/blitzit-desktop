@@ -123,26 +123,26 @@ test('adding a task from Home goes to the list you used last, also one with no s
   noErrors(errors);
 });
 
-test('task card: one List row, always shown, with lists without a space and "Space · List"', async ({ page }) => {
+test('task card: pick the space first, then its lists; "No space" holds lists without a space', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.lists.push({ id: 'lgro', name: 'Groceries', c: '#F5A35A', space: '', loose: true }); save(); goHome(); document.getElementById('addBtn').click(); });
-  await expect(page.locator('#addListWrap')).toBeVisible();
-  await expect(page.locator('#addSpaceWrap')).toBeHidden();
-  const chips = await page.locator('#optList .opt').allInnerTexts();
-  expect(chips[0]).toBe('Groceries');                                  // lists without a space first
-  const first = await page.evaluate(() => { const sp = orderedSpaces()[0], l = S.lists.find(x => x.space === sp.id); return `${sp.name}·${l.name}`; });
-  expect(chips.map(c => c.replace(/\s+/g, '').replace(/^\p{Extended_Pictographic}+/u, ''))).toContain(first.replace(/\s+/g, ''));
-  await page.locator('#optList [data-v="lgro"]').click();
+  await expect(page.locator('#addSpaceWrap')).toBeVisible();
+  await expect(page.locator('#addListWrap')).toBeVisible();                 // always shown, even with one list
+  expect((await page.locator('#optSpace .opt').allInnerTexts())[0]).toBe('No space');
+  const sp = await page.evaluate(() => S.spaces[1].id);
+  await page.locator(`#optSpace [data-v="${sp}"]`).click();
+  expect(await page.locator('#optList .opt').count()).toBe(await page.evaluate(id => S.lists.filter(l => l.space === id).length, sp));
+  await page.locator('#optSpace [data-v=""]').click();
+  expect(await page.locator('#optList .opt').allInnerTexts()).toEqual(['Groceries']);
   await page.locator('#newTitle').fill('Bread');
   await page.locator('#saveBtn').click();
   expect(await page.evaluate(() => S.tasks.find(t => t.title === 'Bread').list)).toBe('lgro');
-  // inside a space: only that space's lists, shown even when there is just one
+  // inside a space: no space row, only its lists
   await page.evaluate(() => { openSpace(S.spaces[0].id); });
   await page.waitForTimeout(300);
   await page.evaluate(() => document.getElementById('addBtn').click());
-  const inSp = await page.locator('#optList .opt').count();
-  expect(inSp).toBe(await page.evaluate(() => S.lists.filter(l => l.space === S.spaces[0].id).length));
-  await expect(page.locator('#addListWrap')).toBeVisible();
+  await expect(page.locator('#addSpaceWrap')).toBeHidden();
+  expect(await page.locator('#optList .opt').count()).toBe(await page.evaluate(() => S.lists.filter(l => l.space === S.spaces[0].id).length));
   noErrors(errors);
 });

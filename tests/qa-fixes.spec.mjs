@@ -100,7 +100,7 @@ test('add sheet: "#space 45m" sets space and time; a goal goes straight to its m
   await expect(page.locator('#addKinds [data-ak]')).toHaveCount(6);
   await expect(page.locator('.ak-tip')).toContainText('#space');
   await page.fill('#newTitle', `Write report #${sp.name.toLowerCase()} 45m`);
-  await expect(page.locator('#optList .opt.on')).toContainText(sp.name); // one List row: "Space · List" (0.279)
+  await expect(page.locator('#optSpace .opt.on')).toContainText(sp.name); // space first, then its lists (0.280)
   await expect(page.locator('#optEst .opt.on')).toHaveText('45m');
   await page.locator('#saveBtn').click();
   const t = await page.evaluate(() => S.tasks.find(x => x.title === 'Write report'));

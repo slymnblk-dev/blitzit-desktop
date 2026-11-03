@@ -12,13 +12,15 @@ const opt=(on,v,label,dot)=>`<button class="opt ${on?'on':''}" data-v="${v}">${d
 /* add sheet */
 let draft;
 function drawAdd(){
-  /* one "List" row, always shown, so you always see where the task goes (0.279).
-     Outside a space: lists without a space first, then "Space · List" for each space. Inside a space: just its lists. */
-  $('addSpaceWrap').hidden=true;$('addListWrap').hidden=false;
-  const ls=inSpaceMode()?S.lists.filter(l=>l.space===S.space):[...looseLists(),...orderedSpaces().flatMap(sp=>S.lists.filter(l=>l.space===sp.id))];
-  $('optList').innerHTML=ls.map(l=>{const sp=!inSpaceMode()&&spaceOf(l.space);
-    return `<button class="opt al-opt${!inSpaceMode()&&spaceOf(l.space)?" sp-opt":""} ${draft.list===l.id?'on':''}" data-v="${l.id}">${sp?`<span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span><span class="al-sp">${esc(sp.name)}</span><span class="al-dv">·</span>`:`<i style="background:${l.c}"></i>`}${esc(l.name)}</button>`}).join('');
-  requestAnimationFrame(()=>{const w=$('optList'),on=w.querySelector('.on');if(on&&(on.offsetLeft<w.scrollLeft||on.offsetLeft+on.offsetWidth>w.scrollLeft+w.clientWidth))w.scrollLeft=on.offsetLeft-16});
+  /* pick the space first, then its lists (0.280): scales to many spaces and lists. "No space" holds lists without a space.
+     The List row always shows, so you always see where the task goes. Inside a space: only its lists. */
+  const lo=looseLists(),pickSpace=!inSpaceMode()&&(S.spaces.length+(lo.length?1:0))>1;
+  $('addSpaceWrap').hidden=!pickSpace;$('addListWrap').hidden=false;
+  if(pickSpace)$('optSpace').innerHTML=(lo.length?`<button class="opt ${draft.space===''?'on':''}" data-v="">No space</button>`:'')+orderedSpaces().map(sp=>`<button class="opt sp-opt ${draft.space===sp.id?'on':''}" data-v="${sp.id}"><span class="sp-mini" style="background:${sp.c}">${sp.e?esc(sp.e):esc((sp.name[0]||'?').toUpperCase())}</span>${esc(sp.name)}</button>`).join('');
+  const ls=S.lists.filter(l=>draft.space===''?l.loose:l.space===draft.space);
+  $('optList').innerHTML=ls.map(l=>opt(draft.list===l.id,l.id,l.name,l.c)).join('');
+  const keep=w=>{const on=w.querySelector('.on');if(on&&(on.offsetLeft<w.scrollLeft||on.offsetLeft+on.offsetWidth>w.scrollLeft+w.clientWidth))w.scrollLeft=on.offsetLeft-16};
+  requestAnimationFrame(()=>{keep($('optSpace'));keep($('optList'))});
   $('optStage').innerHTML=STAGES.filter(s=>s.id!=='done').map(s=>opt(draft.stage===s.id,s.id,s.name,color(s.id))).join('');
   $('optEst').innerHTML=[...new Set([15,30,60,120,draft.est])].filter(m=>m>0).sort((a,b)=>a-b).map(m=>opt(draft.est===m,m,fmt(m))).join(''); // a typed time (e.g. 45m) shows as its own chip
   $('saveBtn').style.background=color(draft.stage);
