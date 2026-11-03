@@ -100,12 +100,10 @@ test('desktop: Add task / Section appear only when the column is hovered', async
   await page.evaluate(() => { openSpaceSide(S.spaces[0].id); });
   const op = sel => page.locator(sel).evaluate(e => +getComputedStyle(e).opacity);
   await page.mouse.move(700, 880);
-  await page.waitForTimeout(300);
-  expect(await op('.col[data-s="week"] .col-add')).toBe(0);
+  await expect.poll(() => op('.col[data-s="week"] .col-add')).toBe(0);   // poll: the fade can be slow when the machine is busy
   await page.locator('.col[data-s="week"] .col-list').hover();
-  await page.waitForTimeout(300);
-  expect(await op('.col[data-s="week"] .col-add')).toBe(1);
-  expect(await op('.col[data-s="backlog"] .col-add')).toBe(0);
+  await expect.poll(() => op('.col[data-s="week"] .col-add')).toBe(1);
+  await expect.poll(() => op('.col[data-s="backlog"] .col-add')).toBe(0);
   noErrors(errors);
 });
 
@@ -137,8 +135,8 @@ test('add tasks straight into a section; Enter keeps a fresh line ready', async 
   await expect(col.locator('[data-sectask="xm"]')).toBeFocused();
   await page.keyboard.type('Plan ads');
   await page.keyboard.press('Enter');
-  const r = await page.evaluate(() => S.tasks.filter(t => ['Write the newsletter', 'Plan ads'].includes(t.title)).map(t => [t.stage, t.sec]));
-  expect(r).toEqual([['week', 'xm'], ['week', 'xm']]);
+  await expect.poll(() => page.evaluate(() => S.tasks.filter(t => ['Write the newsletter', 'Plan ads'].includes(t.title)).map(t => [t.stage, t.sec])))
+    .toEqual([['week', 'xm'], ['week', 'xm']]);
   await expect(col.locator('.sec-h[data-sec="xm"] .sec-c')).toHaveText('2');
   await page.keyboard.press('Escape');
   await expect(col.locator('[data-sectask="xm"]')).toHaveCount(0);
