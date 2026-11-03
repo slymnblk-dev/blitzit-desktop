@@ -65,3 +65,7 @@ button.gf-tt:hover{text-decoration:underline;text-decoration-thickness:2px;text-
 .gf-dn[aria-expanded="true"] svg:last-child{transform:rotate(90deg)}
 .gf-dn+.gm-t,.gf-list>.gm-t+.gf-dn{border-top:1px solid var(--line)}
 @media (max-width:699px){.gf-acts{flex-wrap:wrap}.gf-acts .gf-go{flex:1 1 100%}.gf-acts .gf-sec{flex:1;justify-content:center}}
+/* a finished milestone shows what was done in it, ticked; each can be reopened (0.294) */
+.gf-did{margin-top:14px}
+.gf-did .gm-t{border-top:1px solid color-mix(in srgb,var(--text) 8%,transparent)}
+.gf-reo{margin-top:14px;height:44px;font-size:14px;color:var(--muted)}

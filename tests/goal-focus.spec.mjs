@@ -110,3 +110,15 @@ test('Start is the main action for a task; once every step is ticked, Mark task 
   await expect(page.locator('.gf-sh small')).toHaveText('2 of 2');
   noErrors(errors);
 });
+
+test('tapping a finished milestone shows what was done in it (ticked), with a way to reopen', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await seed(page, 'focus');
+  await page.locator('.gf-seg[data-gsel="m1"]').click();
+  await expect(page.locator('.gf-card .gf-tt')).toHaveText('Milestone done');
+  await expect(page.locator('.gf-card .gf-did .gm-t.on')).toHaveCount(1);
+  await expect(page.locator('.gf-card .gf-did')).toContainText('Run 3 km');
+  await expect(page.locator('.gf-card .gf-reo')).toBeVisible();
+  noErrors(errors);
+});

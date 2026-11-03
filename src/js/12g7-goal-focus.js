@@ -14,7 +14,9 @@ function gfCard(g,m){
   if(!nx){const all=ks.length>0;
     return `<div class="gf-card gf-empty"><span class="gf-eye">${esc(m.t)}</span><b class="gf-tt">${m.done?'Milestone done':all?'Every task is done':'No tasks yet'}</b>
       <p>${m.done?(m.doneAt?`Done ${gShort(m.doneAt)}.`:'Done.'):all?'Tick the milestone and move on to the next one.':'Add the first task for this milestone.'}</p>
+      ${all?`<div class="gf-did"><div class="gf-sh"><span>What you did</span><small>${ks.length} ${ks.length===1?'task':'tasks'}</small></div>${ks.map(gRow).join('')}</div>`:''}
       ${all&&live?`<button class="gf-go" data-gtk="${m.id}">${CK}Mark milestone done</button>`:''}
+      ${m.done&&!g.done?`<button class="gf-sec gf-reo" data-gtk="${m.id}">Reopen milestone</button>`:''}
       ${!all&&live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>`}
   const k=nx.k,subs=nx.subs,t=nx.kind==='t'?nx.t:null,today=t&&t.stage==='today',i=g.ms.indexOf(m);
   const steps=subs.map(s=>`<button class="gf-st${s.done?' on':''}" data-gsub="${k}|${s.id}" aria-pressed="${!!s.done}"><span class="gf-sk">${CK}</span><span>${esc(s.t||'')}</span></button>`).join('');
