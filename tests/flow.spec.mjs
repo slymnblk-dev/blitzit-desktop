@@ -176,3 +176,57 @@ test('empty, thumb, panel: example row + Add a task; phone stage tabs at the bot
   await expect.poll(() => page.evaluate(() => getComputedStyle(document.querySelector('.main')).marginRight)).toBe('420px');
   noErrors(errors);
 });
+
+// the Flow look (0.303): one fixed brand. No Classic theme colour may show on any page, in dark or light.
+const PAGES = [['home', 'goHome()'], ['board', "openSpace(S.spaces[0].id);S.stage='today';render()"],
+  ['add', "goHome();document.getElementById('addBtn').click()"],
+  ['detail', "closeSheets();openSpace(S.spaces[0].id);openDetail(S.tasks.find(x=>shown(x)&&x.stage!=='done'&&listOf(x.list).space===S.spaces[0].id).id)"],
+  ['inbox', 'closeSheets();openInbox()'], ['habits', 'closeInbox();openRhythm()'], ['goals', 'closeRhythm();openGoals()'],
+  ['wins', 'closeGoals();openWins()'], ['routines', 'closeWins();openRoutines()'], ['plan', 'closeRoutines();openPlan()'],
+  ['journal', 'closePlan();openJournal()'], ['metrics', 'closeJournal();openMetrics()'], ['settings', 'closeMetrics();openSettings()'],
+  ['you', "setView='you';drawSettings()"], ['review', 'closeSettings();openReview()']];
+const classicLeaks = () => {
+  const hex = h => { const n = parseInt(h.slice(1), 16); return `rgb(${n >> 16}, ${(n >> 8) & 255}, ${n & 255})`; };
+  const bad = new Set(); Object.values(THEMES).flat().forEach(t => ['bg', 'side', 'surface', 'surface2'].forEach(k => bad.add(hex(t.v[k]))));
+  // colours that are also Flow's own (white, Flow's ink) don't count
+  const probe = document.createElement('i'); document.body.appendChild(probe);
+  ['--bg', '--side', '--surface', '--surface2', '--text', '--ink', '--fl-ink'].forEach(v => { probe.style.backgroundColor = `var(${v})`; bad.delete(getComputedStyle(probe).backgroundColor); });
+  bad.delete('rgb(255, 255, 255)'); probe.remove();
+  const out = [];
+  document.querySelectorAll('body *').forEach(el => { const r = el.getBoundingClientRect(); if (r.width < 4 || r.height < 4 || r.bottom < 0 || r.top > innerHeight) return;
+    const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none') return;
+    if (bad.has(cs.backgroundColor)) out.push(`${el.tagName.toLowerCase()}#${el.id}.${[...el.classList].join('.')} ${cs.backgroundColor}`); });
+  return [...new Set(out)].slice(0, 8);
+};
+for (const mode of ['dark', 'light']) for (const size of ['phone', 'computer']) {
+  test(`Flow look (${mode}, ${size}): Inter, Flow colours on every page, no Classic theme colour anywhere`, async ({ page }) => {
+    test.setTimeout(90000);
+    await (size === 'phone' ? phone(page) : desk(page));
+    const errors = await openApp(page);
+    await page.evaluate(m => { Object.assign(S.cfg, { ui: 'flow', theme: m, darkTheme: 'ember', lightTheme: 'sand', motion: false, habits: true, goals: true, mx: true, wins: true, routines: true, plan: true, journal: true, inbox: true }); save(); applySettings(); goHome(); }, mode);
+    const look = await page.evaluate(() => [getComputedStyle(document.body).fontFamily.split(',')[0].replace(/"/g, ''), getComputedStyle(document.body).backgroundColor]);
+    expect(look).toEqual(['Inter', mode === 'dark' ? 'rgb(14, 15, 18)' : 'rgb(246, 246, 247)']);
+    for (const [name, go] of PAGES) {
+      await page.evaluate(go);
+      await page.waitForTimeout(120);
+      expect(await page.evaluate(classicLeaks), `${name} (${mode}, ${size})`).toEqual([]);
+    }
+    // Settings: no Classic theme picker in Flow
+    await page.evaluate(() => { setView = 'appearance'; drawSettings(); });
+    await expect(page.locator('#setIn .th-fold')).toBeHidden();
+    noErrors(errors);
+  });
+}
+
+test('Flow look: buttons on the coral use dark ink (dark look); Classic keeps its white text', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await page.evaluate(() => { Object.assign(S.cfg, { ui: 'flow', theme: 'dark', motion: false }); save(); applySettings(); openSpace(S.spaces[0].id); S.stage = 'today'; render(); });
+  expect(await page.evaluate(() => window.__flInkN)).toBeGreaterThan(5);
+  expect(await page.evaluate(() => getComputedStyle(document.getElementById('goBtn')).color)).toBe('rgb(20, 16, 14)');
+  await page.evaluate(() => { goHome(); });
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#homeView .td-card')).backgroundColor)).toBe('rgb(255, 138, 91)');
+  await page.evaluate(() => { S.cfg.ui = 'classic'; applySettings(); openSpace(S.spaces[0].id); render(); });
+  expect(await page.evaluate(() => getComputedStyle(document.getElementById('goBtn')).color)).toBe('rgb(255, 255, 255)');
+  noErrors(errors);
+});

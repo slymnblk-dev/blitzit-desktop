@@ -105,3 +105,8 @@
 - Parts: next (Start/Done/Later on Up next), plus (+ menu with page kind first on Habits/Goals; floating + on boards), shell (page headers), presets (Simple/Planner/Everything on Modes), shapes, thumb (phone stage tabs at the bottom), panel (desktop details docked right), inline (pencil rename in the board top bar), wins (tick burst + weekly recap Sun/Mon, `cfg.flRecapX`), empty (example + Add a task), kit.
 - To merge a part into Classic later: move its CSS out of the `[data-fl~=…]` guard and drop its `flowOn` check, then delete its switch. One part at a time, with its tests.
 - The full suite runs in Classic, so it proves Classic didn't change.
+- **Flow look (0.303):** one fixed brand (choice A). Tokens at the top of `37-flow.css` (triple `[data-ui="flow"]` beats the Classic themes): graphite dark `#0E0F12`, soft light `#F6F6F7`, coral `--today`, Inter (loaded only when Flow is on). The Classic theme picker hides in Flow.
+- White text on stage colours becomes dark ink in Flow automatically: `flInk()` in 12gz-flow.js reads the stylesheet once and writes a Flow twin for each such rule (`--fl-ink`).
+- Guard tests: `Flow look (dark|light, phone|computer)` open every page and fail if any Classic theme colour shows.
+- Tools: `node tools/flow-survey.mjs <dir> dark|light phone|desk` (screenshots of every page, `SET=2` for the second batch), `node tools/flow-audit.mjs dark phone` (contrast check).
+- Still Classic-styled on purpose: the first-run intro and the welcome splash (always dark), and the Focus screen colour (your own pick in Settings → Focus).

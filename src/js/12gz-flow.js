@@ -28,7 +28,9 @@ const FL_PARTS=[
 const flKey=p=>'fl'+p[0].toUpperCase()+p.slice(1);
 const flowUI=()=>!!(S.cfg&&S.cfg.ui==='flow');
 const flowOn=p=>flowUI()&&S.cfg[flKey(p)]!==false;
-function flPaint(){if(!flowUI()){delete root.dataset.ui;delete root.dataset.fl;return}
+function flFont(){if(document.getElementById('flFont'))return;const l=document.createElement('link');l.id='flFont';l.rel='stylesheet';
+  l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
+function flPaint(){if(!flowUI()){delete root.dataset.ui;delete root.dataset.fl;return}try{flFont()}catch(e){}
   root.dataset.ui='flow';root.dataset.fl=FL_PARTS.map(([p])=>p).filter(flowOn).join(' ')}
 const _flApply=applySettings;
 applySettings=function(){if(S.cfg&&S.cfg.ui!=='flow')S.cfg.ui='classic';if(S.cfg)FL_PARTS.forEach(([p])=>{if(S.cfg[flKey(p)]===undefined)S.cfg[flKey(p)]=true});const r=_flApply.apply(this,arguments);try{flPaint()}catch(e){}return r};
@@ -42,7 +44,7 @@ settingsPage=function(id){const h=_flPage.apply(this,arguments);if(id!=='appeara
     ${on?`<p class="sub-p fl-p">Flow parts. Turn any part off to see Classic for that part.</p>${FL_PARTS.map(([p,n,s])=>row(n,tg(flKey(p)),s)).join('')}`:''}</div>`;
   const i=h.indexOf('<div class="set-sec');return i<0?h+sec:h.slice(0,i)+sec+h.slice(i)};
 const _flSum=pageSummary;
-pageSummary=function(id){const s=_flSum.apply(this,arguments);return id==='appearance'&&flowUI()?'Flow design · '+s:s};
+pageSummary=function(id){const s=_flSum.apply(this,arguments);if(id!=='appearance'||!flowUI())return s;const c=C();return `Flow design · ${{system:'Auto',light:'Light',dark:'Dark'}[c.theme]}`};
 
 /* ---------- next: Start / Done / Later on the Up next card ---------- */
 const FL_GO='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
@@ -148,7 +150,22 @@ document.addEventListener('click',e=>{if(!e.target.closest('[data-fladd]'))retur
 
 /* every draw: add the Flow pieces (inside the page-motion layer, so they arrive with the page) */
 const _flRender=render;
-function flPaintAll(){if(!flowUI())return;try{flNextPaint();flRecapPaint();flEmptyPaint();flThumbPaint()}catch(e){}}
+function flPaintAll(){if(!flowUI())return;try{if(S.space){root.style.setProperty('--accent-btn','var(--accent)');root.style.setProperty('--on-accent','var(--fl-ink)')}flNextPaint();flRecapPaint();flEmptyPaint();flThumbPaint()}catch(e){}}
 render=function(){const r=_flRender.apply(this,arguments);flPaintAll();return r};
 const _flDesk=renderDesk;
 renderDesk=function(){const r=_flDesk.apply(this,arguments);flPaintAll();return r};
+
+/* ---------- the Flow look: buttons on the coral (and other stage colours) use dark ink, like the mockups ----------
+   Classic paints white text on its deeper gradients. Flow's colours are brighter, so white text would be hard to read.
+   Instead of copying dozens of selectors, read the stylesheet once: every rule that puts white text on a stage colour
+   gets a Flow twin with --fl-ink (dark on the dark look, white on the light look, where the colours are deeper). */
+(function flInk(){try{const sels=[],bgRe=/var\(--(today|week|done|backlog|accent|accent-btn|cta|win-[a-z]+)\)/,whRe=/^(#fff|#ffffff|white|rgb\(255, 255, 255\))$/i;
+  const walk=rules=>{for(const r of rules){if(r.cssRules&&!r.selectorText){walk(r.cssRules);continue}if(!r.style||!r.selectorText)continue;
+    const c=(r.style.getPropertyValue('color')||'').trim(),bg=r.style.getPropertyValue('background')+' '+r.style.getPropertyValue('background-color')+' '+r.style.getPropertyValue('background-image');
+    if(whRe.test(c)&&bgRe.test(bg)&&!/data-ui/.test(r.selectorText))sels.push(r.selectorText)}};
+  for(const sh of document.styleSheets){try{walk(sh.cssRules)}catch(e){}}
+  const extra='.go,#goBtn';
+  const st=document.createElement('style');st.id='flInk';
+  st.textContent=`:root[data-ui="flow"] :is(${[...new Set(sels)].join(',')},${extra}){color:var(--fl-ink)!important}
+:root[data-ui="flow"]{--win-backlog:var(--backlog);--win-week:var(--week);--win-today:var(--today);--win-done:var(--done)}`;
+  document.head.appendChild(st);window.__flInkN=sels.length}catch(e){}})();
