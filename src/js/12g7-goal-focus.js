@@ -53,7 +53,7 @@ function gFocusView(g){
   return `<div class="gf"><div class="gf-hd"><h1 class="gv-h gf-h1">${g.e?`<span class="gf-ge2">${esc(g.e)}</span>`:''}<span>${esc(g.name)}</span></h1>${eye?`<p class="gf-meta">${eye}</p>`:''}</div>
     ${m?gfHead(g,m):''}
     <div class="gf-cols"><div class="gf-main">${g.done?`<div class="gf-card gf-all"><span class="gf-big">${CK}</span><b class="gf-tt">Goal achieved</b><p>Every step got you here.</p></div>`:gfCard(g,m)}</div>
-      <div class="gf-side">${list}${gWhy(g)}${pr.of&&pr.n>=pr.of&&!g.done?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div></div></div>`}
+      <div class="gf-side">${list}${gWhy(g)}${pr.of&&pr.n>=pr.of&&!g.done?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}${gPhone()&&gOtherOpen?gTasksSec(g):''}</div></div></div>`}
 /* opening a finished milestone again, explained: tasks stay ticked unless you choose to untick them */
 document.body.insertAdjacentHTML('beforeend',`<div class="cap" id="gfReo" role="dialog" aria-modal="true" aria-labelledby="gfReoT"><div class="cap-in">
   <h3 id="gfReoT"></h3><p id="gfReoP"></p><div class="cap-b"><button class="cap-ok" id="gfReoKeep">Open it again</button><button class="cap-ok alt" id="gfReoAll"></button><button class="gf-link" id="gfReoNo">Cancel</button></div></div></div>`);
@@ -83,3 +83,6 @@ $('gdPg').addEventListener('click',e=>{
   const go=e.target.closest('[data-gfgo]');if(go){e.stopPropagation();const t=S.tasks.find(x=>String(x.id)===go.dataset.gfgo);if(t){haptic(8);startBlitz([t])}return}
   const td=e.target.closest('[data-gftoday]');if(td){e.stopPropagation();const t=S.tasks.find(x=>String(x.id)===td.dataset.gftoday);if(t&&t.stage!=='today'){if(!canPut(t.list,'today'))return;commit(()=>setStage(t,'today'),`${t.title} · moved to Today`);drawGoal()}return}
 },true);
+/* 0.301: Sunrise ("path") and Countdown ("poster") are gone; anything saved with them opens in Focus */
+(()=>{const fix=()=>{try{if(['path','poster'].includes(S.cfg.gView))S.cfg.gView='focus';(S.goals||[]).forEach(g=>{if(g&&['path','poster'].includes(g.view))g.view='focus'})}catch(e){}};
+  fix();const _ap=applySettings;applySettings=function(){fix();return _ap.apply(this,arguments)}})();

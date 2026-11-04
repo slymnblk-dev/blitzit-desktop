@@ -41,7 +41,7 @@ function gmxPaint(){if(!gdOn)return;const g=gById(gdId);if(!g)return;const root=
     if(old)old.replaceWith(n);else{const a=root.querySelector('.gw-l .gw-f')||root.querySelector('.gpp');if(a&&a.classList.contains('gw-f'))a.after(n);else if(a)a.after(n);else root.appendChild(n)}}
   // finish line on the milestone on show
   root.querySelectorAll('.gfl').forEach(x=>x.remove());
-  const card=root.querySelector('.gpp-ts[data-gcard]'),m=card&&g.ms.find(x=>String(x.id)===card.dataset.gcard),nm=root.querySelector('.gpp-nm');
+  const card=root.querySelector('.gpp-ts[data-gcard]'),gf=root.querySelector('.gf .gf-mt'),m=card?g.ms.find(x=>String(x.id)===card.dataset.gcard):gf?gSel(g):null,nm=root.querySelector('.gpp-nm')||gf; /* 0.301: Focus too */
   if(m&&m.fin&&nm&&mxOn()){nm.insertAdjacentHTML('beforeend',gmxFinChip(m))}
   // menu items: Measured by (goal), Finish line (milestone, phones)
   const pop=$('gdPop');if(pop&&gmxOn()&&!pop.querySelector('[data-gmlink]')){

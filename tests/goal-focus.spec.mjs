@@ -58,17 +58,24 @@ test('Start now opens focus mode on that task', async ({ page }) => {
   noErrors(errors);
 });
 
-test('phone: the ⋯ menu offers Sunrise or Focus; Focus shows Up next', async ({ page }) => {
+test('phone: Focus is the only goal view (Sunrise and Countdown are gone, 0.301); saved old views open in Focus', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
-  await seed(page, null);
-  await page.locator('#gdMore').click();
-  await expect(page.locator('#gdPop [data-gview="path"]')).toBeVisible();
-  await page.locator('#gdPop [data-gview="focus"]').click();
+  await seed(page, 'path');
   await expect(page.locator('.gf-card .gf-tt')).toHaveText('Long run');
+  expect(await page.evaluate(() => S.goals[0].view)).toBe('focus');
   await page.locator('#gdMore').click();
-  await page.locator('#gdPop [data-gview="path"]').click();
-  await expect(page.locator('#gdIn .gf')).toHaveCount(0);
+  await expect(page.locator('#gdPop [data-gview]')).toHaveCount(0);
+  noErrors(errors);
+});
+
+test('computer: the View menu has only The climb and Focus; an old Countdown goal opens in Focus', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const errors = await openApp(page);
+  await seed(page, 'poster');
+  await expect(page.locator('#gdIn .gf')).toBeVisible();
+  await page.locator('#gdMore').click();
+  expect(await page.locator('#gdPop [data-gview]').evaluateAll(b => b.map(x => x.dataset.gview))).toEqual(['climb', 'focus']);
   noErrors(errors);
 });
 

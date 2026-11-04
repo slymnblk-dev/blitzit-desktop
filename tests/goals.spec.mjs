@@ -4,7 +4,7 @@
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
-test('goals: setup, north star, climb, path and poster, milestones, Goals page, achieved, off', async ({ page }) => {
+test('goals: setup, north star, Focus on phones, milestones, Goals page, achieved, off', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   // off: nothing anywhere
@@ -49,36 +49,31 @@ test('goals: setup, north star, climb, path and poster, milestones, Goals page, 
   await expect(page.locator('#homeView .ns-card, .ns-card:visible').first()).toBeVisible();
   await page.locator('.ns-card:visible').first().click();
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
-  await expect(page.locator('#gdPg .gpp-sun')).toBeVisible(); // phones show the Sunrise view only
-  // tick the first milestone
-  await page.locator('#gdPg [data-gtk]').first().click();
+  await expect(page.locator('#gdPg .gf')).toBeVisible(); // phones show the Focus view (Sunrise and Countdown are gone, 0.301)
+  await expect(page.locator('#gdPg .gf-mt b')).toHaveText('Run 10 km');
+  // finish the first milestone from the ⋯ menu (plain words)
+  await page.locator('#gdMore').click();
+  await expect(page.locator('#gdPop [data-gview]')).toHaveCount(0);         // one view on phones: no View section
+  await expect(page.locator('#gdPop [data-gmx="tk"]')).toContainText('Finish milestone');
+  await page.locator('#gdPop [data-gmx="tk"]').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
-  // the card shows the next milestone; a task added there stays in the goal (no list, no stage)
-  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('Run 15 km');
+  // next milestone: a task added there stays in the goal (no list, no stage)
+  await page.evaluate(() => { gSelId = S.goals[0].ms[1].id; drawGoal(); });
+  await expect(page.locator('#gdPg .gf-mt b')).toHaveText('Run 15 km');
   await page.fill('#gMtIn', 'Long run Sunday');
   await page.keyboard.press('Enter');
   expect(await page.evaluate(() => S.tasks.some(x => x.title === 'Long run Sunday'))).toBe(false);
   expect(await page.evaluate(() => S.goals[0].ms[1].items.map(x => x.t))).toEqual(['Long run Sunday']);
-  await expect(page.locator('#gMtIn')).toBeFocused(); // ready for the next one
+  await expect(page.locator('#gdPg .gf-card .gf-tt')).toHaveText('Long run Sunday');
   // finishing its last task ticks the milestone
-  await page.locator('#gMtIn').blur();
-  await page.locator('#gdPg .gpp-ts [data-gmt]').first().click();
+  await page.locator('#gdPg .gf-card .gf-go').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[1].done)).toBe(true);
   await expect(page.locator('#gdPg [data-gwin]')).toBeVisible(); // summit reached → offer to mark achieved
-
-  // phones: Sunrise or Focus (0.292), so the ⋯ menu has a small View section with just those two
-  await page.locator('#gdMore').click();
-  await expect(page.locator('#gdPop [data-gview]')).toHaveCount(2);
-  await page.keyboard.press('Escape');
-  await expect(page.locator('#gdPg .gpp-bar')).toBeVisible();
-  await expect(page.locator('#gdPg .gpp-st')).toHaveCount(2);
+  await expect(page.locator('#gdPg .gf-dot')).toHaveCount(2);
   await expect(page.locator('#gdBack')).toBeVisible(); // a page you drill into always has Back, top left
-  await page.evaluate(() => { gAddMs = true; drawGoal(); });
-  await page.fill('#gMsIn', 'Race day');
-  await page.keyboard.press('Enter');
+  await page.evaluate(() => { S.goals[0].ms.push({ id: 'mR', t: 'Race day', done: false }); save(); gSelId = null; drawGoal(); });
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.length)).toBe(3);
-  await page.evaluate(() => { gSelId = null; drawGoal(); });
-  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('Race day');
+  await expect(page.locator('#gdPg .gf-mt b')).toHaveText('Race day');
   const td = await page.evaluate(gid => { const l = S.lists.find(x => x.space === S.goals[0].space); const x = { id: newId(), title: 'Buy race shoes', stage: 'today', list: l.id, est: 30, subs: [], notes: '', repeat: 'none', goal: gid }; S.tasks.unshift(x); save(); return x; }, g.id);
   await page.locator('#tbGoals').click(); // phones have no Back: the Goals tab goes back
   await expect(page.locator('#gdPg')).not.toHaveClass(/on/);
@@ -180,22 +175,17 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
       ms: Array.from({ length: 6 }, (_, i) => ({ id: 'm' + i, t: 'Step ' + (i + 1), done: i < 3 })) }];
     save(); applySettings(); openGoal('g1');
   });
-  // phones: one shared page (hero, name, step bar, one milestone at a time); the climb's hero is the mountain
-  await expect(page.locator('#gdPg .gpp-sun')).toBeVisible();
-  await expect(page.locator('#gdPg .gpp-st')).toHaveCount(6);
-  await expect(page.locator('#gdPg .gpp-st.on')).toHaveCount(3);
-  // past due: counts the days over, never "0 days left"
-  await expect(page.locator('#gdPg .gr-f')).toContainText('days over');
-  // Back sits top left like every page you drill into; the facts sit beside it
+  // phones: the Focus view (0.301): milestone dots, past due reads right, Back top left
+  await expect(page.locator('#gdPg .gf-dot')).toHaveCount(6);
+  await expect(page.locator('#gdPg .gf-dot.done')).toHaveCount(3);
+  await expect(page.locator('#gdPg .gf-meta')).toContainText('past due');      // never "0 days left"
   await expect(page.locator('#gdBack')).toBeVisible();
-  await expect(page.locator('#gdPg .gr-meta .gr-f')).toBeVisible();
-  // the card opens on Next; a quick double tap on Mark done ticks it once
-  await expect(page.locator('#gdPg .gpp-st.sel.nx')).toHaveCount(1); // opens on Next, its tasks below (no card)
-  await expect(page.locator('#gdPg .gpp .gm-card')).toHaveCount(0);
-  await page.locator('#gdPg .gpp-done').dblclick();
+  await expect(page.locator('#gdPg .gf-mt b')).toHaveText('Step 4');           // opens on the next milestone
+  // finishing a milestone from ⋯ ticks it once
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gmx="tk"]').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(4);
-  // adding a milestone lives in the goal's ⋯ menu → Edit milestones (no extra buttons on the page)
-  await expect(page.locator('#gdPg .gm-head')).toHaveCount(0); // the stats above already count milestones
+  // adding a milestone lives in the goal's ⋯ menu → Edit milestones
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gedit]').click();
   await page.fill('#gmeAdd', 'Extra step');
@@ -205,12 +195,12 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await expect(page.locator('#gmEd')).not.toHaveClass(/on/);
   await expect(page.locator('#gdPg')).toHaveClass(/on/);
   await page.evaluate(() => { S.goals[0].ms.pop(); save(); render(); });
-  // tapping a milestone (track or hill dot) opens its card and never ticks it
+  // tapping a milestone dot opens it and never ticks it
   const before = await page.evaluate(() => S.goals[0].ms.map(m => !!m.done));
-  await page.locator('#gdPg .gpp-st[data-gsel="m1"]').click();
-  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('Step 2');
-  await page.locator('#gdPg .gpp-st[data-gsel="m5"]').click();
-  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('Step 6');
+  await page.locator('#gdPg .gf-dot[data-gsel="m1"]').click();
+  await expect(page.locator('#gdPg .gf-mt b')).toHaveText('Step 2');
+  await page.locator('#gdPg .gf-dot[data-gsel="m5"]').click();
+  await expect(page.locator('#gdPg .gf-mt b')).toHaveText('Step 6');
   expect(await page.evaluate(() => S.goals[0].ms.map(m => !!m.done))).toEqual(before);
   // milestones are parent tasks: the last task done ticks it; reopening a task reopens it;
   // marking it done finishes its open tasks; reopening the milestone leaves its tasks as they are
@@ -218,18 +208,18 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.keyboard.press('Enter');
   await page.fill('#gMtIn', 'B');
   await page.keyboard.press('Enter');
-  await expect(page.locator('#gdPg .gpp-ts .gm-t')).toHaveCount(2);
+  await expect(page.locator('#gdPg .gf-list .gm-t')).toHaveCount(2);
   const st = () => page.evaluate(() => [S.goals[0].ms[5].done, ...['A', 'B'].map(n => S.goals[0].ms[5].items.find(x => x.t === n).done ? 'done' : 'week')]);
-  await expect(page.locator('#gdPg .gpp-ts .gm-tt b')).toHaveText(['A', 'B']); // oldest first, add field at the bottom
-  await page.locator('#gdPg .gpp-ts .gm-t').nth(0).locator('[data-gmt]').click();
+  await expect(page.locator('#gdPg .gf-list .gm-tt b')).toHaveText(['A', 'B']); // oldest first
+  await page.locator('#gdPg .gf-list .gm-t').nth(0).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
   await page.waitForTimeout(450);
-  await page.locator('#gdPg .gpp-ts .gm-t').nth(1).locator('[data-gmt]').click();
+  await page.locator('#gdPg .gf-list .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([true, 'done', 'done']);
-  await expect(page.locator('#gdPg .gpp-eye')).toContainText('done'); // the moment shows on the same milestone
-  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Open again'); // and undoing it is right there (plain words, 0.299)
+  await expect(page.locator('#gdPg .gf-fin')).toContainText('Finished');        // stays on the milestone to see it done
+  await expect(page.locator('#gdPg [data-gfreo]')).toBeVisible();              // and opening it again is right there
   await page.waitForTimeout(450);
-  await page.locator('#gdPg .gpp-ts .gm-t').nth(1).locator('[data-gmt]').click();
+  await page.locator('#gdPg .gf-list .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
   await page.evaluate(() => gMsToggle(S.goals[0], S.goals[0].ms[5]));
   await expect.poll(st).toEqual([true, 'done', 'done']);
@@ -245,18 +235,11 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await expect(page.locator('#gdPg .gv-sec h2')).toContainText(['Other tasks']);
   await expect(page.locator('#gdPg .g-trow')).toContainText(['Loose one']);
   // nothing changed → no redraw (motion stays calm)
-  const same = await page.evaluate(() => { render(); const a = document.querySelector('#gdIn .gb-svg'); render(); return a === document.querySelector('#gdIn .gb-svg'); });
+  const same = await page.evaluate(() => { render(); const a = document.querySelector('#gdIn .gf'); render(); return a === document.querySelector('#gdIn .gf'); });
   expect(same).toBe(true);
-  // summit: the Mark achieved button stands in for the pace
+  // summit: the Mark achieved button shows
   await page.evaluate(() => { S.goals[0].ms.forEach(m => m.done = true); save(); render(); });
   await expect(page.locator('#gdPg [data-gwin]')).toBeVisible();
-  await expect(page.locator('#gdPg .gr-f .gp-ahead, #gdPg .gr-f .gp-on, #gdPg .gr-f .gp-behind')).toHaveCount(0);
-  // poster and path: past due wording
-  await page.evaluate(() => { S.goals[0].ms[5].done = false; S.goals[0].view = 'poster'; save(); openGoal('g1'); });
-  await expect(page.locator('#gdPg .gr-f')).toContainText('days over'); // phones: Sunrise only, the facts line counts the days over
-  await page.evaluate(() => { S.goals[0].view = 'path'; S.goals[0].due = ''; save(); openGoal('g1'); });
-  await expect(page.locator('#gdPg .gr-f')).not.toContainText('days left');
-  await expect(page.locator('#gdPg .gr-f')).not.toContainText('On track'); // no pace words on phones
   noErrors(errors);
 });
 
@@ -507,21 +490,22 @@ test('goal page: one calm facts line; why as a quote that can be hidden from the
   noErrors(errors);
 });
 
-test('phone Path: a milestone with no tasks can be marked done (and reopened) from one clear row', async ({ page }) => {
+test('phone Focus: a milestone with no tasks can be finished (and opened again) from the ⋯ menu', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.goals = true;
     S.goals = [{ id: 'g1', name: 'Run', e: '', space: S.spaces[0].id, why: '', due: '', created: Date.now(), star: false, view: 'path', ms: [{ id: 'm0', t: 'A', done: false }, { id: 'm1', t: 'B', done: false }] }];
     save(); applySettings(); openGoal('g1'); });
-  await expect(page.locator('#gdPg .gpp-done')).toContainText('Mark milestone done');
+  await expect(page.locator('#gdPg .gf-mt b')).toHaveText('A');
   await page.evaluate(() => { window.__sfxLog = []; });
-  await page.locator('#gdPg .gpp-done').click();
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gmx="tk"]').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
-  await expect.poll(() => page.evaluate(() => window.__sfxLog)).toEqual(['milestone', 'rise']); // a milestone chime, then the sun's soft glide
-  await expect(page.locator('#gdPg .gpp-nm b')).toHaveText('B'); // and it moves on to the next milestone
+  await expect.poll(() => page.evaluate(() => window.__sfxLog)).toContain('milestone');
   // the last one: a summit sound; Mark achieved: the big one
-  await page.evaluate(() => { window.__sfxLog = []; });
-  await page.locator('#gdPg .gpp-done').click();
+  await page.evaluate(() => { gSelId = 'm1'; drawGoal(); window.__sfxLog = []; });
+  await page.locator('#gdMore').click();
+  await page.locator('#gdPop [data-gmx="tk"]').click();
   await expect.poll(() => page.evaluate(() => window.__sfxLog[0])).toBe('summit');
   await page.evaluate(() => { window.__sfxLog = []; });
   await page.locator('#gdPg [data-gwin]').click();
@@ -536,23 +520,21 @@ test('phone Path: a milestone with no tasks can be marked done (and reopened) fr
   await page.locator('#gmEd [data-mtk="m0"]').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
   await page.keyboard.press('Escape');
+  // a finished milestone: opening it again asks first
   await page.evaluate(() => { gSelId = 'm0'; drawGoal(); });
-  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Open again');
-  await page.locator('#gdPg .gpp-done').click();
-  await expect(page.locator('#gfReo')).toHaveClass(/on/);                   // asks first: tasks stay ticked unless you choose
+  await page.locator('#gdPg [data-gfreo]').click();
+  await expect(page.locator('#gfReo')).toHaveClass(/on/);
   await page.locator('#gfReoKeep').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(false);
-  // phones: one ⋯ menu in two parts (this milestone, then the goal); no milestone ⋯ on the page; no why / north star here
-  await expect(page.locator('#gdPg .gpp [data-gmm]')).toHaveCount(0);
+  // phones: one ⋯ menu in two parts (this milestone, then the goal); no View part; no why / north star here
   await page.locator('#gdMore').click();
-  await expect(page.locator('#gdPop .pm-lbl')).toHaveText([/Milestone/, 'View', 'Goal']);
-  await expect(page.locator('#gdPop [data-gm="why"], #gdPop [data-gm="star"]')).toHaveCount(0);
-  await page.locator('#gdPop [data-gmx="tk"]').click();
-  await expect.poll(() => page.evaluate(() => S.goals[0].ms.filter(m => m.done).length)).toBe(1);
-  // phones: whatever view was saved, it's Sunrise
-  for (const v of ['climb', 'poster', 'path']) {
+  await expect(page.locator('#gdPop .pm-lbl')).toHaveText([/Milestone/, 'Goal']);
+  await expect(page.locator('#gdPop [data-gview], #gdPop [data-gm="why"], #gdPop [data-gm="star"]')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  // phones: whatever view was saved, it's Focus
+  for (const v of ['climb', 'poster', 'path', 'focus']) {
     await page.evaluate(v => { S.goals[0].view = v; save(); drawGoal(); }, v);
-    await expect(page.locator('#gdPg .gpp-sun')).toBeVisible();
+    await expect(page.locator('#gdPg .gf')).toBeVisible();
   }
   noErrors(errors);
 });

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
 const seed = () => { const now = Date.now(), sp = S.spaces[0].id;
-  S.cfg.goals = true; S.cfg.mx = true; S.cfg.gView = 'path';
+  S.cfg.goals = true; S.cfg.mx = true; S.cfg.gView = 'focus';
   S.goals = [{ id: 'g1', name: 'Learn Spanish', e: '', space: sp, why: '', due: '', created: now, star: true,
     ms: [{ id: 'm1', t: 'Basics', done: false, items: [{ id: 'i1', t: 'Lesson 1', done: false }, { id: 'i2', t: 'Lesson 2', done: false }] }, { id: 'm2', t: 'Conversational', done: false }, { id: 'm3', t: 'Story', done: false }] }];
   S.kpis = [{ id: 1, space: sp, name: 'Study minutes', target: 120, unit: '', period: 'week', better: 'up', src: 'both', kind: 'sum', created: now, log: [] }];
@@ -24,10 +24,10 @@ test('measured by: link from the goal menu, cards on the goal page, tags on Metr
   await expect(page.locator('#gdPg .gmx-row.kpi')).toContainText('Study minutes');
   await expect(page.locator('#gdPg .gmx-row.okr')).toContainText('40%');
   // a goal task ticked adds 1 to the KPI; unticking takes it back
-  await page.locator('#gdPg .gpp-ts .gm-t [data-gmt]').first().click();
+  await page.locator('#gdPg .gf-list .gm-t [data-gmt]').first().click();
   await expect.poll(() => page.evaluate(() => mxKpiNow(S.kpis[0]))).toBe(1);
   await page.waitForTimeout(450);
-  await page.locator('#gdPg .gpp-ts .gm-t [data-gmt]').first().click();
+  await page.locator('#gdPg .gf-list .gm-t [data-gmt]').first().click();
   await expect.poll(() => page.evaluate(() => mxKpiNow(S.kpis[0]) || 0)).toBe(0);
   // Metrics tags them with the goal
   await page.evaluate(() => openMetrics());
@@ -81,7 +81,7 @@ test('a goal outside any space can get its own KPI in no space; Metrics shows it
   await page.setViewportSize({ width: 1400, height: 900 });
   const errors = await openApp(page);
   await page.evaluate(() => { S.cfg.goals = true; S.cfg.mx = true; S.kpis = []; S.okrs = [];
-    S.goals = [{ id: 'g1', name: 'Write a book', e: '', space: null, why: '', due: '', created: Date.now(), star: true, view: 'path', ms: [{ id: 'm1', t: 'Draft', done: false }] }];
+    S.goals = [{ id: 'g1', name: 'Write a book', e: '', space: null, why: '', due: '', created: Date.now(), star: true, view: 'focus', ms: [{ id: 'm1', t: 'Draft', done: false }] }];
     save(); applySettings(); openGoal('g1'); });
   await page.locator('#gdMore').click();
   await page.locator('#gdPop [data-gmlink]').click();

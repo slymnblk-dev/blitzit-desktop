@@ -93,3 +93,8 @@
 - Always on, settings removed (forced in `TRIM_ON`, re-applied in `applySettings`): animations, welcome, Today highlight, sounds (Glass), new tasks on top, fold columns after 5, tuck away finished, quiet when idle (5 s), compact pop-out, sound at end of round, keep awake, one focus step at a time. New tasks default to the last-used list.
 - Appearance: Themes fold away (`themesFold`), Home has its own card, then Layout. Modes: new Inbox card, Everyday holds Weekly review + Morning check-in. Focus: one compact timer row (`timerRow`).
 - Also 0.268–0.269: dark Ember / light Sand / Calm column defaults, sun/moon button (`12e-theme-toggle.js`), Mode row removed, themes as pills.
+
+## Goal views (0.301)
+- Only two goal views now: **The climb** (computers) and **Focus** (`12g7-goal-focus.js`). Sunrise and Countdown are gone; phones always show Focus.
+- Saved `path`/`poster` views (goal or Settings) are migrated to `focus`. Old `gpp-*`/`gpo-*` code in 08n is unused on phones now.
+- Finish line chip (08w `gmxPaint`) also shows in Focus (`.gf-mt`). The ⋯ "Finish milestone" handler uses stopImmediatePropagation so the reopen dialog doesn't pop right after finishing.

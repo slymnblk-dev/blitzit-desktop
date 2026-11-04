@@ -231,7 +231,8 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ================= Goal ================= */
-const gView=g=>{const v=g.view||C().gView;if(v==='focus')return 'focus'; /* Focus (0.292) works on phones and computers */if(matchMedia('(max-width:699px)').matches)return 'path'; /* phones: otherwise Sunrise */return ['climb','path','poster'].includes(v)?v:'climb'};
+const gView=g=>{ /* 0.301: two views — The climb (computers) and Focus. Sunrise and Countdown are gone; phones always show Focus. */
+  if(matchMedia('(max-width:699px)').matches)return 'focus';const v=g.view||C().gView;return v==='focus'||v==='path'||v==='poster'?'focus':'climb'};
 /* phones: one ⋯ menu, in two clearly named parts — the milestone you're looking at, then the goal */
 function gMenuPhone(g){const m=gSel(g),it=(a,ic,t,w)=>`<button ${a} role="menuitem"${w?' class="warn"':''}><span class="lpm-i">${ic}</span>${t}</button>`;
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Milestone and goal options" aria-haspopup="menu">${DOTS_V}</button>
@@ -241,7 +242,6 @@ function gMenuPhone(g){const m=gSel(g),it=(a,ic,t,w)=>`<button ${a} role="menuit
       ${it('data-gmx="ren"',PEN_S,'Rename milestone')}
       ${it('data-gmx="del"',BIN_S,'Delete milestone',1)}
       <span class="pm-sep"></span>`:''}
-    <span class="pm-lbl">View</span>${mItem('data-gview="path"','Sunrise',gView(g)!=='focus')}${mItem('data-gview="focus"','Focus',gView(g)==='focus')}<span class="pm-sep"></span>
     <span class="pm-lbl">Goal</span>
     ${it('data-gm="edit"',PEN_S,'Edit goal')}
     ${g.done&&!g.ms.length?'':it('data-gedit',GRIP,g.ms.length?'Edit milestones':'Add milestones')}
@@ -250,7 +250,7 @@ function gMenuPhone(g){const m=gSel(g),it=(a,ic,t,w)=>`<button ${a} role="menuit
     ${it('data-gm="del"',BIN_S,'Delete goal',1)}</div></div>`}
 function gMenuHTML(g){const v=gView(g);if(gPhone())return gMenuPhone(g);
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Goal options" aria-haspopup="menu">${DOTS_V}</button>
-    <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu">${gPhone()?'':`<span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="path"','Sunrise',v==='path')}${mItem('data-gview="poster"','Countdown',v==='poster')}${mItem('data-gview="focus"','Focus',v==='focus')}
+    <div class="sp-pop lh-pop pm-pop" id="gdPop" role="menu">${gPhone()?'':`<span class="pm-lbl">View</span>${mItem('data-gview="climb"','The climb',v==='climb')}${mItem('data-gview="focus"','Focus',v==='focus')}
     <span class="pm-sep"></span>`}<button data-gm="edit" role="menuitem"><span class="lpm-i">${PEN_S}</span>Edit goal</button>
     ${gPhone()&&gLoose(g).length?`<button data-gm="other" role="menuitem"><span class="lpm-i">${gOtherOpen?X:CHEV}</span>${gOtherOpen?'Hide other tasks':`Other tasks (${gLoose(g).length})`}</button>`:''}
     ${g.star&&!g.done&&gView(g)==='climb'?`<button data-gm="nsky" role="menuitem"><span class="lpm-i">${G_SPARK}</span>${g.hideNs?'Show the star in the sky':'Hide the star in the sky'}</button>`:''}
@@ -523,7 +523,7 @@ function gPosterView(g){return gPhone()?gPhoneView(g,'poster'):gWideView(g,'post
 function drawGoal(){
   const g=gById(gdId);if(!g){closeGoal();return}
   const y=$('gdPg').scrollTop,v=gView(g),anim=gdAnim;
-  const body=v==='focus'?gFocusView(g):v==='path'?gPathView(g):v==='poster'?gPosterView(g):gClimbView(g,anim);
+  const body=v==='focus'?gFocusView(g):gClimbView(g,anim);
   const html=`<div class="set-top gd-top"><button class="icon-btn" id="gdBack" aria-label="Back">${BACK_SVG}</button>${gMenuHTML(g)}</div>
     <div class="gv gv-${v}${anim?' anim':''}">${body}${v==='climb'||gPhone()?'':gTasksSec(g)}</div>`;
   if(!anim&&html===gdHtml)return;
@@ -629,7 +629,7 @@ gMsToggle=function(g,m){const was=!!m.done,mk=Date.now()-gMkAt<1500;_gMsToggleNe
   pg.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;
     if(Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.5)return;gSwipeMs(dx<0?1:-1)},{passive:true});
   pg.addEventListener('click',e=>{const b=e.target.closest('[data-gm="other"]');if(!b)return;e.stopPropagation();const p=$('gdPop');if(p)p.classList.remove('on');gOtherOpen=!gOtherOpen;haptic(4);drawGoal();
-    if(gOtherOpen)setTimeout(()=>{const s=$('gdIn').querySelector('.gpp~.gv-sec');if(s)s.scrollIntoView({behavior:gSmooth(),block:'start'})},60)},true);
+    if(gOtherOpen)setTimeout(()=>{const s=$('gdIn').querySelector('.gpp~.gv-sec,.gf .gv-sec');if(s)s.scrollIntoView({behavior:gSmooth(),block:'start'})},60)},true);
 })();
 function gSwipeMs(step){const g=gById(gdId);if(!g)return;const sel=gSel(g),i=g.ms.indexOf(sel),to=g.ms[i+step];if(!to){haptic(3);return}
   gSelId=to.id;gppDir=step;haptic(5);drawGoal()}
@@ -638,11 +638,11 @@ $('gdPg').addEventListener('click',e=>{const st=e.target.closest('.gpp-st[data-g
   const a=g.ms.indexOf(gSel(g)),b=g.ms.findIndex(m=>m.id===st.dataset.gsel);gppDir=b>a?1:b<a?-1:0},true);
 
 /* the phone menu's milestone part acts on the milestone on screen */
-$('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmx]');if(!b)return;e.stopPropagation();const p=$('gdPop');if(p)p.classList.remove('on');
+$('gdPg').addEventListener('click',e=>{const b=e.target.closest('[data-gmx]');if(!b)return;e.stopImmediatePropagation(); /* 0.301: one handler only — the reopen check below used to see the milestone just finished and ask to open it again */const p=$('gdPop');if(p)p.classList.remove('on');
   const g=gById(gdId),m=g&&gSel(g);if(!m)return;const a=b.dataset.gmx;
-  if(a==='tk')return gMsToggle(g,m);if(a==='ren')return openMsEdit(m.id);if(a==='del')return gMsDelete(g,m)},true);
+  if(a==='tk')return m.done?gfReopenAsk(g,m):gMsToggle(g,m);if(a==='ren')return openMsEdit(m.id);if(a==='del')return gMsDelete(g,m)},true);
 
-/* computers: ← → move between milestones on Sunrise and Countdown */
+/* computers: ← → move between milestones */
 document.addEventListener('keydown',e=>{if(!gdOn||gPhone()||(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')||e.metaKey||e.ctrlKey||e.altKey)return;
   const a=document.activeElement;if(a&&(a.matches('input,textarea,[contenteditable]')||a.closest('.sheet.on,#gmEd.on,.pm-pop.on')))return;
   const g=gById(gdId);if(!g||gView(g)==='climb'||document.querySelector('.sheet.on'))return;e.preventDefault();gSwipeMs(e.key==='ArrowRight'?1:-1)});

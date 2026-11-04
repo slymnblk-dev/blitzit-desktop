@@ -194,7 +194,7 @@ modesPage=function(){
      ${c.wHabits?row('Widget style',`<div class="segc">${sOpt('hwStyle','auto','Default')}${sOpt('hwStyle','one','One at a time')}${sOpt('hwStyle','tiles','Big tiles')}${sOpt('hwStyle','pills','Pills')}</div>`,'On phones. Default: one at a time'):''}`)}
   ${card('goals',MD_GOAL,'Goals','Big outcomes, broken into milestones you can climb',gOn,
     `${gStarters()}${link('goals','Your goals',gn?`${gn} of ${G_MAX} active`:'None yet')}
-     ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','path','Path')}${sOpt('gView','poster','Poster')}</div>`)}
+     ${row('Opens as',`<div class="segc">${sOpt('gView','climb','The climb')}${sOpt('gView','focus','Focus')}</div>`)}
      ${row('North star on Home',tg('wStar'),'Your starred goal under the Today card')}`)}
   ${card('mx',MX_ICON,'KPIs & OKRs','Key numbers and quarterly results for each space',mxOn(),
     `<p class="md-note">Open them from the gauge on a space’s page. In a task, “Counts toward” links it to a KPI or key result.</p>
