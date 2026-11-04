@@ -49,7 +49,8 @@ function gFocusView(g){
       <div class="gf-list">${gCap('gf-'+m.id,ks,row,8,r=>r.k)}${live&&nx?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${m.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(m.t)}"></label>`:''}</div>
       ${m.done&&!g.done?`<button class="gf-sec gf-reo" data-gfreo="${m.id}">Open this milestone again</button>`:''}</div>`
     :m&&m.done&&!g.done?`<button class="gf-sec gf-reo" data-gfreo="${m.id}">Open this milestone again</button>`:'';
-  return `<div class="gf"><div class="gf-hd"><span class="gf-ge">Goal${eye?` · ${eye}`:''}</span><h1 class="gv-h">${g.e?`<span class="gd-e">${esc(g.e)}</span>`:''}${esc(g.name)}</h1></div>
+  /* the goal header, calm (0.300): the name, then one quiet line — no shouting label above */
+  return `<div class="gf"><div class="gf-hd"><h1 class="gv-h gf-h1">${g.e?`<span class="gf-ge2">${esc(g.e)}</span>`:''}<span>${esc(g.name)}</span></h1>${eye?`<p class="gf-meta">${eye}</p>`:''}</div>
     ${m?gfHead(g,m):''}
     <div class="gf-cols"><div class="gf-main">${g.done?`<div class="gf-card gf-all"><span class="gf-big">${CK}</span><b class="gf-tt">Goal achieved</b><p>Every step got you here.</p></div>`:gfCard(g,m)}</div>
       <div class="gf-side">${list}${gWhy(g)}${pr.of&&pr.n>=pr.of&&!g.done?`<button class="gv-win" data-gwin>${G_FLAG}Mark achieved</button>`:''}</div></div></div>`}

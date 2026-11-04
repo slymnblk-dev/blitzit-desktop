@@ -106,3 +106,8 @@ button.gf-tt:hover{text-decoration:underline;text-decoration-thickness:2px;text-
 .gf-list .gm-tt{flex-direction:column;align-items:flex-start;gap:2px}
 .gf-list .gm-tt b{flex:none;width:100%}
 .gf-list .gm-tt small{white-space:normal}
+/* 0.300 · a calmer goal header: name + one quiet line */
+.gf-hd .gf-h1{display:flex;align-items:center;gap:12px;font-size:clamp(26px,4.4vw,40px);letter-spacing:-.035em;line-height:1.1;margin:0}
+.gf-ge2{width:1.4em;height:1.4em;flex:none;border-radius:.42em;background:var(--surface);display:grid;place-items:center;font-size:.72em}
+.gf-hd .gf-meta{margin:8px 0 0;font-size:14px;color:var(--muted)}
+@media (max-width:699px){.gf-hd .gf-h1{font-size:26px;gap:10px}.gf-hd .gf-meta{font-size:13px;margin-top:6px}}
