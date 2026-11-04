@@ -98,3 +98,10 @@
 - Only two goal views now: **The climb** (computers) and **Focus** (`12g7-goal-focus.js`). Sunrise and Countdown are gone; phones always show Focus.
 - Saved `path`/`poster` views (goal or Settings) are migrated to `focus`. Old `gpp-*`/`gpo-*` code in 08n is unused on phones now.
 - Finish line chip (08w `gmxPaint`) also shows in Focus (`.gf-mt`). The ⋯ "Finish milestone" handler uses stopImmediatePropagation so the reopen dialog doesn't pop right after finishing.
+
+## Flow design (0.302) — `src/js/12gz-flow.js`, `src/css/37-flow.css`, `tests/flow.spec.mjs`
+- Settings → Appearance → Design: **Classic** (default, unchanged) or **Flow**. `S.cfg.ui`, and `root[data-ui="flow"]`.
+- Flow is 11 parts, each with its own switch (`S.cfg.flNext`, `flPlus`, … default on). CSS is scoped `:root[data-fl~="part"]`; JS checks `flowOn('part')`.
+- Parts: next (Start/Done/Later on Up next), plus (+ menu with page kind first on Habits/Goals; floating + on boards), shell (page headers), presets (Simple/Planner/Everything on Modes), shapes, thumb (phone stage tabs at the bottom), panel (desktop details docked right), inline (pencil rename in the board top bar), wins (tick burst + weekly recap Sun/Mon, `cfg.flRecapX`), empty (example + Add a task), kit.
+- To merge a part into Classic later: move its CSS out of the `[data-fl~=…]` guard and drop its `flowOn` check, then delete its switch. One part at a time, with its tests.
+- The full suite runs in Classic, so it proves Classic didn't change.

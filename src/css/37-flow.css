@@ -1,0 +1,120 @@
+/* ---------- Flow design (0.302): everything here only applies with Flow on, part by part ---------- */
+
+/* Settings: the Design row */
+.fl-p{margin:14px 0 4px}
+
+/* next: Start / Done / Later on the Up next card */
+.fl-acts{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative;z-index:2}
+.fl-of{flex-basis:100%;font-size:12px;font-weight:700;opacity:.75;margin-bottom:2px}
+.fl-acts button{height:48px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-weight:800;font-size:15px;
+  transition:transform .15s,background .15s;cursor:pointer}
+.fl-acts button:active{transform:scale(.96)}
+.fl-acts svg{width:18px;height:18px}
+.fl-go{flex:1;min-width:120px;background:rgba(0,0,0,.82);color:#fff;border:0}
+.fl-sq{width:48px;background:rgba(0,0,0,.12);color:inherit;border:0}
+.fl-sq:hover{background:rgba(0,0,0,.2)}
+.fl-acts button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+:root[data-fl~="next"] .td-card.fl-next{display:flex;flex-direction:column}
+:root[data-fl~="next"] .td-card.fl-next .td-go{display:none}
+:root[data-fl~="next"] .cm-up.fl-next{flex-wrap:wrap}
+:root[data-fl~="next"] .cm-up.fl-next .cm-go{display:none}
+:root[data-fl~="next"] .cm-up.fl-next .fl-acts{flex-basis:100%}
+@media (min-width:1100px){.fl-of{flex-basis:auto;margin:0 8px 0 0}.fl-go{flex:0 0 auto;padding:0 26px}}
+
+/* plus: the floating + on every board (computers); the suggested kind in the menu */
+@media (min-width:1100px){:root[data-fl~="plus"][data-view="space"] .nw-fab{display:grid}}
+.fl-sugl{font-size:11px;font-weight:700;color:var(--muted);margin-left:2px}
+.nw-menu .fl-sug .nw-l{box-shadow:0 0 0 2px var(--text),0 8px 24px rgba(0,0,0,.25)}
+
+/* shell: every page header the same */
+:root[data-fl~="shell"] .set-top .icon-btn{width:42px;height:42px;border-radius:13px;background:var(--surface2);color:var(--text)}
+:root[data-fl~="shell"] .set-top .icon-btn svg{width:20px;height:20px}
+:root[data-fl~="shell"] .pg-eye{letter-spacing:.08em}
+
+/* presets */
+.fl-pre{display:flex;flex-direction:column;gap:10px;margin:4px 0 22px}
+.fl-pc{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;padding:16px 18px;border-radius:20px;background:var(--surface);
+  border:2px solid var(--line);color:var(--text);font:inherit;cursor:pointer;transition:border-color .15s,transform .15s}
+.fl-pc:hover{border-color:color-mix(in srgb,var(--text) 30%,transparent)}
+.fl-pc:active{transform:scale(.99)}
+.fl-pc.on{border-color:var(--today)}
+.fl-pt{display:flex;justify-content:space-between;align-items:center;width:100%}
+.fl-pt b{font-size:17px;font-weight:800}
+.fl-pc small{color:var(--muted);font-size:14px;line-height:1.4}
+.fl-rad{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;color:#fff}
+.fl-rad svg{width:13px;height:13px;opacity:0}
+.fl-pc.on .fl-rad{background:var(--today);border-color:var(--today)}
+.fl-pc.on .fl-rad svg{opacity:1}
+.fl-tags{display:flex;flex-wrap:wrap;gap:6px}
+.fl-tags em{font-style:normal;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--surface2)}
+.fl-cus{margin:2px 4px 0}
+
+/* shapes: spaces are rounded squares, lists are dots */
+:root[data-fl~="shapes"] .sp-card:not(.lo-row) .sp-ico{border-radius:12px}
+:root[data-fl~="shapes"] .lo-ico i,:root[data-fl~="shapes"] .hl2-dot,:root[data-fl~="shapes"] .lo-sq{border-radius:50%!important}
+:root[data-fl~="shapes"] .sp-mini,:root[data-fl~="shapes"] .sp-sq:not(.lo-sq),:root[data-fl~="shapes"] .hl2-sq{border-radius:5px}
+:root[data-fl~="shapes"] .hm-sp .hm-ic{border-radius:10px}
+
+/* thumb: phones keep the stage tabs just above the bottom bar */
+@media (max-width:1099px){
+  :root[data-fl~="thumb"][data-view="space"] .gauge{position:fixed;left:16px;right:16px;bottom:calc(var(--fl-dock,96px) + 6px);z-index:15;margin:0;
+    padding:6px;border-radius:18px;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 0 0 1px var(--line)}
+  :root[data-fl~="thumb"][data-view="space"] .list{padding-bottom:calc(var(--fl-dock,96px) + 90px)}
+  :root[data-fl~="thumb"][data-view="space"] .hero{margin-bottom:14px}
+}
+
+/* panel: computers dock task details on the right; the board moves over and stays visible */
+@media (min-width:1100px){
+  :root[data-fl~="panel"] #detailSheet:not(.wide){top:0;bottom:0;right:0;width:420px}
+  :root[data-fl~="panel"] #detailSheet:not(.wide) .sheet-in{border-radius:0;box-shadow:-1px 0 0 var(--line)}
+  :root[data-fl~="panel"] body:has(#detailSheet.on:not(.wide)) .scrim.on{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+  :root[data-fl~="panel"] body:has(#detailSheet.on:not(.wide)) .main{margin-right:420px;transition:margin .3s cubic-bezier(.2,.8,.2,1)}
+  :root[data-fl~="panel"] .main{transition:margin .3s cubic-bezier(.2,.8,.2,1)}
+}
+
+/* inline: the rename field sits right in the title */
+.fl-ren{font:inherit;font-weight:700;font-size:15px;color:var(--text);background:var(--surface2);border:0;border-radius:10px;box-shadow:0 0 0 2px var(--today);outline:none;padding:0 12px;height:36px;width:260px}
+.fl-renb{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--muted);background:transparent;border:0;cursor:pointer;margin-left:2px}
+.fl-renb:hover{color:var(--text);background:var(--surface2)}
+.fl-renb svg{width:16px;height:16px}
+.fw-crumbs{display:flex;align-items:center}
+
+/* wins: a small burst at the tick */
+.fl-burst{position:fixed;width:0;height:0;pointer-events:none;z-index:60}
+.fl-burst i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--done);animation:flB .65s cubic-bezier(.2,.8,.2,1) forwards}
+.fl-burst i:nth-child(1){--a:0deg}.fl-burst i:nth-child(2){--a:60deg;background:var(--week)}.fl-burst i:nth-child(3){--a:120deg}
+.fl-burst i:nth-child(4){--a:180deg;background:var(--today)}.fl-burst i:nth-child(5){--a:240deg}.fl-burst i:nth-child(6){--a:300deg;background:var(--week)}
+@keyframes flB{0%{transform:rotate(var(--a)) translateX(4px) scale(1);opacity:1}100%{transform:rotate(var(--a)) translateX(26px) scale(.3);opacity:0}}
+@media (prefers-reduced-motion:reduce){.fl-burst{display:none}}
+/* the weekly recap */
+.fl-recap{position:relative;display:flex;flex-direction:column;gap:6px;margin:14px 0;padding:20px;border-radius:22px;background:var(--text);color:var(--bg)}
+.fl-re{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.fl-rn{font-size:44px;font-weight:800;line-height:1;letter-spacing:-.03em}
+.fl-rs{font-size:14px;font-weight:600;opacity:.75}
+.fl-bars{display:flex;align-items:flex-end;gap:5px;height:56px;margin:6px 0 4px}
+.fl-bars i{flex:1;border-radius:4px;background:color-mix(in srgb,var(--bg) 22%,transparent)}
+.fl-bars i.best{background:var(--today)}
+.fl-rx{position:absolute;z-index:3;top:12px;right:12px;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:inherit;opacity:.6;background:transparent;border:0;cursor:pointer}
+.fl-rx:hover{opacity:1}
+.fl-rx svg{width:18px;height:18px}
+#dHome .fl-recap{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:36px;align-items:center;padding:22px 26px}
+#dHome .fl-recap>*{grid-column:1}
+#dHome .fl-recap .fl-bars{grid-column:2;grid-row:1 / span 4;height:84px;margin:0 44px 0 0}
+
+/* empty: an example and one clear button */
+.fl-empty{display:flex;flex-direction:column;align-items:center;gap:6px}
+.fl-ex{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:340px;margin-bottom:14px;opacity:.75}
+.fl-exl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fl-exr{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;height:56px;padding:0 16px;border-radius:16px;border:2px dashed var(--line);font-weight:600;color:var(--text);text-align:left}
+.fl-exr i{width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);flex:none}
+.fl-exr small{margin-left:auto;color:var(--muted);font-weight:600}
+.fl-eb{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 20px;margin-top:14px;border-radius:14px;background:var(--text);color:var(--bg);border:0;font:inherit;font-weight:800;cursor:pointer}
+.fl-eb svg{width:18px;height:18px}
+
+/* kit: one set of corners, buttons and focus rings */
+:root[data-fl~="kit"] .primary{border-radius:14px}
+:root[data-fl~="kit"] .opt,:root[data-fl~="kit"] .chip{border-radius:999px}
+:root[data-fl~="kit"] .sheet-in{border-radius:26px 26px 0 0}
+@media (min-width:1100px){:root[data-fl~="kit"] .sheet .sheet-in{border-radius:24px}}
+:root[data-fl~="kit"] button:focus-visible,:root[data-fl~="kit"] [role="button"]:focus-visible{outline:2px solid var(--today);outline-offset:2px}
+:root[data-fl~="kit"] .txt-btn,:root[data-fl~="kit"] .ghost-btn{border-radius:12px}
