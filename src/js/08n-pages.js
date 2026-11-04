@@ -237,7 +237,7 @@ function gMenuPhone(g){const m=gSel(g),it=(a,ic,t,w)=>`<button ${a} role="menuit
   return `<div class="lh-wrap gd-mw"><button class="pm-btn" id="gdMore" type="button" aria-label="Milestone and goal options" aria-haspopup="menu">${DOTS_V}</button>
     <div class="sp-pop lh-pop pm-pop gd-pop2" id="gdPop" role="menu">
     ${m?`<span class="pm-lbl">Milestone · ${esc(m.t)}</span>
-      ${g.done?'':it('data-gmx="tk"',m.done?G_REOPEN:CK,m.done?'Reset milestone':'Mark milestone done')}
+      ${g.done?'':it('data-gmx="tk"',m.done?G_REOPEN:CK,m.done?'Open milestone again':'Finish milestone')}
       ${it('data-gmx="ren"',PEN_S,'Rename milestone')}
       ${it('data-gmx="del"',BIN_S,'Delete milestone',1)}
       <span class="pm-sep"></span>`:''}
@@ -359,7 +359,7 @@ function gTaskMenu(g,r){const m=r.m,dest=g.ms.filter(x=>x!==m),k=r.k;
 function gMsMenu(g,m){const live=!m.done&&!g.done;
   return [{t:'Rename',ic:PEN_S,act:()=>openMsEdit(m.id)},
     ...(live?[{t:'Add a task',ic:PLUS_S,act:()=>{gSelId=m.id;drawGoal();gFocus('#gMtIn')}}]:[]),
-    ...(g.done?[]:[{t:m.done?'Reopen milestone':'Mark milestone done',ic:CK,act:()=>gMsToggle(g,m)}]),
+    ...(g.done?[]:[{t:m.done?'Open milestone again':'Finish milestone',ic:CK,act:()=>m.done?gfReopenAsk(g,m):gMsToggle(g,m)}]),
     {t:'Edit all milestones',ic:GRIP,act:()=>openMsEdit()},
     {sep:1},{t:'Delete milestone',ic:BIN_S,warn:1,act:()=>gMsDelete(g,m)}]}
 /* tick a task of either kind; a list task that reopens goes back to My week (or Later when My week is full) */
@@ -475,7 +475,7 @@ function gMsPanel(g,wide){const sel=gSel(g),nx=gNext(g),i=sel?g.ms.indexOf(sel):
           <span class="gpp-sub">${ts.length?`${dn} of ${ts.length} ${ts.length===1?'task':'tasks'}`:'No tasks yet'}${wide?MORE(`data-gmm="${sel.id}"`,`Options for milestone ${esc(sel.t)}`):''}</span></div>${ar(nxm,' nx','Next milestone')}</div>
       <div class="gpp-ts${sl}" data-gcard="${sel.id}">${ts.length?`<div class="gm-ts">${gCap('ms-'+sel.id,ts,gRow,3,r=>r.k)}</div>`:''}
         ${live?`<label class="gm-add"><span class="gm-plus">${PLUS_S}</span><input id="gMtIn" data-gms="${sel.id}" placeholder="Add a task" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Add a task to ${esc(sel.t)}"></label>`:''}
-        ${g.done?'':sel.done?`<div class="gpp-fin"><span class="gpp-fb"><span class="gpp-fk">${CK}</span>Milestone done</span><button class="gpp-done gpp-rs" data-gtk="${sel.id}" aria-pressed="true">${G_REOPEN}Reset milestone</button></div>`
+        ${g.done?'':sel.done?`<div class="gpp-fin"><span class="gpp-fb"><span class="gpp-fk">${CK}</span>Milestone done</span><button class="gpp-done gpp-rs" data-gtk="${sel.id}" aria-pressed="true">${G_REOPEN}Open again</button></div>`
           :`<button class="gpp-done gpp-mk" data-gtk="${sel.id}" aria-pressed="false"><span class="gpp-dk">${CK}</span><span class="gpp-l1">Mark milestone done</span><span class="gpp-l2" aria-hidden="true">Done</span></button>`}</div>`}
   return `${g.ms.length?`<div class="gpp-bar" role="group" aria-label="Milestones">${steps}</div>`:''}${body}${gAddMsRow(g)}`}
 const gWinRow=g=>{const pr=gProg(g);return pr.of>0&&pr.n>=pr.of&&!g.done?`<button class="gpp-done gpp-win" data-gwin><span class="gpp-dk">${G_FLAG}</span>Mark goal achieved</button>`:''};

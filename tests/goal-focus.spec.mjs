@@ -22,8 +22,9 @@ test('computer: pick Focus in the ⋯ menu; Up next shows the next task and its 
   await expect(page.locator('#gdIn .gf')).toBeVisible();
   await expect(page.locator('.gf-card .gf-tt')).toHaveText('Long run');
   await expect(page.locator('.gf-card .gf-st')).toHaveCount(2);
-  await expect(page.locator('.gf-seg')).toHaveCount(3);
-  await expect(page.locator('.gf-seg.sel')).toContainText('Run 10 km');
+  await expect(page.locator('.gf-dot')).toHaveCount(3);                      // milestone first (0.299)
+  await expect(page.locator('.gf-mt b')).toHaveText('Run 10 km');
+  await expect(page.locator('.gf-mn')).toHaveText(/Milestone 2 of 3/i);
   // tick a step
   await page.locator('.gf-card [data-gsub="t9001|2"]').click();
   await expect.poll(() => page.evaluate(() => S.tasks.find(t => t.id === 9001).subs[1].done)).toBe(true);
@@ -36,12 +37,12 @@ test('computer: pick Focus in the ⋯ menu; Up next shows the next task and its 
   await expect.poll(() => page.evaluate(() => S.tasks.find(t => t.id === 9001).stage)).toBe('today');
   await expect(page.locator('[data-gftoday]')).toHaveCount(0);                 // already in Today: the button goes away
   // "Then in …" lists the other open tasks; done ones fold under "1 done"
-  await expect(page.locator('.gf-after .gm-t')).toHaveCount(1);
-  await page.locator('[data-gfdone="m2"]').click();
-  await expect(page.locator('.gf-after .gm-t')).toHaveCount(2);
+  await expect(page.locator('.gf-after .gm-t')).toHaveCount(3);                // one list: every task of the milestone
+  await expect(page.locator('.gf-after .gm-t.gf-nx')).toHaveCount(1);          // the next one is marked
   // the strip: look at another milestone
-  await page.locator('.gf-seg[data-gsel="m3"]').click();
-  await expect(page.locator('.gf-card .gf-tt')).toHaveText('No tasks yet');
+  await page.locator('[data-gfnav="1"]').click();                              // › to the next milestone
+  await expect(page.locator('.gf-mt b')).toHaveText('Run 15 km');
+  await expect(page.locator('.gf-card .gf-tt')).toHaveText('Add the first task');
   await expect(page.locator('.gf-card #gMtIn')).toBeVisible();
   // remembered for this goal
   expect(await page.evaluate(() => S.goals[0].view)).toBe('focus');
@@ -76,10 +77,10 @@ test('empty cases: no milestones asks for the first one; all tasks done offers M
   const errors = await openApp(page);
   await seed(page, 'focus');
   await page.evaluate(() => { S.tasks.filter(t => t.goal === 'gx').forEach(t => { t.stage = 'done'; t.doneAt = Date.now(); }); save(); drawGoal(); });
-  await expect(page.locator('.gf-card [data-gtk="m2"]')).toBeVisible();
+  await expect(page.locator('.gf-card [data-gffin="m2"]')).toBeVisible();          // Finish milestone (0.299)
   await page.evaluate(() => { S.goals[0].ms = []; save(); drawGoal(); });
   await expect(page.locator('.gf-card #gMsIn')).toBeVisible();
-  await expect(page.locator('.gf-strip')).toHaveCount(0);
+  await expect(page.locator('.gf-mh')).toHaveCount(0);
   noErrors(errors);
 });
 
@@ -96,7 +97,7 @@ test('phone: Mark task done works for a task that lives only in the goal, and th
   await expect(page.locator('.gf-card .gf-tt')).toHaveText('10 words a day');
   await page.locator('.gf-card .gf-go').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);   // last task done: the milestone is done
-  await expect(page.locator('.gf-seg.sel')).toContainText('Chat', { timeout: 4000 }); // and it moves on to the next one
+  await expect(page.locator('.gf-mt b')).toHaveText('Chat', { timeout: 4000 });     // and it moves on to the next one
   noErrors(errors);
 });
 
@@ -111,14 +112,35 @@ test('Start is the main action for a task; once every step is ticked, Mark task 
   noErrors(errors);
 });
 
-test('tapping a finished milestone shows what was done in it (ticked), with a way to reopen', async ({ page }) => {
+test('a finished milestone shows what you did; opening it again asks first; every task ticked offers Finish milestone (0.299)', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = await openApp(page);
   await seed(page, 'focus');
-  await page.locator('.gf-seg[data-gsel="m1"]').click();
-  await expect(page.locator('.gf-card .gf-tt')).toHaveText('Milestone done');
-  await expect(page.locator('.gf-card .gf-did .gm-t.on')).toHaveCount(1);
-  await expect(page.locator('.gf-card .gf-did')).toContainText('Run 3 km');
-  await expect(page.locator('.gf-card .gf-reo')).toBeVisible();
+  await page.locator('.gf-dot[data-gsel="m1"]').click();
+  await expect(page.locator('.gf-fin')).toContainText('Finished');
+  await expect(page.locator('.gf-ah')).toHaveText('What you did');
+  await expect(page.locator('.gf-after .gm-t.on')).toHaveCount(1);
+  await expect(page.locator('.gf-after')).toContainText('Run 3 km');
+  // open it again: asked first, tasks stay ticked
+  await page.locator('[data-gfreo]').click();
+  await expect(page.locator('#gfReoP')).toContainText('stays ticked');
+  await page.locator('#gfReoKeep').click();
+  await expect.poll(() => page.evaluate(() => [S.goals[0].ms[0].done, S.goals[0].ms[0].items[0].done])).toEqual([false, true]);
+  // every task ticked → one clear Finish milestone
+  await expect(page.locator('[data-gffin="m1"]')).toBeVisible();
+  await page.locator('[data-gffin="m1"]').click();
+  await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
+  noErrors(errors);
+});
+
+test('opening a milestone again can also untick its tasks', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await seed(page, 'focus');
+  await page.locator('.gf-dot[data-gsel="m1"]').click();
+  await page.locator('[data-gfreo]').click();
+  await page.locator('#gfReoAll').click();
+  await expect.poll(() => page.evaluate(() => [S.goals[0].ms[0].done, S.goals[0].ms[0].items[0].done])).toEqual([false, false]);
+  await expect(page.locator('.gf-card .gf-tt')).toHaveText('Run 3 km');
   noErrors(errors);
 });

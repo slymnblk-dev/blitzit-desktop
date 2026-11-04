@@ -227,7 +227,7 @@ test('goal page: double tap ticks once, past due reads right, summit, calm redra
   await page.locator('#gdPg .gpp-ts .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([true, 'done', 'done']);
   await expect(page.locator('#gdPg .gpp-eye')).toContainText('done'); // the moment shows on the same milestone
-  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Reset milestone'); // and undoing it is right there
+  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Open again'); // and undoing it is right there (plain words, 0.299)
   await page.waitForTimeout(450);
   await page.locator('#gdPg .gpp-ts .gm-t').nth(1).locator('[data-gmt]').click();
   await expect.poll(st).toEqual([false, 'done', 'week']);
@@ -537,8 +537,10 @@ test('phone Path: a milestone with no tasks can be marked done (and reopened) fr
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(true);
   await page.keyboard.press('Escape');
   await page.evaluate(() => { gSelId = 'm0'; drawGoal(); });
-  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Reset milestone');
+  await expect(page.locator('#gdPg .gpp-done')).toHaveText('Open again');
   await page.locator('#gdPg .gpp-done').click();
+  await expect(page.locator('#gfReo')).toHaveClass(/on/);                   // asks first: tasks stay ticked unless you choose
+  await page.locator('#gfReoKeep').click();
   await expect.poll(() => page.evaluate(() => S.goals[0].ms[0].done)).toBe(false);
   // phones: one ⋯ menu in two parts (this milestone, then the goal); no milestone ⋯ on the page; no why / north star here
   await expect(page.locator('#gdPg .gpp [data-gmm]')).toHaveCount(0);

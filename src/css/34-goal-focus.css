@@ -69,3 +69,40 @@ button.gf-tt:hover{text-decoration:underline;text-decoration-thickness:2px;text-
 .gf-did{margin-top:14px}
 .gf-did .gm-t{border-top:1px solid color-mix(in srgb,var(--text) 8%,transparent)}
 .gf-reo{margin-top:14px;height:44px;font-size:14px;color:var(--muted)}
+/* ---------- 0.299 · milestone first ---------- */
+.gf-hd .gv-h{font-size:clamp(28px,6vw,48px)}
+.gf-mh{display:flex;align-items:center;gap:12px;margin-top:26px}
+.gf-nav{width:40px;height:40px;border-radius:13px;background:var(--surface);display:grid;place-items:center;color:var(--text);flex:none;transition:background .15s,opacity .15s}
+.gf-nav svg{width:18px;height:18px}.gf-nav:disabled{opacity:.3}.gf-nav:not(:disabled):hover{background:var(--surface2)}
+.gf-mt{flex:1;min-width:0;text-align:center}
+.gf-mn{display:block;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.gf-mt b{display:block;margin-top:2px;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.15;overflow-wrap:anywhere}
+.gf-dots{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.gf-dot{width:8px;height:8px;border-radius:9px;padding:0;background:var(--line);transition:width .25s cubic-bezier(.2,.8,.2,1),background .2s}
+.gf-dot.done{background:color-mix(in srgb,var(--week) 70%,transparent)}
+.gf-dot.sel{width:24px;background:var(--week)}
+.gf-mp{display:flex;align-items:center;gap:12px;margin-top:14px}
+.gf-mp .gf-prog{flex:1;margin:0;height:6px}
+.gf-mp small{font-size:13px;color:var(--muted);white-space:nowrap}
+.gf-fin{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-size:14px;font-weight:700;color:var(--done)}
+.gf-fin svg{width:15px;height:15px}
+/* every task ticked: one clear way on */
+.gf-all{text-align:center;background:linear-gradient(160deg,color-mix(in srgb,var(--done) 16%,var(--surface)),var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--done) 35%,transparent)}
+.gf-big{width:56px;height:56px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:var(--done);color:#0D2A1C}
+.gf-big svg{width:28px;height:28px}
+.gf-all .gf-tt{margin-top:12px;text-align:center}
+.gf-all p{margin:6px 0 0;color:var(--muted);font-size:15px;line-height:1.45}
+.gf-ok{width:100%;margin-top:16px;background:var(--done)!important;color:#0D2A1C!important}
+.gf-link{display:block;margin:8px auto 0;padding:8px;font:inherit;font-size:14px;color:var(--muted)}
+.gf-link:hover{color:var(--text)}
+/* the next task is marked in the list */
+.gf-nx .gm-tt b::after{content:'NEXT';margin-left:8px;font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--week-ink,var(--week));vertical-align:2px}
+.gf-reo{margin-top:12px;width:100%;justify-content:center;height:48px}
+#gfReo .cap-in{text-align:left}#gfReo h3{margin-top:0}
+#gfReo .gf-link{margin-top:2px}
+@media (max-width:699px){.gf-mt b{font-size:24px}.gf-mh{margin-top:20px}}
+@media (prefers-reduced-motion:reduce){.gf-dot{transition:none}}
+/* list tasks show where they live under the name, so a long name never gets squeezed into a narrow column (0.299 fix) */
+.gf-list .gm-tt{flex-direction:column;align-items:flex-start;gap:2px}
+.gf-list .gm-tt b{flex:none;width:100%}
+.gf-list .gm-tt small{white-space:normal}
