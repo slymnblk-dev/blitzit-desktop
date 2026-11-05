@@ -185,3 +185,34 @@
   :root[data-ui="flow"] #list > li.empty.fl-empty{max-width:none;text-align:center;padding:28px 8px}
   :root[data-ui="flow"] #list > li.empty.fl-empty .fl-ex{max-width:none}
 }
+
+/* ---------- Flow layout pass (0.306): the shapes, not only the colours ---------- */
+/* 1. page titles: calmer everywhere (Classic uses very big display titles) */
+@media (max-width:1099px){
+  :root[data-ui="flow"] :is(.home-hero h1,.ib-h,#inboxPg .ib-h,.hp-h,.hb-h,.set-in h1,.mt2-h,.rv-h,.rp-h,.gv-h,.gb-head .gv-h){font-size:36px!important;line-height:1.05!important;letter-spacing:-.035em!important}
+}
+@media (min-width:1100px){
+  :root[data-ui="flow"] :is(:root[data-view="home"] .m-date,.cm-hd h1,.ib-h,#inboxPg .ib-h,.hp-h,.hb-h,.set-in h1,.mt2-h,.rv-h,.rp-h,.gv-h,.gw-l .gv-h,.gb-head .gv-h){font-size:44px!important;line-height:1.05!important;letter-spacing:-.035em!important}
+  :root[data-ui="flow"] .board.focused .col.fcs .col-t h2{font-size:32px}
+}
+/* 2. computer boards: each stage is a soft panel, each task a card */
+@media (min-width:1100px){
+  :root[data-ui="flow"] .board{gap:14px;padding:28px 28px 20px}
+  :root[data-ui="flow"] .board .col,
+  :root[data-ui="flow"] .board:not(.focused) .col[data-s="today"],:root[data-ui="flow"] .board.focused .col.fcs[data-s="today"]{margin:0;padding:14px 12px 12px;border-radius:22px;background:var(--side);box-shadow:inset 0 0 0 1px var(--line)}
+  :root[data-ui="flow"] .board:not(.focused) .col[data-s="today"],:root[data-ui="flow"] .board.focused .col.fcs[data-s="today"]{box-shadow:inset 0 0 0 2px var(--today)}
+  :root[data-ui="flow"] .board .glint{display:none!important}
+  :root[data-ui="flow"] .col-h{border-bottom:0;padding:2px 6px 4px;align-items:center}
+  :root[data-ui="flow"] .col-h h2{font-size:20px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+  :root[data-ui="flow"] .col-h h2::before{content:'';width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+  :root[data-ui="flow"] .col-n{font-size:12px;font-weight:700;min-width:24px;height:22px;padding:0 7px;border-radius:999px;background:var(--surface2);display:inline-grid;place-items:center}
+  :root[data-ui="flow"] .col-sum{margin:4px 6px 10px}
+  :root[data-ui="flow"] .col-list .row{border:0!important;border-radius:14px;margin-bottom:8px}
+  :root[data-ui="flow"] .col-list .row-in{background:var(--surface);padding:12px 12px;border-radius:14px;box-shadow:0 1px 0 var(--line)}
+  :root[data-ui="flow"] .col-list .row-in:hover{background:var(--surface2)}
+  :root[data-ui="flow"] .col-list .row-in:hover .title{color:var(--text)}
+  :root[data-ui="flow"] .col-list .under{border-radius:14px}
+  :root[data-ui="flow"] .col-empty{margin:4px 6px;padding:18px 12px;border-radius:14px;border:2px dashed var(--line);text-align:center}
+}
+/* narrow columns: wrap between words, never mid-word */
+:root[data-ui="flow"] .col-list .title{word-break:normal;overflow-wrap:break-word;hyphens:auto}

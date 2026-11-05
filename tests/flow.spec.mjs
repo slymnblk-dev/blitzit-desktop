@@ -252,3 +252,19 @@ test('Flow list view (phone): task cards, one segmented stage control lined up w
   expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gauge .bar')).display)).toBe('block');
   noErrors(errors);
 });
+
+test('Flow layout (computer): calmer page titles; each stage a panel, each task a card; Classic board unchanged', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  const look = () => page.evaluate(() => { const c = document.querySelector('.board .col[data-s="week"]'), r = c.querySelector('.col-list .row-in'), h = c.querySelector('.col-h h2');
+    return { panel: getComputedStyle(c).borderRadius, card: getComputedStyle(r).borderRadius, h2: getComputedStyle(h).fontSize }; });
+  await page.evaluate(() => { Object.assign(S.cfg, { ui: 'classic', motion: false }); save(); applySettings(); openSpace(S.spaces[0].id); render(); });
+  const classic = await look();
+  await page.evaluate(() => { S.cfg.ui = 'flow'; applySettings(); render(); });
+  expect(await look()).toEqual({ panel: '22px', card: '14px', h2: '20px' });
+  expect(classic.panel).toBe('0px');
+  expect(classic.h2).not.toBe('20px');
+  await page.evaluate(() => { goHome(); openInbox(); });
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#inboxPg .ib-h')).fontSize)).toBe('44px');
+  noErrors(errors);
+});

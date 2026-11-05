@@ -110,3 +110,5 @@
 - Guard tests: `Flow look (dark|light, phone|computer)` open every page and fail if any Classic theme colour shows.
 - Tools: `node tools/flow-survey.mjs <dir> dark|light phone|desk` (screenshots of every page, `SET=2` for the second batch), `node tools/flow-audit.mjs dark phone` (contrast check).
 - Still Classic-styled on purpose: the first-run intro and the welcome splash (always dark), and the Focus screen colour (your own pick in Settings → Focus).
+- **Flow layout (0.305–0.306):** phone list view (task cards, one segmented stage control, centred empty state), calmer page titles everywhere (36px phone / 44px computer), computer board columns as panels with task cards.
+- Kept on purpose in Flow: The climb goal view illustration, the sun brand marks (Home, Habits empty), the first-run intro (dark), the Focus colour (user's pick), the phone tab bar shape. The Windows pop-out timer was not checked visually here (it loads the same site).
