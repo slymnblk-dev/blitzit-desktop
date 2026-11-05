@@ -86,7 +86,7 @@
 
 /* thumb: phones keep the stage tabs just above the bottom bar */
 @media (max-width:1099px){
-  :root[data-fl~="thumb"][data-view="space"] .gauge{position:fixed;left:16px;right:16px;bottom:calc(var(--fl-dock,96px) + 6px);z-index:15;margin:0;
+  :root[data-fl~="thumb"][data-view="space"] .gauge{position:fixed;left:max(16px,calc(50% - 208px));right:max(16px,calc(50% - 208px));bottom:calc(var(--fl-dock,96px) + 6px);z-index:15;margin:0;
     padding:6px;border-radius:18px;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 0 0 1px var(--line)}
   :root[data-fl~="thumb"][data-view="space"] .list{padding-bottom:calc(var(--fl-dock,96px) + 90px)}
   :root[data-fl~="thumb"][data-view="space"] .hero{margin-bottom:14px}
@@ -162,3 +162,26 @@
 :root[data-ui="flow"] .gf-card{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
 :root[data-ui="flow"] .gf-prog i{background:var(--today)}
 :root[data-ui="flow"] .gf-st.on .gf-sk{background:var(--today);color:var(--fl-ink)}
+
+/* ---------- Flow list view on phones (0.305): like the mockup ----------
+   a calmer title, tasks as soft cards, the stages as one segmented control, a centred empty state */
+@media (max-width:1099px){
+  :root[data-ui="flow"] .hero h1{font-size:clamp(38px,11vw,48px);line-height:1;letter-spacing:-.035em}
+  :root[data-ui="flow"] .hero{margin-bottom:18px}
+  :root[data-ui="flow"] #list .row{border-top:0;border-radius:18px;margin-bottom:8px}
+  :root[data-ui="flow"] #list .row-in{background:var(--surface);border-radius:18px;padding:16px 16px;gap:14px}
+  :root[data-ui="flow"] #list .under{border-radius:18px}
+  :root[data-ui="flow"] #list .row-in .check{margin-top:1px}
+  /* stages: one segmented control */
+  :root[data-ui="flow"] .gauge{gap:4px;padding:4px;border-radius:16px;background:var(--surface);box-shadow:0 0 0 1px var(--line);margin:0 0 22px}
+  :root[data-ui="flow"] .gauge .seg{height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
+  :root[data-ui="flow"] .gauge .bar{display:none}
+  :root[data-ui="flow"] .gauge .seg-l{margin:0;justify-content:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+  :root[data-ui="flow"] .gauge .seg-l b{color:inherit;opacity:.7;font-size:12px}
+  :root[data-ui="flow"] .gauge .seg.on{background:var(--c)}
+  :root[data-ui="flow"] .gauge .seg.on .seg-l{color:var(--fl-ink);font-weight:800}
+  :root[data-ui="flow"][data-fl~="thumb"][data-view="space"] .gauge{background:color-mix(in srgb,var(--surface) 92%,transparent);padding:4px}
+  /* the empty state, centred */
+  :root[data-ui="flow"] #list > li.empty.fl-empty{max-width:none;text-align:center;padding:28px 8px}
+  :root[data-ui="flow"] #list > li.empty.fl-empty .fl-ex{max-width:none}
+}

@@ -231,3 +231,24 @@ test('Flow look: buttons on the coral use dark ink (dark look); Classic keeps it
   expect(await page.evaluate(() => getComputedStyle(document.getElementById('goBtn')).color)).toBe('rgb(255, 255, 255)');
   noErrors(errors);
 });
+
+test('Flow list view (phone): task cards, one segmented stage control lined up with the page, a centred empty state', async ({ page }) => {
+  await page.setViewportSize({ width: 572, height: 918 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { Object.assign(S.cfg, { ui: 'flow', theme: 'dark', motion: false }); save(); applySettings(); openSpace(S.spaces[0].id); S.stage = 'week'; render(); });
+  const st = await page.evaluate(() => { const r = document.querySelector('#list .row-in'), cs = getComputedStyle(r);
+    return [cs.borderRadius, cs.backgroundColor, getComputedStyle(document.querySelector('#gauge .bar')).display]; });
+  expect(st).toEqual(['18px', 'rgb(24, 26, 31)', 'none']);
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.querySelector('#gauge .seg.on')).backgroundColor)).toBe('rgb(255, 184, 107)'); // the active stage is filled
+  const g = await page.locator('#gauge').boundingBox(), l = await page.locator('#list').boundingBox();
+  expect(Math.abs(g.x - l.x)).toBeLessThan(2);
+  expect(Math.abs(g.width - l.width)).toBeLessThan(2);
+  await page.evaluate(() => { const sp = S.spaces[0].id; S.tasks.forEach(t => { if (listOf(t.list).space === sp && t.stage === 'backlog') t.stage = 'week'; }); S.stage = 'backlog'; render(); });
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#list > li.empty')).textAlign)).toBe('center');
+  const e = await page.locator('#list > li.empty').boundingBox();
+  expect(Math.abs(e.width - l.width)).toBeLessThan(2);
+  // Classic: the list view is untouched
+  await page.evaluate(() => { S.cfg.ui = 'classic'; applySettings(); S.stage = 'week'; render(); });
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#gauge .bar')).display)).toBe('block');
+  noErrors(errors);
+});
