@@ -158,3 +158,7 @@
 :root[data-ui="flow"] .fl-go{background:var(--fl-ink);color:var(--today)}
 :root[data-ui="flow"] .fl-sq{background:color-mix(in srgb,var(--fl-ink) 12%,transparent);color:var(--fl-ink)}
 :root[data-ui="flow"] .fl-sq:hover{background:color-mix(in srgb,var(--fl-ink) 20%,transparent)}
+/* the goal's Focus card: a calm Flow surface (no warm tint); the coral button carries the colour */
+:root[data-ui="flow"] .gf-card{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+:root[data-ui="flow"] .gf-prog i{background:var(--today)}
+:root[data-ui="flow"] .gf-st.on .gf-sk{background:var(--today);color:var(--fl-ink)}

@@ -184,7 +184,8 @@ const PAGES = [['home', 'goHome()'], ['board', "openSpace(S.spaces[0].id);S.stag
   ['inbox', 'closeSheets();openInbox()'], ['habits', 'closeInbox();openRhythm()'], ['goals', 'closeRhythm();openGoals()'],
   ['wins', 'closeGoals();openWins()'], ['routines', 'closeWins();openRoutines()'], ['plan', 'closeRoutines();openPlan()'],
   ['journal', 'closePlan();openJournal()'], ['metrics', 'closeJournal();openMetrics()'], ['settings', 'closeMetrics();openSettings()'],
-  ['you', "setView='you';drawSettings()"], ['review', 'closeSettings();openReview()']];
+  ['you', "setView='you';drawSettings()"], ['review', 'closeSettings();openReview()'],
+  ['bento home', "try{closeReview()}catch(e){};S.cfg.homeLayout='bento';applySettings();goHome();render()"], ['all tasks', "S.cfg.homeLayout='calm';applySettings();openSpace('all');render()"]];
 const classicLeaks = () => {
   const hex = h => { const n = parseInt(h.slice(1), 16); return `rgb(${n >> 16}, ${(n >> 8) & 255}, ${n & 255})`; };
   const bad = new Set(); Object.values(THEMES).flat().forEach(t => ['bg', 'side', 'surface', 'surface2'].forEach(k => bad.add(hex(t.v[k]))));
