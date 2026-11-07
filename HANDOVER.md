@@ -112,3 +112,5 @@
 - Still Classic-styled on purpose: the first-run intro and the welcome splash (always dark), and the Focus screen colour (your own pick in Settings → Focus).
 - **Flow layout (0.305–0.306):** phone list view (task cards, one segmented stage control, centred empty state), calmer page titles everywhere (36px phone / 44px computer), computer board columns as panels with task cards.
 - Kept on purpose in Flow: The climb goal view illustration, the sun brand marks (Home, Habits empty), the first-run intro (dark), the Focus colour (user's pick), the phone tab bar shape. The Windows pop-out timer was not checked visually here (it loads the same site).
+- **Flow panel (0.307):** on computers task details slide in OVER the board (460px, flush right); the board keeps its width and is dimmed + blurred behind (`.scrim`); a click on it closes. Replaces the 0.302 docked/squeeze version.
+- Fresh container note: tests need `PW_CHROMIUM=$(ls -d /opt/pw-browsers/chromium-*/chrome-linux*/chrome | head -1)` and `npm ci` first.

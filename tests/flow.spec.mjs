@@ -156,7 +156,7 @@ test('wins: a burst on each tick; the weekly recap shows Sunday/Monday once some
   noErrors(errors);
 });
 
-test('empty, thumb, panel: example row + Add a task; phone stage tabs at the bottom; computer details beside the board', async ({ page }) => {
+test('empty, thumb, panel: example row + Add a task; phone stage tabs at the bottom; computer details slide over a dimmed, blurred board', async ({ page }) => {
   await phone(page);
   const errors = await openApp(page);
   await flow(page);
@@ -173,7 +173,19 @@ test('empty, thumb, panel: example row + Add a task; phone stage tabs at the bot
   // panel (computer)
   await desk(page);
   await page.evaluate(() => { const t = S.tasks.find(x => shown(x) && x.stage !== 'done' && listOf(x.list).space === S.spaces[0].id); render(); openDetail(t.id); });
-  await expect.poll(() => page.evaluate(() => getComputedStyle(document.querySelector('.main')).marginRight)).toBe('420px');
+  // the board keeps its full width (nothing squeezed); the panel sits on top; the board behind is dimmed and blurred
+  const w0 = await page.evaluate(() => document.querySelector('.board').getBoundingClientRect().width);
+  await expect(page.locator('#detailSheet.on')).toBeVisible();
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('.main')).marginRight)).toBe('0px');
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.querySelector('.scrim.on')).backdropFilter)).toContain('blur');
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('.scrim.on')).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
+  const box = await page.locator('#detailSheet .sheet-in').boundingBox();
+  expect(Math.round(box.x + box.width)).toBe(1400);                           // flush right
+  expect(box.width).toBeGreaterThan(440);
+  expect(await page.evaluate(() => document.querySelector('.board').getBoundingClientRect().width)).toBe(w0);
+  // a click on the dimmed board closes it
+  await page.mouse.click(300, 450);
+  await expect(page.locator('#detailSheet.on')).toHaveCount(0);
   noErrors(errors);
 });
 

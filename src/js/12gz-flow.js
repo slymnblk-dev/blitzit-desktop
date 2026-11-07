@@ -20,7 +20,7 @@ const FL_PARTS=[
   ['presets','Mode presets','Simple, Planner or Everything in one tap'],
   ['shapes','Shapes','Spaces are squares, lists are dots'],
   ['thumb','Thumb-first (phone)','Stage tabs at the bottom, near your thumb'],
-  ['panel','Side panel (computer)','Task details dock on the right; the board stays visible'],
+  ['panel','Side panel (computer)','Task details slide over the board; the board dims and blurs behind'],
   ['inline','Rename in place (computer)','Double-click a title to rename it'],
   ['wins','Wins','A small burst on each tick, and a weekly recap'],
   ['empty','Helpful empty pages','An example and one clear button'],
