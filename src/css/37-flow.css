@@ -216,3 +216,62 @@
 }
 /* narrow columns: wrap between words, never mid-word */
 :root[data-ui="flow"] .col-list .title{word-break:normal;overflow-wrap:break-word;hyphens:auto}
+
+/* ---------- Flow pages pass (0.308): Wins, Routines, Journal, Habits, The climb — as approved on the design canvas ---------- */
+/* Wins: a plain jar card; grey bars, the best day in coral */
+:root[data-ui="flow"] .wn-jar{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);border-radius:22px}
+:root[data-ui="flow"] .wn-je{color:var(--today)}
+:root[data-ui="flow"] .wn-bar i{background:color-mix(in srgb,var(--text) 16%,var(--surface))}
+:root[data-ui="flow"] .wn-bar.fut i{background:var(--surface2)}
+:root[data-ui="flow"] .wn-bar.top i{background:var(--today)}
+:root[data-ui="flow"] .wn-chip{background:var(--surface2)}
+:root[data-ui="flow"] .wn-list{background:transparent;display:flex;flex-direction:column;gap:8px;overflow:visible}
+:root[data-ui="flow"] .wn-it{background:var(--surface);border-radius:16px}
+:root[data-ui="flow"] .wn-it+.wn-it{border-top:0}
+:root[data-ui="flow"] .wn-ic{border-radius:11px}
+:root[data-ui="flow"] .wn-rin{background:var(--surface)}
+:root[data-ui="flow"] .wn-rin::before{display:none}
+:root[data-ui="flow"] .wn-rtop .pg-eye{color:var(--today)}
+/* Routines: the routine that's up now is a dark card with a coral outline and a full-width Start */
+:root[data-ui="flow"] .rt-next{display:flex;flex-direction:column;gap:12px;background:var(--surface);border-radius:22px;box-shadow:inset 0 0 0 2px var(--today);padding:18px}
+:root[data-ui="flow"] .rt-nt{display:contents}
+:root[data-ui="flow"] .rt-nx{order:1}
+:root[data-ui="flow"] .rt-ne{color:var(--today)}
+:root[data-ui="flow"] .rt-nn{font-size:24px}
+:root[data-ui="flow"] .rt-chips{order:2;margin-top:0}
+:root[data-ui="flow"] .rt-chips span{background:var(--surface2)}
+:root[data-ui="flow"] .rt-start{order:3;width:100%;height:52px;border-radius:16px;background:var(--today);color:var(--fl-ink);box-shadow:none;font-size:16px}
+:root[data-ui="flow"] .rt-start::before{content:'▶  ';font-size:12px}
+:root[data-ui="flow"] .rt-card{border-radius:18px}
+/* Journal: both cards the same; the mood picker is one switch with the pick in coral */
+:root[data-ui="flow"] .jr-card,:root[data-ui="flow"] .jr-card.now{background:var(--surface);box-shadow:none;border-radius:20px}
+:root[data-ui="flow"] .jr-card .jr-q,:root[data-ui="flow"] .jr-card.now .jr-q{color:var(--muted)}
+:root[data-ui="flow"] .jr-moods{gap:4px;padding:4px;border-radius:14px;background:var(--surface2)}
+:root[data-ui="flow"] .jr-mood{height:38px;border-radius:10px;background:transparent}
+:root[data-ui="flow"] .jr-mood.on{background:var(--today);color:var(--fl-ink);font-weight:800}
+/* Habits: kept days are coral squares with a tick, missed ones outlined; no sunrise on the empty page */
+:root[data-ui="flow"] .hg-card{border-radius:20px}
+:root[data-ui="flow"] .hg-c{border-radius:11px}
+:root[data-ui="flow"] .hg-c.on{background:var(--today);color:var(--fl-ink)}
+:root[data-ui="flow"] .hg-c.on.now{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--today)}
+:root[data-ui="flow"] .hg-c.now:not(.on){box-shadow:inset 0 0 0 2px var(--today)}
+:root[data-ui="flow"] .hg-c.miss{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 18%,transparent)}
+:root[data-ui="flow"] .hg-lg{border-radius:3px}
+:root[data-ui="flow"] .hg-lg.on{background:var(--today)}
+:root[data-ui="flow"] .rh-empty{margin:24px 0 0;padding:24px 18px;border-radius:20px;border:2px dashed var(--line);gap:10px}
+:root[data-ui="flow"] .rh-empty .hb-sun{display:none}
+:root[data-ui="flow"] .rh-empty b{font-size:18px;color:var(--text)}
+:root[data-ui="flow"] .rh-empty .primary{margin-top:8px;background:var(--today);color:var(--fl-ink);border-radius:14px}
+.fl-hbs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}
+.fl-hbs button{height:36px;padding:0 14px;border-radius:999px;background:var(--surface);color:var(--text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.fl-hbs button:hover{background:var(--surface2)}
+/* The climb: a flat Flow mountain in a soft panel; no sun; the path in coral */
+:root[data-ui="flow"] .gb-stage{margin:0 0 4px;border-radius:24px;background:var(--side);box-shadow:inset 0 0 0 1px var(--line)}
+:root[data-ui="flow"] .gb-sun{display:none}
+:root[data-ui="flow"] .gb-mtn{fill:color-mix(in srgb,var(--text) 7%,var(--side))}
+:root[data-ui="flow"] .gb-far{fill:color-mix(in srgb,var(--surface) 55%,var(--side));opacity:1}
+:root[data-ui="flow"] .gb-svg{-webkit-mask-image:none;mask-image:none}
+:root[data-ui="flow"] .gb-halo{animation:none;opacity:.18}
+:root[data-ui="flow"] .gb-ms{fill:var(--side);stroke:color-mix(in srgb,var(--text) 28%,transparent)}
+:root[data-ui="flow"] .gb-ms.on{fill:var(--today);stroke:var(--today)}
+:root[data-ui="flow"] .gb-cloth{fill:var(--text)}

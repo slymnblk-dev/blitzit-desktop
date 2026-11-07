@@ -169,3 +169,12 @@ renderDesk=function(){const r=_flDesk.apply(this,arguments);flPaintAll();return 
   st.textContent=`:root[data-ui="flow"] :is(${[...new Set(sels)].join(',')},${extra}){color:var(--fl-ink)!important}
 :root[data-ui="flow"]{--win-backlog:var(--backlog);--win-week:var(--week);--win-today:var(--today);--win-done:var(--done)}`;
   document.head.appendChild(st);window.__flInkN=sels.length}catch(e){}})();
+
+/* Flow, Habits empty page (0.308): three one-tap ideas under the "New habit" button */
+const FL_HB_IDEAS=['Drink water','Read 10 pages','Walk'];
+function flHabitsEmpty(){const e=document.querySelector('#rhythmPg .rh-empty');if(!e||e.querySelector('.fl-hbs'))return;
+  const t=e.querySelector('span');if(t)t.textContent='Tap a day to tick it. Streaks grow by themselves.';
+  e.querySelector('.primary').insertAdjacentHTML('beforebegin',`<div class="fl-hbs">${FL_HB_IDEAS.map(n=>`<button data-flhb="${esc(n)}">${esc(n)}</button>`).join('')}</div>`)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-flhb]');if(!b)return;e.stopPropagation();openHabit(null);
+  setTimeout(()=>{const i=$('hbName');if(i){i.value=b.dataset.flhb;try{hbDraft.name=i.value}catch(err){}i.dispatchEvent(new Event('input',{bubbles:true}))}},30)},true);
+new MutationObserver(()=>{if(flowUI())try{flHabitsEmpty()}catch(e){}}).observe(document.getElementById('rhythmPg')||document.body,{childList:true,subtree:true});

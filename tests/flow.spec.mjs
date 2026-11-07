@@ -280,3 +280,36 @@ test('Flow layout (computer): calmer page titles; each stage a panel, each task 
   expect(await page.evaluate(() => getComputedStyle(document.querySelector('#inboxPg .ib-h')).fontSize)).toBe('44px');
   noErrors(errors);
 });
+
+test('Flow pages (0.308): Wins, Routines, Journal, Habits and The climb use the Flow look; Classic keeps its own', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { Object.assign(S.cfg, { ui: 'flow', theme: 'dark', motion: false, habits: true, goals: true, wins: true, routines: true, journal: true });
+    const now = Date.now(); S.habits = [{ id: 'h1', name: 'Water', e: '', space: null, days: [0, 1, 2, 3, 4, 5, 6], done: { [dkey(now)]: 1 }, created: now - 9 * DAY }];
+    S.goals = [{ id: 'g1', name: 'Run', e: '', space: S.spaces[0].id, why: '', due: '', created: now, view: 'climb', ms: [{ id: 'm0', t: 'A', done: true }, { id: 'm1', t: 'B', done: false }] }];
+    S.wins = [{ id: 1, t: 'Ran 5k', at: now }]; const r = rtFromTpl(RT_TPL[2]); r.at = ''; S.routines = [r];
+    S.journal = [{ id: 9, d: dkey(now), am: 'x', pm: 'y', mood: 4, en: [] }]; save(); applySettings(); });
+  const bg = sel => page.evaluate(s => getComputedStyle(document.querySelector(s)).backgroundColor, sel);
+  const SURF = 'rgb(24, 26, 31)', CORAL = 'rgb(255, 138, 91)';
+  await page.evaluate(() => openWins());
+  expect(await bg('.wn-jar')).toBe(SURF);
+  await page.evaluate(() => { closeWins(); openRoutines(); });
+  expect(await bg('.rt-next')).toBe(SURF);
+  expect(await page.evaluate(() => { const r = document.querySelector('.rt-start').getBoundingClientRect(), c = document.querySelector('.rt-next').getBoundingClientRect(); return r.width > c.width * .8; })).toBe(true);
+  await page.evaluate(() => { closeRoutines(); openJournal(); });
+  expect(await page.evaluate(() => [...document.querySelectorAll('.jr-card')].map(c => getComputedStyle(c).backgroundColor))).toEqual(['rgb(24, 26, 31)', 'rgb(24, 26, 31)']);
+  expect(await bg('.jr-mood.on')).toBe(CORAL);
+  await page.evaluate(() => { closeJournal(); openRhythm(); });
+  expect(await bg('#rhythmPg .hg-c.on')).toBe(CORAL);
+  await page.evaluate(() => { S.habits = []; save(); drawRhythm(); });
+  await expect(page.locator('#rhythmPg .hb-sun')).toBeHidden();
+  await page.locator('#rhythmPg [data-flhb="Walk"]').click();
+  await expect(page.locator('#hbSheet.on')).toBeVisible();
+  await expect(page.locator('#hbName')).toHaveValue('Walk');
+  await page.evaluate(() => { closeSheets(); closeRhythm(); openGoal('g1'); });
+  await expect(page.locator('#gdPg .gb-sun')).toBeHidden();
+  // Classic: the warm jar is back
+  await page.evaluate(() => { closeGoal(); S.cfg.ui = 'classic'; applySettings(); openWins(); });
+  expect(await bg('.wn-jar')).not.toBe(SURF);
+  noErrors(errors);
+});
