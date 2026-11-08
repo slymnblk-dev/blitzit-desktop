@@ -5,7 +5,7 @@
    on this device only (IndexedDB "wd-vision"); another device shows a calm placeholder until that's added.
    Phones: a Vision tab. Computers: "Vision" under Modes. Morning look: a full-screen slideshow.
    Home shows "Today's vision" (one card a day). Save as wallpaper: a phone-sized PNG of the board. */
-var vbOn=false,vbYear=new Date().getFullYear(),vbArea='',vbAddArea=false,vbE=null,vbCleaned=false;
+var vbOn=false,vbYear=new Date().getFullYear(),vbArea='',vbAddArea=false,vbE=null,vbCleaned=false,vbYOpen=false;
 function visionOn(){return !!(S.cfg&&S.cfg.vision)}
 const VB_MAX=40;
 var VB_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="10" rx="2"/><rect x="13" y="3" width="8" height="6" rx="2"/><rect x="13" y="11" width="8" height="10" rx="2"/><rect x="3" y="15" width="8" height="6" rx="2"/></svg>';
@@ -49,46 +49,55 @@ function vbCardHTML(c,i){const sz=c.size||'m',cap=(c.t||'').trim(),gl=vbGoal(c);
   if(c.k==='photo'){const u=vbImg[c.id];vbLoad([c]);
     return `<button class="vb-c vb-photo sz-${sz}" ${a} aria-label="${esc(cap||'Photo')}${gl?`, goal ${esc(gl.name)}`:''}">${u?`<img src="${u}" alt="">`:u===''?`<span class="vb-miss">${VB_ICON}<small>Photo is on another device</small></span>`:'<span class="vb-load"></span>'}
       ${cap?`<span class="vb-cap">${esc(cap)}</span>`:''}${gl?`<span class="vb-gb">${gl.done?'✓':vbRing(gProg(gl).p,22)}</span>`:''}</button>`}
-  if(c.k==='quote')return `<button class="vb-c vb-quote sz-${sz}" ${a} style="--vc:${esc(c.c||VB_COLORS[0])}"><span class="vb-qt">“${esc(cap)}”</span></button>`;
-  if(c.k==='word')return `<button class="vb-c vb-word" ${a}><span class="vb-lbl">Word of the year</span><span class="vb-w">${esc(cap)}</span></button>`;
+  if(c.k==='quote')return `<button class="vb-c vb-quote sz-${sz}${cap.length>70?' long':''}" ${a} style="--vc:${esc(c.c||VB_COLORS[0])}"><span class="vb-qt">“${esc(cap)}”</span></button>`;
+  if(c.k==='word')return `<button class="vb-c vb-word" ${a} style="--n:${Math.max(5,cap.length)}"><span class="vb-lbl">Word of the year</span><span class="vb-w">${esc(cap)}</span></button>`;
   return `<button class="vb-c vb-goal${vbGoal(c)&&vbGoal(c).done?' won':''}" ${a}>${vbGoalInner(c)}</button>`}
 
 /* ---------- the page ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg vb-pg" id="visionPg" role="region" aria-label="Vision board"><div class="ib-in" id="vbIn"></div></div>');
 function vbSummary(cs){const w=vbWord(vbYear);return `${w?`Word of the year: <b class="vb-wd">${esc(w)}</b> · `:''}${cs.length} card${cs.length===1?'':'s'}`}
 function drawVision(){if(!vbOn)return;const pg=$('visionPg'),y=pg.scrollTop,cs=vbCards(vbYear),vis=vbArea?cs.filter(c=>c.area===vbArea):cs,desk=vbDesk();
-  const yrs=vbYears().map(v=>`<option value="${v}"${v===vbYear?' selected':''}>${v} board</option>`).join('');
-  const tools=`<div class="vb-tools"><label class="vb-yr"><span class="sr">Year</span><select id="vbYear" aria-label="Which year">${yrs}<option value="next">New board for ${vbYears().slice(-1)[0]+1}</option></select></label>
+  const nxt=vbYears().slice(-1)[0]+1,yrs=vbYears().map(v=>`<button role="menuitemradio" aria-checked="${v===vbYear}" class="${v===vbYear?'on':''}" data-vby="${v}"><b>${v}</b><small>${vbCards(v).length} card${vbCards(v).length===1?'':'s'}</small></button>`).join('');
+  const yr=`<div class="vb-yw"><button class="vb-yb" id="vbYearBtn" aria-haspopup="menu" aria-expanded="${vbYOpen}">${vbYear} board<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
+    ${vbYOpen?`<div class="vb-ym" role="menu" aria-label="Boards">${yrs}<button class="vb-ynew" data-vby="${nxt}">${PLUS_S}New board for ${nxt}</button></div>`:''}</div>`;
+  const tools=`<div class="vb-tools">
     <button class="vb-tb" data-vbplay ${cs.length?'':'disabled'} aria-label="Morning look">${VB_PLAY}${desk?'<span>Morning look</span>':''}</button>
     <button class="vb-tb" data-vbwall ${cs.length?'':'disabled'} aria-label="Save as wallpaper">${VB_DL}${desk?'<span>Save as wallpaper</span>':''}</button>
     ${desk?`<button class="vb-tb vb-add" data-vbnew>${PLUS_S}<span>Add card</span></button>`:''}</div>`;
-  const areas=vbAreas(),chips=`<div class="vb-chips" role="group" aria-label="Areas"><button class="vb-chip${vbArea?'':' on'}" data-vbarea="" aria-pressed="${!vbArea}">All</button>${areas.map(a=>`<button class="vb-chip${vbArea===a?' on':''}" data-vbarea="${esc(a)}" aria-pressed="${vbArea===a}">${esc(a)}</button>`).join('')}
+  const areas=vbAreas(),cnt=a=>cs.filter(c=>c.area===a).length,chips=`<div class="vb-chips" role="group" aria-label="Areas"><button class="vb-chip${vbArea?'':' on'}" data-vbarea="" aria-pressed="${!vbArea}">All <em>${cs.length}</em></button>${areas.map(a=>`<span class="vb-cw${vbArea===a?' on':''}"><button class="vb-chip${vbArea===a?' on':''}" data-vbarea="${esc(a)}" aria-pressed="${vbArea===a}">${esc(a)}${cnt(a)?` <em>${cnt(a)}</em>`:''}</button>${vbArea===a?`<button class="vb-adel" data-vbadel="${esc(a)}" aria-label="Remove the area ${esc(a)}" title="Remove this area">✕</button>`:''}</span>`).join('')}
     ${vbAddArea?`<input class="vb-chip vb-ain" id="vbAreaIn" maxlength="18" placeholder="New area" aria-label="New area name">`:areas.length<8?'<button class="vb-chip vb-anew" data-vbareanew>+ Area</button>':''}</div>`;
   const empty=!cs.length?`<div class="vb-empty"><b>Picture the year you want</b><span>Add photos of places, people and things you're working towards. One quote, one word for the year.</span>
       <div class="vb-starts"><button data-vbnew="photo">${VB_ICON}Add a photo</button><button data-vbnew="quote">“ Add a quote</button><button data-vbnew="word">Aa Word of the year</button></div></div>`
     :!vis.length?`<p class="vb-none">Nothing in ${esc(vbArea)} yet.</p>`:'';
   const add=cs.length&&cs.length<VB_MAX?`<button class="vb-c vb-addc" data-vbnew>${PLUS_S}Add a card</button>`:'';
-  $('vbIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="vbBack" aria-label="Back">${BACK_SVG}</button>${tools}</div>
+  $('vbIn').innerHTML=`<div class="set-top ib-top vb-top0"><button class="icon-btn" id="vbBack" aria-label="Back">${BACK_SVG}</button>${yr}${tools}</div>
     <div class="vb-head"><span class="pg-eye">Your ${vbYear}</span><h1 class="ib-h">Vision</h1><div class="pg-sum">${vbSummary(cs)}</div></div>
     ${cs.length?chips:''}${empty}${vis.length?`<div class="vb-grid" id="vbGrid">${vis.map(vbCardHTML).join('')}${add}</div>`:''}
     ${cs.length>=VB_MAX?`<p class="vb-none">${VB_MAX} cards is the most for one board, so it stays clear. Remove one to add another.</p>`:''}`;
   pg.scrollTop=y;if(vbAddArea){const i=$('vbAreaIn');if(i)i.focus()}}
 function vbCloseOthers(){if(ibOn)closeInbox();if(rhOn)closeRhythm();if(glOn)closeGoals();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();if(typeof mtOn!=='undefined'&&mtOn)closeMetrics();
   if(typeof wnOn!=='undefined'&&wnOn)closeWins();if(typeof rtOn!=='undefined'&&rtOn)closeRoutines();if(typeof pnOn!=='undefined'&&pnOn)closePlan();if(typeof jrOn!=='undefined'&&jrOn)closeJournal();if(typeof closeSearch==='function')closeSearch()}
-function openVision(){if(!visionOn())return;vbCloseOthers();vbOn=true;vbArea='';vbAddArea=false;drawVision();vbClean();
+function openVision(){if(!visionOn())return;vbCloseOthers();vbOn=true;vbArea='';vbYOpen=false;vbAddArea=false;drawVision();vbClean();
   $('visionPg').classList.add('on');document.body.classList.add('ib-open');$('visionPg').scrollTop=0;haptic(5);if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
 function closeVision(){if(!vbOn)return;vbOn=false;$('visionPg').classList.remove('on');
   if(!ibOn&&!rhOn&&!(typeof wnOn!=='undefined'&&wnOn)&&!(typeof rtOn!=='undefined'&&rtOn)&&!(typeof pnOn!=='undefined'&&pnOn)&&!(typeof jrOn!=='undefined'&&jrOn))document.body.classList.remove('ib-open');
   const a=document.activeElement;if(a&&a.closest&&a.closest('#visionPg'))a.blur();if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
 $('visionPg').addEventListener('click',e=>{
   if(e.target.closest('#vbBack'))return closeVision();
+  if(e.target.closest('#vbYearBtn')){vbYOpen=!vbYOpen;haptic(4);return drawVision()}
+  const yb=e.target.closest('[data-vby]');if(yb){vbYear=+yb.dataset.vby;vbYOpen=false;vbArea='';haptic(4);return drawVision()}
+  if(vbYOpen&&!e.target.closest('.vb-ym')){vbYOpen=false;drawVision()}
+  const ad=e.target.closest('[data-vbadel]');if(ad){const a=ad.dataset.vbadel,was=[...vbAreas()],hit=vbAll().filter(c=>c.area===a);vbArea='';haptic(5);
+    /* areas live in settings (not in the undo history), so this Undo puts both back by hand */
+    S.cfg.vAreas=was.filter(x=>x!==a);S.cfgU=Date.now();hit.forEach(c=>{c.area=''});save();render();
+    return toast(`Removed the area ${a}`,()=>{S.cfg.vAreas=was;S.cfgU=Date.now();hit.forEach(c=>{c.area=a});vbArea=a;save();render()})}
   const ar=e.target.closest('[data-vbarea]');if(ar){vbArea=ar.dataset.vbarea;haptic(4);return drawVision()}
   if(e.target.closest('[data-vbareanew]')){vbAddArea=true;return drawVision()}
   const nw=e.target.closest('[data-vbnew]');if(nw)return openVbCard(null,nw.dataset.vbnew||null);
   if(e.target.closest('[data-vbplay]'))return vbShowOpen();
   if(e.target.closest('[data-vbwall]'))return vbWallpaper();
   const c=e.target.closest('[data-vbe]');if(c)return openVbCard(c.dataset.vbe)});
-$('visionPg').addEventListener('change',e=>{if(e.target.id!=='vbYear')return;const v=e.target.value;vbYear=v==='next'?vbYears().slice(-1)[0]+1:+v;vbArea='';haptic(4);drawVision()});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&vbYOpen&&vbOn){e.preventDefault();e.stopPropagation();vbYOpen=false;drawVision();const b=$('vbYearBtn');if(b)b.focus()}},true);
 $('visionPg').addEventListener('keydown',e=>{if(e.target.id!=='vbAreaIn')return;e.stopPropagation();
   if(e.key==='Escape'){e.preventDefault();vbAddArea=false;return drawVision()}
   if(e.key==='Enter'){e.preventDefault();const v=e.target.value.trim().slice(0,18);vbAddArea=false;
@@ -128,23 +137,23 @@ function drawVbForm(){const d=vbD,isNew=vbE==null,gs=(S.goals||[]),gOn=typeof go
   if(d.k==='goal')body=!gOn?`<p class="vb-note">Turn on Goals in Settings → Modes to put a goal on your board.</p>`:!gs.length?`<p class="vb-note">You have no goals yet. Make a photo card first, then tap “Also make it a goal”.</p>`
     :`<span class="vb-l">Which goal?</span><div class="vb-gl">${gs.map(g=>`<button class="vb-go${String(d.g)===String(g.id)?' on':''}" data-vbg="${g.id}" aria-pressed="${String(d.g)===String(g.id)}">${g.e?esc(g.e)+' ':''}${esc(g.name)}${g.done?' <small>· achieved</small>':''}</button>`).join('')}</div>`;
   const opts=d.k==='word'||d.k==='goal'?'':`<div class="vb-row"><div><span class="vb-l">Size</span><div class="vb-seg" role="group" aria-label="Size">${['s','m','l'].map(z=>`<button class="${d.size===z?'on':''}" data-vbsz="${z}" aria-pressed="${d.size===z}">${z.toUpperCase()}</button>`).join('')}</div></div></div>`;
-  const area=`<label class="vb-l" for="vbAreaSel">Area</label><select class="field" id="vbAreaSel"><option value="">No area</option>${vbAreas().map(a=>`<option${d.area===a?' selected':''}>${esc(a)}</option>`).join('')}</select>`;
+  const area=`<span class="vb-l">Area</span><div class="vb-ac" role="group" aria-label="Area">${['',...vbAreas()].map(a=>`<button class="${(d.area||'')===a?'on':''}" data-vba="${esc(a)}" aria-pressed="${(d.area||'')===a}">${a?esc(a):'None'}</button>`).join('')}</div>`;
   const ok=d.k==='photo'?!!d.img:d.k==='goal'?d.g!=null:!!d.t.trim();
   const mk=gOn&&(d.k==='photo'||d.k==='quote')&&!vbGoal(d)?`<button class="le-btn vb-mk" data-vbmk ${d.t.trim()?'':'disabled'}>◎ Also make it a goal</button>`:'';
   const ed=isNew?'':`<div class="vb-move"><button class="le-btn" data-vbmv="-1">← Move earlier</button><button class="le-btn" data-vbmv="1">Move later →</button></div><div class="le-acts"><button class="le-btn warn" data-vbdel>Delete card</button></div>`;
   $('vbForm').innerHTML=`${kinds}${body}${opts}${area}<button class="primary vb-save" id="vbSave" ${ok?'':'disabled'}>${isNew?'Add to board':'Save'}</button>${mk}${ed}`}
 $('vbSheet').addEventListener('click',e=>{const d=vbD;if(!d)return;
-  const k=e.target.closest('[data-vbk]');if(k){d.k=k.dataset.vbk;if(d.k!=='goal')d.g=null;return drawVbForm()}
+  const k=e.target.closest('[data-vbk]');if(k&&!k.disabled){const t=$('vbText');if(t)d.t=t.value;d.k=k.dataset.vbk;if(d.k!=='goal')d.g=null;else d.t='';drawVbForm();const i=$('vbText');if(i)i.focus();return}
   if(e.target.closest('[data-vbpick]'))return $('vbFile').click();
   const cl=e.target.closest('[data-vbc]');if(cl){d.c=cl.dataset.vbc;return drawVbForm()}
   const sz=e.target.closest('[data-vbsz]');if(sz){d.size=sz.dataset.vbsz;return drawVbForm()}
+  const ar=e.target.closest('[data-vba]');if(ar){d.area=ar.dataset.vba;return drawVbForm()}
   const g=e.target.closest('[data-vbg]');if(g){d.g=g.dataset.vbg;const gg=vbGoal(d);d.t=gg?gg.name:'';return drawVbForm()}
   if(e.target.closest('#vbSave'))return vbSave();
   if(e.target.closest('[data-vbmk]'))return vbMakeGoal();
   const mv=e.target.closest('[data-vbmv]');if(mv){closeSheets();return vbNudge(vbE,+mv.dataset.vbmv)}
   if(e.target.closest('[data-vbdel]')){const id=vbE;closeSheets();return commit(()=>{S.vision=vbAll().filter(c=>String(c.id)!==String(id))},'Card deleted')}});
 $('vbSheet').addEventListener('input',e=>{if(!vbD)return;if(e.target.id==='vbText'){vbD.t=e.target.value;const s=$('vbSave'),ok=vbD.k==='photo'?!!vbD.img:vbD.k==='goal'?vbD.g!=null:!!vbD.t.trim();if(s)s.disabled=!ok;const m=$('vbSheet').querySelector('[data-vbmk]');if(m)m.disabled=!vbD.t.trim()}});
-$('vbSheet').addEventListener('change',e=>{if(!vbD)return;if(e.target.id==='vbAreaSel')vbD.area=e.target.value});
 $('vbSheet').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='vbText'&&e.target.tagName==='INPUT'){e.preventDefault();const s=$('vbSave');if(s&&!s.disabled)vbSave()}});
 $('vbFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!vbD)return;
   vbShrink(f).then(u=>{vbD.img=u;if(!vbD.t)vbD.t='';drawVbForm()}).catch(err=>toast(err.message||'That photo could not be added'))});
@@ -174,7 +183,7 @@ function vbShowClose(){if(!vbS)return;clearTimeout(vbS.tm);vbS=null;$('vbShow').
 function vbSlide(){if(!vbS)return;const {cs,i}=vbS,c=cs[i],u=c.k==='photo'?vbImg[c.id]:null,g=vbGoal(c);
   const bars=cs.map((x,j)=>`<i class="${j<i?'done':j===i?(vbS.paused?'now paused':'now'):''}"></i>`).join('');
   const art=c.k==='photo'?(u?`<img class="vb-sbg" src="${u}" alt="">`:''):c.k==='quote'?`<div class="vb-sq" style="--vc:${esc(c.c||VB_COLORS[0])}"></div>`:'';
-  const main=c.k==='quote'?`<div class="vb-sqt">“${esc(c.t)}”</div>`:c.k==='word'?`<div class="vb-sw2"><small>Word of the year</small><b>${esc(c.t)}</b></div>`
+  const main=c.k==='quote'?`<div class="vb-sqt">“${esc(c.t)}”</div>`:c.k==='word'?`<div class="vb-sw2" style="--n:${Math.max(5,(c.t||'').length)}"><small>Word of the year</small><b>${esc(c.t)}</b></div>`
     :`<div class="vb-sc">${c.area?`<span class="vb-sa">${esc(c.area)}</span>`:''}<b>${esc(c.k==='goal'&&g?g.name:c.t||'')}</b>${g?`<small>${g.done?'Achieved':`${gProg(g).n} of ${gProg(g).of} milestones`} · ${esc(g.name)}</small>`:''}</div>`;
   $('vbShow').className='vb-show on k-'+c.k;
   $('vbShow').innerHTML=`${art}<div class="vb-shade"></div><div class="vb-bars">${bars}</div>
@@ -211,7 +220,7 @@ function vbWallpaper(){const cs=vbCards(vbYear).filter(c=>!vbArea||c.area===vbAr
 function vbToday(){if(!visionOn())return null;const cs=vbCards(new Date().getFullYear()).filter(c=>c.k!=='goal');if(!cs.length)return null;
   const n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);return cs[n%cs.length]}
 function vbHomeHTML(c){const u=c.k==='photo'?vbImg[c.id]:null;if(c.k==='photo')vbLoad([c]);
-  return `<section class="vb-home k-${c.k}" style="--vc:${esc(c.c||VB_COLORS[0])}" aria-label="Today's vision">${u?`<img src="${u}" alt="">`:''}<div class="vb-hs"></div>
+  return `<section class="vb-home k-${c.k}" style="--vc:${esc(c.c||VB_COLORS[0])};--n:${Math.max(5,(c.t||'').length)}" aria-label="Today's vision">${u?`<img src="${u}" alt="">`:''}<div class="vb-hs"></div>
     <span class="vb-ht">Today's vision</span><div class="vb-hb"><b>${c.k==='quote'?`“${esc(c.t)}”`:esc(c.t||'')}</b><button data-vbopen>Open board</button></div></section>`}
 function vbHomePaint(force){const c=vbToday();document.querySelectorAll('.vb-home').forEach(x=>{if(force||!c)x.remove()});if(!c)return;
   const ph=document.querySelector('#homeView .td-card');if(ph&&!document.querySelector('#homeView .vb-home'))ph.insertAdjacentHTML('afterend',vbHomeHTML(c));

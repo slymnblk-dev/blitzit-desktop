@@ -177,10 +177,48 @@ test('boards per year: a new board for next year starts empty; this year keeps i
   const errors = await openApp(page);
   await on(page);
   const y = await page.evaluate(() => { const y = new Date().getFullYear(); S.vision = [{ id: 1, k: 'quote', t: 'Now', year: y, ord: 0 }]; save(); openVision(); return y; });
-  await page.locator('#vbYear').selectOption('next');
+  // the year picker sits where Back would be (no Back on computers: Vision has no parent page)
+  await expect(page.locator('#vbBack')).toBeHidden();
+  await page.locator('#vbYearBtn').click();
+  await expect(page.locator('#visionPg .vb-ym')).toBeVisible();
+  await page.keyboard.press('Escape');                                   // closes the menu, not the page
+  await expect(page.locator('#visionPg .vb-ym')).toHaveCount(0);
+  await expect(page.locator('#visionPg.on')).toBeVisible();
+  await page.locator('#vbYearBtn').click();
+  await page.locator(`#visionPg .vb-ynew[data-vby="${y + 1}"]`).click();
   await expect(page.locator('#visionPg .vb-empty')).toBeVisible();
   await expect(page.locator('#visionPg .pg-eye')).toHaveText(`Your ${y + 1}`);
-  await page.locator('#vbYear').selectOption(String(y));
+  await page.locator('#vbYearBtn').click();
+  await page.locator(`#visionPg .vb-ym [data-vby="${y}"]`).click();
   await expect(page.locator('#visionPg .vb-quote')).toHaveCount(1);
+  noErrors(errors);
+});
+
+test('QA (0.310): the sheet uses chips (no native dropdowns), keeps what you typed, and areas can be removed', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await on(page);
+  await page.evaluate(() => openVision());
+  await expect(page.locator('#visionPg select')).toHaveCount(0);
+  await page.locator('#visionPg [data-vbnew="quote"]').click();
+  await expect(page.locator('#vbSheet select')).toHaveCount(0);
+  await page.locator('#vbText').fill('Keep me');
+  await page.locator('#vbSheet [data-vbc="#8FB4FF"]').click();
+  await page.locator('#vbSheet [data-vba="Health"]').click();
+  await page.locator('#vbSheet [data-vbsz="l"]').click();
+  await expect(page.locator('#vbText')).toHaveValue('Keep me');
+  await page.locator('#vbSave').click();
+  expect(await page.evaluate(() => { const c = S.vision[0]; return [c.t, c.c, c.area, c.size]; })).toEqual(['Keep me', '#8FB4FF', 'Health', 'l']);
+  // remove the Health area: the card keeps going, with no area; Undo brings it back
+  await page.locator('#visionPg [data-vbarea="Health"]').click();
+  await page.locator('#visionPg [data-vbadel="Health"]').click();
+  expect(await page.evaluate(() => [vbAreas().includes('Health'), S.vision[0].area])).toEqual([false, '']);
+  await page.locator('#undoBtn').click();
+  expect(await page.evaluate(() => [vbAreas().includes('Health'), S.vision[0].area])).toEqual([true, 'Health']);
+  // a long word fits on one line
+  await page.evaluate(() => { S.vision.push({ id: 77, k: 'word', t: 'Extraordinary', year: vbYear, ord: 9 }); save(); vbArea = ''; drawVision(); });
+  expect(await page.evaluate(() => { const w = document.querySelector('#visionPg .vb-w'); return w.scrollWidth <= w.parentElement.clientWidth + 1 && w.getClientRects().length === 1; })).toBe(true);
+  // phones: with Vision as a tab there's no Back button either
+  await expect(page.locator('#vbBack')).toBeHidden();
   noErrors(errors);
 });

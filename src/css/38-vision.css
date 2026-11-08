@@ -150,3 +150,49 @@ body.vb-showing{overflow:hidden}
 .vb-hb button{flex:none;height:38px;padding:0 14px;border-radius:12px;background:#fff;color:#0E0F12;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
 .vb-home.k-word .vb-hb button{background:var(--text);color:var(--bg)}
 #dHome .vb-home{height:220px}
+
+/* ---------- QA pass (0.310) ---------- */
+/* top bar: the year picker sits on the left; Back only when Vision isn't a tab (it has no parent page) */
+.vb-top0{display:flex;align-items:center;gap:8px}
+#vbBack{display:none}
+@media (max-width:1099px){body.tb-off #vbBack,body:not(.tabs-on) #vbBack{display:grid}}
+.vb-yw{position:relative}
+.vb-yb{height:40px;padding:0 10px 0 14px;border-radius:12px;background:var(--surface);color:var(--text);display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:14px;font-weight:800;cursor:pointer}
+.vb-yb svg{width:16px;height:16px;color:var(--muted);transition:transform .2s}
+.vb-yb[aria-expanded="true"] svg{transform:rotate(180deg)}
+.vb-ym{position:absolute;top:46px;left:0;z-index:30;min-width:220px;padding:6px;border-radius:16px;background:var(--surface);box-shadow:0 0 0 1px var(--line),0 18px 44px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:2px;animation:vbIn .15s ease}
+.vb-ym button{display:flex;align-items:center;justify-content:space-between;gap:12px;height:42px;padding:0 12px;border-radius:11px;background:transparent;color:var(--text);font:inherit;font-size:14px;cursor:pointer;text-align:left}
+.vb-ym button:hover{background:var(--surface2)}
+.vb-ym button.on{background:var(--surface2)}
+.vb-ym button.on b::after{content:' ✓';color:var(--today)}
+.vb-ym small{color:var(--muted);font-size:12px}
+.vb-ym .vb-ynew{justify-content:flex-start;gap:8px;color:var(--muted);font-weight:700;border-top:1px solid var(--line);border-radius:0 0 11px 11px;margin-top:4px}
+.vb-ym .vb-ynew svg{width:15px;height:15px}
+/* area chips: counts, and a ✕ to remove the area you're looking at */
+.vb-chip em{font-style:normal;font-size:12px;opacity:.6;margin-left:2px}
+.vb-cw{display:inline-flex;flex:none;align-items:center;border-radius:999px}
+.vb-cw.on{background:var(--text)}
+.vb-cw.on .vb-chip{padding-right:6px}
+.vb-adel{width:30px;height:30px;margin-right:3px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--bg) 18%,transparent);color:var(--bg);font-size:11px;font-weight:800;cursor:pointer}
+/* the add/edit sheet: area as chips (no native dropdown), and it fits the screen */
+.vb-ac{display:flex;flex-wrap:wrap;gap:6px}
+.vb-ac button{height:36px;padding:0 14px;border-radius:999px;background:var(--surface2);color:var(--text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.vb-ac button.on{background:var(--text);color:var(--bg);font-weight:800}
+#vbSheet .sheet-in{max-height:min(92vh,760px);overflow-y:auto;overscroll-behavior:contain}
+#vbSheet h2{margin-bottom:6px}
+.vb-pick{height:160px}
+.vb-pick.has{height:200px}
+#vbSheet .primary:disabled{opacity:.45;filter:saturate(.4)}
+.vb-mk{width:100%}
+@media (min-width:1100px){#vbSheet .sheet-in{max-height:calc(100vh - 48px)}}
+/* long words shrink to fit instead of breaking mid-word */
+.vb-word{container-type:inline-size}
+.vb-w{font-size:min(52px,calc(92cqw / (.55 * var(--n,6))));overflow-wrap:normal;white-space:nowrap}
+.vb-sw2 b{font-size:min(140px,calc(90vw / (.6 * var(--n,6))));white-space:nowrap}
+.vb-home.k-word .vb-hb b{font-size:min(40px,calc(60vw / (.62 * var(--n,6))));white-space:nowrap}
+@media (min-width:1100px){.vb-home.k-word .vb-hb b{font-size:min(48px,calc(420px / (.62 * var(--n,6))))}}
+/* a light quote colour: the slideshow's main button stays visible */
+.vb-show.k-quote .vb-sbtn .go{background:#14100E;color:#fff}
+/* the last cards never hide behind the phone's bottom bar */
+@media (max-width:1099px){#visionPg .ib-in{padding-bottom:140px}}
+.vb-quote.long .vb-qt{font-size:19px}
