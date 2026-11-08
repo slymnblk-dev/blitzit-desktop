@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=310; // bumped with every published update
+const APP_VERSION=311; // bumped with every published update
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -102,7 +102,7 @@ function sanitize(){
   S.kpis=Array.isArray(S.kpis)?S.kpis.filter(k=>obj(k)&&k.id!=null&&typeof k.name==='string'):[];
   S.kpis.forEach(k=>{k.log=mxLog(k.log);if(!Number.isFinite(+k.target))k.target=0});
   S.okrs=Array.isArray(S.okrs)?S.okrs.filter(o=>obj(o)&&o.id!=null&&typeof o.name==='string'):[];
-  S.vision=Array.isArray(S.vision)?S.vision.filter(v=>obj(v)&&v.id!=null&&['photo','quote','word','goal'].includes(v.k)):[];
+  S.vision=Array.isArray(S.vision)?S.vision.filter(v=>obj(v)&&v.id!=null&&['photo','art','quote','word','goal'].includes(v.k)):[];
   S.wins=Array.isArray(S.wins)?S.wins.filter(w=>obj(w)&&w.id!=null&&typeof w.t==='string'&&Number.isFinite(+w.at)):[];
   {const old=dkey(Date.now()-14*864e5);S.blocks=Array.isArray(S.blocks)?S.blocks.filter(b=>obj(b)&&b.id!=null&&typeof b.t==='string'&&typeof b.d==='string'&&Number.isFinite(+b.s)&&Number.isFinite(+b.len)&&(b.rep||b.d>=old)):[]}
   {const by={};S.journal=(Array.isArray(S.journal)?S.journal:[]).filter(j=>obj(j)&&j.id!=null&&typeof j.d==='string'&&/^\d{4}-\d\d-\d\d$/.test(j.d)).filter(j=>{

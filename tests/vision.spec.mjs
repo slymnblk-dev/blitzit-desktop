@@ -6,13 +6,14 @@ const phone = page => page.setViewportSize({ width: 390, height: 844 });
 const desk = page => page.setViewportSize({ width: 1400, height: 900 });
 // a tiny real PNG (2x2) to upload
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDK+mmyAAAAABJRU5ErkJggg==', 'base64');
-const on = (page, extra = {}) => page.evaluate(x => { Object.assign(S.cfg, { vision: true, motion: false }, x); save(); applySettings(); goHome(); }, extra);
+const on = (page, extra = {}) => page.evaluate(x => { Object.assign(S.cfg, { vision: true, motion: false, vSeeded: 1 }, x); save(); applySettings(); goHome(); }, extra);
 const cards = page => page.evaluate(() => S.vision.map(c => [c.k, c.t]));
 
 test('off by default; Settings → Modes (Beta) turns it on: a phone tab and a sidebar item on computers', async ({ page }) => {
   await phone(page);
   const errors = await openApp(page);
   expect(await page.evaluate(() => [!!S.cfg.vision, tabsList().some(t => t[0] === 'vision')])).toEqual([false, false]);
+  await page.evaluate(() => { S.cfg.vSeeded = 1; save(); }); // the sample board has its own test
   await page.evaluate(() => { openSettings(); setView = 'modes'; drawSettings(); });
   await page.locator('#setIn [data-btgrp]').click();
   await page.locator('#setIn .md-card[data-md="vision"] [data-tg="vision"]').click();
@@ -109,10 +110,11 @@ test('areas filter the board; a new area can be added; 40 cards is the most', as
   await page.evaluate(() => { const y = new Date().getFullYear(); S.vision = [{ id: 1, k: 'quote', t: 'Run', area: 'Health', year: y, ord: 0 }, { id: 2, k: 'quote', t: 'Ship', area: 'Career', year: y, ord: 1 }]; save(); openVision(); });
   await page.locator('#visionPg [data-vbarea="Health"]').click();
   await expect(page.locator('#visionPg .vb-quote')).toHaveCount(1);
-  await page.locator('#visionPg [data-vbareanew]').click();
-  await page.locator('#vbAreaIn').fill('Family');
+  await page.locator('#visionPg [data-vbareas]').click();
+  await page.locator('#vbAreaNew').fill('Family');
   await page.keyboard.press('Enter');
-  expect(await page.evaluate(() => [S.cfg.vAreas.includes('Family'), vbArea])).toEqual([true, 'Family']);
+  expect(await page.evaluate(() => S.cfg.vAreas.includes('Family'))).toBe(true);
+  await page.evaluate(() => { closeSheets(); vbArea = 'Family'; drawVision(); });
   await expect(page.locator('#visionPg .vb-none')).toContainText('Nothing in Family yet');
   await page.evaluate(() => { const y = new Date().getFullYear(); for (let i = 3; i <= 40; i++) S.vision.push({ id: i, k: 'quote', t: 'Q' + i, year: y, ord: i }); save(); vbArea = ''; drawVision(); });
   await expect(page.locator('#visionPg .vb-addc')).toHaveCount(0);
@@ -210,15 +212,55 @@ test('QA (0.310): the sheet uses chips (no native dropdowns), keeps what you typ
   await page.locator('#vbSave').click();
   expect(await page.evaluate(() => { const c = S.vision[0]; return [c.t, c.c, c.area, c.size]; })).toEqual(['Keep me', '#8FB4FF', 'Health', 'l']);
   // remove the Health area: the card keeps going, with no area; Undo brings it back
-  await page.locator('#visionPg [data-vbarea="Health"]').click();
-  await page.locator('#visionPg [data-vbadel="Health"]').click();
+  await page.locator('#visionPg [data-vbareas]').click();
+  await page.locator('#vbAreaSheet [data-vbadel="Health"]').click();
   expect(await page.evaluate(() => [vbAreas().includes('Health'), S.vision[0].area])).toEqual([false, '']);
   await page.locator('#undoBtn').click();
   expect(await page.evaluate(() => [vbAreas().includes('Health'), S.vision[0].area])).toEqual([true, 'Health']);
+  // rename: the cards follow
+  await page.locator('#vbAreaSheet [data-vbren="0"]').fill('Body & mind');
+  await page.keyboard.press('Enter');
+  expect(await page.evaluate(() => [vbAreas()[0], S.vision[0].area])).toEqual(['Body & mind', 'Body & mind']);
+  // a duplicate name is refused
+  await page.locator('#vbAreaSheet [data-vbren="1"]').fill('body & MIND');
+  await page.keyboard.press('Enter');
+  expect(await page.evaluate(() => vbAreas()[1])).not.toBe('body & MIND');
+  await page.evaluate(() => closeSheets());
   // a long word fits on one line
   await page.evaluate(() => { S.vision.push({ id: 77, k: 'word', t: 'Extraordinary', year: vbYear, ord: 9 }); save(); vbArea = ''; drawVision(); });
   expect(await page.evaluate(() => { const w = document.querySelector('#visionPg .vb-w'); return w.scrollWidth <= w.parentElement.clientWidth + 1 && w.getClientRects().length === 1; })).toBe(true);
   // phones: with Vision as a tab there's no Back button either
   await expect(page.locator('#vbBack')).toBeHidden();
+  noErrors(errors);
+});
+
+test('first visit: a sample board of illustrations and quotes; Clear examples empties it; editing an example makes it yours; illustrations can be added', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { Object.assign(S.cfg, { vision: true, motion: false }); delete S.cfg.vSeeded; S.vision = []; save(); applySettings(); openVision(); });
+  await expect(page.locator('#visionPg .vb-exb')).toBeVisible();
+  expect(await page.evaluate(() => [S.vision.length, S.vision.every(c => c.sample), S.vision.filter(c => c.k === 'art').length])).toEqual([8, true, 5]);
+  await expect(page.locator('#visionPg .vb-art svg').first()).toBeVisible();
+  // editing an example makes it a real card
+  await page.locator('#visionPg .vb-quote').first().click();
+  await page.locator('#vbSave').click();
+  expect(await page.evaluate(() => S.vision.filter(c => !c.sample).length)).toBe(1);
+  await page.locator('#visionPg [data-vbclear]').click();
+  expect(await page.evaluate(() => S.vision.map(c => c.k))).toEqual(['quote']);
+  await expect(page.locator('#visionPg .vb-exb')).toHaveCount(0);
+  // never seeded twice
+  await page.evaluate(() => { S.vision = []; save(); closeVision(); openVision(); });
+  expect(await page.evaluate(() => S.vision.length)).toBe(0);
+  // add an illustration card; quote ideas fill the text
+  await page.locator('#visionPg [data-vbnew="photo"]').click();
+  await page.locator('#vbSheet [data-vbk="art"]').click();
+  await expect(page.locator('#vbSave')).toBeDisabled();
+  await page.locator('#vbSheet [data-vbart="travel"]').click();
+  await page.locator('#vbText').fill('Japan in spring');
+  await page.locator('#vbSave').click();
+  expect(await page.evaluate(() => [S.vision[0].k, S.vision[0].a, S.vision[0].t])).toEqual(['art', 'travel', 'Japan in spring']);
+  await page.evaluate(() => openVbCard(null, 'quote'));
+  await page.locator('#vbSheet [data-vbq="Start where you are."]').click();
+  await expect(page.locator('#vbText')).toHaveValue('Start where you are.');
   noErrors(errors);
 });
