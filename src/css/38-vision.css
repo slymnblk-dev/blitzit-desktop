@@ -234,3 +234,11 @@ body.vb-showing{overflow:hidden}
 .vb-anew2{display:flex;gap:8px;margin-top:14px}
 .vb-anew2 .field{flex:1;margin:0}
 .vb-anew2 .primary{width:auto;padding:0 22px;margin:0}
+/* card size (0.312): its own row — label above, a full-width switch with words and a tiny shape for each size */
+.vb-row{display:flex;flex-direction:column;gap:8px}
+.vb-row .vb-l{margin-top:4px}
+.vb-seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;width:100%;box-sizing:border-box}
+.vb-seg button{height:44px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px}
+.vb-szi{display:inline-block;width:12px;border-radius:3px;background:currentColor;opacity:.55}
+.vb-szi.z-s{height:9px}.vb-szi.z-m{height:13px}.vb-szi.z-l{height:17px}
+.vb-seg button.on .vb-szi{opacity:.9}
