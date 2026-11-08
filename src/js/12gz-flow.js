@@ -76,7 +76,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('#addBtn,#tbAdd')
   e.preventDefault();e.stopImmediatePropagation();if(nwOn)return closeNw();nwFromFab=false;flSug=k;openNw(b)},true);
 
 /* ---------- presets: Simple / Planner / Everything at the top of Modes ---------- */
-const FL_MODES=['inbox','plan','habits','goals','mx','wins','routines','journal'];
+const FL_MODES=['inbox','plan','habits','goals','mx','wins','routines','journal','vision'];
 const FL_PRESETS=[
   {id:'simple',n:'Simple',s:'Just tasks and lists. Nothing else.',on:[],tags:['Tasks','Lists']},
   {id:'planner',n:'Planner',s:'Plan your week, with an Inbox for quick notes.',on:['inbox','plan'],tags:['Tasks','Inbox','Week plan']},

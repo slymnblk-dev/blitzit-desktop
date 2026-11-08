@@ -287,5 +287,5 @@
 .bt-body[hidden]{display:none}
 .bt-body .md-card{margin:0}
 .bt-tag{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;flex:none}
-#winsPg h1.ib-h::after,#routinesPg h1.ib-h::after,#planPg h1.ib-h::after,#journalPg h1.ib-h::after,#metricsPg h1.hp-h::after{content:'Beta';display:inline-flex;align-items:center;vertical-align:middle;height:22px;padding:0 9px;margin-left:12px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;line-height:1}
+#winsPg h1.ib-h::after,#routinesPg h1.ib-h::after,#planPg h1.ib-h::after,#journalPg h1.ib-h::after,#visionPg h1.ib-h::after,#metricsPg h1.hp-h::after{content:'Beta';display:inline-flex;align-items:center;vertical-align:middle;height:22px;padding:0 9px;margin-left:12px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;line-height:1}
 .set-sec.set-empty{display:none}

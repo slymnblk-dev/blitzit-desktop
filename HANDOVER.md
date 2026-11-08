@@ -115,3 +115,10 @@
 - **Flow panel (0.307):** on computers task details slide in OVER the board (460px, flush right); the board keeps its width and is dimmed + blurred behind (`.scrim`); a click on it closes. Replaces the 0.302 docked/squeeze version.
 - Fresh container note: tests need `PW_CHROMIUM=$(ls -d /opt/pw-browsers/chromium-*/chrome-linux*/chrome | head -1)` and `npm ci` first.
 - **Flow pages (0.308):** Wins (plain jar, grey bars + coral best day, win cards), Routines (now-card with coral outline + full-width Start), Journal (same cards, coral mood switch), Habits (coral square ticks; empty page without the sun, with one-tap ideas `data-flhb`), The climb (no sun, flat mountain in a soft panel). Approved mockups on the design canvas, row "Flow fixes".
+
+## Vision board (0.309) — `src/js/08zv5-vision.js`, `src/css/38-vision.css`, `tests/vision.spec.mjs`
+- Optional Beta mode (`S.cfg.vision`): phone tab, "Vision" in the computer sidebar, card in Settings → Modes (Beta group), part of Flow's Everything preset.
+- Data `S.vision` (synced/merged with prefix 'v', undo, backup/import, reset): cards {id,k:photo|quote|word|goal,t,g,area,size,year,c,ord,at}. Areas in `S.cfg.vAreas`. 40 cards per year board, one word per year.
+- Photos: shrunk to ≤1080px JPEG (~80–200 KB) and stored ONLY on the device in IndexedDB `wd-vision` (never in synced data). Other devices show "Photo is on another device". Orphan photos cleaned once a session. Photo sync = future phase (needs a private Supabase storage bucket + RLS — Suly's call).
+- Extras: Morning look slideshow (6s/card, Esc/arrows), "Today's vision" card on Home, Save as wallpaper (1080×1920 PNG), "Also make it a goal" (opens goal setup, links the new goal back), goal cards with progress + Achieved stamp, drag to reorder on computers / Move earlier-later in the sheet.
+- Also fixed: journal energy test depended on the hour it ran.

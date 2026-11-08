@@ -9,7 +9,7 @@ test('Beta group starts folded, opens, keeps open while toggling; beta pages sho
   await expect(page.locator('#setIn .md-card[data-md="habits"]')).toBeVisible();
   for (const k of ['mx', 'wins', 'routines', 'plan', 'journal']) await expect(page.locator(`#setIn .bt-body .md-card[data-md="${k}"]`)).toBeHidden();
   await page.locator('#setIn [data-btgrp]').click();
-  await expect(page.locator('#setIn .bt-body .md-card')).toHaveCount(5);
+  await expect(page.locator('#setIn .bt-body .md-card')).toHaveCount(6); // + Vision board (0.309)
   await page.locator('#setIn .md-card[data-md="wins"] [data-tg="wins"]').click();
   await expect.poll(() => page.evaluate(() => S.cfg.wins)).toBe(true);
   await expect(page.locator('#setIn .md-card[data-md="wins"]')).toBeVisible();

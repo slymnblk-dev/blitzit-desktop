@@ -60,6 +60,7 @@ test('Energy check-ins (optional): log, then your usual day and best hours; comp
   await page.evaluate(() => {
     for (let i = 1; i <= 6; i++) { const d = new Date(); d.setDate(d.getDate() - i); const at = h => { const x = new Date(d); x.setHours(h, 0, 0, 0); return x.getTime(); };
       S.journal.push({ id: 100 + i, d: dkey(d), am: '', pm: '', en: [{ at: at(9), v: 3 }, { at: at(10), v: 3 }, { at: at(14), v: 1 }, { at: at(17), v: 2 }] }); }
+    jrGet(today()).en = []; // today's tap above lands on whatever hour the test runs (at 8:00 it moved "best" to 8:00)
     save(); drawJournal(); });
   await expect(page.locator('#journalPg .jr-chart')).toBeVisible();
   await expect(page.locator('#journalPg .jr-tip')).toContainText('9:00 – 11:00');
