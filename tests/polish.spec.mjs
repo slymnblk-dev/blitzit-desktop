@@ -57,3 +57,22 @@ test('③ One page header: no tagline eyebrows, no Beta badge on page titles (Be
   await expect(page.locator('#setIn .bt-tag')).toHaveText('Beta');
   noErrors(errors);
 });
+
+test('④ One button system: page main actions use the accent pill, Auto-plan is a grey pill, Flow Win the day stays coral on every stage', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await setUi(page, 'flow', { theme: 'dark', plan: true });
+  const bg = sel => page.evaluate(s => getComputedStyle(document.querySelector(s)).backgroundColor, sel);
+  const coloured = c => { const [r, g, b] = c.match(/\d+/g).map(Number); return Math.max(r, g, b) - Math.min(r, g, b) > 60; }; // a real colour, not white/black/grey
+  await page.evaluate(() => openCloseDay());
+  expect(coloured(await bg('#cdGo'))).toBe(true);                                     // the accent, like every other main button (was white)
+  await page.evaluate(() => openReview());
+  expect(coloured(await bg('#rvDone'))).toBe(true);
+  await page.evaluate(() => openPlan());
+  expect(await bg('[data-pnauto]')).toBe('rgb(34, 37, 43)');
+  await page.evaluate(() => { openSpace(S.spaces[0].id); S.stage = 'week'; render(); });
+  expect(await bg('#goBtn')).toBe('rgb(255, 138, 91)');
+  await setUi(page, 'classic'); await page.evaluate(() => { openSpace(S.spaces[0].id); S.stage = 'week'; render(); });
+  expect(await bg('#goBtn')).not.toBe('rgb(255, 138, 91)');                           // Classic keeps its stage colours
+  noErrors(errors);
+});

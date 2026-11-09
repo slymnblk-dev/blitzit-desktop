@@ -40,3 +40,10 @@
 @media (min-width:1100px){#ibIn.inbox-pg > h1.ib-h:first-child{margin-top:6px}}
 @media (min-width:1100px){#rhIn .rh-empty{max-width:680px;margin-left:auto;margin-right:auto}}
 .set-in > .set-top + h1{margin-top:26px}
+
+/* ④ One button system: the one main action of a page is the accent pill (like every .primary), a second choice is a grey pill,
+   small actions are text. Before, main buttons were white/black on some pages (Close the day, Done for this week, Sign in, goal steps). */
+.rv-done,.gs-next,.ci-end .primary,.acc-form .primary{background:var(--accent)!important;color:var(--ink)!important}
+.pn-auto{background:var(--surface2);color:var(--text)}
+/* Flow: "Win the day" is always the coral main action (it went brown-gold on My week) */
+:root[data-ui="flow"] #goBtn{background:var(--today);color:var(--fl-ink)}
