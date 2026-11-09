@@ -24,3 +24,19 @@ test('① Home on phones: no theme switch on top, tab names under icons; Flow he
   await expect(page.locator('.tt-btn:visible').first()).toBeVisible();
   noErrors(errors);
 });
+
+test('② Flow Focus screen is calm (no coral wall) with the default colour; a picked focus colour and Classic stay as they were', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await todayTask(page);
+  const bg = () => page.evaluate(() => getComputedStyle(document.getElementById('focus')).backgroundColor);
+  const go = () => page.evaluate(() => startBlitz(S.tasks.filter(t => t.stage === 'today' && shown(t))));
+  await setUi(page, 'flow', { theme: 'dark' }); await go();
+  await expect.poll(bg).toBe('rgb(14, 15, 18)');
+  expect(await page.evaluate(() => getComputedStyle(document.getElementById('focus'), '::before').animationName)).toBe('flFocusAur');
+  await page.evaluate(() => { S.cfg.focusColor = 'teal'; applyFocusColor(); });        // the user's own colour still wins
+  await expect.poll(bg).toBe('rgb(46, 200, 192)');
+  await page.evaluate(() => { S.cfg.focusColor = 'red'; applyFocusColor(); S.cfg.ui = 'classic'; applySettings(); });
+  await expect.poll(bg).not.toBe('rgb(14, 15, 18)');                                  // Classic keeps its bold focus wall
+  noErrors(errors);
+});

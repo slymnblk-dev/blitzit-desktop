@@ -15,3 +15,20 @@
 :root[data-ui="flow"] .td-card:not(.td-empty) .td-head{display:none}
 :root[data-ui="flow"] .td-card:not(.td-empty) .td-next{margin-top:0}
 :root[data-ui="flow"] .td-card:not(.td-empty) .td-title{font-size:24px;letter-spacing:-.025em;line-height:1.15;margin-top:8px}
+
+/* ② Flow: the Focus screen is calm graphite (or light) with the same slow Aurora light as Home,
+   instead of a full coral wall. Only for the default focus colour: a colour picked in Settings → Focus still wins. */
+:root[data-ui="flow"][data-focuscol="red"] :is(.focus,.tide){--fbg:var(--bg);--fbrk:var(--bg);--fink:var(--text);--ink:var(--text);isolation:isolate;overflow:hidden}
+:root[data-ui="flow"][data-focuscol="red"] :is(.focus,.tide)::before{content:"";position:absolute;z-index:-2;left:50%;top:42%;width:max(150vmax,900px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;
+  background:conic-gradient(from 0deg,color-mix(in srgb,var(--today) 45%,transparent),transparent,color-mix(in srgb,var(--backlog) 32%,transparent),transparent,color-mix(in srgb,var(--today) 45%,transparent));
+  animation:flFocusAur 60s linear infinite}
+:root[data-ui="flow"][data-focuscol="red"] :is(.focus,.tide)::after{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;
+  background:color-mix(in srgb,var(--bg) 62%,transparent);-webkit-backdrop-filter:blur(60px);backdrop-filter:blur(60px)}
+@keyframes flFocusAur{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){:root[data-ui="flow"] :is(.focus,.tide)::before{animation:none}}
+:root[data-ui="flow"][data-focuscol="red"] .focus :is(.f-x,.f-btn){background:color-mix(in srgb,var(--text) 9%,transparent)}
+:root[data-ui="flow"][data-focuscol="red"] .focus .f-bar{background:color-mix(in srgb,var(--text) 10%,transparent);height:4px}
+:root[data-ui="flow"][data-focuscol="red"] .focus .f-bar span{background:var(--today)}
+:root[data-ui="flow"][data-focuscol="red"] .focus.brk .f-bar span{background:var(--done)}
+:root[data-ui="flow"][data-focuscol="red"] .focus :is(.f-up,.f-cap,.f-next){color:var(--muted)}
+:root[data-ui="flow"][data-focuscol="red"] .focus .f-next b{color:var(--text)}
