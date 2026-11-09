@@ -19,6 +19,6 @@ test('Beta group starts folded, opens, keeps open while toggling; beta pages sho
   await expect(page.locator('#setIn .md-card[data-md="wins"]')).toBeHidden();
   // the page title wears the badge
   await page.evaluate(() => { closeSettings(); openWins(); });
-  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#winsPg h1.ib-h'), '::after').content)).toBe('"Beta"');
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#winsPg h1.ib-h'), '::after').content)).toBe('none'); // 0.316: Beta lives only in Settings → Modes
   noErrors(errors);
 });

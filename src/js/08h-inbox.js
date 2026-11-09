@@ -76,7 +76,7 @@ function drawInbox(){
   const chip=(k,l,n)=>`<button class="ib-fc${ibTab===k?' on':''}" data-ibtab2="${k}" aria-pressed="${ibTab===k}">${l}<em>${n}</em></button>`;
   const sum=nT||nN?`${nT?`<b>${nT}</b> ${nT===1?'task':'tasks'} to sort`:'Nothing to sort'}${nN?` · ${nN} ${nN===1?'note':'notes'}`:''}`:'All clear';
   const seg=k=>ibKind===k?`<button class="on" aria-pressed="true" tabindex="-1">${k==='task'?'Task':'Note'}</button>`:`<button data-ibswap aria-pressed="false" aria-label="Switch to ${k}">${k==='task'?'Task':'Note'}</button>`;
-  $('ibIn').innerHTML=`<span class="pg-eye ib-eye">Capture</span><h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${sum}</div>
+  $('ibIn').innerHTML=`<h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${sum}</div>
     <div class="ib-cap${note?' note':''}">
       ${note?`<textarea id="ibNew" rows="1" placeholder="Write a note" maxlength="4000" aria-label="New note"></textarea>`:`<input id="ibNew" placeholder="Add a task" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="New task">`}
       <span class="ib-seg" role="group" aria-label="Add as">${seg('task')}${seg('note')}</span>

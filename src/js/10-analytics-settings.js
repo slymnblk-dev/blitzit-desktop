@@ -191,7 +191,7 @@ function pageSummary(id){
 }
 function settingsMain(){
   return `<div class="set-top"><button class="icon-btn" id="setBack" aria-label="Close settings">${BACK_SVG}</button></div>
-  <span class="pg-eye set-eye">Windaday</span><h1>Settings</h1>
+  <h1>Settings</h1>
   <button class="you-card" id="youOpen">${avatarHTML()}<span><b>${esc(meName()||'Your profile')}</b><small>${esc(meSub())} · stats, account</small></span>${CHEV}</button>
   ${SET_GROUPS.map(([g,ids])=>{const ps=ids.map(id=>PAGES.find(p=>p.id===id)).filter(p=>p&&!p.hidden&&(p.id!=='shortcuts'||HAS_KEYS()));
     return ps.length?`<h3 class="cat-cap">${g}</h3><div class="cats">${ps.map(p=>`<button class="cat" data-page="${p.id}"><span class="cat-t">${p.name}<small>${pageSummary(p.id)}</small></span>${CHEV}</button>`).join('')}</div>`:''}).join('')}

@@ -40,3 +40,20 @@ test('② Flow Focus screen is calm (no coral wall) with the default colour; a p
   await expect.poll(bg).not.toBe('rgb(14, 15, 18)');                                  // Classic keeps its bold focus wall
   noErrors(errors);
 });
+
+test('③ One page header: no tagline eyebrows, no Beta badge on page titles (Beta stays in Settings → Modes)', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await setUi(page, 'flow', { habits: true, wins: true });
+  await page.evaluate(() => openInbox());
+  await expect(page.locator('#ibIn .ib-eye')).toHaveCount(0);
+  await page.evaluate(() => hbOpenHabits());
+  await expect(page.locator('#rhIn .hp-eye')).toHaveCount(0);
+  await page.evaluate(() => openWins());
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#winsPg h1.ib-h'), '::after').content)).toBe('none');
+  await page.evaluate(() => { openSettings(); });
+  await expect(page.locator('#setIn .set-eye')).toHaveCount(0);
+  await page.evaluate(() => { setView = 'modes'; drawSettings(); });
+  await expect(page.locator('#setIn .bt-tag')).toHaveText('Beta');
+  noErrors(errors);
+});

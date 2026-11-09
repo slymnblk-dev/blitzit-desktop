@@ -24,7 +24,7 @@ drawInbox=function(){
   const tGroups=ibGroups(items).map(g=>`<div class="ib2-g">${ibDayHead('t',g)}${ibFold.has('t:'+g.k)?'':`<ul class="list ib-list">${g.items.map(ibRow).join('')}</ul>`}</div>`).join('');
   const nGroups=(pinned.length?`<div class="ib2-g"><div class="ib2-day pin"><span>Pinned</span><small>${pinned.length}</small></div><div class="ib2-notes">${pinned.map(ibNoteCard).join('')}</div></div>`:'')
     +ibGroups(rest).map(g=>`<div class="ib2-g">${ibDayHead('n',g)}${ibFold.has('n:'+g.k)?'':`<div class="ib2-notes">${g.items.map(ibNoteCard).join('')}</div>`}</div>`).join('');
-  $('ibIn').innerHTML=`<span class="pg-eye ib-eye">Capture</span><h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${sum}</div>
+  $('ibIn').innerHTML=`<h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${sum}</div>
     <div class="ib2">
       <section class="ib2-half" aria-label="Tasks to sort"><div class="ib2-cap"><span>To sort</span><small>${nT}</small></div>
         ${tGroups||'<p class="ib2-none">Nothing waiting. Add a task here, then send it to a list when you’re ready.</p>'}

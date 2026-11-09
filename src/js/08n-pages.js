@@ -76,7 +76,7 @@ function hpMenuHTML(){const v=hpView(),left=hbOpenToday().length;
 function drawRhythm(){
   const y=$('rhythmPg').scrollTop,hs=hbAll(),v=hpView(),anim=!$('rhIn').dataset.v||$('rhIn').dataset.v!==v||$('rhIn').dataset.fresh==='1';
   let head,body,hpMeta="";
-  if(!hs.length){head=`<span class="hp-eye">Small daily wins</span><h1 class="hp-h">Habits</h1>`;
+  if(!hs.length){head=`<h1 class="hp-h">Habits</h1>`; /* ③ 0.316: no tagline eyebrow, same as the full page */
     body=`<div class="ib-empty rh-empty">${hbSun(4,true)}<b>No habits yet</b><span>Small daily wins, one tap each. Your sun rises a little every day you show up.</span><button class="primary" data-hbnew="">New habit</button></div>`}
   else if(v==='grid'){const days=hpWeekDays(hpWeek),c=hpWeekCount(hs),f=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
     hpMeta=`${f(days[0])} – ${f(days[6])} · <b>${c.dn} of ${c.due}</b> kept`;
