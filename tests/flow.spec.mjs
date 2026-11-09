@@ -17,7 +17,7 @@ test('Classic is the default: no Flow marks anywhere; Flow switches on and off f
   await page.locator('#flSec [data-k="ui"][data-v="flow"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-ui', 'flow');
   await expect(page.locator('#flSec [data-tg]')).toHaveCount(11);                    // every part has its own switch, all on
-  expect(await page.locator('#flSec [data-tg]').evaluateAll(b => b.every(x => x.getAttribute('aria-pressed') === 'true'))).toBe(true);
+  expect(await page.locator('#flSec [data-tg]').evaluateAll(b => b.every(x => x.getAttribute('aria-pressed') === (x.dataset.tg === 'flThumb' ? 'false' : 'true')))).toBe(true); // all on, except Thumb-first (off by default since 0.316)
   // one part off: only that part goes back to Classic
   await page.locator('#flSec [data-tg="flNext"]').click();
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.fl.split(' ').includes('next'))).toBe(false);
@@ -165,7 +165,8 @@ test('empty, thumb, panel: example row + Add a task; phone stage tabs at the bot
   await page.locator('#list [data-fladd]').click();
   await expect(page.locator('#addSheet.on')).toBeVisible();
   await page.evaluate(() => closeSheets());
-  // thumb: the stage tabs sit near the bottom
+  // thumb (a switch, off by default since 0.316): the stage tabs sit near the bottom
+  await page.evaluate(() => { S.cfg.flThumb = true; applySettings(); render(); });
   const g = await page.locator('#gauge').boundingBox();
   expect(g.y).toBeGreaterThan(600);
   await page.evaluate(() => { S.cfg.flThumb = false; applySettings(); render(); });

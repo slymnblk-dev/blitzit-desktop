@@ -33,7 +33,7 @@ function flFont(){if(document.getElementById('flFont'))return;const l=document.c
 function flPaint(){if(!flowUI()){delete root.dataset.ui;delete root.dataset.fl;return}try{flFont()}catch(e){}
   root.dataset.ui='flow';root.dataset.fl=FL_PARTS.map(([p])=>p).filter(flowOn).join(' ')}
 const _flApply=applySettings;
-applySettings=function(){if(S.cfg&&S.cfg.ui!=='flow')S.cfg.ui='classic';if(S.cfg)FL_PARTS.forEach(([p])=>{if(S.cfg[flKey(p)]===undefined)S.cfg[flKey(p)]=true});const r=_flApply.apply(this,arguments);try{flPaint()}catch(e){}return r};
+applySettings=function(){if(S.cfg&&S.cfg.ui!=='flow')S.cfg.ui='classic';if(S.cfg&&!S.cfg.flT316){S.cfg.flT316=1;S.cfg.flThumb=false} /* ⑤ 0.316: stage tabs back at the top by default (Thumb-first stays a switch) */if(S.cfg)FL_PARTS.forEach(([p])=>{if(S.cfg[flKey(p)]===undefined)S.cfg[flKey(p)]=true});const r=_flApply.apply(this,arguments);try{flPaint()}catch(e){}return r};
 flPaint();
 
 /* Settings → Appearance: Design (Classic | Flow), and when Flow is on, its parts */

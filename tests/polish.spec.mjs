@@ -76,3 +76,22 @@ test('④ One button system: page main actions use the accent pill, Auto-plan is
   expect(await bg('#goBtn')).not.toBe('rgb(255, 138, 91)');                           // Classic keeps its stage colours
   noErrors(errors);
 });
+
+test('⑤ Space on phones: stage tabs at the top by default (Thumb-first is a switch), list name only with 2+ lists, calm Flow title', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await setUi(page, 'flow');
+  expect(await page.evaluate(() => [S.cfg.flThumb, document.documentElement.dataset.fl.split(' ').includes('thumb')])).toEqual([false, false]);
+  await page.evaluate(() => { openSpace(S.spaces[0].id); S.stage = 'today'; render(); });
+  const g = await page.locator('#gauge').boundingBox(), l = await page.locator('#list').boundingBox();
+  expect(g.y).toBeLessThan(l.y);                                                        // tabs above the tasks
+  const sp = await page.evaluate(() => S.spaces[0].id);
+  const lists = await page.evaluate(id => S.lists.filter(x => x.space === id).length, sp);
+  await expect(page.locator('#list .row .tag')).toHaveCount(lists > 1 ? await page.locator('#list .row').count() : 0);
+  await page.evaluate(id => { S.lists.push({ id: 'l2x', name: 'Second', c: '#5AB8F5', space: id }); const t = S.tasks.find(x => shown(x) && listOf(x.list).space === id && x.stage === 'today'); render(); }, sp);
+  expect(await page.locator('#list .row .tag').count()).toBeGreaterThan(0);           // two lists: the name helps again
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('.hero h1')).color)).toBe(await page.evaluate(() => getComputedStyle(document.body).color));
+  await page.evaluate(() => { S.cfg.flThumb = true; applySettings(); render(); });     // the switch still works
+  expect(await page.evaluate(() => document.documentElement.dataset.fl.split(' ').includes('thumb'))).toBe(true);
+  noErrors(errors);
+});

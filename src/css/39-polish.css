@@ -47,3 +47,7 @@
 .pn-auto{background:var(--surface2);color:var(--text)}
 /* Flow: "Win the day" is always the coral main action (it went brown-gold on My week) */
 :root[data-ui="flow"] #goBtn{background:var(--today);color:var(--fl-ink)}
+
+/* ⑤ A space on phones: stage tabs back at the top (Thumb-first is now off by default, still a switch in Settings → Appearance),
+   the list name only shows when a space has more than one list. Flow: the title is calm text; the active tab carries the stage colour. */
+@media (max-width:1099px){:root[data-ui="flow"][data-view="space"] .hero h1{color:var(--text)}}

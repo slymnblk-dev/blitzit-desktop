@@ -104,12 +104,14 @@ function rowHTML(t){
     t.subs.length?`<span class="mi">${I_SUB}${sd}/${t.subs.length}</span>`:'',
     t.notes.trim()?`<span class="mi" aria-label="Has notes">${I_NOTE}</span>`:''
   ].join('');
+  /* ⑤ 0.316: the list name only when the space has more than one list (one list = every task would say the same) */
+  const showL=S.list==='all'&&S.lists.filter(x=>x.space===l.space).length>1;
   return `<li class="row ${t.stage==='done'?'is-done':''} ${t.id===enterId?'enter':''} ${pr&&ps==='ring'?'pr-'+pr.id:''} ${pr&&ps==='edge'?'pe-'+pr.id:''} ${pr&&ps==='tint'?'pt-'+pr.id:''} ${im&&impStyle()==='levels'&&t.imp>=4?'imp-big':''}" data-id="${t.id}">
     <div class="under"><span></span></div>
     <div class="row-in">
       <button class="check" data-check aria-label="Complete">${CHECK}</button>
       <div class="body"><div class="title"><span>${esc(t.title)}</span>${pr&&(ps==='dot'||ps==='marks')?`<i class="pri-mk ${pr.id}" title="${pr.name} priority" aria-label="${pr.name} priority">${'!'.repeat(pr.n)}</i>`:''}</div>
-        ${(S.list==='all'||extra)?`<div class="meta">${S.list==='all'?`<span class="tag"><i style="background:${l.c}"></i>${esc(l.name)}</span>`:''}${extra}</div>`:''}</div>
+        ${(showL||extra)?`<div class="meta">${showL?`<span class="tag"><i style="background:${l.c}"></i>${esc(l.name)}</span>`:''}${extra}</div>`:''}</div>
       <div class="est">${fmt(t.est)}</div>
     </div></li>`;
 }
