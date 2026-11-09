@@ -54,6 +54,7 @@ test('add a quote, a word (only one a year), edit, move and delete with Undo; th
   await page.keyboard.press('Enter');
   await expect(page.locator('#visionPg .vb-w')).toHaveText('Brave');
   await expect(page.locator('#visionPg .pg-sum')).toContainText('Word of the year: Brave');
+  await expect(page.locator('#visionPg .pg-sum')).not.toContainText('card');   // the count lives on the All chip only
   // a second word is not offered
   await page.evaluate(() => openVbCard(null));
   await expect(page.locator('#vbSheet [data-vbk="word"]')).toBeDisabled();

@@ -71,7 +71,8 @@ function vbCardHTML(c,i){const sz=c.size||'m',cap=(c.t||'').trim(),gl=vbGoal(c);
 
 /* ---------- the page ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg vb-pg" id="visionPg" role="region" aria-label="Vision board"><div class="ib-in" id="vbIn"></div></div>');
-function vbSummary(cs){const w=vbWord(vbYear);return `${w?`Word of the year: <b class="vb-wd">${esc(w)}</b> · `:''}${cs.length} card${cs.length===1?'':'s'}`}
+/* only the word of the year here: the "All" chip already shows how many cards there are (0.314) */
+function vbSummary(){const w=vbWord(vbYear);return w?`Word of the year: <b class="vb-wd">${esc(w)}</b>`:''}
 function drawVision(){if(!vbOn)return;const pg=$('visionPg'),y=pg.scrollTop,cs=vbCards(vbYear),vis=vbArea?cs.filter(c=>c.area===vbArea):cs,desk=vbDesk();
   const nxt=vbYears().slice(-1)[0]+1,yrs=vbYears().map(v=>`<button role="menuitemradio" aria-checked="${v===vbYear}" class="${v===vbYear?'on':''}" data-vby="${v}"><b>${v}</b><small>${vbCards(v).length} card${vbCards(v).length===1?'':'s'}</small></button>`).join('');
   const yr=`<div class="vb-yw"><button class="vb-yb" id="vbYearBtn" aria-haspopup="menu" aria-expanded="${vbYOpen}">${vbYear} board<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
@@ -86,7 +87,7 @@ function drawVision(){if(!vbOn)return;const pg=$('visionPg'),y=pg.scrollTop,cs=v
   const ex=cs.some(c=>c.sample)?`<div class="vb-exb"><span><b>Examples to get you started.</b> Tap any card to make it yours.</span><button data-vbclear>Clear examples</button></div>`:'';
   const add=cs.length&&cs.length<VB_MAX?`<button class="vb-c vb-addc" data-vbnew>${PLUS_S}Add a card</button>`:'';
   $('vbIn').innerHTML=`<div class="set-top ib-top vb-top0"><button class="icon-btn" id="vbBack" aria-label="Back">${BACK_SVG}</button>${yr}${tools}</div>
-    <div class="vb-head"><h1 class="ib-h">Vision</h1><div class="pg-sum">${vbSummary(cs)}</div></div>
+    <div class="vb-head"><h1 class="ib-h">Vision</h1>${vbSummary()?`<div class="pg-sum">${vbSummary()}</div>`:''}</div>
     ${ex}${cs.length?chips:''}${empty}${vis.length?`<div class="vb-grid" id="vbGrid">${vis.map(vbCardHTML).join('')}${add}</div>`:''}
     ${cs.length>=VB_MAX?`<p class="vb-none">${VB_MAX} cards is the most for one board, so it stays clear. Remove one to add another.</p>`:''}`;
   pg.scrollTop=y;if(vbAddArea){const i=$('vbAreaIn');if(i)i.focus()}}
