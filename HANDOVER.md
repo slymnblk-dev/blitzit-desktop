@@ -127,3 +127,12 @@
 - **0.313:** removed Save as wallpaper and the "Your 2026" eyebrow on the Vision page (cleaner); the year button shows the year.
 - **0.314:** Vision summary shows only the word of the year (the All chip already counts cards).
 - **Flow hero 0.315 "Aurora glass":** the Up next card (`.td-card` phone, `.cm-up` computer) is no longer a solid coral block: surface card, `::before` = faint coral+lilac conic light turning in 40s (`flAurora`), `::after` = frosted veil (backdrop blur). Coral only on Start. Done/Later are labelled pills. Reduced motion = still. Test: "Flow hero is Aurora glass".
+- **Polish pass 0.316** (full review, canvas row "Full review: now vs polished"). All CSS in `src/css/39-polish.css`, one numbered block per fix, one commit per fix (easy to revert one):
+  ① phone top bar without the theme switch (`#ttPhone` hidden; theme lives in Settings), floating tab pill shows names; Flow hero hides "Today", task title 24px.
+  ② Flow Focus screen: graphite/light + slow Aurora (`flFocusAur`), only when the focus colour is the default (`data-focuscol="red"`); Classic and picked colours unchanged.
+  ③ one page header: no tagline eyebrows (Inbox "Capture", Habits "Small daily wins", Settings "Windaday"); no Beta badge after page titles (Beta only in Settings → Modes).
+  ④ one button system: `.rv-done`, `.gs-next`, `.ci-end .primary`, `.acc-form .primary` use the accent like `.primary`; Auto-plan grey; Flow `#goBtn` always coral; Flow accent text = `--fl-ink`.
+  ⑤ space page: Thumb-first off by default (one-time migration `cfg.flT316`; still a switch), list name on rows only when the space has 2+ lists (`showL` in 02-tasks-render.js), calm Flow title.
+  ⑥ one empty card: `.rh-empty` and Goals' new `.pl-empty` (dhEmpty) look like Metrics' empty card.
+  ⑦ search dims the page (`body.srch-on::before`; the older phone `::after` dim is turned off).
+  Tests: `tests/polish.spec.mjs` (7 tests); updated flow/beta/phone-home tests for the intended changes.

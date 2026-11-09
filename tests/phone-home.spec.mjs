@@ -20,7 +20,7 @@ test('phone Home: Also today card, Spaces, tab bar that moves between pages', as
   await expect(page.locator('#addBtn')).toBeHidden();
   // icons only, named for screen readers; the + sits in the middle
   expect(await page.locator('#tabBar .tb').evaluateAll(b => b.map(x => x.getAttribute('aria-label')))).toEqual(['Home', 'Inbox', 'Habits', 'Goals']);
-  await expect(page.locator('#tabBar .tb .tb-l').first()).toBeHidden(); // Floating: icons only
+  await expect(page.locator('#tabBar .tb .tb-l').first()).toBeVisible(); // Floating: small names under the icons (0.316)
   await expect(page.locator('#tbInbox .tb-n')).toHaveText('1');
   // Floating (default): a pill of tabs, the + on its own after it; With labels: names under the icons, the + in the middle
   expect(await page.locator('#tbIn button').evaluateAll(b => b.map(x => x.id))).toEqual(['tbHome', 'tbInbox', 'tbHabits', 'tbGoals', 'tbAdd']);

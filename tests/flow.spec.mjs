@@ -303,7 +303,7 @@ test('Flow pages (0.308): Wins, Routines, Journal, Habits and The climb use the 
   await page.evaluate(() => { closeJournal(); openRhythm(); });
   expect(await bg('#rhythmPg .hg-c.on')).toBe(CORAL);
   await page.evaluate(() => { S.habits = []; save(); drawRhythm(); });
-  await expect(page.locator('#rhythmPg .hb-sun')).toBeHidden();
+  await expect(page.locator('#rhythmPg .hb-sun')).toBeVisible();                   // 0.316: the sun is the icon of the shared empty card
   await page.locator('#rhythmPg [data-flhb="Walk"]').click();
   await expect(page.locator('#hbSheet.on')).toBeVisible();
   await expect(page.locator('#hbName')).toHaveValue('Walk');
