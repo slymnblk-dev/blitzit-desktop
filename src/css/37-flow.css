@@ -148,16 +148,31 @@
 :root[data-fl~="kit"] button:focus-visible,:root[data-fl~="kit"] [role="button"]:focus-visible{outline:2px solid var(--today);outline-offset:2px}
 :root[data-fl~="kit"] .txt-btn,:root[data-fl~="kit"] .ghost-btn{border-radius:12px}
 
-/* the Flow look: the Up next card is a solid coral block with dark ink (like the mockups) */
-:root[data-ui="flow"] .td-card:not(.td-empty),:root[data-ui="flow"] .cm-up:not(.is-empty){background:var(--today);color:var(--fl-ink);box-shadow:none;border:0}
-:root[data-ui="flow"] .td-card:not(.td-empty) :is(.td-lbl,.td-up,.td-title,.td-more,.td-sum),
-:root[data-ui="flow"] .cm-up:not(.is-empty) :is(.cm-ut .dh-eye,.cm-ut b,.cm-ut small){color:var(--fl-ink)}
-:root[data-ui="flow"] .td-card:not(.td-empty) .td-more,:root[data-ui="flow"] .td-card:not(.td-empty) .td-sum,:root[data-ui="flow"] .cm-up .cm-ut small{opacity:.72}
-:root[data-ui="flow"] .td-card:not(.td-empty) .up-chip,:root[data-ui="flow"] .cm-up .up-chip{background:color-mix(in srgb,var(--fl-ink) 12%,transparent);color:var(--fl-ink)}
+/* the Flow look (0.315): the Up next card is "Aurora glass" - frosted glass over faint coral and lilac light
+   that turns very slowly (40s). Calm, but still the hero. Still in reduced motion. */
+:root[data-ui="flow"] .td-card:not(.td-empty),:root[data-ui="flow"] .cm-up:not(.is-empty){position:relative;overflow:hidden;isolation:isolate;
+  background:var(--surface);color:var(--text);box-shadow:none;border:0;border-radius:26px}
+:root[data-ui="flow"] .td-card:not(.td-empty)::before,:root[data-ui="flow"] .cm-up:not(.is-empty)::before{content:"";position:absolute;z-index:-2;left:50%;top:50%;
+  width:max(160%,620px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;
+  background:conic-gradient(from 0deg,color-mix(in srgb,var(--today) 55%,transparent),transparent,color-mix(in srgb,var(--backlog) 40%,transparent),transparent,color-mix(in srgb,var(--today) 55%,transparent));
+  animation:flAurora 40s linear infinite}
+:root[data-ui="flow"] .td-card:not(.td-empty)::after,:root[data-ui="flow"] .cm-up:not(.is-empty)::after{content:"";position:absolute;z-index:-1;inset:0;border-radius:inherit;pointer-events:none;
+  background:color-mix(in srgb,var(--surface) 55%,transparent);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);box-shadow:inset 0 0 0 1px var(--line)}
+@keyframes flAurora{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){:root[data-ui="flow"] .td-card:not(.td-empty)::before,:root[data-ui="flow"] .cm-up:not(.is-empty)::before{animation:none}}
+:root[data-ui="flow"] .td-card:not(.td-empty) :is(.td-lbl,.td-title),:root[data-ui="flow"] .cm-up:not(.is-empty) .cm-ut b{color:var(--text)}
+:root[data-ui="flow"] .td-card:not(.td-empty) :is(.td-up,.td-more,.td-sum),:root[data-ui="flow"] .cm-up:not(.is-empty) :is(.cm-ut .dh-eye,.cm-ut small){color:var(--muted);opacity:1}
+:root[data-ui="flow"] .td-card:not(.td-empty) .up-chip,:root[data-ui="flow"] .cm-up .up-chip{background:color-mix(in srgb,var(--text) 8%,transparent);color:var(--text)}
 :root[data-ui="flow"] .td-card .hglint,:root[data-ui="flow"] .cm-up .hglint{display:none}
-:root[data-ui="flow"] .fl-go{background:var(--fl-ink);color:var(--today)}
-:root[data-ui="flow"] .fl-sq{background:color-mix(in srgb,var(--fl-ink) 12%,transparent);color:var(--fl-ink)}
-:root[data-ui="flow"] .fl-sq:hover{background:color-mix(in srgb,var(--fl-ink) 20%,transparent)}
+:root[data-ui="flow"] .fl-of{color:var(--muted);opacity:1}
+:root[data-ui="flow"] .fl-acts button{border-radius:999px}
+:root[data-ui="flow"] .fl-go{background:var(--today);color:var(--fl-ink)}
+:root[data-ui="flow"] .fl-sq{width:auto;min-width:48px;padding:0 16px;background:color-mix(in srgb,var(--text) 8%,transparent);color:var(--text)}
+:root[data-ui="flow"] .td-card .fl-go{min-width:0}
+:root[data-ui="flow"] .td-card .fl-sq{padding:0 13px;gap:6px}
+:root[data-ui="flow"] .td-card .fl-go{flex:1 1 0}
+:root[data-ui="flow"] .fl-sq:hover{background:color-mix(in srgb,var(--text) 14%,transparent)}
+:root[data-ui="flow"] .td-card:not(.td-empty) .td-go{background:var(--today);color:var(--fl-ink)}
 /* the goal's Focus card: a calm Flow surface (no warm tint); the coral button carries the colour */
 :root[data-ui="flow"] .gf-card{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
 :root[data-ui="flow"] .gf-prog i{background:var(--today)}

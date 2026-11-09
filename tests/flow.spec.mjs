@@ -238,7 +238,7 @@ test('Flow look: buttons on the coral use dark ink (dark look); Classic keeps it
   expect(await page.evaluate(() => window.__flInkN)).toBeGreaterThan(5);
   expect(await page.evaluate(() => getComputedStyle(document.getElementById('goBtn')).color)).toBe('rgb(20, 16, 14)');
   await page.evaluate(() => { goHome(); });
-  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#homeView .td-card')).backgroundColor)).toBe('rgb(255, 138, 91)');
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector('#homeView .td-card')).backgroundColor)).toBe('rgb(24, 26, 31)'); // Aurora glass on the dark surface (0.315)
   await page.evaluate(() => { S.cfg.ui = 'classic'; applySettings(); openSpace(S.spaces[0].id); render(); });
   expect(await page.evaluate(() => getComputedStyle(document.getElementById('goBtn')).color)).toBe('rgb(255, 255, 255)');
   noErrors(errors);
@@ -311,5 +311,30 @@ test('Flow pages (0.308): Wins, Routines, Journal, Habits and The climb use the 
   // Classic: the warm jar is back
   await page.evaluate(() => { closeGoal(); S.cfg.ui = 'classic'; applySettings(); openWins(); });
   expect(await bg('.wn-jar')).not.toBe(SURF);
+  noErrors(errors);
+});
+
+test('Flow hero is Aurora glass: calm surface, slow turning light, one row of actions, still in reduced motion; Classic untouched', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await todayTask(page);
+  const classicBg = await page.locator('#homeView .td-card').evaluate(c => getComputedStyle(c, '::before').animationName);
+  expect(classicBg).not.toBe('flAurora');
+  await flow(page);
+  const card = page.locator('#homeView .td-card');
+  const st = await card.evaluate(c => ({ bg: getComputedStyle(c).backgroundColor, surf: getComputedStyle(document.body).getPropertyValue('--surface'),
+    anim: getComputedStyle(c, '::before').animationName, blur: getComputedStyle(c, '::after').backdropFilter }));
+  expect(st.anim).toBe('flAurora');
+  expect(st.blur).toContain('blur');
+  expect(st.bg).not.toBe('rgb(255, 138, 91)');                                         // no solid coral block anymore
+  const tops = await page.locator('#homeView .fl-acts button').evaluateAll(b => b.map(x => Math.round(x.getBoundingClientRect().top)));
+  expect(new Set(tops).size).toBe(1);                                                   // Start · Done · Later on one row (390px)
+  await expect(page.locator('#homeView .fl-sq').first()).toContainText('Done');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(await card.evaluate(c => getComputedStyle(c, '::before').animationName)).toBe('none');
+  await desk(page); await page.evaluate(() => goHome());
+  expect(await page.locator('#dHome .cm-up').evaluate(c => getComputedStyle(c, '::before').animationName)).toBe('none');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  expect(await page.locator('#dHome .cm-up').evaluate(c => getComputedStyle(c, '::before').animationName)).toBe('flAurora');
   noErrors(errors);
 });

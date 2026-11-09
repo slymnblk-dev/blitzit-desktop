@@ -54,7 +54,7 @@ function flNextTask(card){const td=bySpaceOrder(S.tasks.filter(t=>shown(t)&&t.st
   if(card.classList.contains('td-card')){const sp=focusSpace(td),mine=sp?td.filter(t=>listOf(t.list).space===sp.id):td;return {t:mine[0],n:td.length}}
   return {t:td[0],n:td.length}}
 const flActs=(t,n)=>`<div class="fl-acts" data-flt="${t.id}"><span class="fl-of">1 of ${n} today</span>
-  <button class="fl-go" data-flgo>${FL_GO}<span>Start</span></button><button class="fl-sq" data-fldone aria-label="Done" title="Done">${FL_CK}</button><button class="fl-sq" data-fllater aria-label="Later: move to ${esc(STAGES[1].name)}" title="Later">${FL_LATER}</button></div>`;
+  <button class="fl-go" data-flgo>${FL_GO}<span>Start</span></button><button class="fl-sq" data-fldone aria-label="Done" title="Done">${FL_CK}<span>Done</span></button><button class="fl-sq" data-fllater aria-label="Later: move to ${esc(STAGES[1].name)}" title="Later"><span>Later</span>${FL_LATER}</button></div>`;
 function flNextPaint(){if(!flowOn('next'))return;
   document.querySelectorAll('#homeView .td-card:not(.td-empty), #dHome .cm-up:not(.is-empty)').forEach(c=>{if(c.querySelector('.fl-acts'))return;const x=flNextTask(c);if(!x||!x.t)return;
     c.classList.add('fl-next');c.insertAdjacentHTML('beforeend',flActs(x.t,x.n))})}
