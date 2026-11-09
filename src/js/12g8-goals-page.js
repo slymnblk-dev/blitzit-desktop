@@ -18,7 +18,7 @@ function gaCard(g){const pr=gProg(g),pc=gPace(g),dd=gDays(g),nx=gaNext(g);
 function gaDraw(){const y=$('goalsPg').scrollTop,gs=gAll().slice().sort((a,b)=>(b.star?1:0)-(a.star?1:0));
   $('glIn').innerHTML=`<div class="set-top ib-top"><button class="icon-btn" id="glBack" aria-label="Back">${BACK_SVG}</button></div>
     <div class="hb-head ga-head"><h1 class="hb-h">Goals</h1><div class="hb-sub">${gs.length?gSubLine(gs):'Pick one big outcome and climb it, one step at a time.'}</div></div>
-    ${gs.length?`<div class="ga-list">${gs.map(gaCard).join('')}</div>`:`<button class="ga-first" data-gnew="">${PLUS_S}Set your first goal</button>`}
+    ${gs.length?`<div class="ga-list">${gs.map(gaCard).join('')}</div>`:`<div class="mt-empty pl-empty">${dhEmpty(DH_I.goal,'hot','No goals yet','One big outcome, climbed in small milestones.',`<button class="primary pl-eb" data-gnew="">Set your first goal</button>`)}</div>` /* ⑥ 0.316: the same empty card as Metrics and Habits */}
     ${gWonList(gWon(null))}`;
   $('goalsPg').scrollTop=y}
 /* Start → focus mode on that task */

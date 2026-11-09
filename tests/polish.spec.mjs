@@ -95,3 +95,20 @@ test('⑤ Space on phones: stage tabs at the top by default (Thumb-first is a sw
   expect(await page.evaluate(() => document.documentElement.dataset.fl.split(' ').includes('thumb'))).toBe(true);
   noErrors(errors);
 });
+
+test('⑥ One empty state: Habits and Goals use the same card as Metrics (no dashed box, no lone button), the button still works', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  for (const ui of ['flow', 'classic']) {
+    await setUi(page, ui, { habits: true, goals: true });
+    await page.evaluate(() => hbOpenHabits());
+    const st = await page.evaluate(() => { const c = getComputedStyle(document.querySelector('#rhythmPg .rh-empty')); return [c.borderStyle, c.borderRadius, c.backgroundColor !== 'rgba(0, 0, 0, 0)']; });
+    expect(st).toEqual(['none', '22px', true]);
+    await page.evaluate(() => openGoals());
+    await expect(page.locator('#goalsPg .pl-empty .dh-empty b')).toHaveText('No goals yet');
+    await expect(page.locator('#goalsPg .ga-first')).toHaveCount(0);
+  }
+  await page.locator('#goalsPg .pl-empty [data-gnew]').click();                        // still opens the new goal sheet
+  await expect(page.locator('#gsPg #gsIn .gs-n')).toHaveText('1 of 3');
+  noErrors(errors);
+});
