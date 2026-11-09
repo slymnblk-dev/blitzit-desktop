@@ -65,3 +65,10 @@
 /* ④+⑥ Flow: text on the accent pill uses the Flow ink (dark on coral in dark mode, white in light mode) */
 :root[data-ui="flow"] :is(.primary,.pl-eb){color:var(--fl-ink)}
 :root[data-ui="flow"] :is(.rv-done,.gs-next,.ci-end .primary){color:var(--fl-ink)!important}
+
+/* ⑦ Search: the page behind is dimmed so the search panel reads as one clean sheet (tap the dim area to close).
+   Lighter on computers, where the board behind filters live while you type. */
+body.srch-on::before{content:"";position:fixed;inset:0;z-index:690;background:rgba(8,9,12,.48);animation:srScrim .2s ease both}
+@media (min-width:1100px){body.srch-on::before{background:rgba(8,9,12,.2)}}
+@keyframes srScrim{from{opacity:0}}
+@media (max-width:1099px){body.srch-on::after{opacity:0}} /* the older phone dim: one dim layer only */

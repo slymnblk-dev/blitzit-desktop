@@ -112,3 +112,19 @@ test('⑥ One empty state: Habits and Goals use the same card as Metrics (no das
   await expect(page.locator('#gsPg #gsIn .gs-n')).toHaveText('1 of 3');
   noErrors(errors);
 });
+
+test('⑦ Search dims the page behind it (one layer); tapping the dim area closes it', async ({ page }) => {
+  for (const vp of [[390, 844], [1400, 900]]) {
+    await page.setViewportSize({ width: vp[0], height: vp[1] });
+    const errors = await openApp(page);
+    await setUi(page, 'flow');
+    await page.evaluate(() => { openSpace(S.spaces[0].id); render(); openSearch(); });
+    await expect(page.locator('#srch.on')).toBeVisible();
+    const dim = await page.evaluate(() => [getComputedStyle(document.body, '::before').backgroundColor, getComputedStyle(document.body, '::after').opacity]);
+    expect(dim[0]).toMatch(/rgba\(8, 9, 12, 0\.(48|2)\)/);
+    if (vp[0] < 1100) expect(dim[1]).toBe('0');
+    await page.mouse.click(vp[0] / 2, vp[1] - 200);
+    await expect(page.locator('#srch.on')).toHaveCount(0);
+    noErrors(errors);
+  }
+});
