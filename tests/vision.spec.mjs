@@ -147,7 +147,7 @@ test('goal cards show progress and an Achieved stamp; "Also make it a goal" link
   noErrors(errors);
 });
 
-test('Morning look plays the board full screen (next, pause, Esc); Home shows today\'s vision; wallpaper downloads', async ({ page }) => {
+test('Morning look plays the board full screen (next, pause, Esc); Home shows today\'s vision', async ({ page }) => {
   await phone(page);
   const errors = await openApp(page);
   await on(page);
@@ -165,9 +165,8 @@ test('Morning look plays the board full screen (next, pause, Esc); Home shows to
   await page.keyboard.press('Escape');
   await expect(page.locator('#vbShow.on')).toHaveCount(0);
   await expect(page.locator('#visionPg.on')).toBeVisible();      // Esc closed only the slideshow
-  const dl = page.waitForEvent('download');
-  await page.locator('#visionPg [data-vbwall]').click();
-  expect((await dl).suggestedFilename()).toBe(`vision-${new Date().getFullYear()}.png`);
+  await expect(page.locator('#visionPg [data-vbwall]')).toHaveCount(0);   // wallpaper export was removed (0.313)
+  await expect(page.locator('#visionPg .vb-head .pg-eye')).toHaveCount(0); // no "Your 2026" above the title
   // Classic and Flow both draw the board
   await page.evaluate(() => { S.cfg.ui = 'flow'; applySettings(); drawVision(); });
   await expect(page.locator('#visionPg .vb-c[data-vbe]')).toHaveCount(2);
@@ -189,7 +188,7 @@ test('boards per year: a new board for next year starts empty; this year keeps i
   await page.locator('#vbYearBtn').click();
   await page.locator(`#visionPg .vb-ynew[data-vby="${y + 1}"]`).click();
   await expect(page.locator('#visionPg .vb-empty')).toBeVisible();
-  await expect(page.locator('#visionPg .pg-eye')).toHaveText(`Your ${y + 1}`);
+  await expect(page.locator('#vbYearBtn')).toContainText(`${y + 1} board`);
   await page.locator('#vbYearBtn').click();
   await page.locator(`#visionPg .vb-ym [data-vby="${y}"]`).click();
   await expect(page.locator('#visionPg .vb-quote')).toHaveCount(1);

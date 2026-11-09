@@ -4,13 +4,12 @@
    — synced, backed up and undoable like the other modes. Photos are big, so they are shrunk (≈80–160 KB) and kept
    on this device only (IndexedDB "wd-vision"); another device shows a calm placeholder until that's added.
    Phones: a Vision tab. Computers: "Vision" under Modes. Morning look: a full-screen slideshow.
-   Home shows "Today's vision" (one card a day). Save as wallpaper: a phone-sized PNG of the board. */
+   Home shows "Today's vision" (one card a day). */
 var vbOn=false,vbYear=new Date().getFullYear(),vbArea='',vbAddArea=false,vbE=null,vbCleaned=false,vbYOpen=false;
 function visionOn(){return !!(S.cfg&&S.cfg.vision)}
 const VB_MAX=40;
 var VB_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="10" rx="2"/><rect x="13" y="3" width="8" height="6" rx="2"/><rect x="13" y="11" width="8" height="10" rx="2"/><rect x="3" y="15" width="8" height="6" rx="2"/></svg>';
 const VB_PLAY='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
-const VB_DL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
 const VB_COLORS=['#FF8A5B','#7CE0A8','#8FB4FF','#B98CFF','#F5C77E','#F4F4F5'];
 const VB_KINDS=[['photo','Photo'],['art','Art'],['quote','Quote'],['word','Word'],['goal','Goal']];
 /* our own flat illustrations (0.311): no stock photos, no copyright worries; they suit both Classic and Flow */
@@ -79,7 +78,6 @@ function drawVision(){if(!vbOn)return;const pg=$('visionPg'),y=pg.scrollTop,cs=v
     ${vbYOpen?`<div class="vb-ym" role="menu" aria-label="Boards">${yrs}<button class="vb-ynew" data-vby="${nxt}">${PLUS_S}New board for ${nxt}</button></div>`:''}</div>`;
   const tools=`<div class="vb-tools">
     <button class="vb-tb" data-vbplay ${cs.length?'':'disabled'} aria-label="Morning look">${VB_PLAY}${desk?'<span>Morning look</span>':''}</button>
-    <button class="vb-tb" data-vbwall ${cs.length?'':'disabled'} aria-label="Save as wallpaper">${VB_DL}${desk?'<span>Save as wallpaper</span>':''}</button>
     ${desk?`<button class="vb-tb vb-add" data-vbnew>${PLUS_S}<span>Add card</span></button>`:''}</div>`;
   const areas=vbAreas(),cnt=a=>cs.filter(c=>c.area===a).length,chips=`<div class="vb-chips" role="group" aria-label="Areas"><button class="vb-chip${vbArea?'':' on'}" data-vbarea="" aria-pressed="${!vbArea}">All <em>${cs.length}</em></button>${areas.map(a=>`<span class="vb-cw${vbArea===a?' on':''}"><button class="vb-chip${vbArea===a?' on':''}" data-vbarea="${esc(a)}" aria-pressed="${vbArea===a}">${esc(a)}${cnt(a)?` <em>${cnt(a)}</em>`:''}</button></span>`).join('')}<button class="vb-chip vb-anew" data-vbareas aria-label="Edit areas">${VB_PEN}${areas.length?'Edit':'Add areas'}</button></div>`;
   const empty=!cs.length?`<div class="vb-empty"><b>Picture the year you want</b><span>Add photos of places, people and things you're working towards. One quote, one word for the year.</span>
@@ -88,7 +86,7 @@ function drawVision(){if(!vbOn)return;const pg=$('visionPg'),y=pg.scrollTop,cs=v
   const ex=cs.some(c=>c.sample)?`<div class="vb-exb"><span><b>Examples to get you started.</b> Tap any card to make it yours.</span><button data-vbclear>Clear examples</button></div>`:'';
   const add=cs.length&&cs.length<VB_MAX?`<button class="vb-c vb-addc" data-vbnew>${PLUS_S}Add a card</button>`:'';
   $('vbIn').innerHTML=`<div class="set-top ib-top vb-top0"><button class="icon-btn" id="vbBack" aria-label="Back">${BACK_SVG}</button>${yr}${tools}</div>
-    <div class="vb-head"><span class="pg-eye">Your ${vbYear}</span><h1 class="ib-h">Vision</h1><div class="pg-sum">${vbSummary(cs)}</div></div>
+    <div class="vb-head"><h1 class="ib-h">Vision</h1><div class="pg-sum">${vbSummary(cs)}</div></div>
     ${ex}${cs.length?chips:''}${empty}${vis.length?`<div class="vb-grid" id="vbGrid">${vis.map(vbCardHTML).join('')}${add}</div>`:''}
     ${cs.length>=VB_MAX?`<p class="vb-none">${VB_MAX} cards is the most for one board, so it stays clear. Remove one to add another.</p>`:''}`;
   pg.scrollTop=y;if(vbAddArea){const i=$('vbAreaIn');if(i)i.focus()}}
@@ -112,7 +110,6 @@ $('visionPg').addEventListener('click',e=>{
   if(e.target.closest('[data-vbclear]')){vbArea='';return commit(()=>{S.vision=vbAll().filter(c=>!c.sample)},'Examples cleared')}
   const nw=e.target.closest('[data-vbnew]');if(nw)return openVbCard(null,nw.dataset.vbnew||null);
   if(e.target.closest('[data-vbplay]'))return vbShowOpen();
-  if(e.target.closest('[data-vbwall]'))return vbWallpaper();
   const c=e.target.closest('[data-vbe]');if(c)return openVbCard(c.dataset.vbe)});
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&vbYOpen&&vbOn){e.preventDefault();e.stopPropagation();vbYOpen=false;drawVision();const b=$('vbYearBtn');if(b)b.focus()}},true);
 $('visionPg').addEventListener('keydown',e=>{if(e.target.id!=='vbAreaIn')return;e.stopPropagation();
@@ -244,27 +241,6 @@ $('vbShow').addEventListener('click',e=>{if(!vbS)return;if(e.target.closest('[da
 window.addEventListener('keydown',e=>{if(!vbS)return;if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();vbShowClose()}
   else if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();vbNext()}else if(e.key==='ArrowLeft'){e.preventDefault();if(vbS.i>0){vbS.i--;vbSlide()}}},true);
 
-/* ---------- Save as wallpaper: a phone-sized picture of the board ---------- */
-function vbWrap(ctx,t,x,y,w,lh,max){const words=String(t).split(/\s+/);let line='',n=0;for(const wd of words){const tt=line?line+' '+wd:wd;if(ctx.measureText(tt).width>w&&line){ctx.fillText(line,x,y+n*lh);n++;line=wd;if(n>=max)return}else line=tt}if(line&&n<max)ctx.fillText(line,x,y+n*lh)}
-function vbWallpaper(){const cs=vbCards(vbYear).filter(c=>!vbArea||c.area===vbArea);if(!cs.length)return;
-  const W=1080,H=1920,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d'),st=getComputedStyle(root);
-  const col=v=>st.getPropertyValue(v).trim()||'#888',font=(st.getPropertyValue('--font')||'sans-serif').trim();
-  x.fillStyle=col('--bg');x.fillRect(0,0,W,H);x.fillStyle=col('--muted');x.font=`700 34px ${font}`;x.fillText(`MY ${vbYear}`,72,150);
-  x.fillStyle=col('--text');x.font=`800 110px ${font}`;x.fillText(vbWord(vbYear)||'Vision',72,270);
-  const g=24,cw=(W-144-g)/2,cols=[330,330],rr=(px,py,w,h,r)=>{x.beginPath();x.roundRect?x.roundRect(px,py,w,h,r):x.rect(px,py,w,h)};
-  const imgs=cs.map(c=>c.k==='art'?new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360" width="600" height="720">${(VB_ART[c.a]||VB_ART.sunrise)[1]}</svg>`)})
-    :c.k==='photo'&&vbImg[c.id]?new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=vbImg[c.id]}):Promise.resolve(null));
-  Promise.all(imgs).then(ims=>{cs.forEach((c,i)=>{if(c.k==='word')return;const k=cols[0]<=cols[1]?0:1,px=72+k*(cw+g),py=cols[k];const h=c.k==='photo'||c.k==='art'?({s:300,m:420,l:560}[c.size||'m']):c.k==='quote'?300:240;
-      if(py+h>H-80)return;x.save();rr(px,py,cw,h,36);x.clip();
-      if(c.k==='photo'||c.k==='art'){const im=ims[i];x.fillStyle=col('--surface2');x.fillRect(px,py,cw,h);if(im){const s=Math.max(cw/im.width,h/im.height),iw=im.width*s,ih=im.height*s;x.drawImage(im,px+(cw-iw)/2,py+(h-ih)/2,iw,ih)}
-        if(c.t){x.fillStyle='rgba(0,0,0,.55)';x.fillRect(px,py+h-90,cw,90);x.fillStyle='#fff';x.font=`700 34px ${font}`;vbWrap(x,c.t,px+28,py+h-34,cw-56,40,1)}}
-      else if(c.k==='quote'){x.fillStyle=c.c||VB_COLORS[0];x.fillRect(px,py,cw,h);x.fillStyle='#14100E';x.font=`700 44px ${font}`;vbWrap(x,`“${c.t}”`,px+32,py+76,cw-64,54,4)}
-      else{const gg=vbGoal(c);x.fillStyle=col('--surface');x.fillRect(px,py,cw,h);x.fillStyle=col('--muted');x.font=`700 26px ${font}`;x.fillText('GOAL',px+32,py+60);
-        x.fillStyle=col('--text');x.font=`800 40px ${font}`;vbWrap(x,gg?gg.name:c.t,px+32,py+120,cw-64,48,2);if(gg){x.fillStyle=col('--today');x.fillRect(px+32,py+h-50,(cw-64)*gProg(gg).p,10)}}
-      x.restore();cols[k]+=h+g});
-    cv.toBlob(b=>{if(!b)return toast('Could not make the picture');const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`vision-${vbYear}.png`;document.body.appendChild(a);a.click();
-      setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);toast('Saved. Set it as your lock screen')},'image/png')})}
-
 /* ---------- Home: today's vision (one card a day) ---------- */
 function vbToday(){if(!visionOn())return null;const cs=vbCards(new Date().getFullYear()).filter(c=>c.k!=='goal');if(!cs.length)return null;
   const n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);return cs[n%cs.length]}
@@ -312,5 +288,5 @@ const _vbApply=applySettings;applySettings=function(){_vbApply.apply(this,argume
 const _vbModes=modesPage;
 modesPage=function(){const h=_vbModes.apply(this,arguments),on=visionOn();
   const card=`<div class="md-card${on?' on':''}" data-md="vision"><div class="md-head"><span class="md-ic">${VB_ICON}</span><span class="md-t"><b>Vision board</b><small>Photos, a quote and a word for your year</small></span>${tg('vision')}</div>
-    ${on?`<div class="md-body"><p class="md-note">A board per year with a Morning look slideshow, a vision on Home each day, and a wallpaper you can save. Photos stay on this device.</p></div>`:''}</div>`;
+    ${on?`<div class="md-body"><p class="md-note">A board per year with a Morning look slideshow and a vision on Home each day. Photos stay on this device.</p></div>`:''}</div>`;
   return h+card};
