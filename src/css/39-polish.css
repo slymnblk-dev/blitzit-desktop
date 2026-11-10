@@ -72,3 +72,6 @@ body.srch-on::before{content:"";position:fixed;inset:0;z-index:690;background:rg
 @media (min-width:1100px){body.srch-on::before{background:rgba(8,9,12,.2)}}
 @keyframes srScrim{from{opacity:0}}
 @media (max-width:1099px){body.srch-on::after{opacity:0}} /* the older phone dim: one dim layer only */
+
+/* 0.317: on phones, switching stages (Backlog, My week, Today, Done) is instant: no page slide, no title slide */
+@media (max-width:1099px){.hero h1.in-r,.hero h1.in-l{animation:none}[data-view="space"] .hero h1{transition:none}}

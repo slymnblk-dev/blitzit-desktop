@@ -19,8 +19,10 @@ test('with page motion on, every page change lands on the right page and the mot
   expect(await moving()).toBe(0);
   await page.waitForTimeout(300);
   expect(await moving()).toBe(0);
-  // stage change
+  // stage change: instant since 0.317 (no page slide, no title slide)
   await page.evaluate(() => go('week'));
+  expect(await page.evaluate(() => [document.documentElement.dataset.vt || null, vtIn])).toEqual([null, false]);
+  expect(await moving()).toBe(0);
   await settle();
   await expect(page.locator('#listName, .hero h1').first()).toBeVisible();
   expect(await page.evaluate(() => S.stage)).toBe('week');

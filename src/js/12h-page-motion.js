@@ -28,7 +28,7 @@ render=function(d){
   if(vtIn||was===null||!vtOn())return _vtRender.apply(this,arguments);
   let dir=null;
   if(was!==k){dir=k==='home'?'l':was==='home'?'r':was.split(':')[1]!==k.split(':')[1]?'r':'f'}
-  else if(st!==wasSt&&S.space)dir=idx(st)>idx(wasSt)?'r':'l';
+  /* switching stages (Backlog, My week, Today, Done) is instant since 0.317: no slide */
   if(!dir)return _vtRender.apply(this,arguments);
   const args=arguments;vtRun(dir,()=>_vtRender.apply(null,args));
 };
