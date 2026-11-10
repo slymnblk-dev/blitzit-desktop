@@ -133,3 +133,16 @@ test('⑦ Search dims the page behind it (one layer); tapping the dim area close
     noErrors(errors);
   }
 });
+
+test('Light/dark switch (0.319): colour fades are off during the circle, then everything is back to normal', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.motion = true; save(); goHome(); render(); });
+  const t0 = await page.evaluate(() => S.cfg.theme || modeNow());
+  const mid = await page.evaluate(() => new Promise(res => { document.getElementById('ttPhone').click();
+    setTimeout(() => { const c = document.querySelector('.sp-row,.td-card'); res([document.documentElement.classList.contains('tt-anim') || typeof document.startViewTransition !== 'function', c ? getComputedStyle(c).transitionDuration : '0s']); }, 60); }));
+  if (mid[0] === true && await page.evaluate(() => typeof document.startViewTransition === 'function')) expect(mid[1].split(',').every(d => d.trim() === '0s')).toBe(true);
+  await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('tt-anim'))).toBe(false);
+  expect(await page.evaluate(() => S.cfg.theme)).not.toBe(t0);
+  noErrors(errors);
+});

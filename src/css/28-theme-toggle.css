@@ -28,3 +28,6 @@
 .thg2-note{margin:14px 0 0;font-size:13px;color:var(--muted)}
 /* only on Home: inside a space or list the mode you picked simply carries on (0.274) */
 :root:not([data-view="home"]) .tt-btn{display:none}
+/* 0.319: smoother light/dark switch: no colour fades during it, and the new look starts as a dot at the button */
+.tt-anim *:not(.tt-btn svg),.tt-anim *::before,.tt-anim *::after{transition:none!important}
+.tt-anim::view-transition-new(root){clip-path:circle(0px at var(--ttx,50%) var(--tty,0px))}

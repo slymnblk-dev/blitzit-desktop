@@ -15,10 +15,14 @@ function ttSwitch(btn){
   const calm=!C().motion||matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(calm||!document.startViewTransition)return go();
   const r=btn.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,rad=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
+  /* 0.319: smoother. (1) While switching, the app's own colour fades are off, so the new look is final inside the circle
+     (before, cards and buttons were still fading their colours while the circle grew). (2) The new look starts as a dot at the
+     button, so it never flashes in full for a frame before the circle starts. (3) The circle holds its end until the switch is done. */
+  root.style.setProperty('--ttx',x+'px');root.style.setProperty('--tty',y+'px');
   root.classList.add('tt-anim');
   const vt=document.startViewTransition(go);
   vt.ready.then(()=>root.animate({clipPath:[`circle(0px at ${x}px ${y}px)`,`circle(${rad}px at ${x}px ${y}px)`]},
-    {duration:650,easing:'cubic-bezier(.65,0,.35,1)',pseudoElement:'::view-transition-new(root)'})).catch(()=>{});
+    {duration:650,easing:'cubic-bezier(.65,0,.35,1)',fill:'forwards',pseudoElement:'::view-transition-new(root)'})).catch(()=>{});
   vt.finished.finally(()=>root.classList.remove('tt-anim'));
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-tt]');if(!b)return;e.preventDefault();e.stopPropagation();ttSwitch(b)},true);
