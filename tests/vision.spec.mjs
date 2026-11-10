@@ -53,8 +53,8 @@ test('add a quote, a word (only one a year), edit, move and delete with Undo; th
   await page.locator('#vbText').fill('Brave');
   await page.keyboard.press('Enter');
   await expect(page.locator('#visionPg .vb-w')).toHaveText('Brave');
-  await expect(page.locator('#visionPg .pg-sum')).toContainText('Word of the year: Brave');
-  await expect(page.locator('#visionPg .pg-sum')).not.toContainText('card');   // the count lives on the All chip only
+  await expect(page.locator('#visionPg .pg-sum')).toHaveCount(0);                 // 0.318: no line under the title; the word card is pinned on top
+  await expect(page.locator('#visionPg .vb-pins .vb-word .vb-w')).toHaveText('Brave');
   // a second word is not offered
   await page.evaluate(() => openVbCard(null));
   await expect(page.locator('#vbSheet [data-vbk="word"]')).toBeDisabled();
@@ -153,6 +153,8 @@ test('Morning look plays the board full screen (next, pause, Esc); Home shows to
   const errors = await openApp(page);
   await on(page);
   await page.evaluate(() => { const y = new Date().getFullYear(); S.vision = [{ id: 1, k: 'quote', t: 'One', year: y, ord: 0 }, { id: 2, k: 'word', t: 'Brave', year: y, ord: 1 }]; save(); goHome(); render(); });
+  await expect(page.locator('#homeView .vb-home')).toHaveCount(0);                // 0.318: off by default
+  await page.evaluate(() => { S.cfg.vHome = true; save(); render(); });
   await expect(page.locator('#homeView .vb-home')).toBeVisible();
   await page.locator('#homeView .vb-home [data-vbopen]').click();
   await expect(page.locator('#visionPg.on')).toBeVisible();
@@ -262,5 +264,41 @@ test('first visit: a sample board of illustrations and quotes; Clear examples em
   await page.evaluate(() => openVbCard(null, 'quote'));
   await page.locator('#vbSheet [data-vbq="Start where you are."]').click();
   await expect(page.locator('#vbText')).toHaveValue('Start where you are.');
+  noErrors(errors);
+});
+
+test('Pinned cards (0.318): the word is pinned by default, up to 3 pins, pins sit first in one column; Home card switch in Modes; long quotes wrap', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await on(page);
+  await page.evaluate(() => { const y = new Date().getFullYear(); S.vision = [
+    { id: 'w', k: 'word', t: 'Brave', year: y, ord: 0 }, { id: 'a', k: 'quote', t: 'Kdkdkdkdkdkdkdkdkdkdkdkdkdkdkd', year: y, ord: 1 },
+    { id: 'b', k: 'quote', t: 'Two', year: y, ord: 2, pin: true }, { id: 'c', k: 'quote', t: 'Three', year: y, ord: 3, pin: true }, { id: 'd', k: 'quote', t: 'Four', year: y, ord: 4 }]; save(); openVision(); });
+  await expect(page.locator('#visionPg .vb-pins .vb-c')).toHaveCount(3);
+  await expect(page.locator('#visionPg .vb-pins .vb-c').first()).toHaveClass(/vb-word/);
+  const w = await page.locator('#visionPg .vb-pins').boundingBox(), c = await page.locator('#visionPg .vb-pins .vb-c').first().boundingBox();
+  expect(Math.abs(c.width - w.width)).toBeLessThan(2);                               // one column, full width
+  const q = page.locator('#visionPg .vb-grid [data-vbe="a"]');                          // the long word wraps inside its card
+  expect(await q.evaluate(e => e.querySelector('.vb-qt').scrollWidth <= e.clientWidth + 1)).toBe(true);
+  // a 4th pin is not allowed
+  await page.locator('#visionPg [data-vbe="d"]').click();
+  await expect(page.locator('#vbSheet [data-vbpin]')).toBeDisabled();
+  await page.evaluate(() => closeSheets());
+  // unpin the word, then pin another
+  await page.evaluate(() => openVbCard('w'));
+  await page.locator('#vbSheet [data-vbpin]').click();
+  await page.locator('#vbSave').click();
+  await expect(page.locator('#visionPg .vb-pins .vb-word')).toHaveCount(0);
+  await page.evaluate(() => openVbCard('d'));
+  await page.locator('#vbSheet [data-vbpin]').click();
+  await page.locator('#vbSave').click();
+  await expect(page.locator('#visionPg .vb-pins [data-vbe="d"]')).toBeVisible();
+  expect(await page.evaluate(() => S.vision.find(c => c.id === 'w').pin)).toBe(false);  // stays unpinned (saved, so it syncs)
+  // Home card: off by default, a switch under Settings → Modes → Vision board
+  await page.evaluate(() => { closeVision(); goHome(); render(); });
+  await expect(page.locator('#homeView .vb-home')).toHaveCount(0);
+  await page.evaluate(() => { openSettings(); setView = 'modes'; drawSettings(); });
+  await page.locator('[data-md="vision"] [data-tg="vHome"]').evaluate(b => b.click());       // (it sits under the phone tab bar in this small window)
+  await expect.poll(() => page.evaluate(() => S.cfg.vHome)).toBe(true);
   noErrors(errors);
 });

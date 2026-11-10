@@ -35,6 +35,5 @@ render=function(d){
 /* tabs: slide toward the tab you tapped */
 const vtTabOrder=()=>[...document.querySelectorAll('#tbIn [data-tab]')].map(b=>b.dataset.tab);
 const _vtTab=tbGo;
-tbGo=function(k){const o=vtTabOrder(),a=o.indexOf(tabNow()),b=o.indexOf(k);
-  if(a<0||b<0||a===b||vtIn)return _vtTab.apply(this,arguments);
-  const args=arguments;vtRun(b>a?'r':'l',()=>{_vtTab.apply(null,args);vtKey=vtWhere();vtStage=S.stage})};
+/* 0.318: switching tabs is instant too (the slide made pages flash); the tab pages just appear */
+tbGo=function(k){root.classList.add('tb-snap');let r;try{r=_vtTab.apply(this,arguments)}finally{vtKey=vtWhere();vtStage=S.stage;requestAnimationFrame(()=>requestAnimationFrame(()=>root.classList.remove('tb-snap')))}return r};

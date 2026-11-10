@@ -7,13 +7,18 @@ const desk = page => page.setViewportSize({ width: 1400, height: 900 });
 const setUi = (page, ui, extra = {}) => page.evaluate(([ui, x]) => { S.cfg.ui = ui; Object.assign(S.cfg, x); save(); applySettings(); goHome(); render(); }, [ui, extra]);
 const todayTask = page => page.evaluate(() => { const t = S.tasks.find(x => shown(x) && x.stage !== 'done'); t.stage = 'today'; save(); render(); return t.id; });
 
-test('① Home on phones: no theme switch on top, tab names under icons; Flow hero shows the task biggest', async ({ page }) => {
+test('① Home on phones: theme switch on top (left of the modes button), tab names under icons; Flow hero shows the task biggest', async ({ page }) => {
   await phone(page);
   const errors = await openApp(page);
   await todayTask(page);
   for (const ui of ['classic', 'flow']) {
     await setUi(page, ui, { habits: true });
-    await expect(page.locator('#ttPhone')).toBeHidden();
+    await expect(page.locator('#ttPhone')).toBeVisible();                            // 0.318: the theme switch is back, left of the modes button
+    const x = id => page.locator(id).evaluate(e => e.getBoundingClientRect().left);
+    await setUi(page, ui, { habits: true, goals: true, vision: true, wins: true, journal: true, inbox: true });   // more modes than tabs: the modes button shows
+    await expect(page.locator('#modesBtn')).toBeVisible();
+    expect(await x('#ttPhone')).toBeLessThan(await x('#modesBtn'));
+    expect(await x('#modesBtn')).toBeLessThan(await x('#setBtn'));
     await expect(page.locator('.tb .tb-l').first()).toBeVisible();
   }
   const sz = await page.evaluate(() => [getComputedStyle(document.querySelector('#homeView .td-title')).fontSize, getComputedStyle(document.querySelector('#homeView .td-head')).display]);

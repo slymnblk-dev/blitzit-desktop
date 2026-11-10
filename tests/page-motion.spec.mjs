@@ -39,6 +39,7 @@ test('with page motion on, every page change lands on the right page and the mot
   await page.evaluate(() => goHome());
   await settle();
   await page.evaluate(() => tbGo('inbox'));
+  expect(await page.evaluate(() => [document.documentElement.dataset.vt || null, vtIn])).toEqual([null, false]); // 0.318: tabs switch instantly
   await settle();
   expect(await page.evaluate(() => ibOn)).toBe(true);
   await page.evaluate(() => tbGo('home'));

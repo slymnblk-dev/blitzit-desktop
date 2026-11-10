@@ -59,6 +59,9 @@ function vbGoalInner(c){const g=vbGoal(c);if(!g)return `<span class="vb-lbl">Goa
   const pr=gProg(g),nx=(g.ms||[]).find(m=>!m.done);
   return `${g.done?'<span class="vb-stamp">Achieved</span>':''}<span class="vb-gh"><span class="vb-lbl">Goal</span>${g.done?'':vbRing(pr.p)}</span><b class="vb-gn">${esc(g.name)}</b>
     <small class="vb-gs">${g.done?'Done. Well done.':nx?`Next: ${esc(nx.t)}`:`${pr.n} of ${pr.of} milestones`}</small>`}
+/* pinned cards (0.318): up to 3, shown first, one column, large. The word of the year is pinned unless you unpin it. */
+const VB_PINS=3,vbPinned=c=>c.pin===true||(c.k==='word'&&c.pin!==false);
+const VB_PIN=`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 3l6 6-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z"/></svg>`;
 function vbCardHTML(c,i){const sz=c.size||'m',cap=(c.t||'').trim(),gl=vbGoal(c);
   const a=`data-vbe="${c.id}" data-vbi="${i}" draggable="true"`;
   if(c.k==='photo'){const u=vbImg[c.id];vbLoad([c]);
@@ -87,8 +90,8 @@ function drawVision(){if(!vbOn)return;const pg=$('visionPg'),y=pg.scrollTop,cs=v
   const ex=cs.some(c=>c.sample)?`<div class="vb-exb"><span><b>Examples to get you started.</b> Tap any card to make it yours.</span><button data-vbclear>Clear examples</button></div>`:'';
   const add=cs.length&&cs.length<VB_MAX?`<button class="vb-c vb-addc" data-vbnew>${PLUS_S}Add a card</button>`:'';
   $('vbIn').innerHTML=`<div class="set-top ib-top vb-top0"><button class="icon-btn" id="vbBack" aria-label="Back">${BACK_SVG}</button>${yr}${tools}</div>
-    <div class="vb-head"><h1 class="ib-h">Vision</h1>${vbSummary()?`<div class="pg-sum">${vbSummary()}</div>`:''}</div>
-    ${ex}${cs.length?chips:''}${empty}${vis.length?`<div class="vb-grid" id="vbGrid">${vis.map(vbCardHTML).join('')}${add}</div>`:''}
+    <div class="vb-head"><h1 class="ib-h">Vision</h1></div>
+    ${ex}${cs.length?chips:''}${empty}${vis.some(vbPinned)?`<div class="vb-pins" aria-label="Pinned">${vis.filter(vbPinned).map(c=>vbCardHTML(c,vis.indexOf(c)).replace('class="vb-c ','class="vb-c vb-pinned ')).join('')}</div>`:''}${vis.length?`<div class="vb-grid" id="vbGrid">${vis.filter(c=>!vbPinned(c)).map(c=>vbCardHTML(c,vis.indexOf(c))).join('')}${add}</div>`:''}
     ${cs.length>=VB_MAX?`<p class="vb-none">${VB_MAX} cards is the most for one board, so it stays clear. Remove one to add another.</p>`:''}`;
   pg.scrollTop=y;if(vbAddArea){const i=$('vbAreaIn');if(i)i.focus()}}
 function vbCloseOthers(){if(ibOn)closeInbox();if(rhOn)closeRhythm();if(glOn)closeGoals();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();if(typeof mtOn!=='undefined'&&mtOn)closeMetrics();
@@ -180,16 +183,19 @@ function drawVbForm(){const d=vbD,isNew=vbE==null,gs=(S.goals||[]),gOn=typeof go
   if(d.k==='goal')body=!gOn?`<p class="vb-note">Turn on Goals in Settings → Modes to put a goal on your board.</p>`:!gs.length?`<p class="vb-note">You have no goals yet. Make a photo card first, then tap “Also make it a goal”.</p>`
     :`<span class="vb-l">Which goal?</span><div class="vb-gl">${gs.map(g=>`<button class="vb-go${String(d.g)===String(g.id)?' on':''}" data-vbg="${g.id}" aria-pressed="${String(d.g)===String(g.id)}">${g.e?esc(g.e)+' ':''}${esc(g.name)}${g.done?' <small>· achieved</small>':''}</button>`).join('')}</div>`;
   const opts=d.k==='word'||d.k==='goal'?'':`<div class="vb-row"><span class="vb-l">Card size</span><div class="vb-seg" role="group" aria-label="Card size">${[['s','Small'],['m','Medium'],['l','Large']].map(([z,n])=>`<button class="${d.size===z?'on':''}" data-vbsz="${z}" aria-pressed="${d.size===z}"><i class="vb-szi z-${z}" aria-hidden="true"></i>${n}</button>`).join('')}</div></div>`;
+  const pinN=vbCards(vbYear).filter(c=>vbPinned(c)&&String(c.id)!==String(vbE)).length,pinOn=vbPinned(d);
+  const pin=`<div class="vb-row vb-pinr"><span class="vb-l"><b>Pin to top</b><small>${pinOn?'Shown first, large.':pinN>=VB_PINS?`Up to ${VB_PINS} pinned cards. Unpin one first.`:'Shown first, large. Up to 3.'}</small></span><button class="tg${pinOn?' on':''}" data-vbpin role="switch" aria-checked="${pinOn}" aria-label="Pin to top" ${!pinOn&&pinN>=VB_PINS?'disabled':''}></button></div>`;
   const area=`<span class="vb-l">Area</span><div class="vb-ac" role="group" aria-label="Area">${['',...vbAreas()].map(a=>`<button class="${(d.area||'')===a?'on':''}" data-vba="${esc(a)}" aria-pressed="${(d.area||'')===a}">${a?esc(a):'None'}</button>`).join('')}</div>`;
   const ok=d.k==='photo'?!!d.img:d.k==='art'?!!d.a:d.k==='goal'?d.g!=null:!!d.t.trim();
   const mk=gOn&&(d.k==='photo'||d.k==='quote'||d.k==='art')&&!vbGoal(d)?`<button class="le-btn vb-mk" data-vbmk ${d.t.trim()?'':'disabled'}>◎ Also make it a goal</button>`:'';
   const ed=isNew?'':`<div class="vb-move"><button class="le-btn" data-vbmv="-1">← Move earlier</button><button class="le-btn" data-vbmv="1">Move later →</button></div><div class="le-acts"><button class="le-btn warn" data-vbdel>Delete card</button></div>`;
-  $('vbForm').innerHTML=`${kinds}${body}${opts}${area}<button class="primary vb-save" id="vbSave" ${ok?'':'disabled'}>${isNew?'Add to board':'Save'}</button>${mk}${ed}`}
+  $('vbForm').innerHTML=`${kinds}${body}${opts}${pin}${area}<button class="primary vb-save" id="vbSave" ${ok?'':'disabled'}>${isNew?'Add to board':'Save'}</button>${mk}${ed}`}
 $('vbSheet').addEventListener('click',e=>{const d=vbD;if(!d)return;
   const k=e.target.closest('[data-vbk]');if(k&&!k.disabled){const t=$('vbText');if(t)d.t=t.value;d.k=k.dataset.vbk;if(d.k!=='goal')d.g=null;else d.t='';drawVbForm();const i=$('vbText');if(i)i.focus();return}
   if(e.target.closest('[data-vbpick]'))return $('vbFile').click();
   const cl=e.target.closest('[data-vbc]');if(cl){d.c=cl.dataset.vbc;return drawVbForm()}
   const sz=e.target.closest('[data-vbsz]');if(sz){d.size=sz.dataset.vbsz;return drawVbForm()}
+  const pn=e.target.closest('[data-vbpin]');if(pn&&!pn.disabled){const t=$('vbText');if(t)d.t=t.value;d.pin=!vbPinned(d);haptic(4);return drawVbForm()}
   const ar=e.target.closest('[data-vba]');if(ar){d.area=ar.dataset.vba;return drawVbForm()}
   const at=e.target.closest('[data-vbart]');if(at){d.a=at.dataset.vbart;return drawVbForm()}
   const qi=e.target.closest('[data-vbq]');if(qi){d.t=qi.dataset.vbq;return drawVbForm()}
@@ -207,6 +213,7 @@ function vbSave(){const d=vbD;if(!d)return;const isNew=vbE==null,id=isNew?newId(
       if(!c){c={id,at:Date.now(),year:vbYear,ord:vbCards(vbYear).length};vbAll().push(c)}
       delete c.sample;if(d.k==='art')c.a=d.a;else delete c.a;
       Object.assign(c,{k:d.k,t:(d.t||'').trim().slice(0,140),area:d.area||'',size:d.size||'m',c:d.k==='quote'?d.c:undefined,g:d.g!=null?d.g:null});
+      if(d.pin===true||d.pin===false)c.pin=d.pin;else delete c.pin;
       if(c.c===undefined)delete c.c},isNew?'Added to your board':'Saved');
   closeSheets();haptic(6);
   if(d.k==='photo'&&d.img&&d.img!==vbImg[id]){vbImg[id]=d.img;vbDB.put(id,d.img).catch(()=>toast('This browser could not keep the photo. It shows until you close the app.')).then(keep)}else keep()}
@@ -243,7 +250,7 @@ window.addEventListener('keydown',e=>{if(!vbS)return;if(e.key==='Escape'){e.prev
   else if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();vbNext()}else if(e.key==='ArrowLeft'){e.preventDefault();if(vbS.i>0){vbS.i--;vbSlide()}}},true);
 
 /* ---------- Home: today's vision (one card a day) ---------- */
-function vbToday(){if(!visionOn())return null;const cs=vbCards(new Date().getFullYear()).filter(c=>c.k!=='goal');if(!cs.length)return null;
+function vbToday(){if(!visionOn()||!S.cfg.vHome)return null; /* 0.318: a switch in Settings → Modes → Vision board, off by default */const cs=vbCards(new Date().getFullYear()).filter(c=>c.k!=='goal');if(!cs.length)return null;
   const n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);return cs[n%cs.length]}
 function vbHomeHTML(c){const u=c.k==='photo'?vbImg[c.id]:null;if(c.k==='photo')vbLoad([c]);
   if(c.k==='art')return `<section class="vb-home k-art" aria-label="Today's vision">${vbArt(c.a,'vb-hsvg')}<div class="vb-hs"></div>
@@ -289,5 +296,6 @@ const _vbApply=applySettings;applySettings=function(){_vbApply.apply(this,argume
 const _vbModes=modesPage;
 modesPage=function(){const h=_vbModes.apply(this,arguments),on=visionOn();
   const card=`<div class="md-card${on?' on':''}" data-md="vision"><div class="md-head"><span class="md-ic">${VB_ICON}</span><span class="md-t"><b>Vision board</b><small>Photos, a quote and a word for your year</small></span>${tg('vision')}</div>
-    ${on?`<div class="md-body"><p class="md-note">A board per year with a Morning look slideshow and a vision on Home each day. Photos stay on this device.</p></div>`:''}</div>`;
+    ${on?`<div class="md-body"><p class="md-note">A board per year with a Morning look slideshow. Photos stay on this device.</p>
+      <div class="md-sub"><span><b>Today's vision on Home</b><small>One card from your board on Home, a new one each day.</small></span>${tg('vHome')}</div></div>`:''}</div>`;
   return h+card};

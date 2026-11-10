@@ -128,7 +128,7 @@
 - **0.314:** Vision summary shows only the word of the year (the All chip already counts cards).
 - **Flow hero 0.315 "Aurora glass":** the Up next card (`.td-card` phone, `.cm-up` computer) is no longer a solid coral block: surface card, `::before` = faint coral+lilac conic light turning in 40s (`flAurora`), `::after` = frosted veil (backdrop blur). Coral only on Start. Done/Later are labelled pills. Reduced motion = still. Test: "Flow hero is Aurora glass".
 - **Polish pass 0.316** (full review, canvas row "Full review: now vs polished"). All CSS in `src/css/39-polish.css`, one numbered block per fix, one commit per fix (easy to revert one):
-  ① phone top bar without the theme switch (`#ttPhone` hidden; theme lives in Settings), floating tab pill shows names; Flow hero hides "Today", task title 24px.
+  ① phone top bar: theme switch kept (0.318: order theme · modes · search · profile), floating tab pill shows names; Flow hero hides "Today", task title 24px.
   ② Flow Focus screen: graphite/light + slow Aurora (`flFocusAur`), only when the focus colour is the default (`data-focuscol="red"`); Classic and picked colours unchanged.
   ③ one page header: no tagline eyebrows (Inbox "Capture", Habits "Small daily wins", Settings "Windaday"); no Beta badge after page titles (Beta only in Settings → Modes).
   ④ one button system: `.rv-done`, `.gs-next`, `.ci-end .primary`, `.acc-form .primary` use the accent like `.primary`; Auto-plan grey; Flow `#goBtn` always coral; Flow accent text = `--fl-ink`.
@@ -136,3 +136,5 @@
   ⑥ one empty card: `.rh-empty` and Goals' new `.pl-empty` (dhEmpty) look like Metrics' empty card.
   ⑦ search dims the page (`body.srch-on::before`; the older phone `::after` dim is turned off).
   Tests: `tests/polish.spec.mjs` (7 tests); updated flow/beta/phone-home tests for the intended changes.
+- **0.317:** phone stage switches (Backlog/My week/Today/Done) are instant (no View Transition, no title slide/colour fade).
+- **0.318:** phone tab switches are instant (`tbGo` adds `.tb-snap`, which turns off page fades for that frame). Vision: no line under the title; **pinned cards** (`c.pin`, max 3 `VB_PINS`; the word card is pinned unless `pin:false`) shown first in `.vb-pins`, one column, large; "Pin to top" switch in the card sheet. Today's vision on Home is **off by default**: `S.cfg.vHome`, a switch in Settings → Modes → Vision board. Long words in quotes wrap (`overflow-wrap:anywhere`). Tests in vision.spec ("Pinned cards") and page-motion.

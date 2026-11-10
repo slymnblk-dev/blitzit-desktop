@@ -1,10 +1,11 @@
 /* ---------- Polish pass (0.316): the full review, "now vs polished" on the design canvas ----------
    Each numbered block can be taken out on its own. Fixes ① ③ ④ ⑤ ⑥ ⑦ are for both designs; ② and the bigger hero task are Flow only. */
 
-/* ① Home on phones: the theme switch lives in Settings → Appearance (the top bar keeps search + profile);
+/* ① Home on phones:
    the floating tab pill shows small names under its icons */
 @media (max-width:1099px){
-  #ttPhone{display:none}
+  /* the theme switch stays on the phone top bar (Suly, 0.318): left of the modes button, then the profile */
+  .top-r > #ttPhone{order:-2}.top-r > #modesBtn{order:-1}
   :root:not([data-nav="labels"]) .tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
   :root:not([data-nav="labels"]) .tb svg{width:21px;height:21px}
   :root:not([data-nav="labels"]) .tb-l{display:block;font-size:10px;font-weight:600;line-height:1;color:var(--muted)}
@@ -75,3 +76,6 @@ body.srch-on::before{content:"";position:fixed;inset:0;z-index:690;background:rg
 
 /* 0.317: on phones, switching stages (Backlog, My week, Today, Done) is instant: no page slide, no title slide */
 @media (max-width:1099px){.hero h1.in-r,.hero h1.in-l{animation:none}[data-view="space"] .hero h1{transition:none}}
+
+/* 0.318: switching tabs on phones is instant: pages swap with no fade or slide (the old and new page crossing looked like a flash) */
+@media (max-width:1099px){.tb-snap :is(.inbox-pg,.inbox-pg.on,#homeView,.view,.hero h1,.home-hero){transition:none!important;animation:none!important}}
