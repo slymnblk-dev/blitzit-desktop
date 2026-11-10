@@ -7,7 +7,7 @@ const TT_SUN='<svg class="tt-sun" viewBox="0 0 24 24" fill="none" stroke="curren
 const TT_MOON='<svg class="tt-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z"/></svg>';
 const ttBtn=id=>`<button class="icon-btn tt-btn" id="${id}" data-tt aria-label="Switch to light mode" title="Light / dark">${TT_SUN}${TT_MOON}</button>`;
 (()=>{const d=$('dSet');if(d)d.insertAdjacentHTML('beforebegin',ttBtn('ttDesk'));const p=$('setBtn');if(p)p.insertAdjacentHTML('beforebegin',ttBtn('ttPhone'))})();
-function ttPaint(){const dark=modeNow()==='dark';document.querySelectorAll('[data-tt]').forEach(b=>{b.classList.toggle('is-dark',dark);
+function ttPaint(){const dark=modeNow()==='dark';root.dataset.lm=dark?'dark':'light'; /* data-lm: light/dark as shown (system included), for light-only polish (0.321) */document.querySelectorAll('[data-tt]').forEach(b=>{b.classList.toggle('is-dark',dark);
   b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',String(dark))})}
 /* the phone's status bar (theme-color) follows the switch gradually instead of jumping first (0.320) */
 function ttRgb(c){const d=document.createElement('i');d.style.color=c;document.body.appendChild(d);const v=getComputedStyle(d).color;d.remove();const m=v.match(/[\d.]+/g);return m?m.slice(0,3).map(Number):null}

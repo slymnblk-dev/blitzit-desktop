@@ -158,3 +158,25 @@ test('Light/dark switch (0.320): the phone status bar colour fades along with th
   expect(bars[2]).toMatch(/^#/);                                                     // ends exactly on the theme's colour
   noErrors(errors);
 });
+
+test('Light mode QA (0.321): no black selected chips, white text on the accent button, Save note uses the accent; dark mode unchanged', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  const dark = c => { const m = c.match(/\d+/g).map(Number); return m[0] < 60 && m[1] < 60 && m[2] < 60; };
+  for (const ui of ['classic', 'flow']) {
+    await page.evaluate(ui => { Object.assign(S.cfg, { ui, theme: 'light', motion: false }); save(); applySettings(); goHome(); nwPick('task'); }, ui);
+    expect(await page.evaluate(() => document.documentElement.dataset.lm)).toBe('light');
+    const sel = await page.locator('#addSheet .opt.on:visible, #addKinds [data-ak].on').evaluateAll(b => b.map(x => getComputedStyle(x).backgroundColor));
+    expect(sel.length).toBeGreaterThan(0);
+    expect(sel.some(dark)).toBe(false);                                                  // no heavy black pills
+    await page.locator('#newTitle').fill("Let's test");
+    expect(await page.evaluate(() => getComputedStyle(document.getElementById('saveBtn')).color)).toBe('rgb(255, 255, 255)');
+    await page.evaluate(() => { closeSheets(); nwPick('note'); });
+    expect(dark(await page.evaluate(() => getComputedStyle(document.getElementById('saveBtn')).backgroundColor))).toBe(false);
+    await page.evaluate(() => closeSheets());
+  }
+  await page.evaluate(() => { Object.assign(S.cfg, { ui: 'classic', theme: 'dark' }); save(); applySettings(); goHome(); nwPick('task'); });
+  await page.locator('#newTitle').fill('Dark');
+  expect(await page.evaluate(() => getComputedStyle(document.getElementById('saveBtn')).color)).toBe('rgb(15, 16, 19)'); // dark mode keeps dark text on coral
+  noErrors(errors);
+});

@@ -185,7 +185,7 @@ function homeAlso(){
   return (rows.length?`<section class="also" aria-label="Also today"><h2 class="sec-h">Also today</h2><div class="also-in">${rows.join('')}</div></section>`:'')+(one?'':hw)+bk;
 }
 function render(dir){
-  root.dataset.view=S.space?'space':'home';drawMe();
+  root.dataset.view=S.space?'space':'home';root.dataset.stg=S.space?S.stage:'today';drawMe();
   if(!S.space){
     root.style.setProperty('--accent',color('today'));
     $('homeView').innerHTML=homeHTML();
@@ -194,7 +194,7 @@ function render(dir){
   }
   const st=STAGES[idx(S.stage)];
   root.style.setProperty('--accent',color(S.stage));root.style.setProperty('--accent-lg',`var(--${S.stage}-lg)`);
-  root.style.setProperty('--on-accent','#fff');root.style.setProperty('--accent-btn',`var(--win-${S.stage})`); // Win the day: white text on the stage's own two-tone fill
+  root.style.setProperty('--on-accent',S.stage==='week'&&root.dataset.lm==='light'?'#1F1608':'#fff'); // light mode: dark text on the amber week button (white was hard to read, 0.321)root.style.setProperty('--accent-btn',`var(--win-${S.stage})`); // Win the day: white text on the stage's own two-tone fill
   const h=$('stageTitle');h.textContent=st.name;
   if(dir!==undefined){h.classList.remove('in-l','in-r','in-u');void h.offsetWidth;h.classList.add(dir>0?'in-r':dir<0?'in-l':'in-u')}
 

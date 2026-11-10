@@ -334,8 +334,8 @@ test('Flow hero is Aurora glass: calm surface, slow turning light, one row of ac
   await page.emulateMedia({ reducedMotion: 'reduce' });
   expect(await card.evaluate(c => getComputedStyle(c, '::before').animationName)).toBe('none');
   await desk(page); await page.evaluate(() => goHome());
-  expect(await page.locator('#dHome .cm-up').evaluate(c => getComputedStyle(c, '::before').animationName)).toBe('none');
+  await expect.poll(() => page.locator('#dHome .cm-up').evaluate(c => getComputedStyle(c, '::before').animationName)).toBe('none'); // wait for the computer Home to draw
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  expect(await page.locator('#dHome .cm-up').evaluate(c => getComputedStyle(c, '::before').animationName)).toBe('flAurora');
+  await expect.poll(() => page.locator('#dHome .cm-up').evaluate(c => getComputedStyle(c, '::before').animationName)).toBe('flAurora');
   noErrors(errors);
 });

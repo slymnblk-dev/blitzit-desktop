@@ -79,3 +79,23 @@ body.srch-on::before{content:"";position:fixed;inset:0;z-index:690;background:rg
 
 /* 0.318: switching tabs on phones is instant: pages swap with no fade or slide (the old and new page crossing looked like a flash) */
 @media (max-width:1099px){.tb-snap :is(.inbox-pg,.inbox-pg.on,#homeView,.view,.hero h1,.home-hero){transition:none!important;animation:none!important}}
+
+/* ---------- Light mode QA (0.321) ----------
+   1) Selected chips were heavy black pills (add sheet tabs, Space/List/When/Estimate chips, habit options, Goals|Metrics switch,
+      Vision "All"). In light mode the selected one is now a white chip with a thin dark ring and bold text: clear, but light.
+   2) Text on the accent colour was near-black on red ("Add task"). In light mode it is white, except on the amber week colour.
+   3) Metrics "New" was a black pill: it is the page's main action, so it uses the accent like every other main button.
+   4) Faint grey labels (tab names, Settings link on the profile) are a step darker. */
+:root[data-lm="light"] :is(.opt.on,#addKinds [data-ak].on,.vb-chip.on,.mt-sw button[aria-selected="true"]){
+  background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 1.5px var(--text),0 1px 3px rgba(0,0,0,.08);font-weight:800}
+:root[data-lm="light"] #addKinds [data-ak].on svg{color:var(--text)}
+:root[data-lm="light"]{--ink:#fff}
+:root[data-lm="light"][data-stg="week"]{--ink:#1F1608}
+:root[data-lm="light"] .mt2-new{background:var(--accent,var(--today));color:#fff}
+:root[data-lm="light"] .tb-l{color:color-mix(in srgb,var(--text) 62%,transparent)}
+:root[data-lm="light"] .you-set{color:color-mix(in srgb,var(--text) 72%,transparent)}
+/* Flow light Focus: Done is the coral main action, not a black pill */
+:root[data-ui="flow"][data-lm="light"][data-focuscol="red"] .focus .f-done{background:var(--today);color:#fff}
+/* ④ 0.321: Settings → Modes "Pick a few" is a main action: accent pill (was black in light, white in dark) */
+.st-go{background:var(--today)!important;color:var(--ink)!important}
+:root[data-ui="flow"] .st-go{color:var(--fl-ink)!important}

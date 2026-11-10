@@ -42,6 +42,7 @@ test('habits: off by default, turn on in Modes, add, Habits page, tick, turn off
   await page.locator('#hpMore').click();
   await page.locator('#hpPop [data-hpv="sun"]').click();
   await expect(page.locator('#rhythmPg .hs-chip')).toHaveCount(1);
+  await page.waitForTimeout(400);                                                   // a second tap within 350 ms is ignored on purpose (double-tap guard); pages are instant now
   await page.locator('#rhythmPg .hs-chip').click();
   expect(await page.evaluate(() => !!S.habits[0].done[today()])).toBe(false);
   await page.evaluate(() => setCfg('hbView', 'grid'));

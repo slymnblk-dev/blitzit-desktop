@@ -54,7 +54,7 @@ function drawKinds(){
   else if(addKind==='goal')x.innerHTML=`<div class="lbl">By when</div><div class="opts">${[1,3,6,12].map(m=>`<button class="opt${addG.m===m?' on':''}" data-akgm="${m}">${m===12?'1 year':`${m} ${m===1?'month':'months'}`}</button>`).join('')}</div>
       ${akSpaces(addG.space,'akgs')}<p class="ak-tip">Next you’ll add a few milestones.</p>`;
   const sb=$('saveBtn'),ink=addKind==='note'||addKind==='goal';
-  sb.style.background=addKind==='task'?color(draft?draft.stage:'today'):ink?'var(--text)':'var(--today)';sb.style.color=ink?'var(--bg)':'';
+  sb.style.background=addKind==='task'?color(draft?draft.stage:'today'):'var(--today)';sb.style.color=''; /* ④ 0.321: Save note / goal use the accent like every main button (were black/white) */
   sb.disabled=!(addKind==='note'?($('akNote').value.trim()):t.value.trim());
 }
 $('addKinds').addEventListener('click',e=>{const b=e.target.closest('[data-ak]');if(!b)return;const was=addKind;addKind=b.dataset.ak;haptic(5);
