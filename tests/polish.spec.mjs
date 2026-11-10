@@ -146,3 +146,15 @@ test('Light/dark switch (0.319): colour fades are off during the circle, then ev
   expect(await page.evaluate(() => S.cfg.theme)).not.toBe(t0);
   noErrors(errors);
 });
+
+test('Light/dark switch (0.320): the phone status bar colour fades along with the circle instead of jumping first', async ({ page }) => {
+  await phone(page);
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.motion = true; save(); goHome(); render(); });
+  const bars = await page.evaluate(() => new Promise(res => { const m = () => document.querySelector('meta[name="theme-color"]').getAttribute('content'); const o = [m()];
+    document.getElementById('ttPhone').click(); setTimeout(() => o.push(m()), 260); setTimeout(() => { o.push(m()); res(o); }, 900); }));
+  expect(bars[1]).not.toBe(bars[0]);                                                 // already moving…
+  expect(bars[1]).not.toBe(bars[2]);                                                 // …but not jumped to the end
+  expect(bars[2]).toMatch(/^#/);                                                     // ends exactly on the theme's colour
+  noErrors(errors);
+});

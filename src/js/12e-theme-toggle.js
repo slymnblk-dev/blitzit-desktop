@@ -9,11 +9,22 @@ const ttBtn=id=>`<button class="icon-btn tt-btn" id="${id}" data-tt aria-label="
 (()=>{const d=$('dSet');if(d)d.insertAdjacentHTML('beforebegin',ttBtn('ttDesk'));const p=$('setBtn');if(p)p.insertAdjacentHTML('beforebegin',ttBtn('ttPhone'))})();
 function ttPaint(){const dark=modeNow()==='dark';document.querySelectorAll('[data-tt]').forEach(b=>{b.classList.toggle('is-dark',dark);
   b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',String(dark))})}
+/* the phone's status bar (theme-color) follows the switch gradually instead of jumping first (0.320) */
+function ttRgb(c){const d=document.createElement('i');d.style.color=c;document.body.appendChild(d);const v=getComputedStyle(d).color;d.remove();const m=v.match(/[\d.]+/g);return m?m.slice(0,3).map(Number):null}
+function ttBarFade(old,ms){const ms2=document.querySelectorAll('meta[name="theme-color"]'),to=[...ms2].map(m=>m.getAttribute('content'));
+  const pairs=[...ms2].map((m,i)=>[m,ttRgb(old[i]||to[i]),ttRgb(to[i]),to[i]]).filter(p=>p[1]&&p[2]);if(!pairs.length)return;
+  const t0=performance.now(),ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  const step=now=>{const t=Math.min(1,(now-t0)/ms),e=ease(t);
+    pairs.forEach(([m,a,b,fin])=>m.setAttribute('content',t>=1?fin:`rgb(${a.map((v,k)=>Math.round(v+(b[k]-v)*e)).join(',')})`));if(t<1)requestAnimationFrame(step)};
+  pairs.forEach(([m,a])=>m.setAttribute('content',`rgb(${a.join(',')})`));requestAnimationFrame(step)}
 function ttSwitch(btn){
-  const next=modeNow()==='dark'?'light':'dark',go=()=>{setCfg('theme',next);ttPaint()};
-  haptic(8);try{sfx('toggle')}catch(e){}
   const calm=!C().motion||matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(calm||!document.startViewTransition)return go();
+  const oldBar=[...document.querySelectorAll('meta[name="theme-color"]')].map(m=>m.getAttribute('content'));
+  const next=modeNow()==='dark'?'light':'dark',go=()=>{setCfg('theme',next);ttPaint();ttBarFade(oldBar,calm?1:520)};
+  haptic(8);try{sfx('toggle')}catch(e){}
+  if(calm)return go();
+  /* browsers without the circle (e.g. some phone browsers): everything fades together, at one speed, instead of each part on its own */
+  if(!document.startViewTransition){root.classList.add('tt-fade');go();setTimeout(()=>root.classList.remove('tt-fade'),560);return}
   const r=btn.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,rad=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
   /* 0.319: smoother. (1) While switching, the app's own colour fades are off, so the new look is final inside the circle
      (before, cards and buttons were still fading their colours while the circle grew). (2) The new look starts as a dot at the
