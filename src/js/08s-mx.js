@@ -77,11 +77,11 @@ function mxLogTask(t){(t.mx||[]).forEach(l=>{const f=mxFind(l);if(!f)return;
   if(mxAskQ.length)setTimeout(mxAskNext,420)}
 function mxUnlogTask(t){(t.mx||[]).forEach(l=>{const f=mxFind(l);if(!f)return;const mine=f.item.log.filter(e=>e.task===t.id);if(!mine.length)return;
   const last=mine.reduce((a,b)=>b.at>=a.at?b:a);f.item.log=f.item.log.filter(e=>e!==last)})}
-const _mxSetStage=setStage;
-setStage=function(t,stage){const was=t.stage,sp=t.spawned;_mxSetStage(t,stage);
+const _mxSetStage=hkBelow('setStage','mx',setStage__core);
+hkLayer('setStage','mx',function(t,stage){const was=t.stage,sp=t.spawned;_mxSetStage(t,stage);
   try{if(!mxOn()||!Array.isArray(t.mx)||!t.mx.length)return;
     if(stage==='done'&&was!=='done'){mxLogTask(t);if(t.spawned&&t.spawned!==sp){const c=S.tasks.find(x=>x.id===t.spawned);if(c)c.mx=t.mx.map(x=>({...x}))}}
-    else if(was==='done'&&stage!=='done'){mxUnlogTask(t);mxAskQ=mxAskQ.filter(q=>q.task!==t.id)}}catch(e){console.error(e)}};
+    else if(was==='done'&&stage!=='done'){mxUnlogTask(t);mxAskQ=mxAskQ.filter(q=>q.task!==t.id)}}catch(e){console.error(e)}});
 /* "Ask me": a small calm question after the task is done */
 document.body.insertAdjacentHTML('beforeend',`<div class="dlg mx-ask" id="mxAsk" role="dialog" aria-modal="true" aria-labelledby="mxAskT"><div class="dlg-in mx-ask-in">
   <span class="mx-eye">${MX_ICON}Counts toward</span><b id="mxAskT"></b><small id="mxAskS"></small>

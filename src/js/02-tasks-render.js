@@ -39,7 +39,8 @@ let priHintAt=0;
 function priHint(t){if(Date.now()-priHintAt<1500)return;priHintAt=Date.now();
   const by=impOn()&&impVal(t)?(priSortOn()?'impact and priority':'impact'):'priority';
   toast(`Sorted by ${by}. To move this task, change its ${by==='impact and priority'?'impact or priority':by}.`)}
-function setStage(t,stage){
+function setStage(){return hkCall('setStage',setStage__core,this,arguments)}
+function setStage__core(t,stage){
   const was=t.stage;t.stage=stage;
   sfxStage(t,was,stage);
   if(stage==='done'&&was!=='done'&&performance.now()-sfxAct<1500)setTimeout(()=>{try{maybeCelebrate()}catch(e){}},360);
@@ -189,13 +190,11 @@ function homeAlso(){
    A feature adds its redraw step with onRender(name, fn) (runs after the draw),
    or renderLayer(name, fn) when it must run code before/around the draw; inside it,
    renderBelow(name) runs everything under that layer. See renderLayers() for the full list. */
-var RL=[];
-function renderLayer(name,fn){RL.push({name,fn})}
-function renderBelow(name){return function(){const i=RL.findIndex(l=>l.name===name);return runRender(i<0?RL.length-1:i-1,this,arguments)}}
-function runRender(i,self,args){return i<0?renderCore.apply(self,args):RL[i].fn.apply(self,args)}
+function renderLayer(name,fn){hkLayer('render',name,fn)}
+function renderBelow(name){return hkBelow('render',name,renderCore)}
 function onRender(name,fn){const below=renderBelow(name);renderLayer(name,function(){const r=below.apply(this,arguments);try{fn.apply(this,arguments)}catch(e){console.error('[render:'+name+']',e)}return r})}
-function renderLayers(){return RL.map(l=>l.name)}
-function render(){return runRender(RL.length-1,this,arguments)}
+function renderLayers(){return hkLayers('render')}
+function render(){return hkCall('render',renderCore,this,arguments)}
 function renderCore(dir){
   root.dataset.view=S.space?'space':'home';root.dataset.stg=S.space?S.stage:'today';drawMe();
   if(!S.space){

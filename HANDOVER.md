@@ -147,4 +147,8 @@
   - `onRender('name', fn)` = run after every draw (errors are caught and logged, later steps still run).
   - `renderLayer('name', fn)` + `const _x=renderBelow('name')` = code before/around the draw (calm-motion, inbox-keep-typing, goal-metrics, page-motion, ...).
   - `renderLayers()` in the console lists all 26 in order. Test: render-pipeline.spec.
-- Cleanup still to do: step 2 (same for renderDesk, applySettings, tbGo, modesPage, rhythmSide, tabsList, tabNow), 3 CSS, 4 file names, 5 this doc.
+- 0.324 (step 2): **layers for every shared function** (01-boot-data): `hkLayer(fn,name,f)`, `hkBelow(fn,name,fn__core)`, `hkLayers(fn)`.
+  render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage dispatch through `hkCall`; the original body is `fn__core`.
+  render's helpers (onRender/renderLayer/renderBelow) are thin wrappers over this. Test: layers.spec.
+- Known leftovers (work fine, tidy later): the "opening a page closes the others" loops (`window[fn]=function` in metrics/wins/routines/plan/journal/vision); a few full replacements (drawInbox, drawMetrics, mxMark, mxPill, mxPicks, mxHead, canPut) whose first version is now dead code; 1–2-patch functions (hbToggle, setCfg, ...).
+- Cleanup still to do: 3 CSS, 4 file names, 5 this doc.

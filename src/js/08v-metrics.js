@@ -66,9 +66,9 @@ $('mxPg').addEventListener('click',e=>{const b=e.target.closest('[data-mtpick]')
   const s=mtPickSps().find(x=>String(x.id)===b.dataset.mtpick);if(s){mxSpPick=s.id;haptic(4);mxDraw()}},true);
 
 /* computer sidebar: Metrics under Goals */
-const _mtSide=rhythmSide;
-rhythmSide=function(){let h=_mtSide();if(!mxOn())return h;const n=mtCount();
-  return h+`<button class="s-list s-home s-inbox ${mtOn?'on':''}" id="sMetrics" title="Metrics">${MX_ICON}<span class="s-name">Metrics</span>${n?`<span class="n">${n}</span>`:''}</button>`};
+const _mtSide=hkBelow('rhythmSide','metrics',rhythmSide__core);
+hkLayer('rhythmSide','metrics',function(){let h=_mtSide();if(!mxOn())return h;const n=mtCount();
+  return h+`<button class="s-list s-home s-inbox ${mtOn?'on':''}" id="sMetrics" title="Metrics">${MX_ICON}<span class="s-name">Metrics</span>${n?`<span class="n">${n}</span>`:''}</button>`});
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sMetrics')){e.stopImmediatePropagation();return mtOn?closeMetrics():openMetrics()}
   if(mtOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew]'))closeMetrics()},true);
@@ -77,26 +77,26 @@ for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openS
   window[fn]=function(){if(mtOn&&!(fn==='openGoal'&&false))closeMetrics();return f.apply(this,arguments)}}
 /* keep the page in step with every change, and Home not lit while Metrics is open */
 const _mtRender=renderBelow('metrics-page');renderLayer('metrics-page',function(d){_mtRender(d);if(mtOn){if(!mxOn())closeMetrics();else drawMetrics()}});
-const _mtDesk=renderDesk;renderDesk=function(){_mtDesk.apply(this,arguments);if(mtOn){const h=$('sHome');if(h)h.classList.remove('on')}};
+const _mtDesk=hkBelow('renderDesk','metrics',renderDesk__core);hkLayer('renderDesk','metrics',function(){_mtDesk.apply(this,arguments);if(mtOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 /* Escape closes it (computer) */
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!mtOn||mxOpen||$('dlg').classList.contains('on')||document.querySelector('.sheet.on'))return;if(!mtWide())return;e.preventDefault();closeMetrics()});
 
 /* phones: the flag tab holds Goals and Metrics */
-const _mtTabs=tabsList;
-tabsList=function(){let t=_mtTabs();if(goalsOn()||!mxOn())return t;
-  t=t.length?t:[['home','Home',TB_HOME]];t.push(['metrics','Metrics',MX_ICON]);return t};
-const _mtTabNow=tabNow;
-tabNow=function(){if(mtOn)return goalsOn()?'goals':'metrics';return _mtTabNow()};
-const _mtTbGo=tbGo;
-tbGo=function(k){
+const _mtTabs=hkBelow('tabsList','metrics',tabsList__core);
+hkLayer('tabsList','metrics',function(){let t=_mtTabs();if(goalsOn()||!mxOn())return t;
+  t=t.length?t:[['home','Home',TB_HOME]];t.push(['metrics','Metrics',MX_ICON]);return t});
+const _mtTabNow=hkBelow('tabNow','metrics',tabNow__core);
+hkLayer('tabNow','metrics',function(){if(mtOn)return goalsOn()?'goals':'metrics';return _mtTabNow()});
+const _mtTbGo=hkBelow('tbGo','metrics',tbGo__core);
+hkLayer('tbGo','metrics',function(k){
   if(k==='metrics'){if(!mtOn)openMetrics();else $('metricsPg').scrollTo({top:0,behavior:'smooth'});return drawTabs()}
   if(k==='goals'&&mtOn){if(tabNow()==='goals'){$('metricsPg').scrollTo({top:0,behavior:'smooth'});return}}
-  if(mtOn)closeMetrics();return _mtTbGo(k)};
+  if(mtOn)closeMetrics();return _mtTbGo(k)});
 /* the switch also sits on top of the phone Goals page */
 const _mtDrawGoals=drawGoals;
 drawGoals=function(){_mtDrawGoals.apply(this,arguments);const sw=mtSwitch('goals');if(sw)$('glIn').insertAdjacentHTML('afterbegin',sw)};
 /* turning KPIs & OKRs off while the page is open */
-const _mtApply=applySettings;applySettings=function(){_mtApply.apply(this,arguments);if(mtOn&&!mxOn())closeMetrics()};
+const _mtApply=hkBelow('applySettings','metrics',applySettings__core);hkLayer('applySettings','metrics',function(){_mtApply.apply(this,arguments);if(mtOn&&!mxOn())closeMetrics()});
 /* the popup opened from Metrics: Back, Escape and Save return to Metrics (not to the space's scoreboard) */
 var mtPop=false;
 window.addEventListener('click',e=>{if(e.target.closest('#metricsPg [data-mxhw],#metricsPg [data-mtnew]'))mtPop=true},true);

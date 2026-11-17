@@ -206,39 +206,39 @@ onRender('plan-page',function(d){pnRoll();if(pnOn){if(!planOn())closePlan();else
 setInterval(()=>{if(pnOn&&!pnBusy&&!pnDragId&&!document.querySelector('.cx-pop.on'))drawPlan()},60000);
 
 /* ---------- computers: "Plan" under Modes in the sidebar ---------- */
-const _pnSide=rhythmSide;
-rhythmSide=function(){const h=_pnSide();if(!planOn())return h;const n=pnToPlace().length;
+const _pnSide=hkBelow('rhythmSide','plan',rhythmSide__core);
+hkLayer('rhythmSide','plan',function(){const h=_pnSide();if(!planOn())return h;const n=pnToPlace().length;
   const it=`<button class="s-list s-home s-inbox ${pnOn?'on':''}" id="sPlan" title="Plan">${PN_ICON}<span class="s-name">Plan</span>${n?`<span class="n">${n}</span>`:''}</button>`;
-  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`};
+  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`});
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sPlan')){e.stopImmediatePropagation();return pnOn?closePlan():openPlan()}
   if(pnOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins,#sRoutines'))closePlan()},true);
 for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics','openWins','openRoutines']){const f=window[fn];if(typeof f!=='function')continue;
   window[fn]=function(){if(pnOn)closePlan();return f.apply(this,arguments)}}
-const _pnDesk=renderDesk;renderDesk=function(){_pnDesk.apply(this,arguments);if(pnOn){const h=$('sHome');if(h)h.classList.remove('on')}};
+const _pnDesk=hkBelow('renderDesk','plan',renderDesk__core);hkLayer('renderDesk','plan',function(){_pnDesk.apply(this,arguments);if(pnOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!pnOn||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on,.cx-pop.on'))return;
   if(e.target&&e.target.closest&&e.target.closest('#planPg input,#planPg select'))return;if(!pnDesk())return;e.preventDefault();closePlan()});
 ESC_PAGES.planPg=()=>{if(pnBusy){pnBusy=null;return drawPlan()}closePlan()};
 
 /* ---------- phones: a Plan tab ---------- */
 TB_I.plan=PN_ICON;
-const _pnTabs=tabsList;
-tabsList=function(){let t=_pnTabs();if(!planOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['plan','Plan',PN_ICON]);return t};
-const _pnTabNow=tabNow;tabNow=function(){return pnOn?'plan':_pnTabNow()};
-const _pnTbGo=tbGo;
-tbGo=function(k){
+const _pnTabs=hkBelow('tabsList','plan',tabsList__core);
+hkLayer('tabsList','plan',function(){let t=_pnTabs();if(!planOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['plan','Plan',PN_ICON]);return t});
+const _pnTabNow=hkBelow('tabNow','plan',tabNow__core);hkLayer('tabNow','plan',function(){return pnOn?'plan':_pnTabNow()});
+const _pnTbGo=hkBelow('tbGo','plan',tbGo__core);
+hkLayer('tbGo','plan',function(k){
   if(k==='plan'){if(pnOn){$('planPg').scrollTo({top:0,behavior:'smooth'});return}_pnTbGo('home');openPlan();return drawTabs()}
-  if(pnOn)closePlan();return _pnTbGo(k)};
-const _pnApply=applySettings;applySettings=function(){_pnApply.apply(this,arguments);if(pnOn&&!planOn())closePlan()};
+  if(pnOn)closePlan();return _pnTbGo(k)});
+const _pnApply=hkBelow('applySettings','plan',applySettings__core);hkLayer('applySettings','plan',function(){_pnApply.apply(this,arguments);if(pnOn&&!planOn())closePlan()});
 
 /* ---------- Settings → Modes: a Plan card, with the hours of your day ---------- */
-const _pnModes=modesPage;
-modesPage=function(){const h=_pnModes.apply(this,arguments),on=planOn();
+const _pnModes=hkBelow('modesPage','plan',modesPage__core);
+hkLayer('modesPage','plan',function(){const h=_pnModes.apply(this,arguments),on=planOn();
   const hrs=(k,v)=>`<select class="pn-hsel" data-pnh="${k}" aria-label="${k==='planFrom'?'Day starts':'Day ends'}">${Array.from({length:k==='planFrom'?16:18},(_,i)=>(k==='planFrom'?4:7)+i).map(x=>x*60).filter(m=>m<=1440).map(m=>`<option value="${m}"${m===v?' selected':''}>${pnHM(m)}</option>`).join('')}</select>`;
   const card=`<div class="md-card${on?' on':''}" data-md="plan"><div class="md-head"><span class="md-ic">${PN_ICON}</span><span class="md-t"><b>Plan</b><small>Time blocks for today</small></span>${tg('plan')}</div>
     ${on?`<div class="md-body"><p class="md-note">Your Today tasks become blocks on a timeline. Auto-plan fits them around busy time, biggest impact first.</p>
       <div class="pn-hours"><span>Your day</span>${hrs('planFrom',pnFrom())}<span>to</span>${hrs('planTo',pnTo())}</div></div>`:''}</div>`;
-  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)};
+  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)});
 $('setIn').addEventListener('change',e=>{const s=e.target.closest('[data-pnh]');if(!s)return;const k=s.dataset.pnh,v=+s.value;
   if(k==='planTo'&&v<=pnFrom())return toast('The day has to end after it starts');if(k==='planFrom'&&v>=pnTo())return toast('The day has to start before it ends');
   S.cfg[k]=v;S.cfgU=Date.now();save();haptic(4);if(pnOn)drawPlan()});

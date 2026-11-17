@@ -34,4 +34,4 @@ function cHead(){
   const td=S.tasks.filter(t=>shown(t)&&t.stage==='today');
   $('mSub').innerHTML=td.length?`<span><b>${td.length}</b> ${td.length===1?'task':'tasks'} today</span><span><b>${fmt(td.reduce((a,t)=>a+t.est,0))}</b> planned</span>`:'Today is clear';
 }
-const _cRD=renderDesk;renderDesk=function(){_cRD.apply(this,arguments);try{cHead()}catch(err){console.error(err)}};
+const _cRD=hkBelow('renderDesk','c',renderDesk__core);hkLayer('renderDesk','c',function(){_cRD.apply(this,arguments);try{cHead()}catch(err){console.error(err)}});

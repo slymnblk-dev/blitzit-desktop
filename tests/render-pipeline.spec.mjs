@@ -9,7 +9,7 @@ test('render runs through one named pipeline, in load order, with no patching le
   expect(names[0]).toBe('inbox-page');
   expect(names.at(-1)).toBe('page-motion');
   expect(new Set(names).size).toBe(names.length);           // unique names
-  expect(await page.evaluate(() => render.toString().includes('runRender'))).toBe(true);  // nobody replaced render
+  expect(await page.evaluate(() => render.toString().includes('hkCall'))).toBe(true);  // nobody replaced render
   noErrors(errors);
 });
 

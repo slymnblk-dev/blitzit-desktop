@@ -48,5 +48,5 @@ $('metricsPg').addEventListener('click',e=>{
     cxOpen(nm,[{t:'New KPI',ic:MX_ICON,act:()=>go('kpi')},{t:'New OKR',ic:MT_KR_I,act:()=>go('okr')}])}});
 
 /* computer sidebar: Habits, Goals and Metrics sit under "Modes", like Spaces */
-const _mt2Side=rhythmSide;
-rhythmSide=function(){const h=_mt2Side();return h?`<div class="s-lbl2"><span class="s-name">Modes</span></div>${h}`:''};
+const _mt2Side=hkBelow('rhythmSide','mt2',rhythmSide__core);
+hkLayer('rhythmSide','mt2',function(){const h=_mt2Side();return h?`<div class="s-lbl2"><span class="s-name">Modes</span></div>${h}`:''});

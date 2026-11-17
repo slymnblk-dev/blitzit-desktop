@@ -65,7 +65,8 @@ function ciCard(){
   const n=hbOpenToday().length;if(!n)return '';
   return `<div class="ci-home"><span class="ci-hi">${hbSun(3,false)}</span><span class="ci-ht"><b>Evening check-in</b><small>${n} ${n===1?'habit':'habits'} left today</small></span>
     <button class="rv-skip" data-cilater>Later</button><button class="rv-go" data-ciopen>Start</button></div>`}
-function rhythmSide(){let h='';
+function rhythmSide(){return hkCall('rhythmSide',rhythmSide__core,this,arguments)}
+function rhythmSide__core(){let h='';
   if(habitsOn()){const n=hbOpenToday().length;h+=`<button class="s-list s-home s-inbox ${rhOn?'on':''}" id="sRhythm" title="Habits">${RH_ICON}<span class="s-name">Habits</span>${n?`<span class="n">${n}</span>`:''}</button>`}
   if(goalsOn()){const n=gAll().length;h+=`<button class="s-list s-home s-inbox ${typeof glOn!=='undefined'&&glOn?'on':''}" id="sGoals" title="Goals">${G_FLAG}<span class="s-name">Goals</span>${n?`<span class="n">${n}</span>`:''}</button>`}
   return h}

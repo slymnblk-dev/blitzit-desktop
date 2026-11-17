@@ -186,37 +186,37 @@ addEventListener('keydown',e=>{if(!RP||!$('rtPlay').classList.contains('on')||$(
 onRender('routines-page',function(d){if(rtOn){if(!routinesOn())closeRoutines();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#routinesPg'))drawRoutines()}});
 
 /* ---------- computers: "Routines" under Modes in the sidebar ---------- */
-const _rtSide=rhythmSide;
-rhythmSide=function(){const h=_rtSide();if(!routinesOn())return h;const n=rtLeftToday();
+const _rtSide=hkBelow('rhythmSide','routines',rhythmSide__core);
+hkLayer('rhythmSide','routines',function(){const h=_rtSide();if(!routinesOn())return h;const n=rtLeftToday();
   const it=`<button class="s-list s-home s-inbox ${rtOn?'on':''}" id="sRoutines" title="Routines">${RT_ICON}<span class="s-name">Routines</span>${n?`<span class="n">${n}</span>`:''}</button>`;
-  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`};
+  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`});
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sRoutines')){e.stopImmediatePropagation();return rtOn?closeRoutines():openRoutines()}
   if(rtOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins'))closeRoutines()},true);
 for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics','openWins']){const f=window[fn];if(typeof f!=='function')continue;
   window[fn]=function(){if(rtOn)closeRoutines();return f.apply(this,arguments)}}
-const _rtDesk=renderDesk;renderDesk=function(){_rtDesk.apply(this,arguments);if(rtOn){const h=$('sHome');if(h)h.classList.remove('on')}};
+const _rtDesk=hkBelow('renderDesk','routines',renderDesk__core);hkLayer('renderDesk','routines',function(){_rtDesk.apply(this,arguments);if(rtOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!rtOn||e.defaultPrevented||RP||$('dlg').classList.contains('on')||document.querySelector('.sheet.on'))return;
   if(e.target&&e.target.closest&&e.target.closest('#routinesPg input,#routinesPg select'))return;if(!rtDesk())return;e.preventDefault();closeRoutines()});
 ESC_PAGES.routinesPg=()=>{if(rtEdit&&!rtDesk()){rtEdit=false;return drawRoutines()}closeRoutines()};
 
 /* ---------- phones: a Routines tab ---------- */
 TB_I.routines=RT_ICON;
-const _rtTabs=tabsList;
-tabsList=function(){let t=_rtTabs();if(!routinesOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['routines','Routines',RT_ICON]);return t};
-const _rtTabNow=tabNow;tabNow=function(){return rtOn?'routines':_rtTabNow()};
-const _rtTbGo=tbGo;
-tbGo=function(k){
+const _rtTabs=hkBelow('tabsList','routines',tabsList__core);
+hkLayer('tabsList','routines',function(){let t=_rtTabs();if(!routinesOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['routines','Routines',RT_ICON]);return t});
+const _rtTabNow=hkBelow('tabNow','routines',tabNow__core);hkLayer('tabNow','routines',function(){return rtOn?'routines':_rtTabNow()});
+const _rtTbGo=hkBelow('tbGo','routines',tbGo__core);
+hkLayer('tbGo','routines',function(k){
   if(k==='routines'){if(rtOn){if(rtEdit){rtEdit=false;drawRoutines()}$('routinesPg').scrollTo({top:0,behavior:'smooth'});return}_rtTbGo('home');openRoutines();return drawTabs()}
-  if(rtOn)closeRoutines();return _rtTbGo(k)};
+  if(rtOn)closeRoutines();return _rtTbGo(k)});
 /* the + on the Routines tab makes a new routine */
 document.addEventListener('click',e=>{if(!rtOn||!e.target.closest('#tbAdd'))return;e.preventDefault();e.stopImmediatePropagation();rtNewRoutine()},true);
-const _rtApply=applySettings;applySettings=function(){_rtApply.apply(this,arguments);if(rtOn&&!routinesOn())closeRoutines()};
+const _rtApply=hkBelow('applySettings','routines',applySettings__core);hkLayer('applySettings','routines',function(){_rtApply.apply(this,arguments);if(rtOn&&!routinesOn())closeRoutines()});
 
 /* ---------- Settings → Modes: a Routines card ---------- */
-const _rtModes=modesPage;
-modesPage=function(){const h=_rtModes.apply(this,arguments),on=routinesOn(),n=on?rtAll().length:0;
+const _rtModes=hkBelow('modesPage','routines',modesPage__core);
+hkLayer('modesPage','routines',function(){const h=_rtModes.apply(this,arguments),on=routinesOn(),n=on?rtAll().length:0;
   const card=`<div class="md-card${on?' on':''}" data-md="routines"><div class="md-head"><span class="md-ic">${RT_ICON}</span><span class="md-t"><b>Routines</b><small>Small rituals you run step by step</small></span>${tg('routines')}</div>
     ${on?`<div class="md-body"><p class="md-note">Morning, workday shutdown, evening wind-down: a few steps with a gentle timer each. Finish one and it counts toward its streak${typeof winsOn==='function'?' and lands in Wins':''}. ${n?`You have ${n}.`:''}</p>
       <div class="md-sub"><span><b>Next routine on Home</b><small>A small card with Start, from half an hour before its time.</small></span>${tg('rtHome')}</div></div>`:''}</div>`;
-  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)};
+  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)});

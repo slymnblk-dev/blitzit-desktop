@@ -5,12 +5,12 @@
    This file must stay last of the tab-bar wrappers (08zz), so every mode has added its tab before we choose. */
 const TB_MAX=3;
 const TB_CFG={inbox:'inbox',habits:'habits',goals:'goals',mx:'metrics',wins:'wins',routines:'routines',plan:'plan',journal:'journal',vision:'vision'};
-const _tpList=tabsList;
+const _tpList=hkBelow('tabsList','tp',tabsList__core);
 const tbAvail=()=>_tpList().filter(x=>x[0]!=='home');
 function tbPicked(sel){const av=tbAvail().map(x=>x[0]),c=sel||S.cfg.tabs;return (Array.isArray(c)?av.filter(k=>c.includes(k)):av).slice(0,TB_MAX)}
 const tbHidden=()=>{const p=tbPicked();return tbAvail().filter(x=>!p.includes(x[0]))};
-tabsList=function(){const t=_tpList();if(!t.length)return t;const p=tbPicked();
-  const out=[t.find(x=>x[0]==='home')||['home','Home',TB_HOME],...t.filter(x=>p.includes(x[0]))];return out.length>1?out:[]};
+hkLayer('tabsList','tp',function(){const t=_tpList();if(!t.length)return t;const p=tbPicked();
+  const out=[t.find(x=>x[0]==='home')||['home','Home',TB_HOME],...t.filter(x=>p.includes(x[0]))];return out.length>1?out:[]});
 /* a mode page whose tab isn't in the bar shows its Back button */
 const _tpDraw=drawTabs;
 drawTabs=function(){_tpDraw.apply(this,arguments);try{

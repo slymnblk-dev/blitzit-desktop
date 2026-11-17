@@ -85,4 +85,4 @@ $('gdPg').addEventListener('click',e=>{
 },true);
 /* 0.301: Sunrise ("path") and Countdown ("poster") are gone; anything saved with them opens in Focus */
 (()=>{const fix=()=>{try{if(['path','poster'].includes(S.cfg.gView))S.cfg.gView='focus';(S.goals||[]).forEach(g=>{if(g&&['path','poster'].includes(g.view))g.view='focus'})}catch(e){}};
-  fix();const _ap=applySettings;applySettings=function(){fix();return _ap.apply(this,arguments)}})();
+  fix();const _ap=hkBelow('applySettings','ap',applySettings__core);hkLayer('applySettings','ap',function(){fix();return _ap.apply(this,arguments)})})();

@@ -38,6 +38,6 @@ function ttSwitch(btn){
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-tt]');if(!b)return;e.preventDefault();e.stopPropagation();ttSwitch(b)},true);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>ttPaint());
-const _ttApply=applySettings;
-applySettings=function(){_ttApply.apply(this,arguments);try{ttPaint()}catch(e){}};
+const _ttApply=hkBelow('applySettings','theme-toggle',applySettings__core);
+hkLayer('applySettings','theme-toggle',function(){_ttApply.apply(this,arguments);try{ttPaint()}catch(e){}});
 ttPaint();

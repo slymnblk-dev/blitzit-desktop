@@ -176,7 +176,8 @@ gSetWin=function(g,on){const was=!!g.done;_moWin(g,on);try{if(on&&!was&&g.done)s
 var mdJust=null;
 document.addEventListener('click',e=>{const t=e.target.closest('#setIn .md-card [data-tg]');if(t&&['habits','goals','mx','closeDay','pri','imp','tags','inbox','review','checkin'].includes(t.dataset.tg)&&!C()[t.dataset.tg])mdJust=t.dataset.tg},true);
 const MD_GOAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
-modesPage=function(){
+function modesPage(){return hkCall('modesPage',modesPage__core,this,arguments)}
+function modesPage__core(){
   const c=C(),hOn=habitsOn(),gOn=goalsOn(),n=hbAll().length,gn=gAll().length;
   const card=(k,ic,name,sub,on,body)=>`<div class="md-card${on?' on':''}" data-md="${k}"><div class="md-head"><span class="md-ic">${ic}</span><span class="md-t"><b>${name}</b><small>${sub}</small></span>${tg(k)}</div>
     ${on?`<div class="md-body${mdJust===k?' in':''}">${body}</div>`:''}</div>`;

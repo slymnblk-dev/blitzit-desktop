@@ -2,15 +2,15 @@
    0.295: one item that opens the Goals page (the same page as on phones); a goal opens from there. */
 const gSideWide=()=>matchMedia('(min-width:1100px)').matches;
 const G_CHEV='<svg class="s-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
-const _rhythmSide=rhythmSide;
-rhythmSide=function(){
+const _rhythmSide=hkBelow('rhythmSide','rhythm',rhythmSide__core);
+hkLayer('rhythmSide','rhythm',function(){
   if(!gSideWide()||!goalsOn())return _rhythmSide();
   // habits row as before, then our own Goals row
   const keep=S.cfg.goals;S.cfg.goals=false;let h;try{h=_rhythmSide()}finally{S.cfg.goals=keep}
   /* 0.295: Goals is one plain item that opens the Goals page (no fold with every goal) */
   const gs=gAll(),on=(typeof glOn!=='undefined'&&glOn)||(typeof gdOn!=='undefined'&&gdOn);
   h+=`<button class="s-list s-home s-inbox${on?' on':''}" id="sGoals" title="Goals">${G_FLAG}<span class="s-name">Goals</span>${gs.length?`<span class="n">${gs.length}</span>`:''}</button>`;
-  return h};
+  return h});
 
 const _sListsClick=$('sLists').onclick;
 $('sLists').onclick=e=>{

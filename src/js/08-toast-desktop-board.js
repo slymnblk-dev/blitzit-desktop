@@ -58,7 +58,8 @@ function peekSub(sp){
   return `<div class="s-sub s-peek"><button class="s-list" data-pk="${sp.id}" data-pl="all" title="All lists"><span class="stack">${ls.slice(0,3).map(x=>`<span style="background:${x.c};border-color:var(--bg)"></span>`).join('')}</span><span class="s-name">All lists</span><span class="n">${n('all')}</span></button>`+
     ls.map(l=>`<button class="s-list" data-pk="${sp.id}" data-pl="${l.id}" title="${esc(l.name)}"><i style="background:${l.c}"></i><span class="s-name">${esc(l.name)}</span><span class="n">${n(l.id)}</span></button>`).join('')+`</div>`;
 }
-function renderDesk(){
+function renderDesk(){return hkCall('renderDesk',renderDesk__core,this,arguments)}
+function renderDesk__core(){
   const vis=visible();
   // on Home, count every space's Today (like the Today strip); inside a space, what the board shows
   const todayT=(S.space?vis:S.tasks.filter(t=>shown(t))).filter(t=>t.stage==='today');

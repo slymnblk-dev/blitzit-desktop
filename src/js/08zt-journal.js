@@ -119,42 +119,42 @@ $('journalPg').addEventListener('click',e=>{
 onRender('journal-page',function(d){if(jrOn){if(!journalOn())closeJournal();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#journalPg [data-jrf],#jrQ'))drawJournal()}});
 
 /* ---------- computers: "Journal" under Modes in the sidebar ---------- */
-const _jrSide=rhythmSide;
-rhythmSide=function(){const h=_jrSide();if(!journalOn())return h;const done=jrWritten(jrGet(today()));
+const _jrSide=hkBelow('rhythmSide','journal',rhythmSide__core);
+hkLayer('rhythmSide','journal',function(){const h=_jrSide();if(!journalOn())return h;const done=jrWritten(jrGet(today()));
   const it=`<button class="s-list s-home s-inbox ${jrOn?'on':''}" id="sJournal" title="Journal">${JR_ICON}<span class="s-name">Journal</span>${done?'<span class="n jr-sn" aria-label="Written today">✓</span>':''}</button>`;
-  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`};
+  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`});
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sJournal')){e.stopImmediatePropagation();return jrOn?closeJournal():openJournal()}
   if(jrOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins,#sRoutines,#sPlan'))closeJournal()},true);
 for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics','openWins','openRoutines','openPlan']){const f=window[fn];if(typeof f!=='function')continue;
   window[fn]=function(){if(jrOn)closeJournal();return f.apply(this,arguments)}}
-const _jrDesk=renderDesk;renderDesk=function(){_jrDesk.apply(this,arguments);if(jrOn){const h=$('sHome');if(h)h.classList.remove('on')}};
+const _jrDesk=hkBelow('renderDesk','journal',renderDesk__core);hkLayer('renderDesk','journal',function(){_jrDesk.apply(this,arguments);if(jrOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!jrOn||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on,.cx-pop.on'))return;
   if(e.target&&e.target.closest&&e.target.closest('#journalPg textarea'))return;if(!jrDesk())return;e.preventDefault();closeJournal()});
 ESC_PAGES.journalPg=()=>{if(jrDay){jrDay=null;return drawJournal()}closeJournal()};
 
 /* ---------- phones: a Journal tab ---------- */
 TB_I.journal=JR_ICON;
-const _jrTabs=tabsList;
-tabsList=function(){let t=_jrTabs();if(!journalOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['journal','Journal',JR_ICON]);return t};
-const _jrTabNow=tabNow;tabNow=function(){return jrOn?'journal':_jrTabNow()};
-const _jrTbGo=tbGo;
-tbGo=function(k){
+const _jrTabs=hkBelow('tabsList','journal',tabsList__core);
+hkLayer('tabsList','journal',function(){let t=_jrTabs();if(!journalOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['journal','Journal',JR_ICON]);return t});
+const _jrTabNow=hkBelow('tabNow','journal',tabNow__core);hkLayer('tabNow','journal',function(){return jrOn?'journal':_jrTabNow()});
+const _jrTbGo=hkBelow('tbGo','journal',tbGo__core);
+hkLayer('tbGo','journal',function(k){
   if(k==='journal'){if(jrOn){if(jrDay){jrDay=null;drawJournal()}$('journalPg').scrollTo({top:0,behavior:'smooth'});return}_jrTbGo('home');openJournal();return drawTabs()}
-  if(jrOn)closeJournal();return _jrTbGo(k)};
+  if(jrOn)closeJournal();return _jrTbGo(k)});
 /* the + on the Journal tab jumps to today's line */
 document.addEventListener('click',e=>{if(!jrOn||!e.target.closest('#tbAdd'))return;e.preventDefault();e.stopImmediatePropagation();jrDay=null;drawJournal();
   const ta=$('jrIn').querySelector(`[data-jrf="${new Date().getHours()>=15?'pm':'am'}"]`);if(ta){ta.focus();ta.scrollIntoView({block:'center',behavior:'smooth'})}},true);
-const _jrApply=applySettings;applySettings=function(){_jrApply.apply(this,arguments);if(jrOn&&!journalOn())closeJournal()};
+const _jrApply=hkBelow('applySettings','journal',applySettings__core);hkLayer('applySettings','journal',function(){_jrApply.apply(this,arguments);if(jrOn&&!journalOn())closeJournal()});
 
 /* ---------- Settings → Modes: a Journal card, with Energy as an optional part ---------- */
-const _jrModes=modesPage;
-modesPage=function(){const h=_jrModes.apply(this,arguments),on=journalOn();
+const _jrModes=hkBelow('modesPage','journal',modesPage__core);
+hkLayer('modesPage','journal',function(){const h=_jrModes.apply(this,arguments),on=journalOn();
   const card=`<div class="md-card${on?' on':''}" data-md="journal"><div class="md-head"><span class="md-ic">${JR_ICON}</span><span class="md-t"><b>Journal</b><small>One line in the morning, one at night</small></span>${tg('journal')}</div>
     ${on?`<div class="md-body"><p class="md-note">What would make today a win, what went well, and how the day felt. Your moods fill a calendar.</p>
       <div class="md-sub"><span><b>Energy check-ins</b><small>Tap how you feel during the day. Journal learns your best hours to focus.</small></span>${tg('jEnergy')}</div>
       <div class="md-sub"><span><b>Evening reminder</b><small>A nudge to write your evening line, if you haven't yet.</small></span>${C().jRem?`<select class="pn-hsel" data-jrremat aria-label="Reminder time">${['18:00','19:00','20:00','21:00','21:30','22:00','23:00'].map(v=>`<option${v===(C().jRemAt||'21:00')?' selected':''}>${v}</option>`).join('')}</select>`:''}${tg('jRem')}</div></div>`:''}</div>`;
-  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)};
+  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)});
 
 /* linking a task, searching */
 $('journalPg').addEventListener('click',e=>{

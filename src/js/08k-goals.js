@@ -368,9 +368,9 @@ document.addEventListener('click',e=>{
 },true);
 
 /* finishing a task that came from a milestone ticks the milestone (and un-finishing it reopens it) */
-const _gSetStage=setStage;
-setStage=function(t,stage){const was=t.stage;_gSetStage(t,stage);
-  try{if(was!==stage&&(stage==='done'||was==='done'))gList().forEach(g=>{const m=gMsOf(g,t);if(m)gMsSync(m)})}catch(err){}};
+const _gSetStage=hkBelow('setStage','goals',setStage__core);
+hkLayer('setStage','goals',function(t,stage){const was=t.stage;_gSetStage(t,stage);
+  try{if(was!==stage&&(stage==='done'||was==='done'))gList().forEach(g=>{const m=gMsOf(g,t);if(m)gMsSync(m)})}catch(err){}});
 /* keep the goal page in step with edits, undo and sync, without stealing focus while typing */
 onRender('goal-pages',function(d){
   if(gsOn&&!goalsOn())closeSetup();

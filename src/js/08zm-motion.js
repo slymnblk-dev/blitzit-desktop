@@ -50,14 +50,14 @@ document.addEventListener('click',e=>{
 /* 5 · phones: switching tabs, the page comes in from the side of its tab (Inbox from the left of Goals, and so on).
    Computers: pages fade and rise in (CSS). */
 const MO_TABS=['home','inbox','habits','goals'];
-const _moTab=tbGo;tbGo=function(k){
+const _moTab=hkBelow('tbGo','motion',tbGo__core);hkLayer('tbGo','motion',function(k){
   const c=tabNow(),a=MO_TABS.indexOf(c),b=MO_TABS.indexOf(k);
   if(a<0||b<0||a===b||!moOK())return _moTab(k);
   const dir=b>a?'r':'l',open=[...document.querySelectorAll('.inbox-pg.on')];
   root.dataset.tdir=dir;open.forEach(p=>p.classList.add('pg-out-'+(dir==='r'?'l':'r')));
   _moTab(k);
   setTimeout(()=>{open.forEach(p=>p.classList.remove('pg-out-l','pg-out-r'));delete root.dataset.tdir},450);
-};
+});
 
 /* 6 · the last Today task done: the sun rises and a warm gold glow, "You won the day" */
 const moTodayLeft=()=>S.tasks.filter(t=>shown(t)&&t.stage==='today').length;

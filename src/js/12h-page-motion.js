@@ -34,6 +34,6 @@ renderLayer('page-motion',function(d){
 });
 /* tabs: slide toward the tab you tapped */
 const vtTabOrder=()=>[...document.querySelectorAll('#tbIn [data-tab]')].map(b=>b.dataset.tab);
-const _vtTab=tbGo;
+const _vtTab=hkBelow('tbGo','page-motion',tbGo__core);
 /* 0.318: switching tabs is instant too (the slide made pages flash); the tab pages just appear */
-tbGo=function(k){root.classList.add('tb-snap');let r;try{r=_vtTab.apply(this,arguments)}finally{vtKey=vtWhere();vtStage=S.stage;requestAnimationFrame(()=>requestAnimationFrame(()=>root.classList.remove('tb-snap')))}return r};
+hkLayer('tbGo','page-motion',function(k){root.classList.add('tb-snap');let r;try{r=_vtTab.apply(this,arguments)}finally{vtKey=vtWhere();vtStage=S.stage;requestAnimationFrame(()=>requestAnimationFrame(()=>root.classList.remove('tb-snap')))}return r});

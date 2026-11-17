@@ -9,10 +9,12 @@ const TB_I={home:TBI('<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/>'),in
   habits:TBI('<path d="M3.5 18.5h17"/><path d="M7.5 18.5a4.5 4.5 0 0 1 9 0"/><path d="M12 6.5V9M6.2 9.6l1.7 1.7M17.8 9.6l-1.7 1.7"/>'),goals:TBI('<path d="M6 21V4"/><path d="M6 4.5h11l-2.2 4.2L17 13H6"/>')};
 const TB_PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 document.body.insertAdjacentHTML('beforeend','<nav class="tabbar" id="tabBar" aria-label="Main"><div class="tb-in" id="tbIn"></div></nav>');
-function tabsList(){const t=[['home','Home',TB_HOME]];
+function tabsList(){return hkCall('tabsList',tabsList__core,this,arguments)}
+function tabsList__core(){const t=[['home','Home',TB_HOME]];
   if(inboxOn())t.push(['inbox','Inbox',IB_ICON]);if(habitsOn())t.push(['habits','Habits',RH_ICON]);if(goalsOn())t.push(['goals','Goals',G_FLAG]);
   return t.length>1?t:[]}
-function tabNow(){return gdOn||glOn?'goals':rhOn?'habits':ibOn?'inbox':'home'}
+function tabNow(){return hkCall('tabNow',tabNow__core,this,arguments)}
+function tabNow__core(){return gdOn||glOn?'goals':rhOn?'habits':ibOn?'inbox':'home'}
 let tbSig='';
 /* Settings → Appearance → Tab bar on phones: Floating (default) or With labels */
 const tbStyle=()=>C().navStyle==='labels'?'labels':'float';
@@ -28,7 +30,8 @@ function drawTabs(){
   document.documentElement.dataset.nav=st;
 }
 /* one tab at a time: the others close; tapping the open tab goes back to its top (or from a goal to all goals) */
-function tbGo(k){
+function tbGo(){return hkCall('tbGo',tbGo__core,this,arguments)}
+function tbGo__core(k){
   const cur=tabNow();
   if(k===cur){
     if(k==='goals'&&gdOn){closeGoal();if(!glOn)openGoals();return drawTabs()}
@@ -46,4 +49,4 @@ $('tabBar').addEventListener('click',e=>{
   if(e.target.closest('#tbAdd')){addKindNext=rhOn?'habit':glOn&&!gdOn?'goal':null;$('addBtn').click()}
 });
 onRender('tab-bar',function(d){drawTabs()});
-const _tbDesk=renderDesk;renderDesk=function(){_tbDesk.apply(this,arguments);try{drawTabs()}catch(err){console.error(err)}};
+const _tbDesk=hkBelow('renderDesk','tabs',renderDesk__core);hkLayer('renderDesk','tabs',function(){_tbDesk.apply(this,arguments);try{drawTabs()}catch(err){console.error(err)}});

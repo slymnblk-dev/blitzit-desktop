@@ -14,5 +14,5 @@ function heroGlint(){
 const hgSoon=()=>setTimeout(heroGlint,350);
 /* arriving on Home: on start, coming back from a space, or tapping Home in the tab bar from another page */
 onRender('hero-glint',function(d){const h=!S.space;if(h&&hgHome===false)hgSoon();hgHome=h});
-const _hgTab=tbGo;tbGo=function(k){const c=tabNow();_hgTab(k);if(k==='home'&&c!=='home')hgSoon()};
+const _hgTab=hkBelow('tbGo','hero-glint',tbGo__core);hkLayer('tbGo','hero-glint',function(k){const c=tabNow();_hgTab(k);if(k==='home'&&c!=='home')hgSoon()});
 setTimeout(()=>{if(!S.space){hgHome=true;heroGlint()}},700);

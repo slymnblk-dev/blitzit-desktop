@@ -32,8 +32,8 @@ function flFont(){if(document.getElementById('flFont'))return;const l=document.c
   l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 function flPaint(){if(!flowUI()){delete root.dataset.ui;delete root.dataset.fl;return}try{flFont()}catch(e){}
   root.dataset.ui='flow';root.dataset.fl=FL_PARTS.map(([p])=>p).filter(flowOn).join(' ')}
-const _flApply=applySettings;
-applySettings=function(){if(S.cfg&&S.cfg.ui!=='flow')S.cfg.ui='classic';if(S.cfg&&!S.cfg.flT316){S.cfg.flT316=1;S.cfg.flThumb=false} /* ⑤ 0.316: stage tabs back at the top by default (Thumb-first stays a switch) */if(S.cfg)FL_PARTS.forEach(([p])=>{if(S.cfg[flKey(p)]===undefined)S.cfg[flKey(p)]=true});const r=_flApply.apply(this,arguments);try{flPaint()}catch(e){}return r};
+const _flApply=hkBelow('applySettings','flow',applySettings__core);
+hkLayer('applySettings','flow',function(){if(S.cfg&&S.cfg.ui!=='flow')S.cfg.ui='classic';if(S.cfg&&!S.cfg.flT316){S.cfg.flT316=1;S.cfg.flThumb=false} /* ⑤ 0.316: stage tabs back at the top by default (Thumb-first stays a switch) */if(S.cfg)FL_PARTS.forEach(([p])=>{if(S.cfg[flKey(p)]===undefined)S.cfg[flKey(p)]=true});const r=_flApply.apply(this,arguments);try{flPaint()}catch(e){}return r});
 flPaint();
 
 /* Settings → Appearance: Design (Classic | Flow), and when Flow is on, its parts */
@@ -83,11 +83,11 @@ const FL_PRESETS=[
   {id:'all',n:'Everything',s:'Goals, habits, journal, metrics. The full toolkit.',on:FL_MODES,tags:['Goals','Habits','Journal','Metrics']}];
 const flModeOn=k=>k==='inbox'?S.cfg.inbox!==false:!!S.cfg[k];
 const flPresetNow=()=>{const p=FL_PRESETS.find(p=>FL_MODES.every(k=>flModeOn(k)===p.on.includes(k)));return p?p.id:'custom'};
-const _flModes=modesPage;
-modesPage=function(){const h=_flModes.apply(this,arguments);if(!flowOn('presets'))return h;const cur=flPresetNow();
+const _flModes=hkBelow('modesPage','flow',modesPage__core);
+hkLayer('modesPage','flow',function(){const h=_flModes.apply(this,arguments);if(!flowOn('presets'))return h;const cur=flPresetNow();
   return `<div class="fl-pre"><p class="sub-p">How do you work? Pick one. You can still turn each mode on or off below.</p>
     ${FL_PRESETS.map(p=>`<button class="fl-pc${cur===p.id?' on':''}" data-flpre="${p.id}" aria-pressed="${cur===p.id}"><span class="fl-pt"><b>${p.n}</b><i class="fl-rad" aria-hidden="true">${FL_CK}</i></span><small>${p.s}</small><span class="fl-tags">${p.tags.map(t=>`<em>${t}</em>`).join('')}</span></button>`).join('')}
-    ${cur==='custom'?'<p class="sub-p fl-cus">Custom: your own mix.</p>':''}</div>`+h};
+    ${cur==='custom'?'<p class="sub-p fl-cus">Custom: your own mix.</p>':''}</div>`+h});
 document.addEventListener('click',e=>{const b=e.target.closest('#setIn [data-flpre]');if(!b)return;e.stopPropagation();
   const p=FL_PRESETS.find(x=>x.id===b.dataset.flpre);if(!p||flPresetNow()===p.id)return;
   const was=Object.fromEntries(FL_MODES.map(k=>[k,S.cfg[k]]));haptic(6);try{sfx('toggle')}catch(err){}
@@ -152,8 +152,8 @@ document.addEventListener('click',e=>{if(!e.target.closest('[data-fladd]'))retur
 const _flRender=renderBelow('flow-paint');
 function flPaintAll(){if(!flowUI())return;try{if(S.space){root.style.setProperty('--accent-btn','var(--accent)');root.style.setProperty('--on-accent','var(--fl-ink)')}flNextPaint();flRecapPaint();flEmptyPaint();flThumbPaint()}catch(e){}}
 renderLayer('flow-paint',function(){const r=_flRender.apply(this,arguments);flPaintAll();return r});
-const _flDesk=renderDesk;
-renderDesk=function(){const r=_flDesk.apply(this,arguments);flPaintAll();return r};
+const _flDesk=hkBelow('renderDesk','flow',renderDesk__core);
+hkLayer('renderDesk','flow',function(){const r=_flDesk.apply(this,arguments);flPaintAll();return r});
 
 /* ---------- the Flow look: buttons on the coral (and other stage colours) use dark ink, like the mockups ----------
    Classic paints white text on its deeper gradients. Flow's colours are brighter, so white text would be hard to read.

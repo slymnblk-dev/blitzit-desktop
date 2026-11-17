@@ -7,7 +7,19 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=323; // bumped with every published update
+const APP_VERSION=324; // bumped with every published update
+/* ---------- layers (0.324): how features extend a shared function ----------
+   Never write `fn=function(){...}` to patch a function. Instead:
+     hkLayer('fn','my-feature',function(...){ ... })   adds a named layer (later = outer)
+     const _x=hkBelow('fn','my-feature',fn__core)      inside it: runs everything under your layer
+   Layered today: render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage.
+   hkLayers('fn') lists a function's layers, innermost first. */
+function hkL(fn){const H=window.__HK||(window.__HK={});return H[fn]||(H[fn]=[])}
+function hkLayer(fn,name,f){hkL(fn).push({name,f})}
+function hkRun(fn,core,i,self,args){const L=hkL(fn);return i<0?core.apply(self,args):L[i].f.apply(self,args)}
+function hkCall(fn,core,self,args){return hkRun(fn,core,hkL(fn).length-1,self,args)}
+function hkBelow(fn,name,core){return function(){const L=hkL(fn),i=L.findIndex(l=>l.name===name);return hkRun(fn,core,i<0?L.length-1:i-1,this,arguments)}}
+function hkLayers(fn){return hkL(fn).map(l=>l.name)}
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();

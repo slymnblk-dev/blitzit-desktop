@@ -264,13 +264,13 @@ document.addEventListener('click',e=>{if(!e.target.closest('[data-vbopen]'))retu
 
 /* every draw: keep the page and Home's card fresh; link a goal made from a card */
 onRender('vision',function(d){vbLinkNew();vbHomePaint();if(vbOn){if(!visionOn())closeVision();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#vbAreaIn'))drawVision()}});
-const _vbDeskR=renderDesk;renderDesk=function(){_vbDeskR.apply(this,arguments);try{vbHomePaint();if(vbOn){const h=$('sHome');if(h)h.classList.remove('on')}}catch(e){}};
+const _vbDeskR=hkBelow('renderDesk','vision',renderDesk__core);hkLayer('renderDesk','vision',function(){_vbDeskR.apply(this,arguments);try{vbHomePaint();if(vbOn){const h=$('sHome');if(h)h.classList.remove('on')}}catch(e){}});
 
 /* ---------- computers: "Vision" under Modes in the sidebar ---------- */
-const _vbSide=rhythmSide;
-rhythmSide=function(){const h=_vbSide();if(!visionOn())return h;
+const _vbSide=hkBelow('rhythmSide','vision',rhythmSide__core);
+hkLayer('rhythmSide','vision',function(){const h=_vbSide();if(!visionOn())return h;
   const it=`<button class="s-list s-home s-inbox ${vbOn?'on':''}" id="sVision" title="Vision board">${VB_ICON}<span class="s-name">Vision</span></button>`;
-  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`};
+  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`});
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sVision')){e.stopImmediatePropagation();return vbOn?closeVision():openVision()}
   if(vbOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins,#sRoutines,#sPlan,#sJournal'))closeVision()},true);
@@ -282,20 +282,20 @@ ESC_PAGES.visionPg=()=>closeVision();
 
 /* ---------- phones: a Vision tab ---------- */
 TB_I.vision=VB_ICON;
-const _vbTabs=tabsList;
-tabsList=function(){let t=_vbTabs();if(!visionOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['vision','Vision',VB_ICON]);return t};
-const _vbTabNow=tabNow;tabNow=function(){return vbOn?'vision':_vbTabNow()};
-const _vbTbGo=tbGo;
-tbGo=function(k){if(k==='vision'){if(vbOn){$('visionPg').scrollTo({top:0,behavior:'smooth'});return}_vbTbGo('home');openVision();return drawTabs()}
-  if(vbOn)closeVision();return _vbTbGo(k)};
+const _vbTabs=hkBelow('tabsList','vision',tabsList__core);
+hkLayer('tabsList','vision',function(){let t=_vbTabs();if(!visionOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['vision','Vision',VB_ICON]);return t});
+const _vbTabNow=hkBelow('tabNow','vision',tabNow__core);hkLayer('tabNow','vision',function(){return vbOn?'vision':_vbTabNow()});
+const _vbTbGo=hkBelow('tbGo','vision',tbGo__core);
+hkLayer('tbGo','vision',function(k){if(k==='vision'){if(vbOn){$('visionPg').scrollTo({top:0,behavior:'smooth'});return}_vbTbGo('home');openVision();return drawTabs()}
+  if(vbOn)closeVision();return _vbTbGo(k)});
 /* the + while on the board adds a card */
 document.addEventListener('click',e=>{if(!vbOn||!e.target.closest('#tbAdd,#addBtn,#nwFab'))return;e.preventDefault();e.stopImmediatePropagation();openVbCard(null)},true);
-const _vbApply=applySettings;applySettings=function(){_vbApply.apply(this,arguments);if(vbOn&&!visionOn())closeVision()};
+const _vbApply=hkBelow('applySettings','vision',applySettings__core);hkLayer('applySettings','vision',function(){_vbApply.apply(this,arguments);if(vbOn&&!visionOn())closeVision()});
 
 /* ---------- Settings → Modes: a Vision board card ---------- */
-const _vbModes=modesPage;
-modesPage=function(){const h=_vbModes.apply(this,arguments),on=visionOn();
+const _vbModes=hkBelow('modesPage','vision',modesPage__core);
+hkLayer('modesPage','vision',function(){const h=_vbModes.apply(this,arguments),on=visionOn();
   const card=`<div class="md-card${on?' on':''}" data-md="vision"><div class="md-head"><span class="md-ic">${VB_ICON}</span><span class="md-t"><b>Vision board</b><small>Photos, a quote and a word for your year</small></span>${tg('vision')}</div>
     ${on?`<div class="md-body"><p class="md-note">A board per year with a Morning look slideshow. Photos stay on this device.</p>
       <div class="md-sub"><span><b>Today's vision on Home</b><small>One card from your board on Home, a new one each day.</small></span>${tg('vHome')}</div></div>`:''}</div>`;
-  return h+card};
+  return h+card});

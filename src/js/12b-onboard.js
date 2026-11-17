@@ -137,10 +137,10 @@ function tourLoop(){
 const tourAt=k=>tour&&tour.i>0&&TOUR[tour.i-1].k===k;
 const _obOpenSpace=openSpace;
 openSpace=function(id){_obOpenSpace(id);if(tourAt('space'))setTimeout(()=>tourGo(tour.i+1),350)};
-const _obSetStage=setStage;
-setStage=function(t,stage){const was=t&&t.stage;const r=_obSetStage(t,stage);
+const _obSetStage=hkBelow('setStage','onboard',setStage__core);
+hkLayer('setStage','onboard',function(t,stage){const was=t&&t.stage;const r=_obSetStage(t,stage);
   if((tourAt('week')&&was==='backlog'&&stage==='week')||(tourAt('today')&&was==='week'&&stage==='today'))setTimeout(()=>tourGo(tour.i+1),450);
-  return r};
+  return r});
 const _obOpenDetail=openDetail;
 openDetail=function(id){_obOpenDetail(id);if(tourAt('detail'))setTimeout(()=>tourGo(tour.i+1),400)};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&tour&&!document.querySelector('.sheet.on,.dlg.on,#sfDlg.on'))tourEnd()});

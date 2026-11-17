@@ -127,36 +127,36 @@ onRender('wins-jar',function(d){
   if(wnOn){if(!winsOn())closeWins();else drawWins()}});
 
 /* ---------- computers: "Wins" under Modes in the sidebar ---------- */
-const _wnSide=rhythmSide;
-rhythmSide=function(){const h=_wnSide();if(!winsOn())return h;const n=wnThisWeek();
+const _wnSide=hkBelow('rhythmSide','wins',rhythmSide__core);
+hkLayer('rhythmSide','wins',function(){const h=_wnSide();if(!winsOn())return h;const n=wnThisWeek();
   const it=`<button class="s-list s-home s-inbox ${wnOn?'on':''}" id="sWins" title="Wins">${WN_ICON}<span class="s-name">Wins</span>${n?`<span class="n">${n}</span>`:''}</button>`;
-  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`};
+  return h?h+it:`<div class="s-lbl2"><span class="s-name">Modes</span></div>${it}`});
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sWins')){e.stopImmediatePropagation();return wnOn?closeWins():openWins()}
   if(wnOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics'))closeWins()},true);
 for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics']){const f=window[fn];if(typeof f!=='function')continue;
   window[fn]=function(){if(wnOn)closeWins();return f.apply(this,arguments)}}
-const _wnDesk=renderDesk;renderDesk=function(){_wnDesk.apply(this,arguments);if(wnOn){const h=$('sHome');if(h)h.classList.remove('on')}};
+const _wnDesk=hkBelow('renderDesk','wins',renderDesk__core);hkLayer('renderDesk','wins',function(){_wnDesk.apply(this,arguments);if(wnOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!wnOn||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on')||$('wnReel').classList.contains('on'))return;
   if(e.target&&e.target.id==='wnNew')return;if(!matchMedia('(min-width:1100px)').matches)return;e.preventDefault();closeWins()});
 ESC_PAGES.winsPg=()=>closeWins();
 
 /* ---------- phones: a Wins tab ---------- */
 TB_I.wins=WN_ICON;
-const _wnTabs=tabsList;
-tabsList=function(){let t=_wnTabs();if(!winsOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['wins','Wins',WN_ICON]);return t};
-const _wnTabNow=tabNow;tabNow=function(){return wnOn?'wins':_wnTabNow()};
-const _wnTbGo=tbGo;
-tbGo=function(k){
+const _wnTabs=hkBelow('tabsList','wins',tabsList__core);
+hkLayer('tabsList','wins',function(){let t=_wnTabs();if(!winsOn())return t;t=t.length?t:[['home','Home',TB_HOME]];t.push(['wins','Wins',WN_ICON]);return t});
+const _wnTabNow=hkBelow('tabNow','wins',tabNow__core);hkLayer('tabNow','wins',function(){return wnOn?'wins':_wnTabNow()});
+const _wnTbGo=hkBelow('tbGo','wins',tbGo__core);
+hkLayer('tbGo','wins',function(k){
   if(k==='wins'){if(wnOn){$('winsPg').scrollTo({top:0,behavior:'smooth'});return}_wnTbGo('home');openWins();return drawTabs()}
-  if(wnOn)closeWins();return _wnTbGo(k)};
+  if(wnOn)closeWins();return _wnTbGo(k)});
 /* the + on the Wins tab adds a win of your own */
 document.addEventListener('click',e=>{if(!wnOn||!e.target.closest('#tbAdd'))return;e.preventDefault();e.stopImmediatePropagation();wnWeek=0;wnAdding=true;drawWins()},true);
-const _wnApply=applySettings;applySettings=function(){_wnApply.apply(this,arguments);if(wnOn&&!winsOn())closeWins()};
+const _wnApply=hkBelow('applySettings','wins',applySettings__core);hkLayer('applySettings','wins',function(){_wnApply.apply(this,arguments);if(wnOn&&!winsOn())closeWins()});
 
 /* ---------- Settings → Modes: a Wins card ---------- */
-const _wnModes=modesPage;
-modesPage=function(){const h=_wnModes.apply(this,arguments),on=winsOn(),n=on?wnThisWeek():0;
+const _wnModes=hkBelow('modesPage','wins',modesPage__core);
+hkLayer('modesPage','wins',function(){const h=_wnModes.apply(this,arguments),on=winsOn(),n=on?wnThisWeek():0;
   const card=`<div class="md-card${on?' on':''}" data-md="wins"><div class="md-head"><span class="md-ic">${WN_ICON}</span><span class="md-t"><b>Wins</b><small>A jar that fills itself with what you got done</small></span>${tg('wins')}</div>
     ${on?`<div class="md-body"><p class="md-note">Tasks you finish, habit streaks, milestones and the days you win all land in the jar. Add your own wins too. ${n?`This week: ${n} so far.`:''}</p></div>`:''}</div>`;
-  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)};
+  const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)});

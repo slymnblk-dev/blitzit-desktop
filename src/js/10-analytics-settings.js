@@ -116,7 +116,8 @@ function shuffleFocus(){
   const cur=focusLive||S.cfg.focusColor||'red',keys=Object.keys(FOCUS_COLORS).filter(k=>k!==cur&&k!=='paper');
   focusLive=keys[Math.floor(Math.random()*keys.length)];applyFocusColor();
 }
-function applySettings(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
+function applySettings(){return hkCall('applySettings',applySettings__core,this,arguments)}
+function applySettings__core(){try{srchApply()}catch(e){}try{ambApply()}catch(e){}
   root.dataset.pri=(S.cfg&&S.cfg.priStyle)||'bars';
   try{applyFocusColor()}catch(e){}
   root.dataset.canpip=('documentPictureInPicture' in window||DESK())?'1':'0';
