@@ -1,0 +1,41 @@
+# Load order for src/css. The build joins these files top to bottom into one <style>.
+# Order matters: later rules win over earlier ones with the same strength.
+# New file? Add it here (usually at the end). The build stops if a file is missing from this list or listed but not there.
+core/base.css
+shell/desktop.css
+settings/settings.css
+tasks/spaces-home-detail.css
+focus/tide.css
+settings/profile-update-window.css
+core/fixes.css
+modes/goals/goals.css
+modes/everyday.css
+modes/goals/goal-habit-pages.css
+home/phone-home.css
+modes/metrics/kpis-okrs.css
+home/desktop-home.css
+modes/metrics/metrics-page.css
+modes/metrics/goal-metrics.css
+modes/metrics/kpis-on-tasks.css
+modes/metrics/metrics-calm.css
+shell/consistency.css
+modes/wins.css
+tasks/impact.css
+modes/routines.css
+modes/plan.css
+modes/journal.css
+settings/onboard.css
+modes/metrics/kpi-cards.css
+modes/inbox/inbox-halves.css
+theme/theme-toggle.css
+settings/settings-trim.css
+tasks/loose-lists.css
+shell/page-motion.css
+home/home-places.css
+shell/sidebar-fold.css
+modes/goals/goal-focus.css
+modes/goals/goals-page.css
+tasks/cap-dialog.css
+theme/flow.css
+modes/vision.css
+theme/polish.css

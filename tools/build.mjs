@@ -1,22 +1,28 @@
 // Builds the single file Netlify serves (web/index.html) from the smaller source files in src/.
 //   src/index.html  - the page itself (head, body markup) with two placeholders
-//   src/css/*.css   - styles, joined in file-name order into the <style> tag
-//   src/js/*.js     - app code, joined in file-name order into one <script> tag
-// The parts share one scope (like before), so order matters: keep the number prefixes.
+//   src/css/**.css  - styles, joined in the order of src/css/ORDER.txt into the <style> tag
+//   src/js/**.js    - app code, joined in the order of src/js/ORDER.txt into one <script> tag
+// Files live in folders by area (core, tasks, home, modes, ...). The parts share one scope, so order matters:
+// it lives in ORDER.txt, not in file names. The build stops if ORDER.txt and the folder disagree.
 // The joined CSS and JS are minified with esbuild (smaller download, faster open). Top-level names
 // stay as they are (it is one plain script), so the parts can still replace each other's functions.
 // Read and edit src/ - never the built file. BUILD_PLAIN=1 skips minifying (for debugging).
 // Run: npm run build:web   (the automatic checks fail if web/index.html is out of date)
 import { transform } from 'esbuild';
 import { readFile, writeFile, readdir } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const src = join(root, 'src');
 
 async function joinFolder(folder, ext) {
-  const files = (await readdir(join(src, folder))).filter(f => f.endsWith(ext)).sort();
+  const dir = join(src, folder);
+  const files = (await readFile(join(dir, 'ORDER.txt'), 'utf8')).split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  const onDisk = (await readdir(dir, { recursive: true })).filter(f => f.endsWith(ext)).map(f => f.split('\\').join('/'));
+  const missing = onDisk.filter(f => !files.includes(f)), gone = files.filter(f => !onDisk.includes(f));
+  if (missing.length || gone.length || new Set(files).size !== files.length)
+    throw new Error(`src/${folder}/ORDER.txt is out of step. Not listed: ${missing.join(', ') || '-'} · listed but missing: ${gone.join(', ') || '-'}`);
   const parts = await Promise.all(files.map(f => readFile(join(src, folder, f), 'utf8')));
   return parts.join('');
 }

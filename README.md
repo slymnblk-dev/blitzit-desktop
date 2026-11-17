@@ -52,7 +52,7 @@ Run the checks locally with `npm test`.
 The web app is written in small files under `src/` and joined into `web/index.html` (the file Netlify serves) by `npm run build:web`:
 
 - `src/index.html`: the page (head + markup)
-- `src/css/`: styles, by area (base, desktop, settings, spaces/home/detail, Tide, profile/update window, fixes)
-- `src/js/`: app code, by area (data, tasks, gestures, sheets, Classic, Tide, mini timer + updates, board, spaces, settings, profile, sync/sign-in, startup)
+- `src/css/`: styles, in folders by area (core, tasks, focus, home, shell, modes, settings, theme)
+- `src/js/`: app code, in folders by area (core, tasks, focus, home, shell, modes, settings, sync, theme)
 
-Edit `src/`, never `web/index.html` directly. The number prefixes set the order the parts are joined in.
+Edit `src/`, never `web/index.html` directly. `ORDER.txt` in each folder sets the order the parts are joined in.

@@ -1,0 +1,236 @@
+/* ---------- desktop sign-in hand-off ----------
+   The desktop app asks Supabase to send the email link back here with ?desk=1 (unchanged, so Supabase's allowed links stay the same).
+   This browser tab then passes the sign-in to the app (windaday://, or blitzit:// for apps older than 0.6) instead of signing itself in. */
+const HANDOFF=(()=>{try{
+  const q=new URLSearchParams(location.search),h=location.hash.slice(1);
+  if(q.get('desk')!=='1'||window.__TAURI__||!/access_token=|error=/.test(h))return null;
+  history.replaceState(null,'',location.pathname);return h;
+}catch(e){return null}})();
+/* ---------- version ---------- */
+const APP_VERSION=326; // bumped with every published update
+/* ---------- layers (0.324): how features extend a shared function ----------
+   Never write `fn=function(){...}` to patch a function. Instead:
+     hkLayer('fn','my-feature',function(...){ ... })   adds a named layer (later = outer)
+     const _x=hkBelow('fn','my-feature',fn__core)      inside it: runs everything under your layer
+   Layered today: render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage.
+   hkLayers('fn') lists a function's layers, innermost first. */
+function hkL(fn){const H=window.__HK||(window.__HK={});return H[fn]||(H[fn]=[])}
+function hkLayer(fn,name,f){hkL(fn).push({name,f})}
+function hkRun(fn,core,i,self,args){const L=hkL(fn);return i<0?core.apply(self,args):L[i].f.apply(self,args)}
+function hkCall(fn,core,self,args){return hkRun(fn,core,hkL(fn).length-1,self,args)}
+function hkBelow(fn,name,core){return function(){const L=hkL(fn),i=L.findIndex(l=>l.name===name);return hkRun(fn,core,i<0?L.length-1:i-1,this,arguments)}}
+function hkLayers(fn){return hkL(fn).map(l=>l.name)}
+const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
+const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
+  for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
+const STAGES=[
+  {id:'backlog',name:'Backlog',short:'Backlog'},
+  {id:'week',name:'My week',short:'My week'},
+  {id:'today',name:'Today',short:'Today'},
+  {id:'done',name:'Done',short:'Done'}
+];
+const PALETTE=['#5AB8F5','#3EC6C6','#4FD1A5','#7C83F2','#B07CF2','#E879C8','#F06A6A','#F5A35A','#F2C14E','#A1A1AA'];
+const REPEATS=[{id:'none',name:'Never'},{id:'daily',name:'Daily'},{id:'weekdays',name:'Weekdays'},{id:'weekly',name:'Weekly'}];
+const DAY=864e5;
+const dkey=(d=new Date())=>{const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
+const today=()=>dkey();
+const NOW=Date.now();
+const SEED_LISTS=[
+  {id:'dj',name:'DJ Badbull',c:'#5AB8F5',space:'music'},
+  {id:'habits',name:'Habits',c:'#7C83F2',space:'personal'},
+  {id:'swing',name:'Swing trading',c:'#F06A6A',space:'trading'}
+];
+const SEED_SPACES=[{id:'music',name:'Music',c:'#5AB8F5',e:'🎧'},{id:'personal',name:'Personal',c:'#9C95FF',e:'🌱'},{id:'trading',name:'Trading',c:'#FF5B47',e:'📈'}];
+const SEED=[
+  {id:1,title:'Finish the mix for Friday',stage:'today',list:'dj',est:90,subs:[{id:1,t:'Pick the opener',done:true},{id:2,t:'Smooth the mid-set transitions',done:false},{id:3,t:'Export and listen in the car',done:false}]},
+  {id:2,title:'30 minute workout',stage:'today',list:'habits',est:30,repeat:'daily'},
+  {id:3,title:'Set alerts on watchlist',stage:'today',list:'swing',est:15,notes:'Alerts at the 50-day average for each name.'},
+  {id:4,title:'Buy GOOG on pullback',stage:'week',list:'swing',est:15},
+  {id:5,title:'Send promo pack to venues',stage:'week',list:'dj',est:45},
+  {id:6,title:'No screens after midnight',stage:'backlog',list:'habits',est:60},
+  {id:7,title:'Rebuild crate for house sets',stage:'backlog',list:'dj',est:120},
+  {id:8,title:'Journal last week’s trades',stage:'done',list:'swing',est:30,doneAt:NOW-DAY},
+  {id:9,title:'Read 20 pages',stage:'done',list:'habits',est:20,doneAt:NOW-DAY},
+  {id:10,title:'Clean up sample folders',stage:'done',list:'dj',est:45,doneAt:NOW-2*DAY},
+  {id:11,title:'Review open positions',stage:'done',list:'swing',est:20,doneAt:NOW-3*DAY}
+];
+/* "Load demo tasks" (Settings → Data): two spaces, one list each, 9 tasks per list (3 Backlog, 3 My week, 3 Today) */
+const DEMO={
+  work:{space:{name:'Work',c:'#5AB8F5',e:'💼'},list:{name:'Projects',c:'#5AB8F5'},tasks:{
+    backlog:[['Plan the Q1 roadmap',60],['Clean up the shared drive',45],['Draft the onboarding guide',90]],
+    week:[['Prepare Monday’s team meeting',30],['Update the client presentation',60],['Review last month’s numbers',45]],
+    today:[['Reply to important emails',20],['Finish the project proposal',90],['Call with the design team',30]]}},
+  personal:{space:{name:'Personal',c:'#9C95FF',e:'🌱'},list:{name:'Life',c:'#9C95FF'},tasks:{
+    backlog:[['Plan a weekend trip',30],['Learn 20 new words',20],['Sort old photos',60]],
+    week:[['Book a dentist appointment',10],['Call grandma',20],['Meal prep for the week',60]],
+    today:[['30 minute workout',30],['Read 20 pages',20],['Groceries',30]]}}};
+const DEMO_LIST_TITLES=Object.values(DEMO).flatMap(d=>Object.values(d.tasks).flat().map(t=>t[0]));
+function demoSet(){
+  // its own ids (time-based, like newId) so it also works at first start, before anything else is set up
+  let n=Math.max((typeof S==='object'&&S&&S.nid)||0,Date.now()*1000+Math.floor(Math.random()*1000));const newId=()=>n++;
+  const spaces=[],lists=[],tasks=[];
+  Object.values(DEMO).forEach(d=>{
+    const sp={id:'s'+newId(),...d.space,autoSet:true},l={id:'l'+newId(),...d.list,space:sp.id};spaces.push(sp);lists.push(l);
+    ['backlog','week','today'].forEach(st=>d.tasks[st].forEach(([title,est])=>tasks.push({id:newId(),title,stage:st,list:l.id,est,subs:[],notes:'',repeat:'none'})));
+  });
+  if(typeof S==='object'&&S)S.nid=Math.max(S.nid||0,n);
+  return {spaces,lists,tasks,nid:n};
+}
+/* a brand-new Windaday starts with the demo (Work + Personal) and the quick tour (settings/onboard.js) */
+function freshState(){const d=demoSet();return {tasks:d.tasks,lists:d.lists,spaces:d.spaces,stage:'today',list:'all',theme:null,nid:d.nid,lastDay:today(),onboarded:false,demoOn:true}}
+const KEY='blitzit-v1';
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+const FRESH=!S||!S.tasks;
+if(FRESH)S=freshState();
+else if(S.onboarded===undefined)S.onboarded=true;
+/* make sure the saved data has the right shape before anything reads it (old, partial or damaged saves) */
+function sanitize(){
+  const obj=x=>x&&typeof x==='object'&&!Array.isArray(x);
+  if(!Array.isArray(S.tasks))S.tasks=[];
+  S.tasks=S.tasks.filter(t=>obj(t)&&t.id!=null&&isFinite(+t.id));
+  S.tasks.forEach(t=>{t.subs=Array.isArray(t.subs)?t.subs.filter(x=>obj(x)&&x.id!=null&&isFinite(+x.id)):[]});
+  const cleanTags=o=>{if('tags' in o)o.tags=Array.isArray(o.tags)?[...new Set(o.tags.filter(x=>typeof x==='string'&&x.trim()).map(x=>x.trim().slice(0,24)))]:[]};
+  S.tasks.forEach(cleanTags);
+  S.tasks.forEach(t=>{if(t.pri!==undefined&&!['high','med','low'].includes(t.pri))delete t.pri});
+  if(S.lists!=null)S.lists=Array.isArray(S.lists)?S.lists.filter(l=>obj(l)&&l.id!=null):null;
+  if(S.lists)S.lists.forEach(cleanTags);
+  if(S.spaces!=null)S.spaces=Array.isArray(S.spaces)?S.spaces.filter(x=>obj(x)&&x.id!=null):null;
+  if(S.spaces)S.spaces.forEach(x=>{if('secs' in x)x.secs=Array.isArray(x.secs)?x.secs.filter(s=>obj(s)&&s.id&&typeof s.name==='string'&&s.name.trim()&&typeof s.stage==='string'):[]});
+  S.arch=Array.isArray(S.arch)?S.arch.filter(b=>obj(b)&&b.id!=null&&(b.kind==='list'&&obj(b.list)||b.kind==='space'&&obj(b.space))):[];
+  S.arch.forEach(b=>{if(!Array.isArray(b.tasks))b.tasks=[];if(b.kind==='space'&&!Array.isArray(b.lists))b.lists=[]});
+  // habits (Modes → Habits): {id,name,e,space,days:[0-6],done:{'YYYY-MM-DD':1},created,chain?}; chains: {id,name,when,space}
+  S.habits=Array.isArray(S.habits)?S.habits.filter(h=>obj(h)&&h.id!=null&&typeof h.name==='string'):[];
+  S.habits.forEach(h=>{if(!obj(h.done))h.done={};if(!Array.isArray(h.days)||!h.days.length)h.days=[0,1,2,3,4,5,6];if(typeof h.e!=='string')h.e=''});
+  S.hchains=Array.isArray(S.hchains)?S.hchains.filter(c=>obj(c)&&c.id!=null):[];
+  // goals (Modes → Goals): {id,name,e,space?,why,due:'YYYY-MM-DD',created,star,view,done,doneAt,ms:[{id,t,done,items:[{id,t,done,subs}],task?}]}
+  S.goals=Array.isArray(S.goals)?S.goals.filter(g=>obj(g)&&g.id!=null&&typeof g.name==='string'):[];
+  S.goals.forEach(g=>{if(!Array.isArray(g.ms))g.ms=[];g.ms=g.ms.filter(m=>obj(m)&&m.id!=null);g.ms.forEach(m=>{if(m.items!=null)m.items=Array.isArray(m.items)?m.items.filter(it=>obj(it)&&it.id!=null&&typeof it.t==='string'):[]})});
+  // KPIs & OKRs (Modes → KPIs & OKRs), each belongs to a space:
+  // kpi {id,space,name,unit,target,period:'week'|'month'|'quarter',better:'up'|'down',src:'tasks'|'log'|'both',kind:'sum'|'last',created,log:[{id,at,v,task?}]}
+  // okr {id,space,name,start:'YYYY-MM-DD',end:'YYYY-MM-DD',created,closed?,score?,krs:[{id,name,unit,from,target,better,kind,log:[...]}]}
+  S.goals.forEach(g=>{if(g.mx!=null)g.mx=Array.isArray(g.mx)?g.mx.filter(l=>obj(l)&&(l.k==='kpi'||l.k==='okr')&&l.id!=null):[];if(g.mx&&!g.mx.length)delete g.mx;g.ms.forEach(m=>{if(m.fin!=null&&!(obj(m.fin)&&m.fin.id!=null&&Number.isFinite(+m.fin.at)))delete m.fin})});
+  const mxLog=a=>Array.isArray(a)?a.filter(e=>obj(e)&&e.id!=null&&Number.isFinite(+e.v)&&Number.isFinite(+e.at)):[];
+  S.kpis=Array.isArray(S.kpis)?S.kpis.filter(k=>obj(k)&&k.id!=null&&typeof k.name==='string'):[];
+  S.kpis.forEach(k=>{k.log=mxLog(k.log);if(!Number.isFinite(+k.target))k.target=0});
+  S.okrs=Array.isArray(S.okrs)?S.okrs.filter(o=>obj(o)&&o.id!=null&&typeof o.name==='string'):[];
+  S.vision=Array.isArray(S.vision)?S.vision.filter(v=>obj(v)&&v.id!=null&&['photo','art','quote','word','goal'].includes(v.k)):[];
+  S.wins=Array.isArray(S.wins)?S.wins.filter(w=>obj(w)&&w.id!=null&&typeof w.t==='string'&&Number.isFinite(+w.at)):[];
+  {const old=dkey(Date.now()-14*864e5);S.blocks=Array.isArray(S.blocks)?S.blocks.filter(b=>obj(b)&&b.id!=null&&typeof b.t==='string'&&typeof b.d==='string'&&Number.isFinite(+b.s)&&Number.isFinite(+b.len)&&(b.rep||b.d>=old)):[]}
+  {const by={};S.journal=(Array.isArray(S.journal)?S.journal:[]).filter(j=>obj(j)&&j.id!=null&&typeof j.d==='string'&&/^\d{4}-\d\d-\d\d$/.test(j.d)).filter(j=>{
+    j.am=typeof j.am==='string'?j.am:'';j.pm=typeof j.pm==='string'?j.pm:'';if(!(j.mood>=1&&j.mood<=5))delete j.mood;j.en=Array.isArray(j.en)?j.en.filter(e=>obj(e)&&Number.isFinite(+e.at)&&e.v>=1&&e.v<=3):[];
+    const o=by[j.d];if(!o){by[j.d]=j;return true}if((j.u||0)>(o.u||0)){o.am=j.am||o.am;o.pm=j.pm||o.pm;if(j.mood)o.mood=j.mood;}o.en=[...o.en,...j.en.filter(e=>!o.en.some(x=>x.at===e.at))];return false})} // one entry per day
+  S.routines=Array.isArray(S.routines)?S.routines.filter(r=>obj(r)&&r.id!=null&&typeof r.name==='string'):[];
+  S.routines.forEach(r=>{r.steps=Array.isArray(r.steps)?r.steps.filter(x=>obj(x)&&x.id!=null&&typeof x.t==='string'):[];r.steps.forEach(x=>{x.m=Math.max(0,Math.min(180,Math.round(+x.m)||0))});
+    r.days=Array.isArray(r.days)?r.days.filter(d=>Number.isInteger(d)&&d>=0&&d<7):[0,1,2,3,4,5,6];if(typeof r.at!=='string'||!/^\d\d:\d\d$/.test(r.at))r.at='';if(!obj(r.log))r.log={}});
+  S.okrs.forEach(o=>{o.krs=Array.isArray(o.krs)?o.krs.filter(r=>obj(r)&&r.id!=null&&typeof r.name==='string'):[];o.krs.forEach(r=>{r.log=mxLog(r.log)})});
+  if(!obj(S.lens))S.lens={};
+  if(!obj(S.cfg))delete S.cfg;
+  if(!obj(S.tomb))S.tomb={};
+}
+if(!S||typeof S!=='object'||Array.isArray(S))S=freshState();
+sanitize();
+window.__crHold=!!(S.classicRun&&S.classicRun.ids); // keep a saved Classic session until startup has resumed it
+/* migrate older saves */
+if(!S.lists)S.lists=SEED_LISTS.map(l=>({...l}));
+if(!S.lastDay)S.lastDay=today();
+S.tasks.forEach(t=>{t.subs=t.subs||[];t.notes=t.notes||'';t.repeat=t.repeat||'none';if(t.stage==='done'&&!t.doneAt)t.doneAt=NOW-DAY});
+S.nid=Math.max(+S.nid||0,...S.tasks.map(t=>+t.id+1),...S.tasks.flatMap(t=>t.subs.map(s=>+s.id+1)));
+
+/* ids are unique across devices (time-based), so two devices never create the same id */
+const newId=()=>{const v=Math.max(S.nid||0,Date.now()*1000+Math.floor(Math.random()*1000));S.nid=v+1;return v};
+/* change tracking: each task, list and space remembers when it last changed; deletions leave a tombstone */
+let trackMap=null;
+const bareJSON=x=>{const {u,...r}=x;return JSON.stringify(r)};
+function trackChanges(){
+  const now=Date.now(),m={};S.tomb=S.tomb||{};
+  [['t',S.tasks],['l',S.lists],['s',S.spaces||[]],['a',S.arch||[]],['h',S.habits||[]],['c',S.hchains||[]],['g',S.goals||[]],['k',S.kpis||[]],['o',S.okrs||[]],['w',S.wins||[]],['r',S.routines||[]],['b',S.blocks||[]],['j',S.journal||[]],['v',S.vision||[]]].forEach(([k,arr])=>arr.forEach(x=>{const key=k+':'+x.id,b=bareJSON(x);m[key]=b;if(trackMap&&trackMap[key]!==b)x.u=now}));
+  if(trackMap)Object.keys(trackMap).forEach(key=>{if(key[1]===':'&&!(key in m))S.tomb[key]=now});
+  m.__ord=S.tasks.map(t=>t.id).join(',');if(trackMap&&m.__ord!==trackMap.__ord)S.orderU=now;
+  m.__cfg=JSON.stringify(S.cfg||{});if(trackMap&&m.__cfg!==trackMap.__cfg)S.cfgU=now;
+  trackMap=m;
+}
+let saveOk=true; // 0.322: false after a failed save, so the warning shows once per failure streak
+let undoHash=null;const undoCore=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.habits,S.hchains,S.goals,S.kpis,S.okrs,S.wins,S.routines,S.blocks,S.journal,S.vision],(k,v)=>k==='u'?undefined:v); // ignores sync timestamps
+const save=()=>{try{fSave()}catch(e){};if(undoHash!==null){try{if(undoCore()!==undoHash){undoHash=null;dropUndo()}}catch(e){}};try{trackChanges()}catch(e){};try{localStorage.setItem(KEY,JSON.stringify(S));saveOk=true}catch(e){try{saveWarn(e)}catch(_){}};try{cloudDirty()}catch(e){}};
+let PIP=null; // the floating focus window (desktop Chrome)
+const $=id=>document.getElementById(id);
+const color=st=>`var(--${st})`;
+const listOf=id=>S.lists.find(l=>l.id===id)||{id,name:'No list',c:'#A1A1AA'};
+/* lists can live without a space (0.275): l.loose=true, l.space='' */
+const looseLists=()=>S.lists.filter(l=>l.loose);
+const onlyList=l=>!l.loose&&S.lists.filter(x=>!x.loose&&x.space===l.space).length<2;
+function migrateSpaces(){
+  if(!Array.isArray(S.spaces)||!S.spaces.length){
+    const used=new Set(S.lists.map(l=>l.space||(SEED_LISTS.find(x=>x.id===l.id)||{}).space||'personal'));
+    S.spaces=SEED_SPACES.filter(x=>used.has(x.id)).map(x=>({...x}));
+    if(!S.spaces.length)S.spaces=[{...SEED_SPACES[1]}];
+  }
+  const ids=S.spaces.map(x=>x.id);
+  S.lists.forEach(l=>{if(l.loose){l.space='';return}if(!ids.includes(l.space)){const sd=SEED_LISTS.find(x=>x.id===l.id);l.space=sd&&ids.includes(sd.space)?sd.space:ids[0]}});
+  S.spaces.forEach(x=>{if(x.e===undefined||x.e===''){const a=autoIcon(x.name);if(a&&!x.autoSet){x.e=a;x.autoSet=true}}});
+  if(S.space===undefined)S.space=null;
+  if(S.space&&S.space!=='all'&&!ids.includes(S.space))S.space=null;
+  repairData();
+}
+/* safety net: fix anything malformed (old saves, partial syncs) so the app never crashes on bad data */
+function repairData(){
+  const SIDS=['backlog','week','today','done'];
+  if(!SIDS.includes(S.stage))S.stage='today';
+  sanitize();
+  if(!Array.isArray(S.spaces)||!S.spaces.length)S.spaces=[{...SEED_SPACES[1]}];
+  if(!Array.isArray(S.lists)||!S.lists.length)S.lists=[{id:'l'+newId(),name:'General',c:'#9C95FF',space:S.spaces[0].id}];
+  const lids=new Set(S.lists.map(l=>l.id));
+  S.tasks=S.tasks.filter(t=>t&&typeof t==='object'&&t.id!=null);
+  S.tasks.forEach(t=>{
+    if(!SIDS.includes(t.stage))t.stage='backlog';
+    if(t.inbox)t.list=null;else if(!lids.has(t.list))t.list=S.lists[0].id;
+    if(typeof t.title!=='string')t.title=t.title==null?'':String(t.title);
+    if(!Array.isArray(t.subs))t.subs=[];
+    if(typeof t.est!=='number'||!(t.est>=0))t.est=30;
+    if(typeof t.notes!=='string')t.notes='';
+    if(!t.repeat)t.repeat='none';
+  });
+  if(S.list!=='all'&&!lids.has(S.list))S.list='all';
+}
+const spaceOf=id=>S.spaces.find(x=>x.id===id);
+const ICONS=['🎧','🌱','📈','💪','💰','💼','🏠','✈️','📚','🎨','💻','🚀','🍳','🛍️','❤️','🎯','🧘','⚽','🎮','📷','✍️','🎓','🛠️','🌍'];
+const ICON_WORDS=[[/music|dj|song|band|audio|beat/,'🎧'],[/health|fitness|gym|workout|sport|run/,'💪'],[/financ|money|budget|bank|invest|tax/,'💰'],
+  [/trad|stock|crypto|market/,'📈'],[/work|job|office|business|career|client/,'💼'],[/home|house|family|chores/,'🏠'],[/travel|trip|holiday|vacation/,'✈️'],
+  [/study|school|uni|learn|course|exam/,'📚'],[/design|art|draw|paint/,'🎨'],[/code|dev|app|tech|software/,'💻'],[/project|launch|startup|side/,'🚀'],
+  [/food|cook|recipe|meal/,'🍳'],[/shop|buy|grocer/,'🛍️'],[/love|relationship|partner/,'❤️'],[/goal|focus|target/,'🎯'],[/mind|medit|yoga|calm|wellbeing/,'🧘'],
+  [/game|gaming/,'🎮'],[/photo|video|film|content/,'📷'],[/writ|blog|book|journal/,'✍️'],[/personal|life|self|habit/,'🌱']];
+const autoIcon=n=>{const t=(n||'').toLowerCase();const m=ICON_WORDS.find(([r])=>r.test(t));return m?m[1]:''};
+const inSpaceMode=()=>S.space&&S.space!=='all';
+const listsHere=()=>inSpaceMode()?S.lists.filter(l=>l.space===S.space):S.lists;
+const inSpace=t=>!inSpaceMode()||listOf(t.list).space===S.space;
+const fmt=m=>m>=60?(m%60?`${Math.floor(m/60)}h ${m%60}m`:`${m/60}h`):`${m}m`;
+const shown=t=>!t.inbox&&!t.archived&&(!t.showFrom||t.showFrom<=today());
+const VS=()=>STAGES.filter(s=>s.id!=='done'||!S.cfg||S.cfg.showDone);
+const visible=()=>S.tasks.filter(t=>shown(t)&&inSpace(t)&&(S.list==='all'||t.list===S.list)&&srchPass(t));
+const idx=id=>STAGES.findIndex(s=>s.id===id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const root=document.documentElement;
+const haptic=(p=8)=>{try{if(S.cfg&&!S.cfg.haptics)return;navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+const defaultList=()=>{const h=listsHere();if(S.list!=='all'&&h.some(l=>l.id===S.list))return S.list;if(S.cfg&&S.cfg.defList&&h.some(l=>l.id===S.cfg.defList))return S.cfg.defList;return (h[0]||S.lists[0]).id};
+/* focus limits: each list holds at most 10 tasks per stage (Backlog, My week, Today); each task at most 10 steps.
+   Done has no limit. Older lists that are already over keep their tasks; nothing new goes in until there's room. */
+const STAGE_MAX=10,SUB_MAX=10;
+const stageCount=(list,stage,skip)=>S.tasks.filter(t=>t!==skip&&shown(t)&&t.list===list&&t.stage===stage).length;
+const stageRoom=(list,stage,skip)=>stage==='done'||stageCount(list,stage,skip)<STAGE_MAX;
+function canPut(list,stage,skip){
+  if(stageRoom(list,stage,skip))return true;
+  toast(`${listOf(list).name} already has ${STAGE_MAX} in ${STAGES[idx(stage)].name}. Finish or move one first.`);haptic([10,40,10]);return false;
+}
+function canStep(t){if((t.subs||[]).length<SUB_MAX)return true;toast(`Up to ${SUB_MAX} steps per task. Keep it focused.`);haptic([10,40,10]);return false}
+const addTask=t=>{sfx('add');S.cfg&&S.cfg.addTo==='bottom'?S.tasks.push(t):S.tasks.unshift(t)};
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+const X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+const I_REP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>';
+const I_SUB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>';
+const I_NOTE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg>';
+
+
+
+/* the Windaday sunrise mark (logo), drawn in currentColor */
+const sunIcon=(cls='')=>`<svg class="sun-ic ${cls}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" aria-hidden="true"><path d="M12 36a12 12 0 0 1 24 0z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M12 36a12 12 0 0 1 24 0"/><path d="M5 36h38"/><path d="M24 11v7"/><path d="M12.4 15.4l4 4"/><path d="M35.6 15.4l-4 4"/></svg>`;
