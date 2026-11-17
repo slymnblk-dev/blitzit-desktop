@@ -151,4 +151,6 @@
   render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage dispatch through `hkCall`; the original body is `fn__core`.
   render's helpers (onRender/renderLayer/renderBelow) are thin wrappers over this. Test: layers.spec.
 - Known leftovers (work fine, tidy later): the "opening a page closes the others" loops (`window[fn]=function` in metrics/wins/routines/plan/journal/vision); a few full replacements (drawInbox, drawMetrics, mxMark, mxPill, mxPicks, mxHead, canPut) whose first version is now dead code; 1–2-patch functions (hbToggle, setCfg, ...).
-- Cleanup still to do: 3 CSS, 4 file names, 5 this doc.
+- 0.325 (step 3, CSS): fixed a stray-brace bug in 04-spaces-home-detail.css (2 orphan lines silently killed the next rule); removed 156 unused rules (170 selectors), 3 unused @keyframes, 2 exact duplicate rules (~13 KB). Proved pixel-identical on 112 screens with `tools/shots.mjs` + `tools/shots-diff.py` — use these for any future refactor. Test: css-health.spec (brace balance, no stray declarations).
+  `!important` (212 left) deliberately kept: removing them changes which style wins and can't be proven safe cheaply.
+- Cleanup still to do: 4 file names, 5 this doc.

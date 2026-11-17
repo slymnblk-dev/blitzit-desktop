@@ -4,19 +4,9 @@
 .gmx-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .gmx-h>span{flex:1;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .gmx-ed{font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:4px 2px}.gmx-ed:hover{color:var(--text)}
-.gmx-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-.gmx-c{min-width:0;display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:20px;background:var(--surface);text-align:left;font:inherit;color:inherit;transition:box-shadow .2s,transform .2s}
-.gmx-c:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 14%,transparent);transform:translateY(-1px)}
-.gmx-c.okr{box-shadow:inset 3px 0 0 var(--backlog)}
-.gmx-c.okr:hover{box-shadow:inset 3px 0 0 var(--backlog),0 0 0 1px color-mix(in srgb,var(--text) 14%,transparent)}
 .gmx-e{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
-.gmx-c.kpi .gmx-e{color:var(--today)}.gmx-c.okr .gmx-e{color:var(--backlog)}
 .gmx-n{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gmx-v{display:flex;align-items:baseline;gap:5px}.gmx-v b{font-size:24px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.gmx-v small{font-size:13px;color:var(--muted)}
-.gmx-c .mx-bar{height:5px}.gmx-c.late .mx-bar i{background:var(--week)}
-.gmx-ov{display:flex;align-items:center;gap:8px}.gmx-ov>b{font-size:20px;font-weight:800;letter-spacing:-.03em}.gmx-ov small{font-size:13px;color:var(--muted)}
-.gmx-ring{width:30px;height:30px;flex:none}.gmx-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.gmx-ring circle{fill:none;stroke-width:4}.gmx-ring .r0{stroke:var(--surface2)}.gmx-ring .r1{stroke:var(--backlog);stroke-linecap:round}
 .gpp .gmx{margin-top:26px}
 /* the picker and the finish line */
 .gmx-lede{margin:-6px 0 14px;font-size:15px;line-height:1.45;color:var(--muted)}
@@ -56,7 +46,7 @@
 .mt-gl{display:flex;flex-wrap:wrap;gap:6px}
 .mt-gl span{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:3px 9px;border-radius:999px;background:var(--surface2);font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gpp-nm .gfl b,.gfl b{font-size:inherit;font-weight:800;letter-spacing:0;line-height:inherit}
-@media (max-width:699px){.gmx-g{grid-template-columns:1fr 1fr}.gmx-c{padding:12px 14px}.gmx-v b{font-size:20px}.gmx-ov small{display:none}}
+@media (max-width:699px){.gmx-v b{font-size:20px}}
 /* Measured by: calm rows, the same language as the Metrics page */
 .gmx-l{display:flex;flex-direction:column}
 .gmx-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"i t v" "i b b";align-items:center;gap:6px 12px;padding:12px 2px;border-top:1px solid var(--line);text-align:left;font:inherit;color:inherit;border-radius:8px;transition:background .15s}

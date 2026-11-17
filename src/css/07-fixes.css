@@ -102,7 +102,7 @@
 
 /* ---------- sections (optional): named, foldable groups inside a column ---------- */
 .sec-h{list-style:none;display:flex;align-items:center;gap:2px;margin-top:22px;position:relative}
-.sec-h+.row,.sec-h+.sec-empty{border-top-color:transparent}
+.sec-h+.row{border-top-color:transparent}
 .sec-tg{flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:8px 0;text-align:left;color:var(--text);font:inherit;font-size:15px;font-weight:800;letter-spacing:-.01em}
 .sec-tg>svg{width:14px;height:14px;flex:none;color:var(--muted);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
 .sec-h.shut .sec-tg>svg{transform:rotate(-90deg)}
@@ -119,7 +119,6 @@
 @media (hover:none){.sec-more{opacity:.7}}
 .sec-in{flex:1;min-width:0;background:none;border:0;border-bottom:1.5px solid var(--accent,var(--text));color:var(--text);font:inherit;font-size:15px;font-weight:800;padding:2px 0;outline:none}
 .sec-h.naming .sec-c{display:none}
-.sec-empty{list-style:none;font-size:13px;color:var(--muted);padding:14px 0 14px 22px;border-top:1px solid var(--line)}
 .sec-new-row{list-style:none;padding-top:10px}
 .sec-new,.ca-sec{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:var(--muted);padding:8px 0;transition:color .15s}
 .sec-new:hover,.ca-sec:hover{color:var(--text)}
@@ -188,26 +187,9 @@
 :root{--p-high:#FF6B6B;--p-med:#F5A524;--p-low:#6DA8FF}
 :root[data-theme="light"]{--p-high:#D93636;--p-med:#C27803;--p-low:#2F6FDB}
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--p-high:#D93636;--p-med:#C27803;--p-low:#2F6FDB}}
-.pri-dt{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:9px;vertical-align:middle;position:relative;top:-2px}
-.pri-dt.high{background:var(--p-high);box-shadow:0 0 0 3px color-mix(in srgb,var(--p-high) 18%,transparent)}
-.pri-dt.med{background:var(--p-med)}
-.pri-dt.low{background:var(--p-low);opacity:.8}
 .row.pr-high .check{border-color:var(--p-high);border-width:2.5px;background:color-mix(in srgb,var(--p-high) 18%,transparent)}
 .row.pr-med .check{border-color:var(--p-med);border-width:2.5px;background:color-mix(in srgb,var(--p-med) 22%,transparent)}
 .row.pr-low .check{border-color:var(--p-low);border-style:dashed;background:color-mix(in srgb,var(--p-low) 12%,transparent)}
-.pri-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-.prp{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:12px;border-radius:14px;border:2px solid var(--line);text-align:left;color:var(--text);transition:border-color .2s}
-.prp.on{border-color:var(--text)}
-.prp b{font-size:15px}
-.prp small{font-size:12px;color:var(--muted);margin-top:-6px}
-.prp-row{display:flex;align-items:flex-start;gap:9px;width:100%}
-.prp-row .pc{flex:none;width:16px;height:16px;border-radius:50%;border:1.6px solid var(--today);margin-top:1px}
-.prp-row .pt{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;min-width:0}
-.prp-row .pt em{font-style:normal;display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--p-high)}
-.prp-row .pt em .pri-i{width:11px;height:11px}
-.prp .pri-dt{width:6px;height:6px;margin-left:6px;top:-1px}
-.prp.ring .pc{border-color:var(--p-high);border-width:2.2px;background:color-mix(in srgb,var(--p-high) 20%,transparent)}
-@media (max-width:520px){.pri-pick{grid-template-columns:1fr}}
 
 /* celebrations */
 .celeb{position:fixed;inset:0;z-index:900;pointer-events:none;overflow:hidden}
@@ -242,7 +224,6 @@
 .cb-orbit rect{fill:none;stroke:var(--done);stroke-width:3;stroke-linecap:round;stroke-dasharray:18 82;stroke-dashoffset:100;filter:drop-shadow(0 0 6px var(--done));animation:cbOrb 1.6s cubic-bezier(.55,.1,.3,1) forwards}
 @keyframes cbOrb{0%{stroke-dashoffset:100;opacity:0}8%{opacity:1}85%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
 @media (prefers-reduced-motion:reduce){.celeb *{animation-duration:.01s!important}.cb-pill{animation:none}}
-.pri-pick{flex-basis:100%}
 
 /* quiet when idle (computers): summary and add buttons drift away after 5s still, and come back on any move */
 @media (hover:hover) and (pointer:fine){
@@ -333,7 +314,6 @@ body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
 /* priority marks: !!! / !! / ! after the task name */
 .pri-mk{display:inline-block;margin-left:8px;font-style:normal;font-weight:800;font-size:.82em;letter-spacing:.04em;vertical-align:1px}
 .pri-mk.high{color:var(--p-high)}.pri-mk.med{color:var(--p-med)}.pri-mk.low{color:var(--p-low)}
-.prp .pri-mk{margin-left:6px}
 
 /* priority look: Edge, a coloured line at the start of the task (every row shifts a little so they all line up) */
 :root[data-pri="edge"] .row-in{padding-left:14px}
@@ -348,10 +328,6 @@ body.no-srch .srch-btn,body.no-srch .srch-chip{display:none!important}
 .row.pt-med .row-in{background-image:linear-gradient(90deg,color-mix(in srgb,var(--p-med) 17%,transparent),color-mix(in srgb,var(--p-med) 5%,transparent) 75%,transparent)}
 .row.pt-low .row-in{background-image:linear-gradient(90deg,color-mix(in srgb,var(--p-low) 15%,transparent),color-mix(in srgb,var(--p-low) 4%,transparent) 75%,transparent)}
 /* previews in Settings */
-.pri-pick{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-.prp.edge .prp-row{position:relative;padding-left:10px}
-.prp.edge .prp-row::before{content:'';position:absolute;left:0;top:1px;bottom:1px;width:3px;border-radius:3px;background:var(--p-high)}
-.prp.tint .prp-row{padding:7px 8px;margin:-7px -4px;width:calc(100% + 8px);border-radius:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--p-high) 22%,transparent),transparent)}
 
 /* Add task (board): opens as a new task line under the list; Enter adds it and leaves a fresh line ready */
 .col-add{flex-wrap:wrap}
@@ -446,8 +422,6 @@ body.no-amb .amb-btn{display:none!important}
 .amb-vol input{flex:1;accent-color:#F3F2EE;height:4px}
 
 /* list editor: show every space as a choice (wrap, no sideways scrolling) */
-.opts.le-sp{display:flex;flex-wrap:wrap;gap:8px;overflow:visible;white-space:normal;margin-right:0;padding-right:0;-webkit-mask-image:none;mask-image:none}
-.opts.le-sp .opt{flex:none}
 
 /* Profile: is my data safe? */
 .safe-card{display:flex;align-items:center;gap:14px;margin:4px 0 26px;padding:16px;border-radius:20px;border:1px solid}
@@ -460,20 +434,9 @@ body.no-amb .amb-btn{display:none!important}
 .safe-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .safe-t b{font-size:15px;font-weight:800;letter-spacing:-.01em}
 .safe-t small{font-size:13px;color:var(--muted);line-height:1.4}
-.safe-go{flex:none;height:38px;padding:0 16px;border-radius:999px;background:var(--week);color:#0F1013;font-size:15px;font-weight:800}
-@media (max-width:420px){.safe-card.warn{flex-wrap:wrap}.safe-card.warn .safe-go{width:100%;height:42px}}
+@media (max-width:420px){.safe-card.warn{flex-wrap:wrap}}
 /* Profile: avatar picker tucked behind one row */
-.av-row{display:flex;align-items:center;gap:14px;width:100%;padding:10px 4px;font-size:15px;font-weight:600;color:var(--text);text-align:left}
-.av-row>span:not(.av){flex:1}
-.av-row>svg{width:16px;height:16px;color:var(--muted);transition:transform .25s}
-.av-row.open>svg{transform:rotate(90deg)}
-.av-drop{margin-top:10px;animation:caIn .25s cubic-bezier(.2,.8,.2,1)}
 /* Profile → Account section */
-.acc-sec{margin-top:34px;padding:20px 18px 6px;border-radius:20px;background:var(--surface);border:1px solid var(--line);scroll-margin-top:16px}
-.acc-sec-h{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.acc-sec-h svg{width:20px;height:20px;color:var(--muted)}
-.acc-sec-h h2{margin:0;font-size:24px;font-weight:800;letter-spacing:-.03em}
-.acc-sec .sub-p{margin-top:6px}
 .td-go .td-sun{width:38px;height:38px}
 @media (max-width:360px){.td-go .td-sun{width:30px;height:30px}}
 
@@ -506,7 +469,6 @@ body.no-amb .amb-btn{display:none!important}
 @keyframes wlRay{from{stroke-dashoffset:1;opacity:0}12%{opacity:1}}
 @keyframes wlUp{from{opacity:0;transform:translateY(12px);filter:blur(6px)}}
 @media (prefers-reduced-motion:reduce){.welcome.play *{animation:none!important}}
-.wl-set{display:flex;align-items:center;gap:12px}.wl-replay{height:34px;padding:0 14px;margin:0;font-size:13px}
 /* sunrise mark: before the Home greeting at full text height (horizon on the text line, top ray level with the capitals) */
 .m-date.has-sun{display:flex;align-items:center}
 .m-date .m-sun{width:1.24em;height:1.24em;flex:none;margin:0 .12em 0 -.13em;position:relative;top:-.07em;color:var(--today);stroke-width:3.4}
@@ -712,8 +674,6 @@ body.no-amb .amb-btn{display:none!important}
 .set-l small{line-height:1.4}
 .set-row .tg{flex:none}
 /* Welcome animation: Play sits just left of the switch */
-.wl-set{display:flex;align-items:center;gap:10px}
-.wl-replay{order:-1;height:30px!important;padding:0 12px!important;border-radius:999px;background:var(--surface2);color:var(--text);font-size:13px!important;font-weight:600}
 
 /* Lists sheet header: one ⋯ menu instead of two text buttons */
 .lh-wrap{position:relative}
@@ -818,8 +778,6 @@ body.no-amb .amb-btn{display:none!important}
 .settings .cat:first-child{border-top:0}
 .settings .cat:hover{background:var(--surface2);padding:14px 18px}
 .settings .cat>svg{width:16px;height:16px;color:var(--muted);flex:none;margin-left:auto}
-.cat-ic{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;flex:none;color:#0F1013}
-.cat-ic svg{width:18px;height:18px}
 .settings .cat-t{flex:1;font-size:17px;font-weight:800;letter-spacing:-.01em}
 .settings .cat-t small{margin-top:2px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
@@ -837,19 +795,12 @@ body.no-amb .amb-btn{display:none!important}
 #spaceSheet .sp-prev.blank{background:color-mix(in srgb,var(--spc) 22%,transparent);color:var(--spc);font-weight:500;font-size:34px}
 /* settings icons: a soft tint of the colour with the symbol in the colour itself (calmer than solid tiles,
    and the symbol no longer picks up the grey of the row arrow) */
-.settings .cat-ic{background:color-mix(in srgb,var(--ic) 17%,transparent);color:color-mix(in srgb,var(--ic) 88%,var(--text))}
-.settings .cat .cat-ic svg{width:18px;height:18px;color:inherit}
 /* account: show the whole email; a very long one wraps instead of being cut */
 .r-side .set-c .acc-email{max-width:none;overflow:visible;white-space:normal;overflow-wrap:anywhere;text-align:right}
 .set-row.r-side:has(.acc-email){grid-template-columns:auto minmax(0,1fr)}
 .set-row.r-side:has(.acc-email) .set-l{white-space:nowrap}
 
 /* ---------- desktop Home, Colourful cards: the next task under the stage bar (Calm stays as it was) ---------- */
-.sp-bars,.sp-next{display:none}
-.sp-bars i{display:block;height:100%;border-radius:3px;min-width:6px}
-.sp-bars .sp-bars-0{flex:1;background:var(--surface2)}
-.sp-nk{color:var(--muted);flex:none}
-.sp-nt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
 /* Today first, Calm style: the space bars in quiet greys */
 /* Today strip: "Up next" instead of chips */
 
@@ -872,7 +823,6 @@ body.no-amb .amb-btn{display:none!important}
   .ib-in{padding-top:44px}
 }
 .ib-h{font-size:44px;font-weight:800;letter-spacing:-.045em;margin:10px 0 6px;line-height:1}
-.ib-lede{margin:0 0 22px;color:var(--muted);font-size:15px;line-height:1.5}
 .ib-cap{display:flex;align-items:center;gap:10px;height:58px;padding:0 8px 0 16px;border-radius:20px;background:var(--surface);box-shadow:0 0 0 1px var(--line);transition:box-shadow .15s}
 .ib-cap:focus-within{box-shadow:0 0 0 2px var(--text)}
 .ib-cap-i{color:var(--muted);display:grid;place-items:center}.ib-cap-i svg{width:18px;height:18px}
@@ -896,12 +846,11 @@ body.no-amb .amb-btn{display:none!important}
 .ib-empty{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:56px 0 20px;color:var(--muted)}
 .ib-empty svg{width:34px;height:34px;margin-bottom:6px;opacity:.7}
 .ib-empty b{color:var(--text);font-size:17px}
-.s-inbox svg{width:18px;height:18px}
 /* limits */
 .col-n.full{color:var(--today)}
 .col-n.over{color:var(--today);font-weight:800}
 .sub-add.full{opacity:.6}
-@media (prefers-reduced-motion:reduce){.inbox-pg,.ib-p,.ib-it{transition:none!important}.ib-it.new{animation:none}}
+@media (prefers-reduced-motion:reduce){.inbox-pg,.ib-p{transition:none!important}}
 
 /* ---------- Weekly review ---------- */
 .rv-card{display:flex;align-items:center;gap:14px;margin:0 0 16px;padding:14px 14px 14px 16px;border-radius:20px;background:var(--surface);box-shadow:0 0 0 1px var(--line);animation:cardIn .45s cubic-bezier(.2,.8,.2,1) both}
@@ -1034,7 +983,6 @@ body.no-amb .amb-btn{display:none!important}
 .lx-opt small{color:var(--muted);font-weight:500}
 .hb-del{grid-column:1/-1}
 /* settings */
-.md-soon{font-size:13px;color:var(--muted);margin:12px 2px 0}
 .hs-new{margin-top:22px}
 .hs-n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .s-inbox svg{width:18px;height:18px}

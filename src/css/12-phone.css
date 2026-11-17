@@ -59,25 +59,19 @@
 /* ===== Phones: every tap target answers in about 44 px, with no change to how anything looks.
    An invisible layer around small controls (ticks, ⋯, chips, switches) takes the tap. ===== */
 @media (max-width:1099px){
-  .sp-more,.gauge .seg,.row-in .check,#dMore,#dClose,#dPills .pill,.sub .sc,.sub .sx,.sr-x,#fMode button,.stg-dot,#stReset,.chips .opt,#youSet,
-  .ib-kind button,.ib-tabs button,.hg-c,.ho-grip,.gme-days,.gme-del,.gme-addb,.gm-more,.gm-done,.gm-k,.gm-sub,.gpth-t,.gpo-k,.gpo-ml,
-  #gWhyIco button,#gWhyVis button,#inSkip,.rv-go,.rv-skip,.segc button,.gm-n,.gpth-k,.gs-mi button,.t-ch button{position:relative}
-  .sp-more::after,.gauge .seg::after,.row-in .check::after,#dMore::after,#dClose::after,#dPills .pill::after,.sub .sc::after,.sub .sx::after,
-  .sr-x::after,#fMode button::after,.stg-dot::after,#stReset::after,.chips .opt::after,#youSet::after,.ib-kind button::after,.ib-tabs button::after,
-  .hg-c::after,.ho-grip::after,.gme-days::after,.gme-del::after,.gme-addb::after,.gm-more::after,.gm-done::after,.gm-k::after,.gm-sub::after,
-  .gpth-t::after,.gpo-k::after,.gpo-ml::after,#gWhyIco button::after,#gWhyVis button::after,#inSkip::after,.rv-go::after,.rv-skip::after,
-  .segc button::after,.gm-n::after,.gpth-k::after,.gs-mi button::after,.t-ch button::after,.tg::before{content:'';position:absolute;inset:-5px}
+  .sp-more,.gauge .seg,.row-in .check,#dMore,#dClose,#dPills .pill,.sub .sc,.sub .sx,.sr-x,#fMode button,.stg-dot,#stReset,.chips .opt,#youSet,.hg-c,.ho-grip,.gme-days,.gme-del,.gme-addb,.gm-more,.gm-done,.gm-k,.gm-sub,.gpth-t,.gpo-k,.gpo-ml,#gWhyIco button,#gWhyVis button,#inSkip,.rv-go,.rv-skip,.segc button,.gm-n,.gpth-k,.gs-mi button,.t-ch button{position:relative}
+  .sp-more::after,.gauge .seg::after,.row-in .check::after,#dMore::after,#dClose::after,#dPills .pill::after,.sub .sc::after,.sub .sx::after,.sr-x::after,#fMode button::after,.stg-dot::after,#stReset::after,.chips .opt::after,#youSet::after,.hg-c::after,.ho-grip::after,.gme-days::after,.gme-del::after,.gme-addb::after,.gm-more::after,.gm-done::after,.gm-k::after,.gm-sub::after,.gpth-t::after,.gpo-k::after,.gpo-ml::after,#gWhyIco button::after,#gWhyVis button::after,#inSkip::after,.rv-go::after,.rv-skip::after,.segc button::after,.gm-n::after,.gpth-k::after,.gs-mi button::after,.t-ch button::after,.tg::before{content:'';position:absolute;inset:-5px}
   .sub .sc::after{inset:-12px}
   .row-in .check::after{inset:-9px -16px -9px -9px}
   .gm-k::after,.gpo-k::after{inset:-10px}
   .sub .sx::after,.stg-dot::after,.gpth-k::after{inset:-8px}
-  .sr-x::after,.gm-more::after,.ib-kind button::after,.gs-mi button::after{inset:-6px}
+  .sr-x::after,.gm-more::after,.gs-mi button::after{inset:-6px}
   .t-ch button::after{inset:-6px -1px}
   #dClose::after,#gWhyVis button::after{inset:-7px -4px}
   #dPills .pill::after,.chips .opt::after{inset:-4px -2px}
   #gWhyIco button::after{inset:-5px -3px}
   #fMode button::after,.gm-sub::after{inset:-8px -2px}
-  .segc button::after,.ib-tabs button::after,#stReset::after,.gme-addb::after{inset:-6px -1px}
+  .segc button::after,#stReset::after,.gme-addb::after{inset:-6px -1px}
   #youSet::after,.gm-done::after,.gauge .seg::after,.gm-n::after,.rv-go::after,.rv-skip::after{inset:-5px 0}
   .gme-days::after{inset:-7px}
   .gpth-t::after{inset:-10px 0}
@@ -88,7 +82,6 @@
   .gm-ts{padding-left:10px;margin-left:-10px}
   /* segmented switches and the Inbox Task / Note switch: a little taller on phones */
   .segc button{min-height:38px}
-  .ib-kind button{height:38px;min-width:42px;justify-content:center}
 }
 /* long choices in a stacked switch wrap instead of being cut */
 .set-row.r-stack .segc button{white-space:normal;text-overflow:clip;line-height:1.15;padding:4px 6px}
@@ -274,7 +267,7 @@
 .mo-pull.spin .mp-rays{animation:moRaysSpin 1s linear infinite}
 @keyframes moRaysSpin{to{transform:rotate(360deg)}}
 /* 9 · empty states breathe gently */
-.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.gm-empty svg{animation:moBob 4.5s ease-in-out infinite}
+.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg{animation:moBob 4.5s ease-in-out infinite}
 @keyframes moBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 /* 10 · focus: last 10 seconds, and a warm glow on the finish screen */
 .mo-last{transition:color .2s}
@@ -286,8 +279,8 @@
 @keyframes moFin{from{opacity:0;transform:translate(-50%,-44%) scale(.8)}}
 /* motion off: none of the above moves */
 :root[data-motion="off"] .mo-burst,:root[data-motion="off"] .mo-win{display:none}
-:root[data-motion="off"] .ib-empty svg,:root[data-motion="off"] .dh-ei svg,:root[data-motion="off"] .g-empty svg,:root[data-motion="off"] .rh-empty svg,:root[data-motion="off"] .mt2-empty svg,:root[data-motion="off"] .arc-empty svg,:root[data-motion="off"] .gm-empty svg{animation:none}
-@media (prefers-reduced-motion:reduce){.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.gm-empty svg,.mo-tk,.mo-flip{animation:none}}
+:root[data-motion="off"] .ib-empty svg,:root[data-motion="off"] .dh-ei svg,:root[data-motion="off"] .g-empty svg,:root[data-motion="off"] .rh-empty svg,:root[data-motion="off"] .mt2-empty svg,:root[data-motion="off"] .arc-empty svg{animation:none}
+@media (prefers-reduced-motion:reduce){.ib-empty svg,.dh-ei svg,.g-empty svg,.rh-empty svg,.mt2-empty svg,.arc-empty svg,.mo-tk,.mo-flip{animation:none}}
 
 
 /* ===== Focus steps: Spotlight (05-focus-classic.js). One step at a time, or three; the card keeps one size so the timer never moves. ===== */

@@ -19,15 +19,8 @@
 .sp-card:nth-child(2){animation-delay:.04s}.sp-card:nth-child(3){animation-delay:.08s}.sp-card:nth-child(n+4){animation-delay:.12s}
 @keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .sp-card:active{transform:scale(.98)}
-.sp-top{display:flex;align-items:center;gap:12px}
 .sp-ico{flex:none;width:40px;height:40px;border-radius:14px;background:var(--sc);color:var(--ink);display:grid;place-items:center;font-size:20px;font-weight:800}
 .sp-name{flex:1;min-width:0;font-size:24px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sp-top svg{width:18px;height:18px;color:var(--muted);flex:none;transition:transform .2s}
-.sp-card:hover .sp-top svg{transform:translateX(3px);color:var(--text)}
-.sp-bar{display:flex;gap:3px;height:8px;margin-top:18px;border-radius:8px;overflow:hidden;background:var(--surface2)}
-.sp-bar span{display:block;height:100%;border-radius:8px;min-width:6px}
-.sp-meta{display:flex;gap:14px;margin-top:12px;font-size:13px;color:var(--muted)}
-.sp-meta b{color:var(--text);font-weight:600}
 .sp-new{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:64px;border-radius:20px;background:var(--surface);color:var(--text);font-size:17px;font-weight:800;letter-spacing:-.01em;transition:transform .15s,background .15s}
 .sp-new:hover{background:var(--surface2)}
 .sp-new:active{transform:scale(.98)}
@@ -36,11 +29,7 @@
 .sp-new:hover{color:var(--text);border-color:var(--muted)}
 /* space sheet */
 .sp-form{display:flex;align-items:center;gap:12px}
-.sp-emo{flex:none;width:58px;height:58px;border-radius:20px;border:0;text-align:center;font:inherit;font-size:28px;color:var(--ink);outline:none}
-.sp-emo::placeholder{color:rgba(0,0,0,.45)}
 .sp-name-in{flex:1;min-width:0;padding:6px 0 10px!important}
-.sp-del[hidden]{display:none!important}
-.sp-del{margin-top:14px;border-bottom:0!important;justify-content:center!important}
 .sh-acts{display:flex;gap:16px}
 .mv{margin-left:auto;margin-right:6px;height:28px;padding:0 10px;border-radius:999px;background:var(--surface2);font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
 .editing .pick .x{margin-left:0}
@@ -137,8 +126,6 @@
 .le-panel{padding:4px 2px 18px;animation:inU .25s cubic-bezier(.2,.8,.2,1)}
 .le-name{width:100%;height:50px;border-radius:14px;background:var(--surface2);border:0;padding:0 14px;color:var(--text);font:inherit;font-size:17px;font-weight:600;outline:none}
 .le-name:focus{box-shadow:0 0 0 2px var(--text)}
-.le-sp .opt:disabled{opacity:.35}
-.le-del{margin-top:18px;font-size:15px;font-weight:600;color:var(--today);padding:6px 0}
 .le-note{margin:16px 0 0;font-size:13px;color:var(--muted);line-height:1.4}
 /* intro */
 .intro{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;background:var(--bg);color:var(--text);
@@ -294,13 +281,10 @@
 .sp-name .pin-i{width:17px;height:17px;vertical-align:1px}
 .s-name .pin-i{width:12px;height:12px;margin-left:6px;vertical-align:0}
 .desk.collapsed .s-name .pin-i{display:none}
-.sp-pinrow{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 2px;margin:8px 0 6px;font-size:17px;font-weight:600;border-top:1px solid var(--line)}
-.sp-pinrow[hidden]{display:none}
-.sp-pinrow .tg{pointer-events:none}
 /* midnight focus: light tints instead of dark ones */
 :root[data-focusdark="1"] .focus .f-x,:root[data-focusdark="1"] .focus .f-btn,:root[data-focusdark="1"] .focus .mode{background:rgba(255,255,255,.1)}
 :root[data-focusdark="1"] .focus .f-bar{background:rgba(255,255,255,.14)}
-:root[data-focusdark="1"] .focus .f-cur,:root[data-focusdark="1"] .focus .f-steps.has,:root[data-focusdark="1"] .focus .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
+:root[data-focusdark="1"] .focus .f-steps.has,:root[data-focusdark="1"] .focus .f-steps:not(.has) .fs-add{background:rgba(255,255,255,.08)}
 /* focus colour picker */
 .fc-sw{max-width:340px}
 .fc-prev{display:flex;align-items:center;justify-content:space-between;gap:12px;height:96px;padding:0 20px;border-radius:20px;margin:4px 0 14px;background:var(--pb);color:var(--pi);
@@ -329,8 +313,6 @@
 :root[data-home="calm"] .sp-row-new svg{width:38px;height:38px;padding:10px;border-radius:14px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
 :root[data-home="calm"] .sp-row-new:hover{background:color-mix(in srgb,var(--surface2) 50%,transparent);color:var(--text)}
 :root[data-home="calm"] .sp-row:hover{background:color-mix(in srgb,var(--surface2) 50%,transparent)}
-  border-radius:20px;background:var(--surface);box-shadow:0 0 0 1px var(--line);animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both;transition:background .18s,box-shadow .18s,transform .18s}
-  background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);font-size:15px;transition:box-shadow .18s,color .18s,background .18s}
 /* focus style switch (shared by Classic and Tide) */
 .fsw{display:flex;background:rgba(0,0,0,.12);border-radius:999px;padding:3px}
 .focus .fsw,.tide .fsw{display:none!important} /* look is chosen in Settings */
@@ -382,9 +364,6 @@
 .meta{flex-wrap:wrap;row-gap:4px}.meta .tag{white-space:nowrap}
 /* list editor: archive + delete */
 .le-acts{display:flex;gap:22px;margin-top:18px}
-.le-acts .le-del{margin-top:0}
-.le-arc{font-size:15px;font-weight:600;color:var(--text);padding:6px 0}
-.sp-arc{color:var(--text)}
 /* Archived page */
 .arc-tabs{display:flex;width:100%;margin-top:22px}
 .arc-tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}

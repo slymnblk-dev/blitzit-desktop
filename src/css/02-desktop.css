@@ -47,8 +47,6 @@
   .s-list .n{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--muted)}
   .s-list svg{width:12px;height:12px}
   .s-foot{margin-top:auto;padding-top:24px;display:flex;flex-direction:column;gap:12px}
-  .s-tools{display:flex;gap:8px}
-  .s-tools:not(:has(:not([hidden]))){display:none}
   .m-right{display:flex;align-items:center;gap:20px}
   .m-set{width:44px;height:44px}
   .m-set svg{width:20px;height:20px}

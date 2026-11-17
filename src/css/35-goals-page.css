@@ -23,8 +23,6 @@ button.ga-next>svg,.ga-op svg{width:15px;height:15px;color:var(--muted);flex:non
 .ga-go:hover{filter:brightness(1.06)}.ga-go:active{transform:scale(.96)}
 .ga-op{display:grid;place-items:center;width:32px;height:32px;border-radius:10px}
 .ga-cw>.gm-more{position:absolute;top:16px;right:12px}
-.ga-first{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;background:var(--surface);font:inherit;font-weight:700;color:var(--text)}
-.ga-first svg{width:15px;height:15px}
 /* phones: milestones on one line, days left on the line under it */
 @media (max-width:699px){
   .ga-cw{padding:16px 16px 14px;border-radius:22px}

@@ -233,7 +233,6 @@ html,body{overscroll-behavior-y:contain}
 .notes{width:100%;resize:none;min-height:70px;line-height:1.5;margin-top:4px;padding:12px 14px;background:var(--surface2);border-radius:14px}
 .sub-add input::placeholder,.notes::placeholder{color:var(--muted)}
 .d-foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
-.del-btn{color:var(--today);font-weight:600;font-size:15px;padding:8px 2px}
 /* lists */
 .pick .dot{width:14px;height:14px;border-radius:5px;flex:none}
 .pick .x{margin-left:auto;width:30px;height:30px;border-radius:50%;background:var(--surface2);display:grid;place-items:center}
@@ -260,11 +259,6 @@ html,body{overscroll-behavior-y:contain}
 .focus.brk .mode button.on{--fc:var(--fbrk,var(--done))}
 .f-done{color:var(--fc,var(--fbg,var(--today)))}
 .focus.brk .f-done{--fc:var(--fbrk,var(--done))}
-.f-subs{margin-top:22px;display:flex;flex-direction:column;gap:2px}
-.f-sub{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:500;padding:6px 0;text-align:left}
-.f-sub i{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink);flex:none;transition:background .2s}
-.f-sub.on i{background:var(--ink)}
-.f-sub.on span{text-decoration:line-through;opacity:.55}
 .f-time{margin:34px 0 18px}
 .f-sum{display:none;flex:1;flex-direction:column;justify-content:center;max-width:460px;width:100%;margin:0 auto}
 .focus.sum .f-main,.focus.sum .f-ctrl,.focus.sum .mode{display:none}

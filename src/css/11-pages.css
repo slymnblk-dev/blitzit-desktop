@@ -56,7 +56,6 @@ button.hg-c:active{transform:scale(.88)}
 .hg-s b{color:var(--text);font-weight:800}
 .hg-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;margin:16px 4px 0;font-size:13px;color:var(--muted)}
 .hg-foot span{display:flex;align-items:center;gap:7px}
-.hg-tip{margin-left:auto}
 .hg-lg{width:11px;height:11px;border-radius:50%;display:block;font-style:normal}
 .hg-lg.on{background:var(--tick-soft);box-shadow:inset 0 0 0 1.5px var(--tick-mid)}.hg-lg.miss{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 22%,transparent)}
 .hg-lg.rest{width:5px;height:5px;background:color-mix(in srgb,var(--text) 25%,transparent);margin:0 3px}
@@ -71,7 +70,6 @@ button.hg-c:active{transform:scale(.88)}
   .hg-n{grid-column:1/6;grid-row:1;padding:12px 0 8px;font-size:17px}
   .hg-s{grid-column:6/8;grid-row:1;align-self:center}
   .hg-c{width:36px;height:36px}
-  .hg-tip{display:none}
 }
 
 /* ===== Habits · Sunrise ===== */
@@ -82,7 +80,6 @@ button.hg-c:active{transform:scale(.88)}
 .hs-dg{transform:translateY(var(--sy));transition:transform 1.1s var(--spring)}
 .hs-disc{fill:var(--today)}
 .hs-glow{animation:gbBreath 4.5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-@keyframes hsBreath{50%{transform:scale(1.08);opacity:.2}}
 .hs-hz{stroke:color-mix(in srgb,var(--text) 25%,transparent);stroke-width:3;stroke-linecap:round}
 .hs-rays path{fill:none;stroke:var(--today);stroke-width:5;stroke-linecap:round}
 .hs-rays{opacity:0;transform:scale(.85);transform-origin:210px 178px;transition:opacity .6s .3s,transform .8s .3s var(--spring)}
@@ -172,9 +169,6 @@ button.hg-c:active{transform:scale(.88)}
 @keyframes gbRise{from{opacity:0;transform:translateY(24px)}}
 .gv.anim .gb-head{animation:pgIn .6s var(--ease) both}
 .gb-pace{font-size:24px!important;line-height:34px!important}
-.gs-addb{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 10px;border-radius:999px;font-size:13px;font-weight:800;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:color .2s,box-shadow .2s}
-.gs-addb svg{width:14px;height:14px}
-.gs-addb:hover{color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 30%,transparent)}
 .gb-hit{fill:transparent;pointer-events:all;cursor:pointer}
 .gb-svg{pointer-events:none}.gb-svg .gb-hit{pointer-events:all}
 @media (min-width:1100px){.gb-stage{margin:-8px -32px 0}.gb-head{padding:8px 32px 0}}
@@ -305,15 +299,9 @@ button.hg-c:active{transform:scale(.88)}
 @media (max-width:699px){.hw-pill{height:40px;padding:0 13px 0 8px;font-size:13px;gap:7px}.hw-pill .hw-k{width:20px;height:20px}.hw-pl{gap:6px}.hw-pl .hw-more{height:40px}}
 
 /* ===== Reorder habits ===== */
-.ho-tip{margin:-8px 0 14px;font-size:15px;color:var(--muted)}
-.ho-list{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
-.ho-row{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 6px 0 14px;border-radius:14px;background:var(--surface2);position:relative;user-select:none;-webkit-user-select:none}
-.ho-row.lifted{z-index:2;box-shadow:0 16px 36px rgba(0,0,0,.25);transform-origin:center}
 .ho-i{width:18px;font-size:13px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
-.ho-n{flex:1;min-width:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ho-grip{width:44px;height:44px;display:grid;place-items:center;color:var(--muted);cursor:grab;touch-action:none;border-radius:14px}
 .ho-grip svg{width:20px;height:20px}
-.ho-row.lifted .ho-grip{cursor:grabbing;color:var(--text)}
 .ho-grip:focus-visible{outline:2px solid var(--today);outline-offset:-2px}
 
 /* ===== Milestones as parent tasks: the track and the milestone card ===== */
@@ -366,7 +354,6 @@ button.hg-c:active{transform:scale(.88)}
 .gm-tt b{flex:1;min-width:0;font-size:15px;font-weight:600;overflow-wrap:anywhere}
 .gm-tt small{font-size:13px;color:var(--muted);white-space:nowrap}
 .gm-t.on .gm-tt b{color:var(--muted);font-weight:500}
-.gm-empty{margin:0;font-size:15px;line-height:1.45;color:var(--muted)}
 .gm-add{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:12px;cursor:text}
 .gm-plus{width:24px;height:24px;display:grid;place-items:center;color:var(--muted);flex:none}
 .gm-plus svg{width:16px;height:16px}
@@ -383,7 +370,7 @@ button.hg-c:active{transform:scale(.88)}
 .gm-card.hot{background:var(--cta);color:#fff;border-radius:28px;padding:24px 26px;animation:pgIn .6s .2s var(--ease) both}
 .gm-card.hot .gm-tag{color:#fff;font-weight:800;letter-spacing:.1em}
 .gm-card.hot .gm-hx>b{font-size:28px}
-.gm-card.hot .gm-hx small,.gm-card.hot .gm-tt small,.gm-card.hot .gm-empty,.gm-card.hot .gm-plus,.gm-card.hot .gm-add input::placeholder{color:#fff}
+.gm-card.hot .gm-hx small,.gm-card.hot .gm-tt small,.gm-card.hot .gm-plus,.gm-card.hot .gm-add input::placeholder{color:#fff}
 .gm-card.hot .gm-add input{color:#fff}
 .gm-card.hot .gm-t,.gm-card.hot .gm-add{border-color:rgba(255,255,255,.22)}
 .gm-card.hot .gm-bar{background:rgba(255,255,255,.25)}.gm-card.hot .gm-bar i{background:#fff}
@@ -573,19 +560,10 @@ button.hg-c:active{transform:scale(.88)}
 /* ===== Inbox: tasks and notes ===== */
 .ib-cap{gap:8px;padding-left:6px}
 .ib-cap.note{height:auto;min-height:58px;align-items:flex-start;padding-top:9px;padding-bottom:9px}
-.ib-kind{display:flex;gap:2px;padding:3px;border-radius:14px;background:var(--surface2);flex:none}
-.ib-kind button{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px 0 9px;border-radius:8px;font-size:13px;font-weight:800;color:var(--muted);transition:background .2s,color .2s}
-.ib-kind button svg{width:15px;height:15px}
-.ib-kind button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .ib-cap textarea{flex:1;min-width:0;background:none;border:0;outline:none;resize:none;color:var(--text);font:inherit;font-size:17px;line-height:1.45;padding:6px 4px;max-height:240px}
 .ib-cap textarea::placeholder{color:var(--muted)}
 .ib-cap.note .ib-cap-go{align-self:flex-end}
 .ib-hint{margin:8px 4px 0;font-size:12px;color:var(--muted)}
-.ib-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:24px 0 14px}
-.ib-tabs+.ib-count{margin-top:6px}
-.ib-tabs button{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px;border-radius:999px;font-size:13px;font-weight:800;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);transition:background .2s,color .2s}
-.ib-tabs button small{font-size:12px;font-weight:600;opacity:.7;font-variant-numeric:tabular-nums}
-.ib-tabs button.on{background:var(--text);color:var(--bg);box-shadow:none}
 /* notes: soft cards, two columns on computers */
 .ib-notes{columns:1;column-gap:12px;margin-top:6px}
 @media (min-width:700px){.ib-notes{columns:2}}
@@ -610,7 +588,7 @@ button.hg-c:active{transform:scale(.88)}
 
 /* Inbox: wider on computers so notes breathe; narrow phones show the kind switch as icons */
 @media (min-width:1100px){#inboxPg .ib-in{max-width:760px}}
-@media (max-width:479px){.ib-kind button span{display:none}.ib-kind button{padding:0 9px}.ib-cap{gap:6px}}
+@media (max-width:479px){.ib-cap{gap:6px}}
 /* ⋯ on task rows and note cards */
 .ib-list .row-in{align-items:center}
 .ib-list .row-in .gm-more{margin-left:2px;margin-right:-6px}
@@ -650,12 +628,6 @@ button.hg-c:active{transform:scale(.88)}
 .gm-msl .gpo-m.nx:not(.on) .gpo-k::before{color:var(--today)}
 .gm-msl .gv-add{border-top:0;margin-top:4px}
 /* computer: Goals fold open in the sidebar; the goal page has no back button, its title starts at the top */
-.s-gfold .s-chev{width:14px;height:14px;flex:none;margin-left:6px;color:var(--muted);transition:transform .25s var(--ease)}
-.s-gfold.open .s-chev{transform:rotate(90deg)}
-.s-gfold .n+.s-chev{margin-left:8px}
-.s-gsub .sg-e{width:18px;flex:none;display:grid;place-items:center;font-size:15px;line-height:1}
-.s-gsub .sg-e svg{width:13px;height:13px;color:var(--muted)}
-.s-gsub .s-list .n{font-variant-numeric:tabular-nums}
 @media (min-width:1100px){
   #gdBack{display:none}
   .gd-pg .gd-top{height:0;align-items:flex-start;justify-content:flex-end}
@@ -860,10 +832,6 @@ button.hg-c:active{transform:scale(.88)}
 .ib-cap input,.ib-cap textarea{font-size:17px}
 .ib-cap.note{height:auto;min-height:60px;align-items:flex-end;padding-top:9px;padding-bottom:8px}
 .ib-cap.note textarea{align-self:center;padding:9px 0}
-.ib-swap{flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 11px 0 9px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:600;transition:color .2s,background .2s}
-.ib-swap svg{width:15px;height:15px}
-.ib-swap:hover{color:var(--text)}
-.ib-cap.note .ib-swap{color:var(--week)}
 .ib-cap-go{flex:none;width:0;height:44px;padding:0;margin-left:-8px;border-radius:50%;background:var(--today);color:#fff;display:grid;place-items:center;overflow:hidden;opacity:0;transform:scale(.6);pointer-events:none;
   transition:width .22s var(--ease),margin .22s var(--ease),opacity .18s,transform .22s var(--ease)}
 .ib-cap-go svg{width:18px;height:18px;flex:none}

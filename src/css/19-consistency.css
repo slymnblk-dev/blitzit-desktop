@@ -62,9 +62,6 @@
 .pg-sum b,.hp-sub b,.hb-sub b,.m-sub b{color:var(--text);font-weight:800}
 .home-hero h1{margin-top:8px}
 .home-hero .pg-sum{margin-top:10px}
-.p-only{display:block}
-@media (min-width:1100px){.p-only{display:none}}
-.ib-eye{display:block;margin-top:30px}
 #inboxPg .ib-h{margin-top:8px!important;margin-bottom:6px}
 .ib-sum{margin-bottom:22px}
 .set-eye{display:block;margin-top:26px}
@@ -145,7 +142,6 @@
 }
 
 /* ===== Inbox: sort faster (08zo-inbox-sort.js) ===== */
-.ib-th{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .ib-sortb{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:999px;background:var(--surface2);color:var(--text);font-size:13px;font-weight:600;margin-bottom:2px}
 .ib-sortb svg{width:16px;height:16px}
 .ib-sortb:hover{background:color-mix(in srgb,var(--text) 10%,var(--surface2))}
@@ -232,7 +228,6 @@
 #inboxPg .ib-cap.note .ib-seg{align-self:flex-end;margin-bottom:6px}
 #inboxPg .ib-cap-go{background:var(--text);color:var(--bg);height:44px}
 #inboxPg .ib-cap.note .ib-cap-go{align-self:flex-end}
-.ib-swap{display:none}
 .ib-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 4px}
 .ib-fcs{display:flex;gap:6px;flex-wrap:wrap}
 .ib-fc{height:34px;padding:0 13px;border-radius:999px;background:var(--surface);color:var(--muted);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
@@ -240,7 +235,6 @@
 .ib-fc.on{background:var(--text);color:var(--bg)}
 .ib-fc.on em{opacity:.7}
 .ib-bar .ib-sortb{margin:0}
-.ib-th{display:none}
 /* tasks: one calm card of rows, with when you added each */
 #inboxPg .ib-count{margin:16px 4px 8px}
 #inboxPg .ib-list{background:var(--surface);border-radius:20px;padding:0 14px;overflow:hidden}
@@ -288,4 +282,3 @@
 .bt-body .md-card{margin:0}
 .bt-tag{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;flex:none}
 #winsPg h1.ib-h::after,#routinesPg h1.ib-h::after,#planPg h1.ib-h::after,#journalPg h1.ib-h::after,#visionPg h1.ib-h::after,#metricsPg h1.hp-h::after{content:'Beta';display:inline-flex;align-items:center;vertical-align:middle;height:22px;padding:0 9px;margin-left:12px;border-radius:999px;background:color-mix(in srgb,var(--today) 14%,transparent);color:var(--today-ink);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;line-height:1}
-.set-sec.set-empty{display:none}

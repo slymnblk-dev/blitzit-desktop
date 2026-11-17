@@ -60,7 +60,7 @@
 .bn-hb.on .bn-hk{background:var(--today);box-shadow:none;color:#0F1013}
 .bn-hn{flex:1;min-width:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s}
 .bn-hb.on .bn-hn{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
-.bn-hb small{font-size:13px;color:var(--muted)}.bn-hb.on small{color:var(--today)}
+.bn-hb small{font-size:13px;color:var(--muted)}
 .bn-alld{margin-top:auto;padding-top:10px;font-size:13px;font-weight:800;color:var(--today)}
 .bn-kn{display:block;margin-top:10px;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bn-kv{display:flex;align-items:baseline;gap:6px;margin-top:6px}

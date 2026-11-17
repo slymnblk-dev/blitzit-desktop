@@ -64,7 +64,6 @@
 .you-hl p{margin:8px 0 0;font-size:15px;color:var(--muted)}
 .you-tabs{display:flex;width:100%}.you-tabs button{flex:1}
 .you-range{margin-top:22px}
-.you-in{height:52px;font-size:17px}
 .av-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}
 .av-grid button{height:44px;border-radius:14px;font-size:24px;display:grid;place-items:center;transition:background .15s,transform .2s cubic-bezier(.3,1.6,.5,1)}
 .av-grid button:hover{background:var(--surface2)}
