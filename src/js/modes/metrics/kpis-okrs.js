@@ -306,18 +306,13 @@ function mxBtns(){const on=mxOn()&&!!mxSpaceIn();document.querySelectorAll('[dat
 onRender('metrics-buttons',function(d){mxBtns();if(mxOpen){if(!mxOn()||!mxSpaceNow())return mxClose();const a=document.activeElement;if(!(a&&a.closest&&a.closest('#mxPg')&&a.matches('input')))mxDraw()}});
 
 /* ---------- in a task: "Counts toward" (pill + picker), and a small mark on the row ---------- */
-function mxPill(t,P){if(!mxOn()||t.inbox)return '';const links=(t.mx||[]).map(mxFind).filter(Boolean);if(!links.length&&!mxCands(t).length)return '';
-  return P('mx',`${MX_ICON}${links.length?esc(links[0].name)+(links.length>1?` +${links.length-1}`:''):'Counts toward'}`,!links.length)}
-function mxPicks(t){const cs=mxCands(t);if(!cs.length)return `<p class="mx-pkh">Add a KPI or OKR from the gauge on this space’s page first.</p>`;
-  return cs.map(c=>{const l=(t.mx||[]).find(x=>mxKey(x)===mxKey(c));
-    return `<span class="mx-pkw${l?' on':''}"><button class="pk ${l?'on':''}" data-v="${mxKey(c)}">${c.kind==='kr'?'KR · ':''}${esc(c.name)}</button>${l?`<label class="mx-amt" title="Adds this much when the task is done. Empty: ask me.">+<input type="number" inputmode="decimal" step="any" min="0" data-mxamt="${mxKey(c)}" value="${l.add==null?'':esc(String(l.add))}" placeholder="ask" aria-label="Adds when done (empty: ask me)"></label>`:''}</span>`}).join('')
-    +`<p class="mx-pkh">Added when done. Leave empty to be asked.</p>`}
+/* mxPill: final version lives further down the load order */
+/* mxPicks: final version lives further down the load order */
 function mxPickToggle(t,v){const [kind,a,b]=v.split(':');const link=kind==='kr'?{id:b,okr:a}:{id:a};
   const key=mxKey(link);t.mx=Array.isArray(t.mx)?t.mx:[];const has=t.mx.find(x=>mxKey(x)===key);
   if(has)t.mx=t.mx.filter(x=>x!==has);else{const c=mxCands(t).find(x=>mxKey(x)===key);if(c)t.mx.push(c.okr!=null?{id:c.id,okr:c.okr,add:1}:{id:c.id,add:1})}
   if(!t.mx.length)delete t.mx}
-function mxMark(t){if(!mxOn()||!Array.isArray(t.mx)||!t.mx.length)return '';const f=mxFind(t.mx[0]);if(!f)return '';
-  const a=t.mx[0].add;return `<span class="mi mx-mi" title="Counts toward ${esc(f.name)}">${MX_ICON}${a==null?'':'+'+mxN(a)+' '}${esc(f.name.length>16?f.name.slice(0,15)+'…':f.name)}${t.mx.length>1?` +${t.mx.length-1}`:''}</span>`}
+/* mxMark: final version lives further down the load order */
 $('dPicker').addEventListener('input',e=>{const k=e.target.dataset.mxamt;if(!k||!cur)return;const l=(cur.mx||[]).find(x=>mxKey(x)===k);if(!l)return;
   const v=e.target.value;l.add=v===''?null:Math.max(0,+v||0);save()});
 $('dPicker').addEventListener('change',e=>{if(e.target.dataset.mxamt)render()});

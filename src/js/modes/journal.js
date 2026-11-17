@@ -126,8 +126,8 @@ hkLayer('rhythmSide','journal',function(){const h=_jrSide();if(!journalOn())retu
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sJournal')){e.stopImmediatePropagation();return jrOn?closeJournal():openJournal()}
   if(jrOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins,#sRoutines,#sPlan'))closeJournal()},true);
-for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics','openWins','openRoutines','openPlan']){const f=window[fn];if(typeof f!=='function')continue;
-  window[fn]=function(){if(jrOn)closeJournal();return f.apply(this,arguments)}}
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('journal',['openJournal'],()=>jrOn,closeJournal);
 const _jrDesk=hkBelow('renderDesk','journal',renderDesk__core);hkLayer('renderDesk','journal',function(){_jrDesk.apply(this,arguments);if(jrOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!jrOn||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on,.cx-pop.on'))return;
   if(e.target&&e.target.closest&&e.target.closest('#journalPg textarea'))return;if(!jrDesk())return;e.preventDefault();closeJournal()});

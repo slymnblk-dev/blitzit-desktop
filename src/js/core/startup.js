@@ -1,3 +1,4 @@
+pagesWire(); // 0.327: one rule for full pages, after every opener exists
 /* ---------- finished-task clean up ---------- */
 function runCleanup(withUndo){
   if(!S.cfg||S.cfg.cleanup==='never')return;

@@ -134,8 +134,8 @@ hkLayer('rhythmSide','wins',function(){const h=_wnSide();if(!winsOn())return h;c
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sWins')){e.stopImmediatePropagation();return wnOn?closeWins():openWins()}
   if(wnOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics'))closeWins()},true);
-for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics']){const f=window[fn];if(typeof f!=='function')continue;
-  window[fn]=function(){if(wnOn)closeWins();return f.apply(this,arguments)}}
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('wins',['openWins'],()=>wnOn,closeWins);
 const _wnDesk=hkBelow('renderDesk','wins',renderDesk__core);hkLayer('renderDesk','wins',function(){_wnDesk.apply(this,arguments);if(wnOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!wnOn||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on')||$('wnReel').classList.contains('on'))return;
   if(e.target&&e.target.id==='wnNew')return;if(!matchMedia('(min-width:1100px)').matches)return;e.preventDefault();closeWins()});

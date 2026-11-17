@@ -66,27 +66,7 @@ var I_UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-widt
 /* the page, "capture first" (0.245): a small label, the name and what waits; one capture bar for tasks and notes
    (Task | Note inside it); filter chips with counts and Sort; tasks as a calm list with when you added them,
    notes as warm paper cards. On computers tasks and notes sit side by side. */
-function drawInbox(){
-  const items=inboxItems(),notes=inboxNotes(),nT=items.length,nN=notes.length,note=ibKind==='note';
-  if(ibTab==='tasks'&&!nT||ibTab==='notes'&&!nN)ibTab='all';
-  const head=(l,n)=>`<div class="ib-count"><span>${l}</span><small>${n}</small></div>`;
-  const showT=nT&&ibTab!=='notes',showN=nN&&ibTab!=='tasks';
-  const tasksSec=showT?`<div class="ib-col">${head('Tasks',nT)}<ul class="list ib-list">${items.map(ibRow).join('')}</ul></div>`:'';
-  const notesSec=showN?`<div class="ib-col">${head('Notes',nN)}<div class="ib-notes">${notes.map(ibNoteCard).join('')}</div></div>`:'';
-  const chip=(k,l,n)=>`<button class="ib-fc${ibTab===k?' on':''}" data-ibtab2="${k}" aria-pressed="${ibTab===k}">${l}<em>${n}</em></button>`;
-  const sum=nT||nN?`${nT?`<b>${nT}</b> ${nT===1?'task':'tasks'} to sort`:'Nothing to sort'}${nN?` · ${nN} ${nN===1?'note':'notes'}`:''}`:'All clear';
-  const seg=k=>ibKind===k?`<button class="on" aria-pressed="true" tabindex="-1">${k==='task'?'Task':'Note'}</button>`:`<button data-ibswap aria-pressed="false" aria-label="Switch to ${k}">${k==='task'?'Task':'Note'}</button>`;
-  $('ibIn').innerHTML=`<h1 class="ib-h">Inbox</h1><div class="pg-sum ib-sum">${sum}</div>
-    <div class="ib-cap${note?' note':''}">
-      ${note?`<textarea id="ibNew" rows="1" placeholder="Write a note" maxlength="4000" aria-label="New note"></textarea>`:`<input id="ibNew" placeholder="Add a task" maxlength="120" enterkeyhint="done" autocomplete="off" aria-label="New task">`}
-      <span class="ib-seg" role="group" aria-label="Add as">${seg('task')}${seg('note')}</span>
-      <button class="ib-cap-go" id="ibAdd" aria-label="${note?'Add note':'Add task'}">${I_UP}</button></div>
-    ${note?'<p class="ib-hint">Enter for a new line · Ctrl or ⌘ + Enter to add</p>':''}
-    ${nT||nN?`<div class="ib-bar"><div class="ib-fcs">${chip('all','All',nT+nN)}${nT?chip('tasks','Tasks',nT):''}${nN?chip('notes','Notes',nN):''}</div>${nT?`<button class="ib-sortb" data-ibsort>${I_SORT}Sort</button>`:''}</div>
-      <div class="ib-cols${showT&&showN?' two':''}">${tasksSec}${notesSec}</div>`
-      :`<div class="ib-empty">${IB_ICON}<b>Your inbox is empty</b><span>Tasks and notes you add show up here.</span></div>`}`;
-  enterId=null;
-}
+/* drawInbox: final version lives further down the load order */
 const ibTyped=()=>{const n=$('ibNew'),c=n&&n.closest('.ib-cap');if(c)c.classList.toggle('typed',!!n.value.trim())};
 function ibAdd(){
   const i=$('ibNew'),v=(i.value||'').trim();if(!v)return;
@@ -161,3 +141,5 @@ $('inboxPg').addEventListener('input',e=>{if(e.target.id==='ibNew'){ibGrow(e.tar
 /* keep the page in step with edits, undo and sync, without stealing focus while typing */
 const _ibRender=renderBelow('inbox-page');
 renderLayer('inbox-page',function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;ibGrow(n);ibTyped();n.focus()}}});
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('inbox',['openInbox'],()=>ibOn,closeInbox);

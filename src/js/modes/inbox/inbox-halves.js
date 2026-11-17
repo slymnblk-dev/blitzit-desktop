@@ -17,7 +17,7 @@ function ibDayHead(side,g){const id=side+':'+g.k,f=ibFold.has(id);
 /* a task row: same as before, without "Added …" (the day says it) */
 const _ib2Row=ibRow;
 ibRow=function(t){return _ib2Row(t).replace(/<span class="mi ib-when">[^<]*<\/span>/,'').replace(/<div class="meta"><\/div>/,'')};
-drawInbox=function(){
+function drawInbox(){
   const items=inboxItems(),notes=inboxNotes(),nT=items.length,nN=notes.length;
   const pinned=notes.filter(t=>t.pin),rest=notes.filter(t=>!t.pin);
   const sum=nT||nN?`${nT?`<b>${nT}</b> ${nT===1?'task':'tasks'} to sort`:'Nothing to sort'} · ${nN} ${nN===1?'note':'notes'}`:'All clear';

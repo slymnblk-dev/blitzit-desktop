@@ -21,7 +21,7 @@ function mt2OkrRow(o,showSp,krs){const p=o.closed?(o.score||0):mxOkrP(o),id=`okr
       <span class="mt2-bar"><span class="mx-bar"><i style="width:${(p*100).toFixed(1)}%"></i></span></span>
       <span class="mt2-p">${o.closed?'closed':''}</span></button>
     ${krs&&!o.closed?`<div class="mt2-krs">${o.krs.map(r=>`<span class="mt2-kr"><span>${esc(r.name)}</span><span class="mx-bar"><i style="width:${(mxKrP(r)*100).toFixed(1)}%"></i></span><b>${mxFmt(mxKrNow(r),r.unit)}</b><small>${mxKrKind(r)==='sum'?'/':'→'} ${mxFmt(+r.target,r.unit)}</small></span>`).join('')}</div>`:''}</div>`}
-drawMetrics=function(){if(!mtOn)return;const y=$('metricsPg').scrollTop;if(mtSp!=='all'&&mtSp!=='none'&&!spaceOf(mtSp))mtSp='all';
+function drawMetrics(){if(!mtOn)return;const y=$('metricsPg').scrollTop;if(mtSp!=='all'&&mtSp!=='none'&&!spaceOf(mtSp))mtSp='all';
   const sps=mtSpaces(),multi=sps.length>1,all=(S.kpis||[]).filter(k=>mxSpOk(k.space)).length+(S.okrs||[]).filter(o=>mxSpOk(o.space)).length;
   const viewSw=`<div class="mt2-seg" role="tablist" aria-label="View"><button role="tab" data-mtview="list" aria-selected="${mtView==='list'}">List</button><button role="tab" data-mtview="space" aria-selected="${mtView==='space'}">By space</button></div>`;
   const filt=mtView==='list'&&multi?`<div class="mt2-seg mt-f" role="tablist" aria-label="Space">${[['all','All'],...sps.map(s=>[s.id,(s.e?s.e+' ':'')+s.name])].map(([v,l])=>`<button role="tab" data-mtsp="${v}" aria-selected="${String(v)===String(mtSp)}">${esc(l)}</button>`).join('')}</div>`:'';

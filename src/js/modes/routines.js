@@ -193,8 +193,8 @@ hkLayer('rhythmSide','routines',function(){const h=_rtSide();if(!routinesOn())re
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sRoutines')){e.stopImmediatePropagation();return rtOn?closeRoutines():openRoutines()}
   if(rtOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins'))closeRoutines()},true);
-for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics','openWins']){const f=window[fn];if(typeof f!=='function')continue;
-  window[fn]=function(){if(rtOn)closeRoutines();return f.apply(this,arguments)}}
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('routines',['openRoutines'],()=>rtOn,closeRoutines);
 const _rtDesk=hkBelow('renderDesk','routines',renderDesk__core);hkLayer('renderDesk','routines',function(){_rtDesk.apply(this,arguments);if(rtOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!rtOn||e.defaultPrevented||RP||$('dlg').classList.contains('on')||document.querySelector('.sheet.on'))return;
   if(e.target&&e.target.closest&&e.target.closest('#routinesPg input,#routinesPg select'))return;if(!rtDesk())return;e.preventDefault();closeRoutines()});

@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=326; // bumped with every published update
+const APP_VERSION=327; // bumped with every published update
 /* ---------- layers (0.324): how features extend a shared function ----------
    Never write `fn=function(){...}` to patch a function. Instead:
      hkLayer('fn','my-feature',function(...){ ... })   adds a named layer (later = outer)
@@ -20,6 +20,16 @@ function hkRun(fn,core,i,self,args){const L=hkL(fn);return i<0?core.apply(self,a
 function hkCall(fn,core,self,args){return hkRun(fn,core,hkL(fn).length-1,self,args)}
 function hkBelow(fn,name,core){return function(){const L=hkL(fn),i=L.findIndex(l=>l.name===name);return hkRun(fn,core,i<0?L.length-1:i-1,this,arguments)}}
 function hkLayers(fn){return hkL(fn).map(l=>l.name)}
+/* ---------- full pages (0.327): opening one closes the others ----------
+   Each full page registers once: regPage(name, [its openers], isOn, close).
+   pagesWire() (run at startup) makes every opener, plus goHome and openSpaceSide, close any other open page first. */
+function pgList(){return window.__PG||(window.__PG=[])}
+function regPage(name,openers,isOn,close){pgList().push({name,openers,isOn,close})}
+let pgClosing=false;
+function closePagesExcept(page){if(pgClosing)return;pgClosing=true;try{for(const p of pgList())if(p!==page){let on=false;try{on=p.isOn()}catch(e){}if(on)try{p.close()}catch(e){console.error('[pages:'+p.name+']',e)}}}finally{pgClosing=false}}
+function pagesWire(){const fns=new Set(['goHome','openSpaceSide']);pgList().forEach(p=>p.openers.forEach(o=>fns.add(o)));
+  for(const fn of fns){const f=window[fn];if(typeof f!=='function')continue;const mine=pgList().find(p=>p.openers.includes(fn))||null;
+    window[fn]=function(){closePagesExcept(mine);return f.apply(this,arguments)}}}
 const VER='0.'+String(APP_VERSION).padStart(2,'0'); // shown to people, e.g. 0.39
 const BUILD=(()=>{try{const src=[...document.scripts].map(x=>x.textContent).join('');let h=2166136261;
   for(let i=0;i<src.length;i++){h^=src.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).slice(0,6)}catch(e){return ''}})();
@@ -218,10 +228,7 @@ const defaultList=()=>{const h=listsHere();if(S.list!=='all'&&h.some(l=>l.id===S
 const STAGE_MAX=10,SUB_MAX=10;
 const stageCount=(list,stage,skip)=>S.tasks.filter(t=>t!==skip&&shown(t)&&t.list===list&&t.stage===stage).length;
 const stageRoom=(list,stage,skip)=>stage==='done'||stageCount(list,stage,skip)<STAGE_MAX;
-function canPut(list,stage,skip){
-  if(stageRoom(list,stage,skip))return true;
-  toast(`${listOf(list).name} already has ${STAGE_MAX} in ${STAGES[idx(stage)].name}. Finish or move one first.`);haptic([10,40,10]);return false;
-}
+/* canPut: final version lives further down the load order */
 function canStep(t){if((t.subs||[]).length<SUB_MAX)return true;toast(`Up to ${SUB_MAX} steps per task. Keep it focused.`);haptic([10,40,10]);return false}
 const addTask=t=>{sfx('add');S.cfg&&S.cfg.addTo==='bottom'?S.tasks.push(t):S.tasks.unshift(t)};
 const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';

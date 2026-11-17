@@ -274,8 +274,8 @@ hkLayer('rhythmSide','vision',function(){const h=_vbSide();if(!visionOn())return
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sVision')){e.stopImmediatePropagation();return vbOn?closeVision():openVision()}
   if(vbOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins,#sRoutines,#sPlan,#sJournal'))closeVision()},true);
-for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics','openWins','openRoutines','openPlan','openJournal']){const f=window[fn];if(typeof f!=='function')continue;
-  window[fn]=function(){if(vbOn)closeVision();return f.apply(this,arguments)}}
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('vision',['openVision'],()=>vbOn,closeVision);
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!vbOn||vbS||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on,.cx-pop.on'))return;
   if(e.target&&e.target.closest&&e.target.closest('#visionPg input,#visionPg select'))return;if(!vbDesk())return;e.preventDefault();closeVision()});
 ESC_PAGES.visionPg=()=>closeVision();

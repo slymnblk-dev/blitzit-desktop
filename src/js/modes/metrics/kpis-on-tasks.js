@@ -7,18 +7,18 @@
 const MXP_KR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>';
 const mxpLinks=t=>(Array.isArray(t.mx)?t.mx:[]).map(l=>({l,f:mxFind(l)})).filter(x=>x.f);
 /* rows */
-mxMark=function(t){if(!mxOn())return '';const ls=mxpLinks(t);if(!ls.length)return '';
+function mxMark(t){if(!mxOn())return '';const ls=mxpLinks(t);if(!ls.length)return '';
   const k=ls.some(x=>x.f.kind==='kpi'),r=ls.some(x=>x.f.kind==='kr');
   const tip='Counts toward '+ls.map(x=>`${x.f.name}${x.l.add!=null&&x.l.add!==''?` (+${mxN(x.l.add)})`:''}`).join(', ');
   return `<span class="mi mxp-mi" title="${esc(tip)}" aria-label="${esc(tip)}">${k?`<i class="k">${MX_ICON}</i>`:''}${r?`<i class="r">${MXP_KR}</i>`:''}</span>`};
 /* details pill */
-mxPill=function(t,P){if(!mxOn()||t.inbox)return '';const ls=mxpLinks(t);if(!ls.length&&!mxCands(t).length)return '';
+function mxPill(t,P){if(!mxOn()||t.inbox)return '';const ls=mxpLinks(t);if(!ls.length&&!mxCands(t).length)return '';
   if(!ls.length)return P('mx',`${MX_ICON}Counts toward`,true);
   const k=ls.filter(x=>x.f.kind==='kpi').length,r=ls.length-k;
   const lbl=ls.length===1?esc(ls[0].f.name):`${k?`${k} ${k===1?'KPI':'KPIs'}`:''}${k&&r?' · ':''}${r?`${r} ${r===1?'key result':'key results'}`:''}`;
   return P('mx',`<span class="mxp-pi">${k?`<i class="k">${MX_ICON}</i>`:''}${r?`<i class="r">${MXP_KR}</i>`:''}</span>${lbl}`,false)};
 /* the picker */
-mxPicks=function(t){const cs=mxCands(t);if(!cs.length)return `<p class="mx-pkh">Add a KPI or OKR from the gauge on this space’s page first.</p>`;
+function mxPicks(t){const cs=mxCands(t);if(!cs.length)return `<p class="mx-pkh">Add a KPI or OKR from the gauge on this space’s page first.</p>`;
   const row=c=>{const l=(t.mx||[]).find(x=>mxKey(x)===mxKey(c)),f=mxFind(c);let sub='';
     if(c.kind==='kpi'&&f)sub=`${MX_PER[f.item.period]||''}`;else if(c.kind==='kr'){const o=(S.okrs||[]).find(x=>String(x.id)===String(c.okr));sub=o?`OKR · ${esc(o.name)}`:'Key result'}
     return `<div class="mxp-r ${c.kind}${l?' on':''}"><button class="pk mxp-b${l?' on':''}" data-v="${mxKey(c)}" aria-pressed="${!!l}"><span class="mxp-k">${DH_CK}</span><span class="mxp-ic">${c.kind==='kr'?MXP_KR:MX_ICON}</span><span class="mxp-t"><b>${esc(c.name)}</b>${sub?`<small>${sub}</small>`:''}</span></button>

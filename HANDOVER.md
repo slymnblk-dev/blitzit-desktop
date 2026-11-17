@@ -1,4 +1,4 @@
-# Windaday — handover (2026-10-31)
+# Windaday — handover (2026-11-17, after the code cleanup 0.322–0.327)
 
 ## Who / how
 - Owner: **Suly**. Not technical. Windows PC + Samsung Android phone.
@@ -8,13 +8,12 @@
 - **Watch Suly's back (her words, 2026-11-03):** she isn't technical and may miss edge cases. Before building, think through the blind spots (defaults, empty states, where new things show on phone AND computer, what happens with modes off, old data, sync) and tell her in a short list what you covered and what's still open.
 - **Never break what works:** every new feature gets its own Playwright spec, and old specs are updated when behaviour changes on purpose.
 - Suly answers in chat and can't see artifact comments. Screenshots from the phone are the main bug reports.
-- Testing policy (agreed 2026-10-27): small UI changes → run only the related spec files + a screenshot check; risky changes (data, sync, saving, new features, shared code) → full suite; "go live" → the pipeline runs the full suite anyway. Say which tests you ran.
-- Quick small tweaks (a colour, a text, one style): no QA sweep and no full suite — just the related spec file(s) + one screenshot (Suly, 2026-10-29).
+- **Speed workflow (Suly's rule, all projects):** small UI/text tweak → one screenshot check, no suite · bug fix → only that area's specs · new feature / redesign → visual check + new specs, no full suite · full suite only for big changes (data, storage, app-wide rewrites), when asked or before a big release, at most once · if a change would break many old tests, stop and tell Suly first. "Go live" → the pipeline runs the full suite anyway. Always say which tests ran and whether they passed.
 
 ## Repo / workflow
 - Repo `slymnblk-dev/blitzit-desktop`. Work on **`dev`** only. Never push to `main` directly.
-- Build: `src/index.html` + `src/css/*.css` + `src/js/*.js` are concatenated in sorted order into `web/index.html` by `node tools/build.mjs` (one shared scope; later files wrap earlier functions by reassigning them, e.g. `render`, `drawGoal`, `mxSave`, `rhythmSide`). Since 0.254 the CSS and JS are minified with esbuild (pinned devDependency; top-level names are kept). `BUILD_PLAIN=1 node tools/build.mjs` builds unminified for debugging — never commit that. The service worker opens the saved copy if the network takes over 1.5s.
-- After every change: bump `APP_VERSION` in `src/js/01-boot-data.js` **and** `blitzit-vNN` in `web/sw.js` (same number) → build → tests → commit (with the attribution lines) → push `dev`.
+- Build: `src/index.html` + `src/css/**` + `src/js/**` are joined in the order of `src/css/ORDER.txt` / `src/js/ORDER.txt` into `web/index.html` by `node tools/build.mjs` (one shared scope; the build stops if ORDER.txt and the folders disagree). See **Code map** below for how files extend each other. Since 0.254 the CSS and JS are minified with esbuild (pinned devDependency; top-level names are kept). `BUILD_PLAIN=1 node tools/build.mjs` builds unminified for debugging — never commit that. The service worker opens the saved copy if the network takes over 1.5s.
+- After every change: bump `APP_VERSION` in `src/js/core/data.js` **and** `blitzit-vNN` in `web/sw.js` (same number) → build → tests → commit (with the attribution lines) → push `dev`.
 - Tests: `(node tests/server.mjs > /dev/null 2>&1 &)` then `PW_CHROMIUM=<chromium path> npm test` (or `npx playwright test tests/<file>.spec.mjs`). Kill the server after: `pgrep -f "node tests/serve[r]" | xargs -r kill`.
 - Test copy for Suly: https://slymnblk-dev.github.io/blitzit-desktop/ (from `dev`).
 - **Go live** only when Suly says "go live": `gh workflow run pipeline.yml --ref dev -f go_live=true` (in a cloud session without `gh`: the GitHub Actions tool, workflow `pipeline.yml`, ref `dev`, input `go_live=true`), watch it (~12 min), then check `git ls-remote origin main dev` shows the same commit. Netlify charges credits **per deploy**: batch changes into one go-live (two steps would cost more, not less). The desktop app builds only when `src-tauri/` or `RELEASE_NOTES.md` changed (~8 min, publishes a GitHub release that installed apps pick up).
@@ -22,8 +21,19 @@
 - Design options go on the Claude Design canvas (artifact "Habits & Goals pages"); re-read `project/canvas.json` from the artifact before publishing, the editor re-saves it.
 
 ## State
-- **Live = dev = 0.253** (commit `e1d1299`, gone live 2026-10-31). Desktop app **0.6.7** live (opens full screen the first time). Full suite: 149 + new specs, all passing at the last full run; every go-live re-runs it.
-- Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/BYn4rb2GZxgnG8WSTwUR8R — rebuild with `python3 <scratchpad>/tools/preview.py web/index.html <out>.html` (scratchpad tools don't survive a new session; the test copy on GitHub Pages does).
+- **dev = 0.327** (cleanup done; on `dev`, waiting for Suly's "go live"). Live (main) = 0.321. Check with `git ls-remote origin main dev`.
+- Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/NQdsSMjFwxZzzZ54XdxCRD — republish `web/index.html` after every change.
+- Full suite at the last run (0.327): 233/235 passed; the 2 misses were a test race in new-menu.spec (read the result before the save finished), fixed with expect.poll and passing 24/24 under load.
+
+## Code map (after the 0.322–0.327 cleanup — read first)
+- **Folders** (`src/js`, `src/css`): core · tasks · focus · home · shell (tabs, sidebar, motion, toast) · modes (inbox, habits, goals, metrics, wins, routines, plan, journal, vision, beta) · settings · sync · theme (themes, flow, polish). Load order = `ORDER.txt`; new files usually go at the end.
+- **Extending a shared function: never `fn=function(){}`.** Use `hkLayer('fn','my-feature',function(...){...})` and, inside it, `const _x=hkBelow('fn','my-feature',fn__core)` to run everything below. For redraws: `onRender('name', fn)` (runs after every draw, errors caught and logged). Layered: render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage. Console: `hkLayers('tbGo')`, `renderLayers()`.
+- **Full pages:** `regPage(name, [openers], isOn, close)`; `pagesWire()` at startup makes any opener (and goHome / openSpaceSide) close the other pages. Never add `window[fn]=function` loops again.
+- **Saving:** `save()` never fails silently: `saveWarn()` shows one warning when storage is full/blocked.
+- **Visual safety net for refactors:** `node tools/shots.mjs <dir>` (120 screenshots: phone/computer × Flow/Classic × light/dark) before and after, then `python3 tools/shots-diff.py before after` → must say `0 differ`.
+- **Guards (tests):** layers.spec, render-pipeline.spec, pages.spec, css-health.spec (brace balance, ORDER.txt), save-warn.spec.
+- Still patched the old way (1–2 wrappers each, fine as they are; convert to hkLayer if you touch them): ciCard, hbToggle, gSetWin, openRhythm, gMsToggle, openGoal, homeAlso, mxKpiForm, mxOkrForm, drawGoals, mxSave, mxClose, drawGoal, gMsMenu, mtKpiCard, mtOkrCard, mxBtns, setCfg, openSettings, drawTabs, openSpace, openDetail, mxHead, ibRow, renderFullWidth, homeSpaces, addKinds, drawKinds, closeSheets, settingsPage, pageSummary, openNw.
+- `!important`: ~212 left on purpose (removing them changes which style wins; not provable cheaply).
 
 ## What landed recently (newest first)
 - 0.295 **Goals page redesign (A · Up next on every goal)** (`modes/goals/goals-page.js` → `gaDraw()`, called by `drawGoals()` in 08k so the Metrics switch wrapper in 08v still runs; `modes/goals/goals-page.css`). Same page on phone and computer: cards with progress, pace chip, and a NEXT row (Start = `startBlitz` for list tasks, otherwise opens the goal). Computer sidebar "Goals" is now one plain item that opens this page (the old fold with every goal is gone; 08q). Phone cards put days left on its own line. 0.293–0.294: Focus view fixes (Mark done for goal-only tasks, clearer card, finished milestone shows what you did).
@@ -51,7 +61,7 @@
 - 0.222 Goals ↔ KPIs/OKRs: Measured by links, New OKR from goal (milestones → key results), finish lines (`m.fin`), goal mini-tasks can add to a KPI (modes/metrics/goal-metrics.js). Desktop Home: **Bento** (default) and **Calm column** (home/desktop-home.js). Metrics page + sidebar item (modes/metrics/metrics-page.js). Mark milestone done button reworked.
 
 ## Design system (agreed with Suly, 0.241 — keep new work on it)
-- Overrides live in `src/css/19-consistency.css` and `src/js/08zn-consistency.js`.
+- Overrides live in `src/css/shell/consistency.css` and `src/js/shell/consistency.js`.
 - Text sizes: 12 label · 13 meta · 15 body · 17 row title · 20 · 24 card title · 28 · 34 · 44 · 56 page name (computers) + big display titles. No half sizes.
 - Weights: 500 regular, 600 semibold, 800 heavy (the font only loads these three; 700 renders as 800).
 - Corners: 8 chips · 14 rows/fields · 20 cards · 28 hero/sheets · round for pills and circles. Tiny bars/dots keep 2–6.
@@ -67,8 +77,8 @@
 
 
 ## How the newer pieces fit (read before touching them)
-- Modes are optional (`S.cfg.<mode>`), each one file that wraps shared functions: `rhythmSide` (desktop sidebar), `tabsList`/`tabNow`/`tbGo` (phone tabs), `modesPage` (Settings → Modes card), `render`/`renderDesk`, `applySettings`, plus `ESC_PAGES.<pageId>`. Copy the Wins/Routines/Plan/Journal pattern for a new one.
-- Order matters (files concatenate by name): `08zp-wins` → `08zq-routines` → `08zs-plan` → `08zt-journal` → `08zu-reminders` → `08zv-statusbar` → `08zw-beta` (moves beta cards into the folded group; must come after every `modesPage` wrapper) → `08zz-tabs-pick` (picks Home + 3 tabs; must stay the last tab wrapper).
+- Modes are optional (`S.cfg.<mode>`), each one file that adds **layers** (`hkLayer`, see Code map) to shared functions: `rhythmSide` (desktop sidebar), `tabsList`/`tabNow`/`tbGo` (phone tabs), `modesPage` (Settings → Modes card), `render` (`onRender`), `renderDesk`, `applySettings`; registers its full page with `regPage(...)`; plus `ESC_PAGES.<pageId>`. Copy the Wins/Routines/Plan/Journal pattern for a new one.
+- Order matters (ORDER.txt): `modes/wins` → `modes/routines` → `modes/plan` → `modes/journal` → `tasks/reminders` → `shell/statusbar` → `modes/beta` (moves beta cards into the folded group; must come after every `modesPage` wrapper) → `shell/tabs-pick` (picks Home + 3 tabs; must stay the last tab wrapper).
 - New synced collections need the same plumbing everywhere: `core/data.js` (repair, `trackChanges` key, `undoCore`), `core/undo-gestures.js` (snapshot/restore), `shell/toast-desktop-board.js` (`backupData`), `settings/profile.js` (restore, reset), `sync/cloud-sync-signin.js` (`hashOf`, `localDoc`, `coreOf`, `mergeArr` key, `applyDoc`). Keys in use: t l s a h c g k o w r b j.
 - Name clashes: one shared script scope and one stylesheet. Grep before adding a name. Bitten before: `hgT`, `.mo-in`, `moRise`, `.week`, `.ok` (Journal moods use `jm-`), and a global `const top` breaks a page (browsers reserve `top`).
 - `[hidden]` loses to any `display:` rule in this app: add `.x[hidden]{display:none}` when hiding a flex/grid element.
@@ -80,16 +90,16 @@
 - Needs keys/services Suly manages (not built): a live calendar connection (Google/Outlook sign-in) instead of the .ics import; push reminders when the app is closed (needs a push server).
 - Pin up to 3 lists to Home (design option A on the canvas, "Phone Home · quicker way into a list").
 
-## First time (0.255): demo + Clear chip + quick tour — `src/js/12b-onboard.js`, `src/css/25-onboard.css`
+## First time (0.255): demo + Clear chip + quick tour — `src/js/settings/onboard.js`, `src/css/settings/onboard.css`
 - New people land on the demo (`S.demoOn=true` in `freshState`); the 3 intro slides now only show after a reset.
 - Home shows "Example tasks · Clear" while demo tasks exist (phone: under the title; computer: in `#mSub`). Clear → "Start fresh" (sheet on phones, centred card on computers): pick spaces; removes demo tasks only, keeps spaces holding your own things; undo works.
 - Quick tour: hello card, then 6 steps you do yourself (open a space → lists → stages → Backlog→My week → My week→Today → open a task). Card follows `openSpace` / `setStage` / `openDetail` (wrapped). Replay: Settings → Help → Quick tour. Automated checks skip the auto-start unless `window.__tourTest`. Tests: `tests/onboard.spec.mjs`.
 
 ## Repo visibility (decided 2026-11-01)
 - The repo stays **public** for now (no real users yet). Suly plans to make it **private once real users arrive**.
-- Before going private: the Windows updater (`src-tauri/tauri.conf.json` endpoints) and the download button (`WIN_RELEASES` in `src/js/11-profile.js`) read **public GitHub releases** of this repo. They must move to a separate public "windaday-releases" repo first (needs a token secret Suly adds), ship one desktop update with the new address, and only then go private. Private repos also lose the free github.io test copy and have limited free Actions minutes.
+- Before going private: the Windows updater (`src-tauri/tauri.conf.json` endpoints) and the download button (`WIN_RELEASES` in `src/js/settings/profile.js`) read **public GitHub releases** of this repo. They must move to a separate public "windaday-releases" repo first (needs a token secret Suly adds), ship one desktop update with the new address, and only then go private. Private repos also lose the free github.io test copy and have limited free Actions minutes.
 
-## Settings trimmed (0.270) — `src/js/12f-settings-trim.js`
+## Settings trimmed (0.270) — `src/js/settings/settings-trim.js`
 - Always on, settings removed (forced in `TRIM_ON`, re-applied in `applySettings`): animations, welcome, Today highlight, sounds (Glass), new tasks on top, fold columns after 5, tuck away finished, quiet when idle (5 s), compact pop-out, sound at end of round, keep awake, one focus step at a time. New tasks default to the last-used list.
 - Appearance: Themes fold away (`themesFold`), Home has its own card, then Layout. Modes: new Inbox card, Everyday holds Weekly review + Morning check-in. Focus: one compact timer row (`timerRow`).
 - Also 0.268–0.269: dark Ember / light Sand / Calm column defaults, sun/moon button (`theme/theme-toggle.js`), Mode row removed, themes as pills.
@@ -99,7 +109,7 @@
 - Saved `path`/`poster` views (goal or Settings) are migrated to `focus`. Old `gpp-*`/`gpo-*` code in 08n is unused on phones now.
 - Finish line chip (08w `gmxPaint`) also shows in Focus (`.gf-mt`). The ⋯ "Finish milestone" handler uses stopImmediatePropagation so the reopen dialog doesn't pop right after finishing.
 
-## Flow design (0.302) — `src/js/12gz-flow.js`, `src/css/37-flow.css`, `tests/flow.spec.mjs`
+## Flow design (0.302) — `src/js/theme/flow.js`, `src/css/theme/flow.css`, `tests/flow.spec.mjs`
 - Settings → Appearance → Design: **Classic** (default, unchanged) or **Flow**. `S.cfg.ui`, and `root[data-ui="flow"]`.
 - Flow is 11 parts, each with its own switch (`S.cfg.flNext`, `flPlus`, … default on). CSS is scoped `:root[data-fl~="part"]`; JS checks `flowOn('part')`.
 - Parts: next (Start/Done/Later on Up next), plus (+ menu with page kind first on Habits/Goals; floating + on boards), shell (page headers), presets (Simple/Planner/Everything on Modes), shapes, thumb (phone stage tabs at the bottom), panel (desktop details docked right), inline (pencil rename in the board top bar), wins (tick burst + weekly recap Sun/Mon, `cfg.flRecapX`), empty (example + Add a task), kit.
@@ -116,7 +126,7 @@
 - Fresh container note: tests need `PW_CHROMIUM=$(ls -d /opt/pw-browsers/chromium-*/chrome-linux*/chrome | head -1)` and `npm ci` first.
 - **Flow pages (0.308):** Wins (plain jar, grey bars + coral best day, win cards), Routines (now-card with coral outline + full-width Start), Journal (same cards, coral mood switch), Habits (coral square ticks; empty page without the sun, with one-tap ideas `data-flhb`), The climb (no sun, flat mountain in a soft panel). Approved mockups on the design canvas, row "Flow fixes".
 
-## Vision board (0.309) — `src/js/08zv5-vision.js`, `src/css/38-vision.css`, `tests/vision.spec.mjs`
+## Vision board (0.309) — `src/js/modes/vision.js`, `src/css/modes/vision.css`, `tests/vision.spec.mjs`
 - Optional Beta mode (`S.cfg.vision`): phone tab, "Vision" in the computer sidebar, card in Settings → Modes (Beta group), part of Flow's Everything preset.
 - Data `S.vision` (synced/merged with prefix 'v', undo, backup/import, reset): cards {id,k:photo|quote|word|goal,t,g,area,size,year,c,ord,at}. Areas in `S.cfg.vAreas`. 40 cards per year board, one word per year.
 - Photos: shrunk to ≤1080px JPEG (~80–200 KB) and stored ONLY on the device in IndexedDB `wd-vision` (never in synced data). Other devices show "Photo is on another device". Orphan photos cleaned once a session. Photo sync = future phase (needs a private Supabase storage bucket + RLS — Suly's call).
@@ -127,7 +137,7 @@
 - **0.313:** removed Save as wallpaper and the "Your 2026" eyebrow on the Vision page (cleaner); the year button shows the year.
 - **0.314:** Vision summary shows only the word of the year (the All chip already counts cards).
 - **Flow hero 0.315 "Aurora glass":** the Up next card (`.td-card` phone, `.cm-up` computer) is no longer a solid coral block: surface card, `::before` = faint coral+lilac conic light turning in 40s (`flAurora`), `::after` = frosted veil (backdrop blur). Coral only on Start. Done/Later are labelled pills. Reduced motion = still. Test: "Flow hero is Aurora glass".
-- **Polish pass 0.316** (full review, canvas row "Full review: now vs polished"). All CSS in `src/css/39-polish.css`, one numbered block per fix, one commit per fix (easy to revert one):
+- **Polish pass 0.316** (full review, canvas row "Full review: now vs polished"). All CSS in `src/css/theme/polish.css`, one numbered block per fix, one commit per fix (easy to revert one):
   ① phone top bar: theme switch kept (0.318: order theme · modes · search · profile), floating tab pill shows names; Flow hero hides "Today", task title 24px.
   ② Flow Focus screen: graphite/light + slow Aurora (`flFocusAur`), only when the focus colour is the default (`data-focuscol="red"`); Classic and picked colours unchanged.
   ③ one page header: no tagline eyebrows (Inbox "Capture", Habits "Small daily wins", Settings "Windaday"); no Beta badge after page titles (Beta only in Settings → Modes).
@@ -143,16 +153,16 @@
 
 ## 0.322–0.323 · cleanup step 0–1
 - 0.322: `saveWarn()` (08-toast): a failed localStorage save shows one clear warning (signed-in wording differs); `saveOk` resets after a good save. Test: save-warn.spec.
-- 0.323: **one draw pipeline.** Never write `render=function` again. In 02-tasks-render: `renderCore` + named layers.
+- 0.323: **one draw pipeline.** Never write `render=function` again. In tasks/render: `renderCore` + named layers.
   - `onRender('name', fn)` = run after every draw (errors are caught and logged, later steps still run).
   - `renderLayer('name', fn)` + `const _x=renderBelow('name')` = code before/around the draw (calm-motion, inbox-keep-typing, goal-metrics, page-motion, ...).
   - `renderLayers()` in the console lists all 26 in order. Test: render-pipeline.spec.
-- 0.324 (step 2): **layers for every shared function** (01-boot-data): `hkLayer(fn,name,f)`, `hkBelow(fn,name,fn__core)`, `hkLayers(fn)`.
+- 0.324 (step 2): **layers for every shared function** (core/data): `hkLayer(fn,name,f)`, `hkBelow(fn,name,fn__core)`, `hkLayers(fn)`.
   render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage dispatch through `hkCall`; the original body is `fn__core`.
   render's helpers (onRender/renderLayer/renderBelow) are thin wrappers over this. Test: layers.spec.
-- Known leftovers (work fine, tidy later): the "opening a page closes the others" loops (`window[fn]=function` in metrics/wins/routines/plan/journal/vision); a few full replacements (drawInbox, drawMetrics, mxMark, mxPill, mxPicks, mxHead, canPut) whose first version is now dead code; 1–2-patch functions (hbToggle, setCfg, ...).
 - 0.325 (step 3, CSS): fixed a stray-brace bug in tasks/spaces-home-detail.css (2 orphan lines silently killed the next rule); removed 156 unused rules (170 selectors), 3 unused @keyframes, 2 exact duplicate rules (~13 KB). Proved pixel-identical on 112 screens with `tools/shots.mjs` + `tools/shots-diff.py` — use these for any future refactor. Test: css-health.spec (brace balance, no stray declarations).
   `!important` (212 left) deliberately kept: removing them changes which style wins and can't be proven safe cheaply.
 - 0.326 (step 4, files): source files now live in folders by area, with plain names; load order lives in `src/js/ORDER.txt` and `src/css/ORDER.txt` (the build stops if a file is missing or unlisted). Build output was byte-identical before/after. Test: css-health.spec (ORDER check).
   Folders: core · tasks · focus · home · shell (tabs, sidebar, motion, toast) · modes (inbox, habits, goals, metrics, wins, routines, plan, journal, vision) · settings · sync · theme (themes, flow, polish).
   New file → put it in its folder and add it to ORDER.txt (usually at the end).
+- 0.327 (step 5 + leftovers): the 6 "close other pages" loops became one page list (`regPage`/`pagesWire`), which also fixed Goals → Inbox leaving Goals open underneath; 6 dead first versions removed (drawInbox, drawMetrics, mxMark, mxPill, mxPicks, canPut — the final version is now a plain declaration); this doc rewritten around the Code map. Pixel-identical on 112 screens. Test: pages.spec.

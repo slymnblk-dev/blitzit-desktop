@@ -378,3 +378,5 @@ onRender('goal-pages',function(d){
   if(gdOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#gdPg')&&a.matches('input,textarea')))drawGoal()}
   if(glOn&&!goalsOn())closeGoals();if(glOn)drawGoals();
 });
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('goals',['openGoals','openGoal'],()=>glOn||gdOn,()=>{if(gdOn)closeGoal();if(glOn)closeGoals()});

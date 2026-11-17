@@ -23,4 +23,4 @@ $('capInbox').onclick=()=>{const nw=capNew;capClose();if(!nw)return;
   commit(()=>S.tasks.push(t),'Saved to your Inbox');try{sfx('add')}catch(e){}if(nw.after)try{nw.after()}catch(e){}};
 document.addEventListener('keydown',e=>{if(!$('capDlg').classList.contains('on'))return;if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();capClose()}},true);
 /* the check itself: same rule, the new message instead of a short toast. A 4th argument {title, after} marks a brand-new task. */
-canPut=function(list,stage,skip,nw){if(stageRoom(list,stage,skip))return true;capOpen(list,stage,nw);return false};
+function canPut(list,stage,skip,nw){if(stageRoom(list,stage,skip))return true;capOpen(list,stage,nw);return false};

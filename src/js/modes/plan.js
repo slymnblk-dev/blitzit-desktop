@@ -213,8 +213,8 @@ hkLayer('rhythmSide','plan',function(){const h=_pnSide();if(!planOn())return h;c
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sPlan')){e.stopImmediatePropagation();return pnOn?closePlan():openPlan()}
   if(pnOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew],#sMetrics,#sWins,#sRoutines'))closePlan()},true);
-for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide','openMetrics','openWins','openRoutines']){const f=window[fn];if(typeof f!=='function')continue;
-  window[fn]=function(){if(pnOn)closePlan();return f.apply(this,arguments)}}
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('plan',['openPlan'],()=>pnOn,closePlan);
 const _pnDesk=hkBelow('renderDesk','plan',renderDesk__core);hkLayer('renderDesk','plan',function(){_pnDesk.apply(this,arguments);if(pnOn){const h=$('sHome');if(h)h.classList.remove('on')}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!pnOn||e.defaultPrevented||$('dlg').classList.contains('on')||document.querySelector('.sheet.on,.cx-pop.on'))return;
   if(e.target&&e.target.closest&&e.target.closest('#planPg input,#planPg select'))return;if(!pnDesk())return;e.preventDefault();closePlan()});

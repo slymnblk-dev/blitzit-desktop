@@ -19,6 +19,7 @@ test('computer: the floating + opens Task, Note, List, Space; L makes a list wit
   await expect(page.locator('#addSheet')).toHaveAttribute('data-kind', 'list');
   await page.locator('#newTitle').fill('Groceries');
   await page.locator('#newTitle').press('Enter');
+  await expect.poll(() => page.evaluate(() => !!S.lists.find(x => x.name === 'Groceries'))).toBe(true);   // wait for the list (busy machines)
   const r = await page.evaluate(() => { const l = S.lists.find(x => x.name === 'Groceries'); return { loose: l.loose, space: l.space, open: S.space === 'all' && S.list === l.id, title: document.getElementById('mDate').textContent }; });
   expect(r).toEqual({ loose: true, space: '', open: true, title: 'Groceries' });
   // the sidebar shows it under "Lists", above Spaces
@@ -111,7 +112,7 @@ test('adding a task from Home goes to the list you used last, also one with no s
     await page.evaluate(() => { goHome(); document.getElementById('addBtn').click(); });
     await page.locator('#newTitle').fill(title);
     await page.locator('#saveBtn').click();
-    await page.waitForTimeout(250);
+    await expect.poll(() => page.evaluate(t => !!S.tasks.find(x => x.title === t), title)).toBe(true);   // wait for the save (busy machines)
     return page.evaluate(t => listOf(S.tasks.find(x => x.title === t).list).name, title);
   };
   // used Groceries last → a task from Home lands there
@@ -137,7 +138,7 @@ test('task card: pick the space first, then its lists; "No space" holds lists wi
   expect(await page.locator('#optList .opt').allInnerTexts()).toEqual(['Groceries']);
   await page.locator('#newTitle').fill('Bread');
   await page.locator('#saveBtn').click();
-  expect(await page.evaluate(() => S.tasks.find(t => t.title === 'Bread').list)).toBe('lgro');
+  await expect.poll(() => page.evaluate(() => (S.tasks.find(t => t.title === 'Bread') || {}).list)).toBe('lgro');
   // inside a space: no space row, only its lists
   await page.evaluate(() => { openSpace(S.spaces[0].id); });
   await page.waitForTimeout(300);

@@ -215,3 +215,5 @@ document.addEventListener('click',e=>{
 
 /* the habits page and cards follow every redraw */
 onRender('habits',function(d){modesRender()});
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('habits',['openRhythm'],()=>rhOn,closeRhythm);

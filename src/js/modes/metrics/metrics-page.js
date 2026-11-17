@@ -30,19 +30,7 @@ function mtOkrCard(o){const p=o.closed?(o.score||0):mxOkrP(o),sp=spaceOf(o.space
     <span class="mt-oh"><span class="mt-ot"><span class="mt-per">${esc(mxOkrWhen(o))}${mtSp==='all'&&mtSpaces().length>1?` · ${sp.e?esc(sp.e)+' ':''}${esc(sp.name||'')}`:''}</span><b>${esc(o.name)}</b></span>
       <span class="mt-ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="r0" cx="32" cy="32" r="${r}"/><circle class="r1" cx="32" cy="32" r="${r}" style="stroke-dasharray:${(C2*p).toFixed(1)} ${C2.toFixed(1)}"/></svg><b>${Math.round(p*100)}%</b></span></span>
     ${o.closed?'':`<span class="mt-krs">${o.krs.map(k=>`<span class="mt-kr"><span class="mt-krt"><span>${esc(k.name)}</span><b>${mxFmt(mxKrNow(k),k.unit)}<small> ${mxKrKind(k)==='sum'?'/':'→'} ${mxFmt(+k.target,k.unit)}</small></b></span><span class="mx-bar"><i style="width:${(mxKrP(k)*100).toFixed(1)}%"></i></span></span>`).join('')}</span>`}</button>`}
-function drawMetrics(){if(!mtOn)return;const y=$('metricsPg').scrollTop;
-  if(mtSp!=='all'&&!spaceOf(mtSp))mtSp='all';
-  const ks=(S.kpis||[]).filter(k=>spaceOf(k.space)&&mtIn(k.space)),os=(S.okrs||[]).filter(o=>!o.closed&&spaceOf(o.space)&&mtIn(o.space)),past=(S.okrs||[]).filter(o=>o.closed&&spaceOf(o.space)&&mtIn(o.space));
-  const sps=mtSpaces();
-  const filt=sps.length>1?`<div class="mt-f" role="tablist" aria-label="Space">${[['all','All spaces'],...sps.map(s=>[s.id,(s.e?s.e+' ':'')+s.name])].map(([v,l])=>`<button role="tab" data-mtsp="${v}" aria-selected="${String(v)===String(mtSp)}">${esc(l)}</button>`).join('')}</div>`:'';
-  const head=(ico,cls,t,n,line,kind)=>`<div class="mt-sh"><span class="mt-si ${cls}">${ico}</span><div class="mt-st"><b>${t}${n?`<small>${n}</small>`:''}</b><span>${line}</span></div>${n?`<button class="mt-new" data-mtnew="${kind}">${PLUS_S}New ${t.slice(0,-1)}</button>`:''}</div>`;
-  const kSec=`<section class="mt-sec">${head(MX_ICON,'hot','KPIs',ks.length,'Numbers you keep an eye on, every week or month','kpi')}
-    ${ks.length?`<div class="mt-kg">${ks.map(mtKpiCard).join('')}</div>`:`<div class="mt-empty">${dhEmpty(MX_ICON,'hot','Track a number','Like messages sent or demos booked. Done tasks can count toward it.',dhBtn('data-mtnew="kpi"','New KPI'))}</div>`}</section>`;
-  const oSec=`<section class="mt-sec">${head(MT_OKR_I,'vi','OKRs',os.length,'A goal for the quarter, and the results that prove it','okr')}
-    ${os.length?`<div class="mt-og">${os.map(mtOkrCard).join('')}</div>`:`<div class="mt-empty">${dhEmpty(MT_OKR_I,'vi','Aim for the quarter','One objective, like “Win 3 customers”, with a few key results.',dhBtn('data-mtnew="okr"','New OKR'))}</div>`}
-    ${past.length?`<button class="mt-pastb" data-mtpast aria-expanded="${mtPast}">Past OKRs<small>${past.length}</small>${CHEV}</button>${mtPast?`<div class="mt-og">${past.map(mtOkrCard).join('')}</div>`:''}`:''}</section>`;
-  $('mtIn').innerHTML=`${mtSwitch('metrics')}<div class="hp-head mt-head"><div class="hp-tt"><span class="hp-eye">${ks.length||os.length?`${ks.length} ${ks.length===1?'KPI':'KPIs'} · ${os.length} ${os.length===1?'OKR':'OKRs'}`:'KPIs & OKRs'}</span><h1 class="hp-h">Metrics</h1></div></div>${filt}${kSec}${oSec}`;
-  $('metricsPg').scrollTop=y}
+/* drawMetrics: final version lives further down the load order */
 function openMetrics(){if(!mxOn())return;
   if(ibOn)closeInbox();if(rhOn)closeRhythm();if(glOn)closeGoals();if(typeof gdOn!=='undefined'&&gdOn)closeGoal();if(typeof closeSearch==='function')closeSearch();
   mtOn=true;drawMetrics();$('metricsPg').classList.add('on');document.body.classList.add('ib-open');$('metricsPg').scrollTop=0;haptic(5);
@@ -72,9 +60,8 @@ hkLayer('rhythmSide','metrics',function(){let h=_mtSide();if(!mxOn())return h;co
 $('sLists').addEventListener('click',e=>{
   if(e.target.closest('#sMetrics')){e.stopImmediatePropagation();return mtOn?closeMetrics():openMetrics()}
   if(mtOn&&e.target.closest('#sHome,#sAll,[data-sp],#sNewSp,[data-l],#sInbox,#sRhythm,#sGoals,[data-sgoal],[data-sgnew]'))closeMetrics()},true);
-/* any other page opening closes Metrics */
-for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide']){const f=window[fn];if(typeof f!=='function')continue;
-  window[fn]=function(){if(mtOn&&!(fn==='openGoal'&&false))closeMetrics();return f.apply(this,arguments)}}
+/* a full page: opening any other page closes it (see regPage in core/data.js) */
+regPage('metrics',['openMetrics'],()=>mtOn,closeMetrics);
 /* keep the page in step with every change, and Home not lit while Metrics is open */
 const _mtRender=renderBelow('metrics-page');renderLayer('metrics-page',function(d){_mtRender(d);if(mtOn){if(!mxOn())closeMetrics();else drawMetrics()}});
 const _mtDesk=hkBelow('renderDesk','metrics',renderDesk__core);hkLayer('renderDesk','metrics',function(){_mtDesk.apply(this,arguments);if(mtOn){const h=$('sHome');if(h)h.classList.remove('on')}});
