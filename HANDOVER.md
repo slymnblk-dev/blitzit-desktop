@@ -21,7 +21,7 @@
 - Design options go on the Claude Design canvas (artifact "Habits & Goals pages"); re-read `project/canvas.json` from the artifact before publishing, the editor re-saves it.
 
 ## State
-- **dev = 0.327** (cleanup done; on `dev`, waiting for Suly's "go live"). Live (main) = 0.321. Check with `git ls-remote origin main dev`.
+- **dev = 0.328** (cleanup done; on `dev`, waiting for Suly's "go live"). Live (main) = 0.321. Check with `git ls-remote origin main dev`.
 - Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/NQdsSMjFwxZzzZ54XdxCRD — republish `web/index.html` after every change.
 - Full suite at the last run (0.327): 233/235 passed; the 2 misses were a test race in new-menu.spec (read the result before the save finished), fixed with expect.poll and passing 24/24 under load.
 
@@ -166,3 +166,4 @@
   Folders: core · tasks · focus · home · shell (tabs, sidebar, motion, toast) · modes (inbox, habits, goals, metrics, wins, routines, plan, journal, vision) · settings · sync · theme (themes, flow, polish).
   New file → put it in its folder and add it to ORDER.txt (usually at the end).
 - 0.327 (step 5 + leftovers): the 6 "close other pages" loops became one page list (`regPage`/`pagesWire`), which also fixed Goals → Inbox leaving Goals open underneath; 6 dead first versions removed (drawInbox, drawMetrics, mxMark, mxPill, mxPicks, canPut — the final version is now a plain declaration); this doc rewritten around the Code map. Pixel-identical on 112 screens. Test: pages.spec.
+- 0.328: **bug fix** — Save ignored a new task added within 0.7 s of the previous one (the double-tap guard was global). `openSheet('addSheet')` now resets `addLock`; a real double tap is still blocked. Also made new-menu.spec flaky in CI. Test: quick-add.spec.

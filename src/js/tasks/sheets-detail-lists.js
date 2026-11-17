@@ -1,6 +1,6 @@
 /* ---------- sheets ---------- */
 let onSheetClose=null;
-function openSheet(id){$('scrim').classList.add('on');$(id).classList.add('on')}
+function openSheet(id){$('scrim').classList.add('on');$(id).classList.add('on');if(id==='addSheet')addLock=0} // 0.328: a fresh add card is never blocked by the last save's double-tap guard
 function closeSheets(){
   const ae=document.activeElement;if(ae&&ae.closest&&ae.closest('.sheet'))ae.blur();
   if(!settingsOpen())$('scrim').classList.remove('on');document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('on'));
@@ -39,7 +39,7 @@ $('optList').onclick=e=>{const b=e.target.closest('.opt');if(b){draft.list=b.dat
 $('optEst').onclick=e=>{const b=e.target.closest('.opt');if(b){draft.est=+b.dataset.v;drawAdd()}};
 $('newTitle').oninput=e=>$('saveBtn').disabled=!e.target.value.trim();
 $('newTitle').onkeydown=e=>{if(e.key==='Enter'&&e.target.value.trim())$('saveBtn').click()};
-let addLock=0;
+var addLock=0; // var: openSheet (above) resets it
 $('saveBtn').onclick=()=>{
   if(Date.now()-addLock<700)return;addLock=Date.now(); // ignore accidental double taps
   if(!canPut(draft.list,draft.stage,null,{title:$('newTitle').value.trim(),after:()=>closeSheets()}))return;
