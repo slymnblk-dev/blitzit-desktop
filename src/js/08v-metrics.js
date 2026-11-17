@@ -76,7 +76,7 @@ $('sLists').addEventListener('click',e=>{
 for(const fn of ['openInbox','openRhythm','openGoals','openGoal','goHome','openSpaceSide']){const f=window[fn];if(typeof f!=='function')continue;
   window[fn]=function(){if(mtOn&&!(fn==='openGoal'&&false))closeMetrics();return f.apply(this,arguments)}}
 /* keep the page in step with every change, and Home not lit while Metrics is open */
-const _mtRender=render;render=function(d){_mtRender(d);if(mtOn){if(!mxOn())closeMetrics();else drawMetrics()}};
+const _mtRender=renderBelow('metrics-page');renderLayer('metrics-page',function(d){_mtRender(d);if(mtOn){if(!mxOn())closeMetrics();else drawMetrics()}});
 const _mtDesk=renderDesk;renderDesk=function(){_mtDesk.apply(this,arguments);if(mtOn){const h=$('sHome');if(h)h.classList.remove('on')}};
 /* Escape closes it (computer) */
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!mtOn||mxOpen||$('dlg').classList.contains('on')||document.querySelector('.sheet.on'))return;if(!mtWide())return;e.preventDefault();closeMetrics()});

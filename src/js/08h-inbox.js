@@ -159,5 +159,5 @@ $('inboxPg').addEventListener('keydown',e=>{
 });
 $('inboxPg').addEventListener('input',e=>{if(e.target.id==='ibNew'){ibGrow(e.target);ibTyped()}});
 /* keep the page in step with edits, undo and sync, without stealing focus while typing */
-const _ibRender=render;
-render=function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;ibGrow(n);ibTyped();n.focus()}}};
+const _ibRender=renderBelow('inbox-page');
+renderLayer('inbox-page',function(d){_ibRender(d);if(ibOn&&!inboxOn()){closeInbox();return}if(ibOn){const a=document.activeElement,typing=a&&a.id==='ibNew';const y=$('inboxPg').scrollTop;drawInbox();$('inboxPg').scrollTop=y;if(typing){const n=$('ibNew');n.value=a.value;ibGrow(n);ibTyped();n.focus()}}});

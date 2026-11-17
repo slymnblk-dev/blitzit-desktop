@@ -183,7 +183,7 @@ addEventListener('keydown',e=>{if(!RP||!$('rtPlay').classList.contains('on')||$(
   if(e.key===' '&&!e.target.closest('button')&&RP.r.steps[RP.i].m){e.preventDefault();e.stopImmediatePropagation();$('rpIn').querySelector('[data-rppause]').click()}},true);
 
 /* ---------- keep things fresh ---------- */
-const _rtRender=render;render=function(d){_rtRender(d);try{if(rtOn){if(!routinesOn())closeRoutines();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#routinesPg'))drawRoutines()}}catch(err){console.error(err)}};
+onRender('routines-page',function(d){if(rtOn){if(!routinesOn())closeRoutines();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#routinesPg'))drawRoutines()}});
 
 /* ---------- computers: "Routines" under Modes in the sidebar ---------- */
 const _rtSide=rhythmSide;

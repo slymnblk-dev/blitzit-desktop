@@ -116,7 +116,7 @@ $('journalPg').addEventListener('click',e=>{
     cxOpen(m,[{t:'Clear this day',ic:BIN_S,warn:1,act:()=>{commit(()=>{const j=jrGet(k);if(j){j.am='';j.pm='';delete j.mood}},'Day cleared');drawJournal()}}])}});
 
 /* ---------- keep it fresh ---------- */
-const _jrRender=render;render=function(d){_jrRender(d);try{if(jrOn){if(!journalOn())closeJournal();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#journalPg [data-jrf],#jrQ'))drawJournal()}}catch(err){console.error(err)}};
+onRender('journal-page',function(d){if(jrOn){if(!journalOn())closeJournal();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#journalPg [data-jrf],#jrQ'))drawJournal()}});
 
 /* ---------- computers: "Journal" under Modes in the sidebar ---------- */
 const _jrSide=rhythmSide;

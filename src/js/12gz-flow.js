@@ -149,9 +149,9 @@ function flEmptyPaint(){if(!flowOn('empty')||!S.space||S.stage==='done')return;c
 document.addEventListener('click',e=>{if(!e.target.closest('[data-fladd]'))return;e.stopPropagation();$('addBtn').click()},true);
 
 /* every draw: add the Flow pieces (inside the page-motion layer, so they arrive with the page) */
-const _flRender=render;
+const _flRender=renderBelow('flow-paint');
 function flPaintAll(){if(!flowUI())return;try{if(S.space){root.style.setProperty('--accent-btn','var(--accent)');root.style.setProperty('--on-accent','var(--fl-ink)')}flNextPaint();flRecapPaint();flEmptyPaint();flThumbPaint()}catch(e){}}
-render=function(){const r=_flRender.apply(this,arguments);flPaintAll();return r};
+renderLayer('flow-paint',function(){const r=_flRender.apply(this,arguments);flPaintAll();return r});
 const _flDesk=renderDesk;
 renderDesk=function(){const r=_flDesk.apply(this,arguments);flPaintAll();return r};
 

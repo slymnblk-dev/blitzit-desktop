@@ -33,9 +33,8 @@ document.addEventListener('click',e=>{
 
 /* new tasks go to the list you used last: remember the list of the newest task you added */
 var trimSeen=0;
-const _trimRender=render;
-render=function(d){_trimRender(d);try{let top=null;for(const t of S.tasks)if(t.list&&!t.inbox&&(!top||t.id>top.id))top=t;
-  if(top&&top.id>trimSeen){if(trimSeen&&S.cfg.defList!==top.list){S.cfg.defList=top.list}trimSeen=top.id}}catch(e){}};
+onRender('last-used-list',function(d){let top=null;for(const t of S.tasks)if(t.list&&!t.inbox&&(!top||t.id>top.id))top=t;
+  if(top&&top.id>trimSeen){if(trimSeen&&S.cfg.defList!==top.list){S.cfg.defList=top.list}trimSeen=top.id}});
 /* these stay on even if a synced older setting says otherwise */
 const _trimApply=applySettings;
 applySettings=function(){Object.assign(S.cfg,TRIM_ON);if(!['ring','tint'].includes(S.cfg.priStyle))S.cfg.priStyle='ring'; /* priorities: Ring (default) or Tint (0.273) */return _trimApply.apply(this,arguments)};

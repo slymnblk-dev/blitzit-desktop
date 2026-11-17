@@ -169,8 +169,8 @@ function gmxFinCheck(){const fire=[];
   if(!fire.length)return;
   setTimeout(()=>{fire.forEach(([g,m])=>{if(m.done||!m.fin)return;m.fin.hit=true;gMsToggle(g,m);
     const fv=gmxFinVal(m.fin);toast(`🏁 ${m.t} · done, ${fv?fv.name:'the number'} reached ${mxFmt(+m.fin.at,fv&&fv.unit)}`)})},350)}
-const _gmxRender=render;
-render=function(d){_gmxRender(d);if(gmxBusy)return;gmxBusy=true;try{if(gmxTasksSync())_gmxRender();if(mxOn())gmxFinCheck();if(gdOn)gmxPaint()}catch(e){console.error(e)}finally{gmxBusy=false}};
+const _gmxRender=renderBelow('goal-metrics');
+renderLayer('goal-metrics',function(d){_gmxRender(d);if(gmxBusy)return;gmxBusy=true;try{if(gmxTasksSync())_gmxRender();if(mxOn())gmxFinCheck();if(gdOn)gmxPaint()}catch(e){console.error(e)}finally{gmxBusy=false}});
 
 /* Metrics: tag KPIs and OKRs with the goal they measure (🏆 once it's achieved) */
 const gmxTag=(k,id)=>{const gs=gmxGoalsOf(k,id);return gs.length?`<span class="mt-gl">${gs.map(g=>`<span>${g.done?'🏆 ':g.e?esc(g.e)+' ':''}${esc(g.name)}</span>`).join('')}</span>`:''};

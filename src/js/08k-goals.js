@@ -372,10 +372,9 @@ const _gSetStage=setStage;
 setStage=function(t,stage){const was=t.stage;_gSetStage(t,stage);
   try{if(was!==stage&&(stage==='done'||was==='done'))gList().forEach(g=>{const m=gMsOf(g,t);if(m)gMsSync(m)})}catch(err){}};
 /* keep the goal page in step with edits, undo and sync, without stealing focus while typing */
-const _gRender=render;
-render=function(d){_gRender(d);try{
+onRender('goal-pages',function(d){
   if(gsOn&&!goalsOn())closeSetup();
   if(gdOn&&(!goalsOn()||!gById(gdId)))closeGoal();
   if(gdOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#gdPg')&&a.matches('input,textarea')))drawGoal()}
   if(glOn&&!goalsOn())closeGoals();if(glOn)drawGoals();
-}catch(err){console.error(err)}};
+});

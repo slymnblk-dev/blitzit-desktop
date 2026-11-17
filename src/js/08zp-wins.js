@@ -118,13 +118,13 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&$('wnReel').classList.contai
 
 /* ---------- a won day goes in the jar: the moment every Today task is done ---------- */
 let wnLeft=null;
-const _wnRender=render;render=function(d){_wnRender(d);try{
+onRender('wins-jar',function(d){
   const left=S.tasks.filter(t=>shown(t)&&t.stage==='today').length;
   if(wnLeft>0&&left===0&&performance.now()-sfxAct<2500&&S.tasks.some(t=>shown(t)&&t.stage==='done'&&t.doneAt&&Date.now()-t.doneAt<4000)){
     S.wins=S.wins||[];const k=today();if(!S.wins.some(w=>w.kind==='day'&&dkey(w.at)===k)){const n=S.tasks.filter(t=>t.stage==='done'&&t.doneAt&&dkey(t.doneAt)===k).length;
       S.wins.push({id:newId(),t:`${n} ${n===1?'task':'tasks'} done`,at:Date.now(),kind:'day'});save()}}
   wnLeft=left;
-  if(wnOn){if(!winsOn())closeWins();else drawWins()}}catch(err){console.error(err)}};
+  if(wnOn){if(!winsOn())closeWins();else drawWins()}});
 
 /* ---------- computers: "Wins" under Modes in the sidebar ---------- */
 const _wnSide=rhythmSide;

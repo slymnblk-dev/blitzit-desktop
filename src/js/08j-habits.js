@@ -213,4 +213,4 @@ document.addEventListener('click',e=>{
 },true);
 
 /* the habits page and cards follow every redraw */
-const _hbRender=render;render=function(d){_hbRender(d);try{modesRender()}catch(err){console.error(err)}};
+onRender('habits',function(d){modesRender()});

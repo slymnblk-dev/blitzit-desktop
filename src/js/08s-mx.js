@@ -303,8 +303,7 @@ document.querySelectorAll('[data-srch]').forEach(s=>s.insertAdjacentHTML('before
 document.addEventListener('click',e=>{if(e.target.closest('[data-mxopen]')){e.preventDefault();mxOpenPop()}});
 
 function mxBtns(){const on=mxOn()&&!!mxSpaceIn();document.querySelectorAll('[data-mxopen]').forEach(b=>{b.hidden=!on})}
-const _mxRender=render;
-render=function(d){_mxRender(d);try{mxBtns();if(mxOpen){if(!mxOn()||!mxSpaceNow())return mxClose();const a=document.activeElement;if(!(a&&a.closest&&a.closest('#mxPg')&&a.matches('input')))mxDraw()}}catch(err){console.error(err)}};
+onRender('metrics-buttons',function(d){mxBtns();if(mxOpen){if(!mxOn()||!mxSpaceNow())return mxClose();const a=document.activeElement;if(!(a&&a.closest&&a.closest('#mxPg')&&a.matches('input')))mxDraw()}});
 
 /* ---------- in a task: "Counts toward" (pill + picker), and a small mark on the row ---------- */
 function mxPill(t,P){if(!mxOn()||t.inbox)return '';const links=(t.mx||[]).map(mxFind).filter(Boolean);if(!links.length&&!mxCands(t).length)return '';

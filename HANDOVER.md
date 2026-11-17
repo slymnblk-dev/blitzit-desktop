@@ -140,3 +140,11 @@
 - **0.318:** phone tab switches are instant (`tbGo` adds `.tb-snap`, which turns off page fades for that frame). Vision: no line under the title; **pinned cards** (`c.pin`, max 3 `VB_PINS`; the word card is pinned unless `pin:false`) shown first in `.vb-pins`, one column, large; "Pin to top" switch in the card sheet. Today's vision on Home is **off by default**: `S.cfg.vHome`, a switch in Settings → Modes → Vision board. Long words in quotes wrap (`overflow-wrap:anywhere`). Tests in vision.spec ("Pinned cards") and page-motion.
 - **0.319–0.320:** light/dark switch: no colour fades inside the circle (`.tt-anim *` transitions off), new look starts as a dot (no one-frame flash), the browser bar colour (theme-color) fades with it (`ttBarFade`); browsers without View Transitions fade everything together (`.tt-fade`).
 - **0.321 light mode QA:** `root.dataset.lm` = light/dark as shown; `root.dataset.stg` = current stage. Light only: selected chips are white with a thin dark ring (were black pills: `.opt.on`, add-sheet kind tabs, `.vb-chip.on`, Goals|Metrics switch); `--ink` is white on the accent (dark on the amber week); Metrics "New" uses the accent; tab names and the profile Settings link a step darker; Flow light Focus "Done" is coral. Both modes: Save note / goal and Settings → Modes "Pick a few" use the accent (were black/white). Test: polish.spec "Light mode QA". The habits double-tap guard (350 ms) needed a wait in habits.spec now that pages are instant.
+
+## 0.322–0.323 · cleanup step 0–1
+- 0.322: `saveWarn()` (08-toast): a failed localStorage save shows one clear warning (signed-in wording differs); `saveOk` resets after a good save. Test: save-warn.spec.
+- 0.323: **one draw pipeline.** Never write `render=function` again. In 02-tasks-render: `renderCore` + named layers.
+  - `onRender('name', fn)` = run after every draw (errors are caught and logged, later steps still run).
+  - `renderLayer('name', fn)` + `const _x=renderBelow('name')` = code before/around the draw (calm-motion, inbox-keep-typing, goal-metrics, page-motion, ...).
+  - `renderLayers()` in the console lists all 26 in order. Test: render-pipeline.spec.
+- Cleanup still to do: step 2 (same for renderDesk, applySettings, tbGo, modesPage, rhythmSide, tabsList, tabNow), 3 CSS, 4 file names, 5 this doc.

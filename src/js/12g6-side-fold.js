@@ -23,5 +23,4 @@ function sbToggle(lab){const k=lab.dataset.sbk,box=lab.nextElementSibling;if(!k|
   if(shut)sbFold[k]=1;else delete sbFold[k];try{localStorage.setItem('wd-sbfold',JSON.stringify(sbFold))}catch(e){}haptic(4);try{sfx('fold')}catch(e){}}
 document.addEventListener('click',e=>{const l=e.target.closest('#sLists .sb-lbl');if(!l)return;e.preventDefault();e.stopPropagation();sbToggle(l)},true);
 document.addEventListener('keydown',e=>{const l=e.target.closest&&e.target.closest('#sLists .sb-lbl');if(l&&(e.key==='Enter'||e.key===' ')){e.preventDefault();sbToggle(l)}});
-const _sbRender=render;
-render=function(){const r=_sbRender.apply(this,arguments);try{sbWrap()}catch(e){}return r};
+onRender('sidebar-fold',function(){sbWrap()});

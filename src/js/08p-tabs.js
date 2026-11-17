@@ -45,5 +45,5 @@ $('tabBar').addEventListener('click',e=>{
   const b=e.target.closest('[data-tab]');if(b){haptic(5);return tbGo(b.dataset.tab)}
   if(e.target.closest('#tbAdd')){addKindNext=rhOn?'habit':glOn&&!gdOn?'goal':null;$('addBtn').click()}
 });
-const _tbRender=render;render=function(d){_tbRender(d);try{drawTabs()}catch(err){console.error(err)}};
+onRender('tab-bar',function(d){drawTabs()});
 const _tbDesk=renderDesk;renderDesk=function(){_tbDesk.apply(this,arguments);try{drawTabs()}catch(err){console.error(err)}};

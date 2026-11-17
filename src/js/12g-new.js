@@ -29,8 +29,7 @@ function looseDesk(){
   if(lo.length){const cm=document.querySelector('#dHome .cm-sps');if(cm&&!cm.querySelector('.cm-lo')){const nw=cm.querySelector('.cm-sp.new');const h=lo.map(l=>chip(l,'cm')).join('');nw?nw.insertAdjacentHTML('beforebegin',h):cm.insertAdjacentHTML('beforeend',h)}
     const bn=document.querySelector('#dHome .bn-sps');if(bn&&!bn.querySelector('.bn-lo')){const nw=bn.querySelector('.bn-sp.new');const h=lo.map(l=>chip(l,'bn')).join('');nw?nw.insertAdjacentHTML('beforebegin',h):bn.insertAdjacentHTML('beforeend',h)}}
 }
-const _nwRender=render;
-render=function(){const r=_nwRender.apply(this,arguments);try{looseDesk();nwFabPaint()}catch(e){}return r};
+onRender('loose-lists',function(){looseDesk();nwFabPaint()});
 const _nwFw=renderFullWidth;
 renderFullWidth=function(){_nwFw.apply(this,arguments);if(!isLooseView())return;const p=document.querySelector('#fwNav .fw-pill');if(p)p.innerHTML=`<span>${esc(listOf(S.list).name)}</span>${CHEV_D}`};
 

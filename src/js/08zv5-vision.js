@@ -263,7 +263,7 @@ function vbHomePaint(force){const c=vbToday();document.querySelectorAll('.vb-hom
 document.addEventListener('click',e=>{if(!e.target.closest('[data-vbopen]'))return;e.stopPropagation();openVision()},true);
 
 /* every draw: keep the page and Home's card fresh; link a goal made from a card */
-const _vbRender=render;render=function(d){_vbRender(d);try{vbLinkNew();vbHomePaint();if(vbOn){if(!visionOn())closeVision();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#vbAreaIn'))drawVision()}}catch(err){console.error(err)}};
+onRender('vision',function(d){vbLinkNew();vbHomePaint();if(vbOn){if(!visionOn())closeVision();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#vbAreaIn'))drawVision()}});
 const _vbDeskR=renderDesk;renderDesk=function(){_vbDeskR.apply(this,arguments);try{vbHomePaint();if(vbOn){const h=$('sHome');if(h)h.classList.remove('on')}}catch(e){}};
 
 /* ---------- computers: "Vision" under Modes in the sidebar ---------- */

@@ -36,7 +36,7 @@ function moArrive(scope){if(!moOK())return;root.classList.add('mo-arrive');clear
 const moAtHome=()=>!S.space&&!(typeof spPage!=='undefined'&&spPage);
 const moHomeBox=()=>matchMedia('(min-width:1100px)').matches?$('dHome'):$('homeView');
 let moWasHome=null;
-const _moRender=render;render=function(d){_moRender(d);try{const h=moAtHome();if(h&&moWasHome===false)moArrive(moHomeBox());moWasHome=h}catch(err){console.error(err)}};
+onRender('home-arrive',function(d){const h=moAtHome();if(h&&moWasHome===false)moArrive(moHomeBox());moWasHome=h});
 ['inboxPg','rhythmPg','goalsPg','mxPg'].forEach(id=>{const pg=$(id);if(!pg)return;
   new MutationObserver(()=>{const on=pg.classList.contains('on');if(on&&!pg.dataset.moOn)moArrive(pg);pg.dataset.moOn=on?'1':''}).observe(pg,{attributes:true,attributeFilter:['class']})});
 setTimeout(()=>{if(moAtHome()){moWasHome=true;moArrive(moHomeBox())}},700);
@@ -87,9 +87,9 @@ function moWonSound(){try{
   [523.3,659.3,784,1046.5].forEach((f,i)=>bell(f,t+i*.085,.9-i*.05,.16));
   [523.3,659.3,784].forEach(f=>osc('sine',f,t+.34,1.3,.07,.08));osc('triangle',261.6,t+.34,1.2,.05,.1);bell(1318.5,t+.42,.7,.04);
 }catch(e){}}
-const _moRender2=render;render=function(d){_moRender2(d);try{const n=moTodayLeft();
+onRender('day-won-sound',function(d){const n=moTodayLeft();
   if(moLeft>0&&n===0&&performance.now()-sfxAct<2500&&S.tasks.some(t=>shown(t)&&t.stage==='done'&&t.doneAt&&Date.now()-t.doneAt<4000))setTimeout(moWon,380);
-  moLeft=n}catch(err){console.error(err)}};
+  moLeft=n});
 
 /* 7 · a habit's streak grows: the number flips up like a counter */
 const _moHb=hbToggle;hbToggle=function(id,force){

@@ -202,7 +202,7 @@ function pnRoll(){if(pnRollDay===today()||!planOn())return;pnRollDay=today();con
   S.tasks.forEach(t=>{if(t.pl&&t.pl.d===k&&t.stage==='week'&&shown(t)){setStage(t,'today');n++}});if(n){save();setTimeout(()=>render(),0);toast(`${n} planned ${n===1?'task':'tasks'} moved to Today`)}}
 
 /* ---------- keep it fresh: the now line moves, finished tasks fade ---------- */
-const _pnRender=render;render=function(d){_pnRender(d);try{pnRoll();if(pnOn){if(!planOn())closePlan();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#planPg .pn-form'))drawPlan()}}catch(err){console.error(err)}};
+onRender('plan-page',function(d){pnRoll();if(pnOn){if(!planOn())closePlan();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#planPg .pn-form'))drawPlan()}});
 setInterval(()=>{if(pnOn&&!pnBusy&&!pnDragId&&!document.querySelector('.cx-pop.on'))drawPlan()},60000);
 
 /* ---------- computers: "Plan" under Modes in the sidebar ---------- */

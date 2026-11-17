@@ -16,8 +16,7 @@ function demoChipPlace(){
   const dk=$('mSub');if(dk&&deskOn())dk.insertAdjacentHTML('beforeend',DEMO_CHIP());
 }
 const deskOn=()=>matchMedia('(min-width:1100px)').matches;
-const _obRender=render;
-render=function(d){_obRender(d);try{demoChipPlace()}catch(e){}};
+onRender('demo-chip',function(d){demoChipPlace()});
 document.addEventListener('click',e=>{if(e.target.closest('[data-democlear]')){e.preventDefault();e.stopPropagation();haptic(6);sfOpen()}},true);
 
 /* "Start fresh": pick spaces, clear the examples (your own tasks, goals and habits stay; undo brings it all back) */

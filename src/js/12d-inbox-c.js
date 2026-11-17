@@ -46,6 +46,6 @@ $('inboxPg').addEventListener('keydown',e=>{if(e.target.id!=='ibNewN')return;
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ib2AddNote()}},true);
 $('inboxPg').addEventListener('input',e=>{if(e.target.id==='ibNewN')ibGrow(e.target)});
 /* keep a note you're typing when the page redraws (edits, undo, sync) */
-const _ib2Render=render;
-render=function(d){const a=document.activeElement,typingN=ibOn&&a&&a.id==='ibNewN'?a.value:null;_ib2Render(d);
-  if(typingN!=null){const n=$('ibNewN');if(n){n.value=typingN;ibGrow(n);n.focus()}}};
+const _ib2Render=renderBelow('inbox-keep-typing');
+renderLayer('inbox-keep-typing',function(d){const a=document.activeElement,typingN=ibOn&&a&&a.id==='ibNewN'?a.value:null;_ib2Render(d);
+  if(typingN!=null){const n=$('ibNewN');if(n){n.value=typingN;ibGrow(n);n.focus()}}});

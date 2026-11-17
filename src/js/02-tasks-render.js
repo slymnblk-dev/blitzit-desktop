@@ -184,7 +184,19 @@ function homeAlso(){
   const rows=[nsCard(),one?hw:'',typeof mxHome==='function'?mxHome():'',nd].filter(Boolean);
   return (rows.length?`<section class="also" aria-label="Also today"><h2 class="sec-h">Also today</h2><div class="also-in">${rows.join('')}</div></section>`:'')+(one?'':hw)+bk;
 }
-function render(dir){
+/* ---------- the draw pipeline (0.323) ----------
+   render() = renderCore() plus named layers, in load order (first = innermost).
+   A feature adds its redraw step with onRender(name, fn) (runs after the draw),
+   or renderLayer(name, fn) when it must run code before/around the draw; inside it,
+   renderBelow(name) runs everything under that layer. See renderLayers() for the full list. */
+var RL=[];
+function renderLayer(name,fn){RL.push({name,fn})}
+function renderBelow(name){return function(){const i=RL.findIndex(l=>l.name===name);return runRender(i<0?RL.length-1:i-1,this,arguments)}}
+function runRender(i,self,args){return i<0?renderCore.apply(self,args):RL[i].fn.apply(self,args)}
+function onRender(name,fn){const below=renderBelow(name);renderLayer(name,function(){const r=below.apply(this,arguments);try{fn.apply(this,arguments)}catch(e){console.error('[render:'+name+']',e)}return r})}
+function renderLayers(){return RL.map(l=>l.name)}
+function render(){return runRender(RL.length-1,this,arguments)}
+function renderCore(dir){
   root.dataset.view=S.space?'space':'home';root.dataset.stg=S.space?S.stage:'today';drawMe();
   if(!S.space){
     root.style.setProperty('--accent',color('today'));

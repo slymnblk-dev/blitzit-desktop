@@ -178,7 +178,7 @@ $('gmEd').addEventListener('keydown',e=>{
   if(e.key==='Escape'){if($('dlg').classList.contains('on'))return;e.preventDefault();e.stopPropagation();if(e.target.matches('input')&&e.target.value&&e.target.id==='gmeAdd'){e.target.value='';return}closeMsEdit()}
 });
 /* undo, sync and edits elsewhere keep the popup current (but never while you type in it) */
-const _gmeRender=render;render=function(d){_gmeRender(d);try{if(gmeOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#gmEd')&&a.matches('input')))drawMsEdit()}}catch(err){console.error(err)}};
+onRender('milestone-editor',function(d){if(gmeOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#gmEd')&&a.matches('input')))drawMsEdit()}});
 
 var GRIP='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.7"/><circle cx="15" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/><circle cx="9" cy="18" r="1.7"/><circle cx="15" cy="18" r="1.7"/></svg>';
 /* ---------- edit habits: a calm popup like the milestone editor. Add, rename, drag to reorder, delete; ✎ opens a habit's full settings ---------- */
@@ -217,7 +217,7 @@ $('hbEd').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.id==='hbeAdd'){e.preventDefault();return hbeAddNow()}
   if(e.key==='Escape'){if($('dlg').classList.contains('on'))return;e.preventDefault();e.stopPropagation();if(e.target.id==='hbeAdd'&&e.target.value){e.target.value='';return}closeHbEdit()}
 });
-const _hbeRender=render;render=function(d){_hbeRender(d);try{if(hbeOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#hbEd')&&a.matches('input')))drawHbEdit()}}catch(err){console.error(err)}};
+onRender('habit-editor',function(d){if(hbeOn){const a=document.activeElement;if(!(a&&a.closest&&a.closest('#hbEd')&&a.matches('input')))drawHbEdit()}});
 
 /* Escape on the Habits page: closes the ⋯ menu first, then the check-in, then the page, wherever focus is */
 document.addEventListener('keydown',e=>{

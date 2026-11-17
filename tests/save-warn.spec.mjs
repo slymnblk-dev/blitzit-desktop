@@ -27,6 +27,6 @@ test('failed save shows a warning once, then again only after a save worked', as
 
 test('signed-in users get the "still syncing" wording', async ({ page }) => {
   await openApp(page);
-  await page.evaluate(() => { window.__u = { email: 'a@b.c' }; Storage.prototype.setItem = function () { throw new Error('blocked'); }; save(); });
+  await page.evaluate(() => { user = { id: 'u1', email: 'a@b.c' }; Storage.prototype.setItem = function () { throw new Error('blocked'); }; save(); });
   await expect(page.locator('#toastMsg')).toContainText('still syncing');
 });

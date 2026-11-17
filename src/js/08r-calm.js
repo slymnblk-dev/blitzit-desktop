@@ -14,8 +14,8 @@ function calmFinish(){
     try{a.finish()}catch(e){}
   }
 }
-const _calmRender=render;
-render=function(d){
+const _calmRender=renderBelow('calm-motion');
+renderLayer('calm-motion',function(d){
   const k=calmNow(),quiet=k===calmKey&&d===undefined&&!enterId;
   _calmRender(d);calmKey=calmNow();
-  if(quiet)calmFinish()};
+  if(quiet)calmFinish()});

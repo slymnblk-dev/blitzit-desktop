@@ -21,8 +21,8 @@ function vtSettle(){try{document.getAnimations().forEach(a=>{if(typeof CSSAnimat
   const tm=a.effect&&a.effect.getComputedTiming?a.effect.getComputedTiming():null;if(!tm||tm.iterations===Infinity||a.playState==='finished')return;a.finish()})}catch(e){}}
 /* where you are, for render: Home, a space (and list), or a stage inside it */
 const vtWhere=()=>S.space?`s:${S.space}:${S.list}`:'home';
-const _vtRender=render;
-render=function(d){
+const _vtRender=renderBelow('page-motion');
+renderLayer('page-motion',function(d){
   if(vtWait){vtArgs=[d];return}                     // a page change is about to be drawn: draw once, with the latest state
   const k=vtWhere(),st=S.stage,was=vtKey,wasSt=vtStage;vtKey=k;vtStage=st;
   if(vtIn||was===null||!vtOn())return _vtRender.apply(this,arguments);
@@ -31,7 +31,7 @@ render=function(d){
   /* switching stages (Backlog, My week, Today, Done) is instant since 0.317: no slide */
   if(!dir)return _vtRender.apply(this,arguments);
   const args=arguments;vtRun(dir,()=>_vtRender.apply(null,args));
-};
+});
 /* tabs: slide toward the tab you tapped */
 const vtTabOrder=()=>[...document.querySelectorAll('#tbIn [data-tab]')].map(b=>b.dataset.tab);
 const _vtTab=tbGo;
