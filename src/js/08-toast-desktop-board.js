@@ -7,6 +7,13 @@ function toast(m,undo){
   t.classList.remove('on');void t.offsetWidth;t.classList.add('on');
   clearTimeout(tt);tt=setTimeout(()=>{t.classList.remove('on');undoFn=null},undo?4000:1800);
 }
+/* 0.322: never fail to save silently. Storage full or blocked -> one clear, longer warning (again only after a save has worked in between). */
+function saveWarn(e){
+  if(!saveOk)return;saveOk=false;
+  const signed=(()=>{try{return !!window.__u}catch(_){return false}})();
+  toast(signed?'Couldn\u2019t save on this device. Your changes are still syncing to your account.':'Couldn\u2019t save on this device \u2014 storage is full or blocked. Sign in to back up your tasks.');
+  clearTimeout(tt);tt=setTimeout(()=>$('toast').classList.remove('on'),7000);
+}
 $('undoBtn').onclick=()=>{if(undoFn){sfx('undo');const f=undoFn;undoFn=null;f();$('toast').classList.remove('on')}};
 
 /* ---------- desktop board ---------- */

@@ -13,7 +13,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const CID=Math.random().toString(36).slice(2);
 let sb=null,user=null,syncState='off',syncTimer=null,pendingRemote=null,channel=null,applying=false,lastHash='';
 let authStep='email',authEmail='',authBusy=false,authMsg='',resendAt=0;
-const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));saveOk=true}catch(e){try{saveWarn(e)}catch(_){}}};
 const hashOf=()=>JSON.stringify([S.tasks,S.lists,S.spaces,S.arch||[],S.cfg,S.nid,S.focusLog||{},S.habits||[],S.hchains||[],S.goals||[],S.kpis||[],S.okrs||[],S.wins||[],S.routines||[],S.blocks||[],S.journal||[],S.vision||[]]);
 const busyUI=()=>document.querySelector('.sheet.on,.focus.on,.tide.on');
 const SYNC_LABEL={off:'Off',syncing:'Syncing…',synced:'Up to date',offline:'Offline, will sync later',error:'Couldn’t sync, will retry'};
