@@ -21,7 +21,7 @@
 - Design options go on the Claude Design canvas (artifact "Habits & Goals pages"); re-read `project/canvas.json` from the artifact before publishing, the editor re-saves it.
 
 ## State
-- **dev = 0.333** (Funnel settings fix + desktop polish; waiting for "go live"). Live (main) = 0.331. Live (main) = 0.328. Check with `git ls-remote origin main dev`.
+- **Live = dev = 0.333** (gone live 2026-11-18: Funnel settings fix + page polish). Live (main) = 0.328. Check with `git ls-remote origin main dev`.
 - Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/NQdsSMjFwxZzzZ54XdxCRD — republish `web/index.html` after every change.
 - Full suite at the last run (0.327): 233/235 passed; the 2 misses were a test race in new-menu.spec (read the result before the save finished), fixed with expect.poll and passing 24/24 under load.
 
