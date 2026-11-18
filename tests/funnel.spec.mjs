@@ -170,3 +170,62 @@ test('the funnel settings travel with sync (they live in cfg)', async ({ page })
   expect(await page.evaluate(() => localDoc().cfg.fn.steps.length)).toBe(7);
   noErrors(errors);
 });
+
+// ---------- 0.330: Focus view, view switch, default view, quiet note + unlock glow ----------
+test('Funnel | Focus switch; the page opens in the default view from Settings', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await on(page); await sales(page);
+  await page.evaluate(() => openFunnel());
+  await expect(page.locator('#fnShape')).toBeVisible();
+  await page.locator('[data-fnview="focus"]').click();
+  await expect(page.locator('.fn-hero')).toBeVisible();
+  await expect(page.locator('#fnShape')).toHaveCount(0);
+  await expect(page.locator('.fn-seg')).toHaveCount(7);
+  // Settings → Modes → Funnel → Start in: Focus
+  await page.evaluate(() => { closeFunnel(); openSettings(); setView = 'modes'; drawSettings(); });
+  await page.locator('#setIn [data-btgrp]').click();                 // the Beta group starts folded
+  await page.locator('[data-fnsetview="focus"]').click();
+  expect(await page.evaluate(() => S.cfg.fnView)).toBe('focus');
+  await page.evaluate(() => { try { closeSettings(); } catch {} openFunnel(); });
+  await expect(page.locator('.fn-hero')).toBeVisible();
+  noErrors(errors);
+});
+
+test('Focus view: the hero shows the task you are on; Done ticks it and the next one moves up; Start opens focus', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await on(page); await sales(page);
+  await page.evaluate(() => { S.cfg.fnView = 'focus'; fnSel = null; openFunnel(); window.__blitz = []; startBlitz = q => window.__blitz.push(q[0].title); });
+  await expect(page.locator('.fn-hero .fn-ht')).toContainText('Research ICP accounts');
+  await page.locator('.fn-hero [data-fntick]').click();
+  await expect(page.locator('.fn-hero .fn-ht')).toContainText('Find decision makers');
+  await page.locator('.fn-hero [data-fngo]').click();
+  expect(await page.evaluate(() => window.__blitz)).toEqual(['Find decision makers']);
+  noErrors(errors);
+});
+
+test('when a step opens: a quiet line says so and the new step glows once (no toast)', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await on(page); const steps = await sales(page);
+  await page.evaluate(() => { fnSel = null; openFunnel(); });
+  await page.locator('.fn-task.now [data-fntick]').click();          // 1 of 2 prospects → Outreach opens
+  await expect(page.locator('.fn-note')).toContainText('Outreach is open now');
+  await expect(page.locator(`[data-fnstep="${steps[1].list}"]`)).toHaveClass(/flash/);
+  await page.locator('.fn-task.now [data-fntick]').click();          // 2 of 2 → Prospects done
+  await expect(page.locator('.fn-note')).toContainText('Prospects done');
+  noErrors(errors);
+});
+
+test('Focus view on an empty step is calm and points to the next open step; works in Classic too', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.ui = 'classic'; save(); applySettings(); render(); });
+  await on(page); await page.evaluate(() => fnFromTpl(FN_TPL[3]));     // Start empty: 3 open steps, no tasks
+  await page.evaluate(() => { S.cfg.fnView = 'focus'; openFunnel(); });
+  await expect(page.locator('.fn-hero.calm')).toContainText('Nothing planned in Step 1');
+  await page.locator('.fn-hero [data-fngoto]').click();
+  await expect(page.locator('.fn-seg.sel')).toContainText('Step 2');
+  noErrors(errors);
+});

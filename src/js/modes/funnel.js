@@ -3,10 +3,10 @@
    Data: the funnel lives in a normal space, and each step is one of that space's lists, so every
    funnel task is an ordinary task (focus, repeat, reminders, search, sync and undo just work).
    S.cfg.fn = {space, steps:[{list, target (0 = none), open (always open)}], unl:{d:'YYYY-MM-DD', lists:[…]}}
-   S.cfg.funnel = mode on/off · S.cfg.fnFree = no locks. A task can count for more than one: t.amt (default 1).
+   S.cfg.funnel = mode on/off · S.cfg.fnFree = no locks · S.cfg.fnView = 'funnel' (default) or 'focus'. A task can count for more than one: t.amt (default 1).
    A step today = what you finished today ÷ its target (no target: ÷ everything planned in it today).
    The next step opens when the one before is half way, when it is set to "always open", or when you open it anyway. */
-var fnOn=false,fnSel=null,fnShowDone=false,fnEdit=false,fnAsk=null;
+var fnOn=false,fnSel=null,fnShowDone=false,fnEdit=false,fnAsk=null,fnView='funnel',fnFlash=null,fnNote=null,fnNoteT=0;
 const FN_MIN=3,FN_MAX=8;
 function funnelOn(){return !!(S.cfg&&S.cfg.funnel)}
 var FN_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg>';
@@ -53,7 +53,7 @@ const fnDesk=()=>matchMedia('(min-width:1100px)').matches;
 const fnEsc=s=>esc(s).replace(/'/g,'&#39;');
 function fnRow(st,i,m){const s=m.stats[i],l=listOf(st.list),open=m.open[i],sel=i===m.sel;
   const ct=!open?FN_LOCK:s.full?'done':s.goal?`${s.c} / ${s.goal}`:'';
-  return `<button class="fn-row${sel?' sel':''}${open?'':' lock'}${s.full?' full':''}" data-fnstep="${st.list}" aria-label="${fnEsc(l.name)}, ${open?(s.goal?s.c+' of '+s.goal:'open'):'locked'}"${sel?' aria-current="true"':''}>
+  return `<button class="fn-row${sel?' sel':''}${open?'':' lock'}${s.full?' full':''}${fnFlash===st.list?' flash':''}" data-fnstep="${st.list}" aria-label="${fnEsc(l.name)}, ${open?(s.goal?s.c+' of '+s.goal:'open'):'locked'}"${sel?' aria-current="true"':''}>
     ${open?`<span class="fn-fill" style="width:${(s.p*100).toFixed(1)}%"></span>`:''}<span class="fn-rc"><span class="fn-nm">${esc(l.name)}</span><span class="fn-ct">${ct}</span></span></button>`}
 function fnTaskRow(t,now){const a=fnAmt(t),done=t.stage==='done';
   return `<div class="fn-task${now?' now':''}${done?' done':''}" data-fntask="${t.id}">
@@ -62,12 +62,32 @@ function fnTaskRow(t,now){const a=fnAmt(t),done=t.stage==='done';
     ${now?`<button class="fn-go" data-fngo="${t.id}" aria-label="Start focus on ${fnEsc(t.title)}">${FN_PLAY}</button>`:''}
     ${done?'':MORE(`data-fnm="${t.id}"`,'More for this task')}</div>`}
 function fnPanel(m){const st=m.steps[m.sel];if(!st)return '';const l=listOf(st.list),s=m.stats[m.sel],open=fnOpenTasks(st.list),done=fnDoneTasks(st.list);
-  return `<div class="fn-panel"><span class="fn-eye">Step ${m.sel+1} of ${m.steps.length}</span>
+  return `<div class="fn-panel">${fnNoteHTML()}<span class="fn-eye">Step ${m.sel+1} of ${m.steps.length}</span>
     <div class="fn-ph"><b class="fn-pn">${esc(l.name)}</b>${s.goal?`<span class="fn-pc"><b>${s.c}</b>/${s.goal}</span>`:''}</div>
     <div class="fn-bar" aria-hidden="true"><i style="width:${(s.p*100).toFixed(1)}%"></i></div>
     <div class="fn-list">${open.length?open.map((t,i)=>fnTaskRow(t,i===0)).join(''):`<p class="fn-none">${done.length?'All done here. Nice.':'Nothing planned here today.'}</p>`}</div>
     ${done.length?`<button class="fn-dn" data-fndone aria-expanded="${fnShowDone}">${done.length} done · ${fnShowDone?'Hide':'Show'}</button>${fnShowDone?`<div class="fn-list">${done.map(t=>fnTaskRow(t,false)).join('')}</div>`:''}`:''}
     <label class="fn-add"><span class="wn-pl">${PLUS_S}</span><input id="fnNew" placeholder="Add to ${fnEsc(l.name)}…" maxlength="200" enterkeyhint="done" autocomplete="off" aria-label="Add a task to ${fnEsc(l.name)}"></label></div>`}
+/* a quiet line after a step fills or opens: no confetti here, the big moment is the whole funnel */
+const fnNoteHTML=()=>fnNote&&Date.now()-fnNoteT<4500?`<div class="fn-note" role="status"><span>${FN_TICK}</span>${esc(fnNote)}</div>`:'';
+/* Focus view: the same steps as a thin line, and only the task you are on, big and calm */
+function fnStepLine(m){return `<div class="fn-line" role="group" aria-label="Steps">${m.steps.map((st,i)=>{const s=m.stats[i],l=listOf(st.list);
+  return `<button class="fn-seg${i===m.sel?' sel':''}${m.open[i]?'':' lock'}${s.full?' full':''}${fnFlash===st.list?' flash':''}" data-fnstep="${st.list}" aria-label="${fnEsc(l.name)}, ${m.open[i]?(s.goal?s.c+' of '+s.goal:'open'):'locked'}"${i===m.sel?' aria-current="true"':''}>
+    <i><b style="width:${(s.p*100).toFixed(1)}%"></b></i><span>${esc(l.name)}</span></button>`}).join('')}</div>`}
+function fnHeroHTML(m){const st=m.steps[m.sel],l=listOf(st.list),s=m.stats[m.sel],open=fnOpenTasks(st.list),t=open[0],nx=m.steps.findIndex((x,i)=>i>m.sel&&m.open[i]);
+  const eye=`${esc(l.name)}${s.goal?` · ${s.c} of ${s.goal}`:''}`;
+  if(!t)return `<div class="fn-hero calm"><div class="fn-hin"><span class="fn-eye">${eye}</span><b class="fn-ht">${s.c?`${esc(l.name)} is done for today`:`Nothing planned in ${esc(l.name)}`}</b>
+    <small class="fn-hs">${s.c?'Nice work.':'Add a task below, or pick another step.'}</small>
+    ${nx>=0?`<div class="fn-hb"><button class="fn-main" data-fngoto="${m.steps[nx].list}">Go to ${esc(listOf(m.steps[nx].list).name)}</button></div>`:''}</div></div>`;
+  const sub=(t.notes||'').split('\n')[0].trim();
+  return `<div class="fn-hero"><div class="fn-hin"><span class="fn-eye">${eye}</span><b class="fn-ht">${esc(t.title)}${fnAmt(t)>1?` <i class="fn-amt">×${fnAmt(t)}</i>`:''}</b>${sub?`<small class="fn-hs">${esc(sub.slice(0,120))}</small>`:''}
+    <div class="fn-hb"><button class="fn-main" data-fngo="${t.id}">${FN_PLAY}Start</button><button class="fn-soft" data-fntick="${t.id}">Done</button>${MORE(`data-fnm="${t.id}"`,'More for this task')}</div></div></div>`}
+function fnFocusHTML(m){const st=m.steps[m.sel];if(!st)return '';const open=fnOpenTasks(st.list).slice(1),done=fnDoneTasks(st.list),l=listOf(st.list);
+  return `<div class="fn-focus">${fnStepLine(m)}<span class="fn-eye fn-lnow">Step ${m.sel+1} of ${m.steps.length} · ${esc(l.name)}</span>${fnAsk?fnAskHTML(m):''}
+    <div class="fn-fgrid"><div class="fn-fl">${fnNoteHTML()}${fnHeroHTML(m)}</div>
+    <div class="fn-fr">${open.length?`<span class="fn-eye">Up next</span><div class="fn-list">${open.map(t=>fnTaskRow(t,false)).join('')}</div>`:''}
+      ${done.length?`<button class="fn-dn" data-fndone aria-expanded="${fnShowDone}">${done.length} done · ${fnShowDone?'Hide':'Show'}</button>${fnShowDone?`<div class="fn-list">${done.map(t=>fnTaskRow(t,false)).join('')}</div>`:''}`:''}
+      <label class="fn-add"><span class="wn-pl">${PLUS_S}</span><input id="fnNew" placeholder="Add to ${fnEsc(l.name)}…" maxlength="200" enterkeyhint="done" autocomplete="off" aria-label="Add a task to ${fnEsc(l.name)}"></label></div></div></div>`}
 function fnAskHTML(m){const i=m.steps.findIndex(s=>s.list===fnAsk);if(i<1)return '';const l=listOf(m.steps[i].list),p=listOf(m.steps[i-1].list),ps=m.stats[i-1],left=Math.max(1,Math.ceil(ps.goal*.5)-ps.c);
   return `<div class="fn-ask" role="dialog" aria-label="${fnEsc(l.name)} is locked"><span class="fn-ai">${FN_LOCK}</span><b>${esc(l.name)} opens after ${esc(p.name)}</b>
     <small>${ps.goal?`${left} more in ${esc(p.name)} to go.`:`Finish something in ${esc(p.name)} first.`}</small>
@@ -93,8 +113,9 @@ function drawFunnel(){if(!fnOn)return;const pg=$('funnelPg'),y=pg.scrollTop,sp=f
   const m=fnModel(),cur=m.steps[m.cur],left=fnLeftToday();
   $('fnIn').innerHTML=`${top}<div class="fn-head"><div><span class="pg-eye">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</span><h1 class="ib-h wn-h">Funnel</h1>
       <div class="pg-sum">${cur?`Step <b>${m.cur+1} of ${m.steps.length}</b> · ${esc(listOf(cur.list).name)}`:''}${left?` · ${left} to do today`:''}</div></div>
-      <button class="icon-btn fn-gear" data-fnedit aria-label="Edit steps">${FN_GEAR}</button></div>
-    <div class="fn-grid"><div class="fn-l"><div class="fn-shape" id="fnShape">${m.steps.map((s,i)=>fnRow(s,i,m)).join('')}</div>${fnAsk?fnAskHTML(m):''}</div>${fnPanel(m)}</div>`;
+      <div class="fn-tools"><div class="segc fn-vsw" role="group" aria-label="View">${['funnel','focus'].map(v=>`<button data-fnview="${v}" class="${fnView===v?'on':''}" aria-pressed="${fnView===v}">${v==='funnel'?'Funnel':'Focus'}</button>`).join('')}</div>
+      <button class="icon-btn fn-gear" data-fnedit aria-label="Edit steps">${FN_GEAR}</button></div></div>
+    ${fnView==='focus'?fnFocusHTML(m):`<div class="fn-grid"><div class="fn-l"><div class="fn-shape" id="fnShape">${m.steps.map((s,i)=>fnRow(s,i,m)).join('')}</div>${fnAsk?fnAskHTML(m):''}</div>${fnPanel(m)}</div>`}`;
   fnShape();pg.scrollTop=y}
 /* the one-piece funnel: a soft trapezoid clipped around the stacked rows, and each label kept inside its narrowing row */
 function fnShape(){const el=$('fnShape');if(!el)return;const w=el.offsetWidth,h=el.offsetHeight;if(!w||!h)return;const tip=.42,r=14,bx=(w-w*tip)/2;
@@ -102,7 +123,7 @@ function fnShape(){const el=$('fnShape');if(!el)return;const w=el.offsetWidth,h=
   [...el.children].forEach(row=>{const yc=row.offsetTop+row.offsetHeight/2,vis=Math.max(80,w-2*bx*(yc/h)-28);row.querySelector('.fn-rc').style.maxWidth=vis+'px'})}
 addEventListener('resize',()=>{if(fnOn)fnShape()});
 function openFunnel(){if(!funnelOn())return;if(typeof closeSearch==='function')closeSearch();
-  fnOn=true;fnEdit=false;fnAsk=null;fnShowDone=false;$('funnelPg').classList.add('on');document.body.classList.add('ib-open');drawFunnel();$('funnelPg').scrollTop=0;haptic(5);
+  fnOn=true;fnEdit=false;fnAsk=null;fnShowDone=false;fnNote=null;fnView=S.cfg.fnView==='focus'?'focus':'funnel';$('funnelPg').classList.add('on');document.body.classList.add('ib-open');drawFunnel();$('funnelPg').scrollTop=0;haptic(5);
   if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
 function closeFunnel(){if(!fnOn)return;fnOn=false;fnEdit=false;fnAsk=null;$('funnelPg').classList.remove('on');if(!document.querySelector('.inbox-pg.on'))document.body.classList.remove('ib-open');
   const a=document.activeElement;if(a&&a.closest&&a.closest('#funnelPg'))a.blur();if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
@@ -118,8 +139,13 @@ function fnFromTpl(tp){const sp={id:'s'+newId(),name:tp.k==='empty'?'Funnel':tp.
 function fnTick(id){const t=S.tasks.find(x=>String(x.id)===String(id));if(!t)return;const on=t.stage!=='done';
   if(!on&&!canPut(t.list,'today',t))return;
   const m0=fnModel();commit(()=>setStage(t,on?'done':'today'),on?'Task done':'Back on today');
-  if(on){haptic([8,30,12]);const m1=fnModel(),opened=m1.open.findIndex((o,i)=>o&&!m0.open[i]);if(opened>0)toast(`${listOf(m1.steps[opened].list).name} is open now`)}
+  if(on){haptic([8,30,12]);fnAfterTick(m0,fnModel())}
   drawFunnel()}
+/* after a tick: say quietly what changed (a step filled, the next one opened) and let the new step glow once */
+function fnAfterTick(m0,m1){const filled=m1.stats.findIndex((s,k)=>s.full&&m0.stats[k]&&!m0.stats[k].full),opened=m1.open.findIndex((o,k)=>o&&!m0.open[k]);
+  const name=k=>listOf(m1.steps[k].list).name,parts=[];if(filled>=0)parts.push(`${name(filled)} done`);if(opened>0)parts.push(`${name(opened)} is open now`);
+  if(!parts.length)return;fnNote=parts.join(' · ');fnNoteT=Date.now();if(opened>0){fnFlash=m1.steps[opened].list;setTimeout(()=>{fnFlash=null;if(fnOn)drawFunnel()},1600)}
+  setTimeout(()=>{if(fnOn&&Date.now()-fnNoteT>=4400)drawFunnel()},4600)}
 function fnAddTask(v){const m=fnModel(),st=m.steps[m.sel];if(!st||!v)return false;const t=newTask(v.slice(0,200),'today',st.list,S.cfg.defEst);
   if(!canPut(t.list,'today',null,{title:v}))return false;commit(()=>S.tasks.push(t),'Task added');try{sfx('add')}catch(e){}haptic(6);return true}
 function fnMoveTask(t,list){commit(()=>{t.list=list},`Moved to ${listOf(list).name}`);drawFunnel()}
@@ -134,11 +160,12 @@ function fnAddStep(v){const steps=fnSteps(),sp=fnSpace();if(!sp||!v||steps.lengt
 $('funnelPg').addEventListener('click',e=>{const T=x=>e.target.closest(x);
   if(T('#fnBack')){if(fnEdit){fnEdit=false;return drawFunnel()}return closeFunnel()}
   const tp=T('[data-fntpl]');if(tp)return fnFromTpl(FN_TPL[+tp.dataset.fntpl]);
+  const vw=T('[data-fnview]');if(vw){fnView=vw.dataset.fnview;fnAsk=null;haptic(4);return drawFunnel()}
   if(T('[data-fnedit]')){fnEdit=!fnEdit;haptic(4);drawFunnel();$('funnelPg').scrollTop=0;return}
   if(T('[data-fnfree]')){haptic(5);setCfg('fnFree',!S.cfg.fnFree);return drawFunnel()}
   const st=T('[data-fnstep]');if(st){const m=fnModel(),i=m.steps.findIndex(s=>s.list===st.dataset.fnstep);if(i<0)return;haptic(4);
     if(!m.open[i]){fnAsk=fnAsk===st.dataset.fnstep?null:st.dataset.fnstep;return drawFunnel()}
-    fnAsk=null;fnSel=st.dataset.fnstep;fnShowDone=false;drawFunnel();if(!fnDesk())$('funnelPg').querySelector('.fn-panel').scrollIntoView({behavior:'smooth',block:'start'});return}
+    fnAsk=null;fnSel=st.dataset.fnstep;fnShowDone=false;drawFunnel();const tgt=!fnDesk()&&fnView==='funnel'&&$('funnelPg').querySelector('.fn-panel');if(tgt)tgt.scrollIntoView({behavior:'smooth',block:'start'});return}
   const gt=T('[data-fngoto]');if(gt){fnAsk=null;fnSel=gt.dataset.fngoto;return drawFunnel()}
   const an=T('[data-fnany]');if(an){const id=an.dataset.fnany;fnSetCfg(c=>{const u=c.unl&&c.unl.d===today()?c.unl:{d:today(),lists:[]};if(!u.lists.includes(id))u.lists.push(id);c.unl=u});fnAsk=null;fnSel=id;haptic(6);return drawFunnel()}
   if(fnAsk&&!T('.fn-ask')){fnAsk=null;drawFunnel()}
@@ -205,7 +232,9 @@ const _fnModes=hkBelow('modesPage','funnel',modesPage__core);
 hkLayer('modesPage','funnel',function(){const h=_fnModes.apply(this,arguments),on=funnelOn(),sp=fnReady()&&fnSpace();
   const card=`<div class="md-card${on?' on':''}" data-md="funnel"><div class="md-head"><span class="md-ic">${FN_ICON}</span><span class="md-t"><b>Funnel</b><small>Move work through steps, one at a time</small></span>${tg('funnel')}</div>
     ${on?`<div class="md-body"><p class="md-note">Steps like Prospects → Outreach → Replies. Finishing tasks fills each step, and the next one opens half way. ${sp?`Your funnel lives in the space <b>${esc(sp.name)}</b>, so its tasks also show in Today and search.`:'Open it to pick a starting shape.'}</p>
+      <div class="md-sub"><span><b>Start in</b><small>The view the page opens with. You can switch on the page too.</small></span><div class="segc">${['funnel','focus'].map(v=>`<button data-fnsetview="${v}" class="${(S.cfg.fnView||'funnel')===v?'on':''}" aria-pressed="${(S.cfg.fnView||'funnel')===v}">${v==='funnel'?'Funnel':'Focus'}</button>`).join('')}</div></div>
       <div class="md-sub"><span><b>Open all steps</b><small>No locks: every step is open from the start.</small></span>${tg('fnFree')}</div>
       ${sp?`<button class="md-act" data-fnsetedit>Edit steps and targets</button>`:''}</div>`:''}</div>`;
   const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)});
+$('setIn').addEventListener('click',e=>{const v=e.target.closest('[data-fnsetview]');if(!v)return;e.stopPropagation();haptic(5);setCfg('fnView',v.dataset.fnsetview)},true);
 $('setIn').addEventListener('click',e=>{if(!e.target.closest('[data-fnsetedit]'))return;e.stopPropagation();try{closeSettings()}catch(err){}openFunnel();fnEdit=true;drawFunnel()},true);

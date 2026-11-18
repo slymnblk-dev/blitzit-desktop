@@ -95,3 +95,48 @@
 .fn-edone{align-self:flex-start;margin-top:4px}
 .md-act{margin-top:10px;border:0;border-radius:12px;padding:10px 14px;background:color-mix(in srgb,var(--text) 7%,transparent);color:var(--text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.fn-fill,.fn-bar i,.fn-row{transition:none}}
+
+/* ---------- 0.330: Focus view, view switch, quiet note, unlock glow ---------- */
+.fn-tools{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.fn-tools .fn-gear{margin-bottom:0}
+.fn-vsw button{font-size:14px;height:34px}
+@media (max-width:420px){.fn-vsw button{padding:0 11px}}
+.fn-note{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,var(--text) 5%,transparent);color:var(--text);font-size:14px;font-weight:500;animation:fnNote 4.5s ease forwards}
+.fn-note span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--surface);color:var(--muted)}
+.fn-note svg{width:11px;height:11px}
+@keyframes fnNote{0%{opacity:0;transform:translateY(-4px)}8%,85%{opacity:1;transform:none}100%{opacity:0}}
+.fn-row.flash,.fn-seg.flash{animation:fnGlow 1.4s ease}
+@keyframes fnGlow{30%{filter:brightness(1.35)}}
+.fn-focus{display:flex;flex-direction:column;gap:14px;margin-top:22px;position:relative}
+.fn-line{display:flex;gap:6px}
+.fn-seg{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;border:0;background:none;padding:6px 0;color:var(--muted);font:inherit;cursor:pointer;text-align:left}
+.fn-seg i{display:block;height:3px;border-radius:2px;background:var(--line);overflow:hidden}
+.fn-seg i b{display:block;height:100%;background:color-mix(in srgb,var(--text) 40%,transparent);border-radius:2px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.fn-seg.sel i b{background:var(--today);opacity:.85}
+.fn-seg span{font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fn-seg.sel span{color:var(--text);font-weight:600}
+.fn-seg.lock span{opacity:.55}
+.fn-lnow{margin-top:-4px}
+@media (min-width:1100px){.fn-lnow{display:none}}
+@media (max-width:1099px){.fn-seg span{display:none}.fn-seg{padding:8px 0}}
+.fn-fgrid{display:flex;flex-direction:column;gap:18px}
+@media (min-width:1100px){.fn-fgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:26px;align-items:start;margin-top:8px}}
+.fn-fl,.fn-fr{display:flex;flex-direction:column;gap:10px;min-width:0}
+.fn-focus .fn-ask{top:120px;transform:translateX(-50%)}
+/* the hero: one calm card with a dim, slowly turning aurora behind it */
+.fn-hero{position:relative;overflow:hidden;border-radius:26px;background:var(--surface);isolation:isolate}
+.fn-hero::before{content:"";position:absolute;inset:-60%;z-index:-1;background:conic-gradient(from 200deg,color-mix(in srgb,var(--today) 18%,transparent),color-mix(in srgb,#8FA2FF 13%,transparent),color-mix(in srgb,#7CE0A8 9%,transparent),color-mix(in srgb,var(--today) 18%,transparent));filter:blur(60px);animation:fnAur 40s linear infinite}
+.fn-hero.calm::before{opacity:.45}
+@keyframes fnAur{to{transform:rotate(360deg)}}
+.fn-hin{display:flex;flex-direction:column;gap:10px;padding:28px 28px 24px}
+@media (max-width:1099px){.fn-hin{padding:22px 20px 18px}}
+.fn-ht{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.035em;line-height:1.08;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fn-hero.calm .fn-ht{font-size:clamp(22px,3vw,28px)}
+.fn-hs{color:var(--muted);font-size:14px}
+.fn-hb{display:flex;align-items:center;gap:10px;margin-top:6px}
+.fn-hb .fn-main{display:inline-flex;align-items:center;gap:8px}
+.fn-hb .fn-main svg{width:15px;height:15px}
+.fn-soft{border:0;border-radius:15px;min-height:46px;padding:0 18px;background:color-mix(in srgb,var(--text) 8%,transparent);color:var(--text);font:inherit;font-size:15px;font-weight:600;cursor:pointer}
+.fn-hb .gm-more{margin-left:auto}
+@media (prefers-reduced-motion:reduce){.fn-hero::before,.fn-note,.fn-row.flash,.fn-seg.flash{animation:none}}
+@media (max-width:1099px){#funnelPg .fn-head{flex-direction:column;align-items:stretch;gap:14px}#funnelPg .fn-tools{margin-bottom:0;justify-content:space-between}}

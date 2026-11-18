@@ -21,7 +21,7 @@
 - Design options go on the Claude Design canvas (artifact "Habits & Goals pages"); re-read `project/canvas.json` from the artifact before publishing, the editor re-saves it.
 
 ## State
-- **dev = 0.329** (Funnel mode, release 1 of 3; waiting for "go live"). Live (main) = 0.328. Check with `git ls-remote origin main dev`.
+- **dev = 0.330** (Funnel mode, releases 1–2 of 3; waiting for "go live"). Live (main) = 0.328. Check with `git ls-remote origin main dev`.
 - Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/NQdsSMjFwxZzzZ54XdxCRD — republish `web/index.html` after every change.
 - Full suite at the last run (0.327): 233/235 passed; the 2 misses were a test race in new-menu.spec (read the result before the save finished), fixed with expect.poll and passing 24/24 under load.
 
@@ -171,4 +171,5 @@
   Steps are lists in a normal space (`S.cfg.fn = {space, steps:[{list,target,open}], unl}`), so funnel tasks are ordinary tasks. `t.amt` = a task counting for more than one (repeat copies keep it, via a `setStage` layer).
   Progress = finished today ÷ target (no target: ÷ today's planned). Next step opens at 50%, or "always open", "Open anyway" (remembered for today) or `S.cfg.fnFree`. 3–8 steps; deleting a step moves its tasks to the step before.
   Templates: Sales (7 steps, Leadsomo targets + weekday tasks), Content, Job search, Start empty. Test: funnel.spec (11). Guard tests updated: layers/pages/beta/render-pipeline.
-  Still to do: release 2 (Focus view + Funnel|Focus switch + default view, unlock flash, quiet step-done line, Classic polish) · release 3 (daily/weekly targets, past days, Home card, funnel done → Win, Plan/Journal pills).
+  Still to do: release 3 (daily/weekly targets, past days, Home card, funnel done → Win, Plan/Journal pills).
+- 0.330: **Funnel release 2** — Focus view (thin step line + one calm hero card with a slow dim aurora; Start / Done; Up next), Funnel | Focus switch on the page, `S.cfg.fnView` = view it opens with (Settings → Modes → Funnel → Start in). After a tick: a quiet line ("Prospects done · Outreach is open now") and the newly opened step glows once, instead of a toast. Phone header puts the switch on its own row. Checked in Flow + Classic, dark + light. Test: funnel.spec (+4, now 15).
