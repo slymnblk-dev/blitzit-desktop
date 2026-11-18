@@ -5,7 +5,7 @@ import { openApp, noErrors } from './helpers.mjs';
 test('render runs through one named pipeline, in load order, with no patching left', async ({ page }) => {
   const errors = await openApp(page);
   const names = await page.evaluate(() => renderLayers());
-  expect(names.length).toBe(26);
+  expect(names.length).toBe(27);
   expect(names[0]).toBe('inbox-page');
   expect(names.at(-1)).toBe('page-motion');
   expect(new Set(names).size).toBe(names.length);           // unique names

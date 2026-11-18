@@ -21,7 +21,7 @@
 - Design options go on the Claude Design canvas (artifact "Habits & Goals pages"); re-read `project/canvas.json` from the artifact before publishing, the editor re-saves it.
 
 ## State
-- **Live = dev = 0.328** (gone live 2026-11-17). Check with `git ls-remote origin main dev`.
+- **dev = 0.329** (Funnel mode, release 1 of 3; waiting for "go live"). Live (main) = 0.328. Check with `git ls-remote origin main dev`.
 - Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/NQdsSMjFwxZzzZ54XdxCRD — republish `web/index.html` after every change.
 - Full suite at the last run (0.327): 233/235 passed; the 2 misses were a test race in new-menu.spec (read the result before the save finished), fixed with expect.poll and passing 24/24 under load.
 
@@ -167,3 +167,8 @@
   New file → put it in its folder and add it to ORDER.txt (usually at the end).
 - 0.327 (step 5 + leftovers): the 6 "close other pages" loops became one page list (`regPage`/`pagesWire`), which also fixed Goals → Inbox leaving Goals open underneath; 6 dead first versions removed (drawInbox, drawMetrics, mxMark, mxPill, mxPicks, canPut — the final version is now a plain declaration); this doc rewritten around the Code map. Pixel-identical on 112 screens. Test: pages.spec.
 - 0.328: **bug fix** — Save ignored a new task added within 0.7 s of the previous one (the double-tap guard was global). `openSheet('addSheet')` now resets `addLock`; a real double tap is still blocked. Also made new-menu.spec flaky in CI. Test: quick-add.spec.
+- 0.329: **Funnel mode (Beta), release 1 of 3** — `modes/funnel.js` + `modes/funnel.css`. Idea from Leadsomo, Windaday look (design canvas "Funnel FINAL").
+  Steps are lists in a normal space (`S.cfg.fn = {space, steps:[{list,target,open}], unl}`), so funnel tasks are ordinary tasks. `t.amt` = a task counting for more than one (repeat copies keep it, via a `setStage` layer).
+  Progress = finished today ÷ target (no target: ÷ today's planned). Next step opens at 50%, or "always open", "Open anyway" (remembered for today) or `S.cfg.fnFree`. 3–8 steps; deleting a step moves its tasks to the step before.
+  Templates: Sales (7 steps, Leadsomo targets + weekday tasks), Content, Job search, Start empty. Test: funnel.spec (11). Guard tests updated: layers/pages/beta/render-pipeline.
+  Still to do: release 2 (Focus view + Funnel|Focus switch + default view, unlock flash, quiet step-done line, Classic polish) · release 3 (daily/weekly targets, past days, Home card, funnel done → Win, Plan/Journal pills).

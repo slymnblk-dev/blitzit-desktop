@@ -1,6 +1,6 @@
 /* ---------- Beta: newer modes live in a folded "Beta" group in Settings → Modes, and their pages wear a Beta badge ----------
    The group starts folded each time Settings opens; switching a mode on or off inside it keeps it open. */
-const BETA_MD=['mx','wins','routines','plan','journal','vision'];
+const BETA_MD=['mx','wins','routines','plan','journal','vision','funnel'];
 let betaOpen=false;
 const _btModes=hkBelow('modesPage','beta',modesPage__core);
 hkLayer('modesPage','beta',function(){const h=_btModes.apply(this,arguments),tpl=document.createElement('template');tpl.innerHTML=h;

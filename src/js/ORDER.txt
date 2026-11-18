@@ -44,6 +44,7 @@ modes/journal.js
 tasks/reminders.js
 shell/statusbar.js
 modes/vision.js
+modes/funnel.js
 modes/beta.js
 shell/tabs-pick.js
 tasks/spaces.js

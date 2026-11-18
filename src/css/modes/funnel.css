@@ -1,0 +1,97 @@
+/* ===== Funnel (modes/funnel.js): steps that fill as you finish tasks — calm, one accent ===== */
+@media (min-width:1100px){#funnelPg .ib-in{max-width:1080px;padding-top:34px}}
+@media (max-width:1099px){body.tabs-on #funnelPg .ib-top{display:none}body.tabs-on #funnelPg .fn-head{margin-top:30px}}
+.fn-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.fn-head .pg-sum b{color:var(--text);font-weight:600}
+.fn-gear{flex:none;margin-bottom:6px}
+.fn-grid{display:flex;flex-direction:column;gap:22px;margin-top:22px}
+@media (min-width:1100px){.fn-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:30px;align-items:start;margin-top:30px}}
+.fn-l{position:relative;display:flex;flex-direction:column;align-items:center}
+
+/* the funnel: one piece, rows stacked 1px apart, each row fills from the left */
+.fn-shape{width:100%;max-width:560px;display:flex;flex-direction:column;gap:1px;background:var(--bg)}
+.fn-row{position:relative;height:52px;flex:none;display:flex;align-items:center;justify-content:center;border:0;padding:0;margin:0;
+  background:var(--surface);color:var(--muted);font:inherit;cursor:pointer;transition:background .25s var(--ease,ease),filter .2s}
+@media (min-width:1100px){.fn-row{height:58px}}
+.fn-row:hover{filter:brightness(1.08)}
+.fn-row:focus-visible{outline:2px solid var(--today);outline-offset:-3px}
+.fn-fill{position:absolute;left:0;top:0;bottom:0;background:color-mix(in srgb,var(--text) 6%,transparent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.fn-row.sel{background:color-mix(in srgb,var(--surface) 92%,var(--text));color:var(--text)}
+.fn-row.sel .fn-fill{background:color-mix(in srgb,var(--today) 26%,transparent)}
+.fn-row.lock{color:color-mix(in srgb,var(--muted) 55%,transparent)}
+.fn-rc{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;min-width:0}
+.fn-nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:500}
+.fn-row.sel .fn-nm{font-weight:600}
+.fn-ct{flex:none;display:flex;align-items:center;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
+.fn-ct svg{width:13px;height:13px}
+.fn-row.sel .fn-ct{color:var(--today);font-weight:600}
+.fn-row.full:not(.sel) .fn-ct{color:var(--muted)}
+
+/* a locked step asks before opening */
+.fn-ask{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(320px,92%);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+  padding:20px 18px 14px;border-radius:24px;background:var(--surface2,var(--surface));box-shadow:0 24px 60px -20px rgba(0,0,0,.55),inset 0 0 0 1px var(--line)}
+.fn-ai svg{width:22px;height:22px;color:var(--muted)}
+.fn-ask b{font-size:17px}
+.fn-ask small{color:var(--muted);font-size:14px;margin-bottom:6px}
+.fn-main{border:0;border-radius:15px;min-height:46px;padding:0 20px;background:var(--text);color:var(--bg);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.fn-ask .fn-main{width:100%}
+.fn-anyway{border:0;background:none;color:var(--muted);font:inherit;font-size:14px;font-weight:600;padding:8px;cursor:pointer}
+
+/* the step you are looking at: Now first, then Next */
+.fn-panel{display:flex;flex-direction:column;gap:10px;min-width:0}
+@media (min-width:1100px){.fn-panel{padding:4px 0 0 30px;border-left:1px solid var(--line);min-height:420px}}
+.fn-eye{font-size:13px;font-weight:600;color:var(--muted)}
+.fn-ph{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.fn-pn{font-size:26px;font-weight:700;letter-spacing:-.03em}
+.fn-pc{font-size:18px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.fn-pc b{color:var(--text);font-weight:600}
+.fn-bar{height:3px;border-radius:2px;background:var(--line);overflow:hidden;margin:2px 0 8px}
+.fn-bar i{display:block;height:100%;background:var(--today);opacity:.8;border-radius:2px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.fn-list{display:flex;flex-direction:column;gap:8px}
+.fn-task{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 8px 6px 14px;border-radius:18px;background:var(--surface)}
+.fn-task.now{min-height:64px}
+.fn-task.done{background:transparent}
+.fn-tick{flex:none;width:24px;height:24px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;cursor:pointer;
+  background:none;box-shadow:inset 0 0 0 1.7px var(--line);color:var(--muted)}
+.fn-task.now .fn-tick{box-shadow:inset 0 0 0 1.7px color-mix(in srgb,var(--today) 70%,transparent)}
+.fn-task.done .fn-tick{background:var(--surface);box-shadow:none}
+.fn-tick svg{width:13px;height:13px}
+.fn-tt{flex:1;min-width:0;border:0;background:none;padding:6px 0;color:var(--text);font:inherit;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px}
+.fn-tt b{font-size:15px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fn-task.now .fn-tt b{font-size:16px}
+.fn-task.done .fn-tt b{color:var(--muted);font-weight:500;text-decoration:line-through}
+.fn-amt{flex:none;font-style:normal;font-size:12px;font-weight:600;color:var(--muted);padding:2px 7px;border-radius:8px;background:color-mix(in srgb,var(--text) 6%,transparent)}
+.fn-go{flex:none;width:38px;height:38px;border-radius:12px;border:0;display:grid;place-items:center;cursor:pointer;background:color-mix(in srgb,var(--text) 8%,transparent);color:var(--text)}
+.fn-go svg{width:15px;height:15px}
+.fn-none{margin:4px 2px;color:var(--muted);font-size:14px}
+.fn-dn{align-self:flex-start;border:0;background:none;color:var(--muted);font:inherit;font-size:14px;font-weight:600;padding:6px 4px;cursor:pointer}
+.fn-add{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 14px;border-radius:18px;box-shadow:inset 0 0 0 1px var(--line);color:var(--muted);margin-top:4px;cursor:text}
+.fn-add input{flex:1;min-width:0;border:0;background:none;color:var(--text);font:inherit;font-size:15px;outline:none}
+.fn-add input::placeholder{color:var(--muted)}
+
+/* first visit: pick a starting shape */
+.fn-setup{display:flex;flex-direction:column;gap:12px;margin-top:22px;max-width:620px}
+.fn-sh{font-size:26px;font-weight:700;letter-spacing:-.03em;margin:0}
+.fn-sp{color:var(--muted);font-size:14px;line-height:1.5;margin:0 2px}
+.fn-tpls{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.fn-tpl{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:16px 18px;border-radius:20px;border:0;background:var(--surface);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.fn-tpl:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 45%,transparent)}
+.fn-tpl b{font-size:16px;font-weight:600}
+.fn-tpl small{color:var(--muted);font-size:13px;line-height:1.4}
+
+/* editing steps */
+.fn-ed{display:flex;flex-direction:column;gap:10px;margin-top:22px;max-width:720px}
+.fn-es{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-radius:18px;background:var(--surface)}
+.fn-n{flex:none;width:22px;color:var(--muted);font-size:13px;font-weight:600}
+.fn-ename{flex:1;min-width:0;border:0;background:none;color:var(--text);font:inherit;font-size:15px;font-weight:600;outline:none;padding:8px 0}
+.fn-tg{flex:none;display:flex;align-items:center;gap:2px;padding:3px;border-radius:12px;background:color-mix(in srgb,var(--text) 5%,transparent)}
+.fn-tg button{width:30px;height:30px;border:0;border-radius:9px;background:none;color:var(--text);font:inherit;font-size:16px;cursor:pointer}
+.fn-tg b{min-width:22px;text-align:center;font-size:14px;font-variant-numeric:tabular-nums}
+.fn-alw{flex:none;border:0;border-radius:11px;padding:8px 10px;background:none;color:var(--muted);font:inherit;font-size:12px;font-weight:600;cursor:pointer;box-shadow:inset 0 0 0 1px var(--line)}
+.fn-alw.on{color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--today) 50%,transparent)}
+@media (max-width:520px){.fn-alw{display:none}}
+.fn-free{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border-radius:18px;background:var(--surface)}
+.fn-free span{display:flex;flex-direction:column;gap:2px}.fn-free small{color:var(--muted);font-size:13px}
+.fn-edone{align-self:flex-start;margin-top:4px}
+.md-act{margin-top:10px;border:0;border-radius:12px;padding:10px 14px;background:color-mix(in srgb,var(--text) 7%,transparent);color:var(--text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.fn-fill,.fn-bar i,.fn-row{transition:none}}

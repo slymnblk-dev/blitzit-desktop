@@ -38,4 +38,5 @@ modes/goals/goals-page.css
 tasks/cap-dialog.css
 theme/flow.css
 modes/vision.css
+modes/funnel.css
 theme/polish.css
