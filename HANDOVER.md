@@ -21,7 +21,7 @@
 - Design options go on the Claude Design canvas (artifact "Habits & Goals pages"); re-read `project/canvas.json` from the artifact before publishing, the editor re-saves it.
 
 ## State
-- **Live = dev = 0.331** (gone live 2026-11-18: cleanup follow-ups + Funnel mode). Live (main) = 0.328. Check with `git ls-remote origin main dev`.
+- **dev = 0.333** (Funnel settings fix + desktop polish; waiting for "go live"). Live (main) = 0.331. Live (main) = 0.328. Check with `git ls-remote origin main dev`.
 - Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/NQdsSMjFwxZzzZ54XdxCRD — republish `web/index.html` after every change.
 - Full suite at the last run (0.327): 233/235 passed; the 2 misses were a test race in new-menu.spec (read the result before the save finished), fixed with expect.poll and passing 24/24 under load.
 
@@ -173,3 +173,5 @@
   Templates: Sales (7 steps, Leadsomo targets + weekday tasks), Content, Job search, Start empty. Test: funnel.spec (11). Guard tests updated: layers/pages/beta/render-pipeline.
 - 0.330: **Funnel release 2** — Focus view (thin step line + one calm hero card with a slow dim aurora; Start / Done; Up next), Funnel | Focus switch on the page, `S.cfg.fnView` = view it opens with (Settings → Modes → Funnel → Start in). After a tick: a quiet line ("Prospects done · Outreach is open now") and the newly opened step glows once, instead of a toast. Phone header puts the switch on its own row. Checked in Flow + Classic, dark + light. Test: funnel.spec (+4, now 15).
 - 0.331: **Funnel release 3** — optional whole-funnel targets `S.cfg.fn.daily/weekly = {list,n}` (one quiet line under the funnel / hero; week follows Settings week start); ‹ past days › up to 30 days back (read only, `fnDay`); optional Home Now card (`S.cfg.fnHome`, via a `ciCard` layer — ciCard is now layered: routines, close-day, funnel); whole funnel done → quiet "You won the day" + one Win (`kind:'big'`, once a day via `S.cfg.fn.won`); Plan ☀ / Journal ☾ buttons on the page when those modes are on. Test: funnel.spec (+5, now 20); layers.spec counts ciCard.
+- 0.332: Funnel settings — the whole-funnel target step is picked from the app menu (`cxOpen`); the native `<select>` popup was white-on-white on Windows dark.
+- 0.333: **Funnel page polish** (design canvas "Desktop polish" + "T4·A"): header says only "N to do today" (the step lives in the panel); no lock icons on rows — only the next locked step says "opens at 1/2" (`m.nx`, `m.need`, `m.left` in `fnModel`); thin coral outline on the selected row; desktop rows 54px with 17px names; "coming up" card in the panel; panel and funnel tops aligned; soft day-arrow buttons. **Goals under the tip**: one stem from the funnel splits (Y) into a card per goal (`fnGoalsHTML`; one goal = straight stem; met = coral outline + ✓; none = "Add a daily or weekly goal" invite that opens editing). Focus view keeps the small targets line. Test: funnel.spec (+1, 22).

@@ -7,7 +7,7 @@ const HANDOFF=(()=>{try{
   history.replaceState(null,'',location.pathname);return h;
 }catch(e){return null}})();
 /* ---------- version ---------- */
-const APP_VERSION=332; // bumped with every published update
+const APP_VERSION=333; // bumped with every published update
 /* ---------- layers (0.324): how features extend a shared function ----------
    Never write `fn=function(){...}` to patch a function. Instead:
      hkLayer('fn','my-feature',function(...){ ... })   adds a named layer (later = outer)

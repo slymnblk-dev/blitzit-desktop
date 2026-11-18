@@ -49,7 +49,8 @@ function fnIsOpen(i,steps,stats){const st=steps[i];if(i===0||fnPast()||S.cfg.fnF
 function fnModel(){const steps=fnSteps(),stats=steps.map(fnStat),open=steps.map((s,i)=>fnIsOpen(i,steps,stats));
   let cur=steps.findIndex((s,i)=>open[i]&&!stats[i].full);if(cur<0)cur=open.lastIndexOf(true);
   let sel=steps.findIndex(s=>s.list===fnSel);if(sel<0||!open[sel])sel=cur;
-  return {steps,stats,open,cur,sel}}
+  const nx=open.indexOf(false),need=nx>0&&stats[nx-1].goal?Math.ceil(stats[nx-1].goal*.5):0;
+  return {steps,stats,open,cur,sel,nx,need,left:need?Math.max(1,need-stats[nx-1].c):0}}
 const fnLeftToday=()=>fnReady()?fnSteps().reduce((n,s)=>n+S.tasks.filter(t=>t.list===s.list&&t.stage==='today'&&shown(t)).length,0):0;
 /* optional targets for the whole funnel: one for the day, one for the week (counts finished tasks in one step) */
 function fnWeekStart(k){const d=new Date(k+'T12:00:00'),ws=+C().weekStart===0?0:1;d.setDate(d.getDate()-((d.getDay()-ws+7)%7));return dkey(d)}
@@ -63,9 +64,9 @@ function fnTargetsHTML(){const ts=['daily','weekly'].map(fnTarget).filter(Boolea
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg fn-pg" id="funnelPg" role="region" aria-label="Funnel"><div class="ib-in" id="fnIn"></div></div>');
 const fnDesk=()=>matchMedia('(min-width:1100px)').matches;
 const fnEsc=s=>esc(s).replace(/'/g,'&#39;');
-function fnRow(st,i,m){const s=m.stats[i],l=listOf(st.list),open=m.open[i],sel=i===m.sel;
-  const ct=!open?FN_LOCK:s.full?'done':s.goal?`${s.c} / ${s.goal}`:'';
-  return `<button class="fn-row${sel?' sel':''}${open?'':' lock'}${s.full?' full':''}${fnFlash===st.list?' flash':''}" data-fnstep="${st.list}" aria-label="${fnEsc(l.name)}, ${open?(s.goal?s.c+' of '+s.goal:'open'):'locked'}"${sel?' aria-current="true"':''}>
+function fnRow(st,i,m){const s=m.stats[i],l=listOf(st.list),open=m.open[i],sel=i===m.sel,next=!open&&i===m.nx;
+  const ct=!open?(next&&m.need?`opens at ${m.need}/${m.stats[i-1].goal}`:''):s.full?'done':s.goal?`${s.c} / ${s.goal}`:'';
+  return `<button class="fn-row${sel?' sel':''}${open?'':' lock'}${next?' next':''}${s.full?' full':''}${fnFlash===st.list?' flash':''}" data-fnstep="${st.list}" aria-label="${fnEsc(l.name)}, ${open?(s.goal?s.c+' of '+s.goal:'open'):'locked'}"${sel?' aria-current="true"':''}>
     ${open?`<span class="fn-fill" style="width:${(s.p*100).toFixed(1)}%"></span>`:''}<span class="fn-rc"><span class="fn-nm">${esc(l.name)}</span><span class="fn-ct">${ct}</span></span></button>`}
 function fnTaskRow(t,now){const a=fnAmt(t),done=t.stage==='done';if(fnPast())return `<div class="fn-task done ro"><span class="fn-tick">${FN_TICK}</span><span class="fn-tt"><b>${esc(t.title)}</b>${a>1?`<i class="fn-amt">×${a}</i>`:''}</span></div>`;
   return `<div class="fn-task${now?' now':''}${done?' done':''}" data-fntask="${t.id}">
@@ -80,7 +81,18 @@ function fnPanel(m){const st=m.steps[m.sel];if(!st)return '';const l=listOf(st.l
     ${fnPast()?`<div class="fn-list">${done.length?done.map(t=>fnTaskRow(t,false)).join(''):'<p class="fn-none">Nothing finished here that day.</p>'}</div></div>`:''}
     ${fnPast()?'':`<div class="fn-list">${open.length?open.map((t,i)=>fnTaskRow(t,i===0)).join(''):`<p class="fn-none">${done.length?'All done here. Nice.':'Nothing planned here today.'}</p>`}</div>`}
     ${fnPast()?'':`${done.length?`<button class="fn-dn" data-fndone aria-expanded="${fnShowDone}">${done.length} done · ${fnShowDone?'Hide':'Show'}</button>${fnShowDone?`<div class="fn-list">${done.map(t=>fnTaskRow(t,false)).join('')}</div>`:''}`:''}
-    <label class="fn-add"><span class="wn-pl">${PLUS_S}</span><input id="fnNew" placeholder="Add to ${fnEsc(l.name)}…" maxlength="200" enterkeyhint="done" autocomplete="off" aria-label="Add a task to ${fnEsc(l.name)}"></label></div>`}`}
+    <label class="fn-add"><span class="wn-pl">${PLUS_S}</span><input id="fnNew" placeholder="Add to ${fnEsc(l.name)}…" maxlength="200" enterkeyhint="done" autocomplete="off" aria-label="Add a task to ${fnEsc(l.name)}"></label>${fnComingHTML(m)}</div>`}`}
+/* what opens next, and how far away it is */
+function fnComingHTML(m){if(fnPast()||m.nx<1||!m.left)return '';const nx=listOf(m.steps[m.nx].list),pv=listOf(m.steps[m.nx-1].list);
+  return `<div class="fn-coming"><span>${FN_LOCK}</span><span>${esc(nx.name)} opens after <b>${m.left} more</b> in ${esc(pv.name)}</span></div>`}
+/* goals for the whole funnel: the funnel pours into them — one stem from the tip splits to a card per goal */
+function fnGoalsHTML(){const ts=['daily','weekly'].map(fnTarget).filter(Boolean),past=fnPast();
+  if(!ts.length)return past?'':`<div class="fn-goals"><span class="fn-stem"></span><button class="fn-ginv" data-fnedit>${TGT_I}Add a daily or weekly goal</button></div>`;
+  const met=ts.map(t=>t.c>=t.n),split=ts.length>1;
+  const stem=split?`<svg class="fn-ysplit${met.some(Boolean)?' lit':''}" viewBox="0 0 200 34" aria-hidden="true"><path d="M100 0 V12 Q100 18 92 18 H28 Q20 18 20 26 V34 M100 12 Q100 18 108 18 H172 Q180 18 180 26 V34"/></svg>`:`<span class="fn-stem${met[0]?' lit':''}"></span>`;
+  return `<div class="fn-goals">${stem}<div class="fn-gcards">${ts.map((t,k)=>`<div class="fn-goal${met[k]?' met':''}${t.kind==='weekly'?' wk':''}"><span class="fn-geye">${t.kind==='daily'?(past?'That day':'Today'):(past?'That week':'This week')}${met[k]?' ✓':''}</span>
+    <b class="fn-gv">${t.c}<span>/${t.n}</span></b><span class="fn-gu">${esc(listOf(t.list).name.toLowerCase())}${met[k]?' · met':''}</span><i><b style="width:${(t.p*100).toFixed(0)}%"></b></i></div>`).join('')}</div></div>`}
+const TGT_I='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>';
 /* a quiet line after a step fills or opens: no confetti here, the big moment is the whole funnel */
 const fnNoteHTML=()=>fnNote&&Date.now()-fnNoteT<4500?`<div class="fn-note" role="status"><span>${FN_TICK}</span>${esc(fnNote)}</div>`:'';
 /* Focus view: the same steps as a thin line, and only the task you are on, big and calm */
@@ -134,14 +146,14 @@ function drawFunnel(){if(!fnOn)return;const pg=$('funnelPg'),y=pg.scrollTop,sp=f
   const top=`<div class="set-top ib-top"><button class="icon-btn" id="fnBack" aria-label="Back">${BACK_SVG}</button></div>`;
   if(!fnReady()){$('fnIn').innerHTML=`${top}<div class="fn-head"><div><span class="pg-eye">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</span><h1 class="ib-h wn-h">Funnel</h1></div></div>${fnSetupHTML()}`;return}
   if(fnEdit){$('fnIn').innerHTML=`${top}<div class="fn-head"><div><span class="pg-eye">${esc(sp.name)}</span><h1 class="ib-h wn-h">Edit steps</h1></div></div>${fnEditHTML()}`;pg.scrollTop=y;return}
-  const m=fnModel(),cur=m.steps[m.cur],left=fnLeftToday(),past=fnPast(),done=m.stats.reduce((n,s)=>n+s.c,0);
-  const sum=past?`${done} finished that day · looking back`:`${cur?`Step <b>${m.cur+1} of ${m.steps.length}</b> · ${esc(listOf(cur.list).name)}`:''}${left?` · ${left} to do today`:''}`;
+  const m=fnModel(),left=fnLeftToday(),past=fnPast(),done=m.stats.reduce((n,s)=>n+s.c,0);
+  const sum=past?`${done} finished that day · looking back`:left?`${left} to do today`:'All done for today';
   const pill=(on,attr,ic,lbl)=>on?`<button class="icon-btn fn-pill" ${attr} aria-label="${lbl}" title="${lbl}">${ic}</button>`:'';
   $('fnIn').innerHTML=`${top}<div class="fn-head"><div>${fnDayNav()}<h1 class="ib-h wn-h">Funnel</h1><div class="pg-sum">${sum}</div></div>
       <div class="fn-tools">${past?`<button class="fn-soft fn-today" data-fnday="0">Back to today</button>`:`<div class="segc fn-vsw" role="group" aria-label="View">${['funnel','focus'].map(v=>`<button data-fnview="${v}" class="${fnView===v?'on':''}" aria-pressed="${fnView===v}">${v==='funnel'?'Funnel':'Focus'}</button>`).join('')}</div>`}
       <span class="fn-tr">${past?'':pill(typeof planOn==='function'&&planOn(),'data-fnplan',FN_SUN,'Plan the day')+pill(typeof journalOn==='function'&&journalOn(),'data-fnjr',FN_MOON,'Close the day')}
       <button class="icon-btn fn-gear" data-fnedit aria-label="Edit steps">${FN_GEAR}</button></span></div></div>
-    ${fnView==='focus'&&!past?fnFocusHTML(m):`<div class="fn-grid"><div class="fn-l"><div class="fn-shape" id="fnShape">${m.steps.map((s,i)=>fnRow(s,i,m)).join('')}</div>${fnAsk?fnAskHTML(m):''}${fnTargetsHTML()}</div>${fnPanel(m)}</div>`}`;
+    ${fnView==='focus'&&!past?fnFocusHTML(m):`<div class="fn-grid"><div class="fn-l"><div class="fn-shape" id="fnShape">${m.steps.map((s,i)=>fnRow(s,i,m)).join('')}</div>${fnAsk?fnAskHTML(m):''}${fnGoalsHTML()}</div>${fnPanel(m)}</div>`}`;
   fnShape();pg.scrollTop=y}
 /* the one-piece funnel: a soft trapezoid clipped around the stacked rows, and each label kept inside its narrowing row */
 function fnShape(){const el=$('fnShape');if(!el)return;const w=el.offsetWidth,h=el.offsetHeight;if(!w||!h)return;const tip=.42,r=14,bx=(w-w*tip)/2;

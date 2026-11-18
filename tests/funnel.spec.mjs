@@ -236,15 +236,18 @@ test('daily and weekly targets count finished tasks in one step; none set = no l
   const errors = await openApp(page);
   await on(page); await sales(page);
   await page.evaluate(() => openFunnel());
-  await expect(page.locator('.fn-tgts')).toHaveCount(0);
+  await expect(page.locator('.fn-goal')).toHaveCount(0);
+  await expect(page.locator('.fn-ginv')).toBeVisible();                     // no goals yet: one quiet invite
   const r = await page.evaluate(() => { const st = fnSteps(); S.cfg.fn.daily = { list: st[0].list, n: 2 }; S.cfg.fn.weekly = { list: st[0].list, n: 5 };
     const t = fnOpenTasks(st[0].list)[0]; t.amt = 2; setStage(t, 'done');
     const old = newTask('Earlier', 'done', st[0].list, 15); old.doneAt = Date.now() - 864e5; S.tasks.push(old);   // yesterday: counts for the week only if same week
     drawFunnel(); return { d: fnTarget('daily'), w: fnTarget('weekly'), sameWeek: fnWeekStart(dkey(Date.now() - 864e5)) === fnWeekStart(today()) }; });
   expect(r.d).toMatchObject({ c: 2, n: 2 });
   expect(r.w.c).toBe(r.sameWeek ? 3 : 2);
-  await expect(page.locator('.fn-tgt')).toHaveCount(2);
-  await expect(page.locator('.fn-tgt').first()).toContainText('2/2 prospects');
+  await expect(page.locator('.fn-goal')).toHaveCount(2);                   // 0.333: goal cards under the funnel's tip
+  await expect(page.locator('.fn-goal').first()).toContainText('2/2');
+  await expect(page.locator('.fn-goal').first()).toHaveClass(/met/);
+  await expect(page.locator('.fn-ysplit')).toHaveCount(1);
   noErrors(errors);
 });
 
@@ -315,5 +318,26 @@ test('0.332: whole-funnel targets are picked from the app menu (no native dropdo
   await page.locator('.cx-it, .cx button, [role="menuitem"]').filter({ hasText: 'Conversations' }).first().click();
   expect(await page.evaluate(() => listOf(S.cfg.fn.daily.list).name + ' ' + S.cfg.fn.daily.n)).toBe('Conversations 2');
   await expect(page.locator('[data-fntgl="daily"]')).toContainText('Conversations');
+  noErrors(errors);
+});
+
+test('0.333 polish: step said once, only the next locked step speaks, coming-up card, one goal = straight stem, invite opens editing', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await on(page); const steps = await sales(page);
+  await page.evaluate(() => { fnSel = null; openFunnel(); });
+  await expect(page.locator('.fn-head .pg-sum')).toHaveText('16 to do today');
+  await expect(page.locator('.fn-row.lock svg')).toHaveCount(0);            // no lock icons on rows
+  await expect(page.locator('.fn-row.next')).toHaveCount(1);
+  await expect(page.locator(`.fn-row.next[data-fnstep="${steps[1].list}"]`)).toContainText('opens at 1/2');
+  await expect(page.locator('.fn-coming')).toContainText('Outreach opens after 1 more in Prospects');
+  await expect(page.locator('.fn-row.sel')).toHaveCount(1);
+  await page.evaluate(l => { S.cfg.fn.weekly = { list: l, n: 5 }; drawFunnel(); }, steps[5].list);
+  await expect(page.locator('.fn-goal')).toHaveCount(1);
+  await expect(page.locator('.fn-stem')).toHaveCount(1);
+  await expect(page.locator('.fn-ysplit')).toHaveCount(0);
+  await page.evaluate(() => { S.cfg.fn.weekly = null; drawFunnel(); });
+  await page.locator('.fn-ginv').click();
+  await expect(page.locator('.fn-ed')).toBeVisible();
   noErrors(errors);
 });
