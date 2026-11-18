@@ -2,11 +2,13 @@
    Move work through steps, one at a time. The idea comes from Leadsomo; the look is Windaday's.
    Data: the funnel lives in a normal space, and each step is one of that space's lists, so every
    funnel task is an ordinary task (focus, repeat, reminders, search, sync and undo just work).
-   S.cfg.fn = {space, steps:[{list, target (0 = none), open (always open)}], unl:{d:'YYYY-MM-DD', lists:[…]}}
-   S.cfg.funnel = mode on/off · S.cfg.fnFree = no locks · S.cfg.fnView = 'funnel' (default) or 'focus'. A task can count for more than one: t.amt (default 1).
+   S.cfg.fn = {space, steps:[{list, target (0 = none), open (always open)}], unl:{d:'YYYY-MM-DD', lists:[…]},
+                daily:{list,n} | null, weekly:{list,n} | null (optional targets), won:'YYYY-MM-DD' (funnel done → a Win, once a day)}
+   S.cfg.funnel = mode on/off · S.cfg.fnFree = no locks · S.cfg.fnView = 'funnel' (default) or 'focus' · S.cfg.fnHome = a Now card on Home. A task can count for more than one: t.amt (default 1).
    A step today = what you finished today ÷ its target (no target: ÷ everything planned in it today).
    The next step opens when the one before is half way, when it is set to "always open", or when you open it anyway. */
-var fnOn=false,fnSel=null,fnShowDone=false,fnEdit=false,fnAsk=null,fnView='funnel',fnFlash=null,fnNote=null,fnNoteT=0;
+var fnOn=false,fnSel=null,fnShowDone=false,fnEdit=false,fnAsk=null,fnView='funnel',fnFlash=null,fnNote=null,fnNoteT=0,fnDay=null;
+const FN_BACK_DAYS=30;
 const FN_MIN=3,FN_MAX=8;
 function funnelOn(){return !!(S.cfg&&S.cfg.funnel)}
 var FN_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg>';
@@ -31,21 +33,31 @@ const fnSpace=()=>{const c=fnCfg();return c&&(S.spaces||[]).find(s=>s.id===c.spa
 const fnSteps=()=>{const c=fnCfg();if(!c||!Array.isArray(c.steps))return [];return c.steps.filter(s=>S.lists.some(l=>l.id===s.list))};
 const fnReady=()=>!!fnSpace()&&fnSteps().length>0;
 const fnAmt=t=>Math.max(1,Math.round(+t.amt)||1);
-const fnDoneToday=t=>t.stage==='done'&&t.doneAt&&dkey(t.doneAt)===today();
-const fnOpenTasks=list=>S.tasks.filter(t=>t.list===list&&t.stage==='today'&&shown(t));
-const fnDoneTasks=list=>S.tasks.filter(t=>t.list===list&&fnDoneToday(t)).sort((a,b)=>b.doneAt-a.doneAt);
+/* the day you are looking at: today, or a past day (read only) */
+const fnKey=()=>fnDay||today();
+const fnPast=()=>!!fnDay&&fnDay<today();
+const fnDoneOn=(t,k)=>t.stage==='done'&&t.doneAt&&dkey(t.doneAt)===k;
+const fnOpenTasks=list=>fnPast()?[]:S.tasks.filter(t=>t.list===list&&t.stage==='today'&&shown(t));
+const fnDoneTasks=list=>S.tasks.filter(t=>t.list===list&&fnDoneOn(t,fnKey())).sort((a,b)=>b.doneAt-a.doneAt);
 const fnSum=a=>a.reduce((n,t)=>n+fnAmt(t),0);
 function fnStat(st){const c=fnSum(fnDoneTasks(st.list)),open=fnSum(fnOpenTasks(st.list)),goal=+st.target>0?+st.target:c+open;
   return {c,goal,p:goal?Math.min(1,c/goal):0,full:goal>0&&c>=goal}}
 const fnUnlToday=()=>{const u=fnCfg()&&fnCfg().unl;return u&&u.d===today()&&Array.isArray(u.lists)?u.lists:[]};
-function fnIsOpen(i,steps,stats){const st=steps[i];if(i===0||S.cfg.fnFree||st.open||stats[i].c>0||fnUnlToday().includes(st.list))return true;
+function fnIsOpen(i,steps,stats){const st=steps[i];if(i===0||fnPast()||S.cfg.fnFree||st.open||stats[i].c>0||fnUnlToday().includes(st.list))return true;
   const prev=stats[i-1];return !prev.goal||prev.c>=Math.ceil(prev.goal*.5)}
 /* everything the page needs, worked out once per draw */
 function fnModel(){const steps=fnSteps(),stats=steps.map(fnStat),open=steps.map((s,i)=>fnIsOpen(i,steps,stats));
   let cur=steps.findIndex((s,i)=>open[i]&&!stats[i].full);if(cur<0)cur=open.lastIndexOf(true);
   let sel=steps.findIndex(s=>s.list===fnSel);if(sel<0||!open[sel])sel=cur;
   return {steps,stats,open,cur,sel}}
-const fnLeftToday=()=>fnReady()?fnSteps().reduce((n,s)=>n+fnOpenTasks(s.list).length,0):0;
+const fnLeftToday=()=>fnReady()?fnSteps().reduce((n,s)=>n+S.tasks.filter(t=>t.list===s.list&&t.stage==='today'&&shown(t)).length,0):0;
+/* optional targets for the whole funnel: one for the day, one for the week (counts finished tasks in one step) */
+function fnWeekStart(k){const d=new Date(k+'T12:00:00'),ws=+C().weekStart===0?0:1;d.setDate(d.getDate()-((d.getDay()-ws+7)%7));return dkey(d)}
+function fnTarget(kind){const c=fnCfg(),g=c&&c[kind];if(!g||!(+g.n>0)||!fnSteps().some(s=>s.list===g.list))return null;const k=fnKey();
+  const from=kind==='weekly'?fnWeekStart(k):k,inRange=t=>t.list===g.list&&t.stage==='done'&&t.doneAt&&dkey(t.doneAt)>=from&&dkey(t.doneAt)<=k;
+  const n=fnSum(S.tasks.filter(inRange));return {kind,list:g.list,n:+g.n,c:n,p:Math.min(1,n/g.n)}}
+function fnTargetsHTML(){const ts=['daily','weekly'].map(fnTarget).filter(Boolean);if(!ts.length)return '';
+  return `<div class="fn-tgts">${ts.map(t=>`<span class="fn-tgt${t.c>=t.n?' met':''}"><small>${t.kind==='daily'?(fnPast()?'That day':'Today'):(fnPast()?'That week':'This week')}</small><span><b>${t.c}</b>/${t.n} ${esc(listOf(t.list).name.toLowerCase())}</span><i><b style="width:${(t.p*100).toFixed(0)}%"></b></i></span>`).join('')}</div>`}
 
 /* ---------- the page ---------- */
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg rh-pg fn-pg" id="funnelPg" role="region" aria-label="Funnel"><div class="ib-in" id="fnIn"></div></div>');
@@ -55,7 +67,7 @@ function fnRow(st,i,m){const s=m.stats[i],l=listOf(st.list),open=m.open[i],sel=i
   const ct=!open?FN_LOCK:s.full?'done':s.goal?`${s.c} / ${s.goal}`:'';
   return `<button class="fn-row${sel?' sel':''}${open?'':' lock'}${s.full?' full':''}${fnFlash===st.list?' flash':''}" data-fnstep="${st.list}" aria-label="${fnEsc(l.name)}, ${open?(s.goal?s.c+' of '+s.goal:'open'):'locked'}"${sel?' aria-current="true"':''}>
     ${open?`<span class="fn-fill" style="width:${(s.p*100).toFixed(1)}%"></span>`:''}<span class="fn-rc"><span class="fn-nm">${esc(l.name)}</span><span class="fn-ct">${ct}</span></span></button>`}
-function fnTaskRow(t,now){const a=fnAmt(t),done=t.stage==='done';
+function fnTaskRow(t,now){const a=fnAmt(t),done=t.stage==='done';if(fnPast())return `<div class="fn-task done ro"><span class="fn-tick">${FN_TICK}</span><span class="fn-tt"><b>${esc(t.title)}</b>${a>1?`<i class="fn-amt">×${a}</i>`:''}</span></div>`;
   return `<div class="fn-task${now?' now':''}${done?' done':''}" data-fntask="${t.id}">
     <button class="fn-tick" data-fntick="${t.id}" aria-label="${done?'Mark not done':'Mark done'}: ${fnEsc(t.title)}">${done?FN_TICK:''}</button>
     <button class="fn-tt" data-fnopen="${t.id}"><b>${esc(t.title)}</b>${a>1?`<i class="fn-amt">×${a}</i>`:''}</button>
@@ -65,9 +77,10 @@ function fnPanel(m){const st=m.steps[m.sel];if(!st)return '';const l=listOf(st.l
   return `<div class="fn-panel">${fnNoteHTML()}<span class="fn-eye">Step ${m.sel+1} of ${m.steps.length}</span>
     <div class="fn-ph"><b class="fn-pn">${esc(l.name)}</b>${s.goal?`<span class="fn-pc"><b>${s.c}</b>/${s.goal}</span>`:''}</div>
     <div class="fn-bar" aria-hidden="true"><i style="width:${(s.p*100).toFixed(1)}%"></i></div>
-    <div class="fn-list">${open.length?open.map((t,i)=>fnTaskRow(t,i===0)).join(''):`<p class="fn-none">${done.length?'All done here. Nice.':'Nothing planned here today.'}</p>`}</div>
-    ${done.length?`<button class="fn-dn" data-fndone aria-expanded="${fnShowDone}">${done.length} done · ${fnShowDone?'Hide':'Show'}</button>${fnShowDone?`<div class="fn-list">${done.map(t=>fnTaskRow(t,false)).join('')}</div>`:''}`:''}
-    <label class="fn-add"><span class="wn-pl">${PLUS_S}</span><input id="fnNew" placeholder="Add to ${fnEsc(l.name)}…" maxlength="200" enterkeyhint="done" autocomplete="off" aria-label="Add a task to ${fnEsc(l.name)}"></label></div>`}
+    ${fnPast()?`<div class="fn-list">${done.length?done.map(t=>fnTaskRow(t,false)).join(''):'<p class="fn-none">Nothing finished here that day.</p>'}</div></div>`:''}
+    ${fnPast()?'':`<div class="fn-list">${open.length?open.map((t,i)=>fnTaskRow(t,i===0)).join(''):`<p class="fn-none">${done.length?'All done here. Nice.':'Nothing planned here today.'}</p>`}</div>`}
+    ${fnPast()?'':`${done.length?`<button class="fn-dn" data-fndone aria-expanded="${fnShowDone}">${done.length} done · ${fnShowDone?'Hide':'Show'}</button>${fnShowDone?`<div class="fn-list">${done.map(t=>fnTaskRow(t,false)).join('')}</div>`:''}`:''}
+    <label class="fn-add"><span class="wn-pl">${PLUS_S}</span><input id="fnNew" placeholder="Add to ${fnEsc(l.name)}…" maxlength="200" enterkeyhint="done" autocomplete="off" aria-label="Add a task to ${fnEsc(l.name)}"></label></div>`}`}
 /* a quiet line after a step fills or opens: no confetti here, the big moment is the whole funnel */
 const fnNoteHTML=()=>fnNote&&Date.now()-fnNoteT<4500?`<div class="fn-note" role="status"><span>${FN_TICK}</span>${esc(fnNote)}</div>`:'';
 /* Focus view: the same steps as a thin line, and only the task you are on, big and calm */
@@ -84,10 +97,16 @@ function fnHeroHTML(m){const st=m.steps[m.sel],l=listOf(st.list),s=m.stats[m.sel
     <div class="fn-hb"><button class="fn-main" data-fngo="${t.id}">${FN_PLAY}Start</button><button class="fn-soft" data-fntick="${t.id}">Done</button>${MORE(`data-fnm="${t.id}"`,'More for this task')}</div></div></div>`}
 function fnFocusHTML(m){const st=m.steps[m.sel];if(!st)return '';const open=fnOpenTasks(st.list).slice(1),done=fnDoneTasks(st.list),l=listOf(st.list);
   return `<div class="fn-focus">${fnStepLine(m)}<span class="fn-eye fn-lnow">Step ${m.sel+1} of ${m.steps.length} · ${esc(l.name)}</span>${fnAsk?fnAskHTML(m):''}
-    <div class="fn-fgrid"><div class="fn-fl">${fnNoteHTML()}${fnHeroHTML(m)}</div>
+    <div class="fn-fgrid"><div class="fn-fl">${fnNoteHTML()}${fnHeroHTML(m)}${fnTargetsHTML()}</div>
     <div class="fn-fr">${open.length?`<span class="fn-eye">Up next</span><div class="fn-list">${open.map(t=>fnTaskRow(t,false)).join('')}</div>`:''}
       ${done.length?`<button class="fn-dn" data-fndone aria-expanded="${fnShowDone}">${done.length} done · ${fnShowDone?'Hide':'Show'}</button>${fnShowDone?`<div class="fn-list">${done.map(t=>fnTaskRow(t,false)).join('')}</div>`:''}`:''}
       <label class="fn-add"><span class="wn-pl">${PLUS_S}</span><input id="fnNew" placeholder="Add to ${fnEsc(l.name)}…" maxlength="200" enterkeyhint="done" autocomplete="off" aria-label="Add a task to ${fnEsc(l.name)}"></label></div></div></div>`}
+const FN_SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const FN_MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>';
+/* ‹ day › — look back up to a month; today has no "next" */
+function fnDayNav(){const k=fnKey(),d=new Date(k+'T12:00:00'),min=dkey(Date.now()-FN_BACK_DAYS*864e5);
+  const lbl=(fnPast()?'':'Today · ')+d.toLocaleDateString(undefined,{weekday:fnPast()?'long':'short',day:'numeric',month:'long'});
+  return `<span class="fn-day"><button class="fn-dnb" data-fnday="-1" aria-label="Previous day"${k<=min?' disabled':''}>‹</button><span class="pg-eye">${lbl}</span><button class="fn-dnb" data-fnday="1" aria-label="Next day"${fnPast()?'':' disabled'}>›</button></span>`}
 function fnAskHTML(m){const i=m.steps.findIndex(s=>s.list===fnAsk);if(i<1)return '';const l=listOf(m.steps[i].list),p=listOf(m.steps[i-1].list),ps=m.stats[i-1],left=Math.max(1,Math.ceil(ps.goal*.5)-ps.c);
   return `<div class="fn-ask" role="dialog" aria-label="${fnEsc(l.name)} is locked"><span class="fn-ai">${FN_LOCK}</span><b>${esc(l.name)} opens after ${esc(p.name)}</b>
     <small>${ps.goal?`${left} more in ${esc(p.name)} to go.`:`Finish something in ${esc(p.name)} first.`}</small>
@@ -104,18 +123,25 @@ function fnEditHTML(){const steps=fnSteps();
       ${MORE(`data-fnem="${st.list}"`,'More for this step')}</div>`}).join('')}
     ${steps.length<FN_MAX?`<label class="fn-add"><span class="wn-pl">${PLUS_S}</span><input id="fnNewStep" placeholder="Add a step" maxlength="24" enterkeyhint="done" autocomplete="off" aria-label="Add a step"></label>`:''}
     <p class="fn-sp">Target = how many to finish each day (– means none). Without a target, a step is full when its tasks for today are done. The next step opens half way.</p>
+    <span class="pg-eye fn-tgh">Targets for the whole funnel · optional</span>
+    ${['daily','weekly'].map(kind=>{const g=(fnCfg()||{})[kind]||{},has=+g.n>0&&steps.some(s=>s.list===g.list);
+      return `<div class="fn-es fn-tge" data-fntge="${kind}"><b class="fn-tgk">${kind==='daily'?'Each day':'Each week'}</b>
+        <select data-fntgl="${kind}" aria-label="${kind==='daily'?'Daily':'Weekly'} target step"><option value="">No target</option>${steps.map(s=>`<option value="${s.list}"${has&&g.list===s.list?' selected':''}>${esc(listOf(s.list).name)}</option>`).join('')}</select>
+        ${has?`<span class="fn-tg"><button data-fntgn="-1" aria-label="Fewer">−</button><b>${g.n}</b><button data-fntgn="1" aria-label="More">+</button></span>`:''}</div>`}).join('')}
     <div class="fn-free"><span><b>Open all steps</b><small>No locks: every step is open from the start.</small></span><button class="tg" data-fnfree aria-pressed="${!!S.cfg.fnFree}" aria-label="Open all steps"></button></div>
     <button class="fn-main fn-edone" data-fnedit>Done</button></div>`}
 function drawFunnel(){if(!fnOn)return;const pg=$('funnelPg'),y=pg.scrollTop,sp=fnSpace();
   const top=`<div class="set-top ib-top"><button class="icon-btn" id="fnBack" aria-label="Back">${BACK_SVG}</button></div>`;
   if(!fnReady()){$('fnIn').innerHTML=`${top}<div class="fn-head"><div><span class="pg-eye">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</span><h1 class="ib-h wn-h">Funnel</h1></div></div>${fnSetupHTML()}`;return}
   if(fnEdit){$('fnIn').innerHTML=`${top}<div class="fn-head"><div><span class="pg-eye">${esc(sp.name)}</span><h1 class="ib-h wn-h">Edit steps</h1></div></div>${fnEditHTML()}`;pg.scrollTop=y;return}
-  const m=fnModel(),cur=m.steps[m.cur],left=fnLeftToday();
-  $('fnIn').innerHTML=`${top}<div class="fn-head"><div><span class="pg-eye">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</span><h1 class="ib-h wn-h">Funnel</h1>
-      <div class="pg-sum">${cur?`Step <b>${m.cur+1} of ${m.steps.length}</b> · ${esc(listOf(cur.list).name)}`:''}${left?` · ${left} to do today`:''}</div></div>
-      <div class="fn-tools"><div class="segc fn-vsw" role="group" aria-label="View">${['funnel','focus'].map(v=>`<button data-fnview="${v}" class="${fnView===v?'on':''}" aria-pressed="${fnView===v}">${v==='funnel'?'Funnel':'Focus'}</button>`).join('')}</div>
-      <button class="icon-btn fn-gear" data-fnedit aria-label="Edit steps">${FN_GEAR}</button></div></div>
-    ${fnView==='focus'?fnFocusHTML(m):`<div class="fn-grid"><div class="fn-l"><div class="fn-shape" id="fnShape">${m.steps.map((s,i)=>fnRow(s,i,m)).join('')}</div>${fnAsk?fnAskHTML(m):''}</div>${fnPanel(m)}</div>`}`;
+  const m=fnModel(),cur=m.steps[m.cur],left=fnLeftToday(),past=fnPast(),done=m.stats.reduce((n,s)=>n+s.c,0);
+  const sum=past?`${done} finished that day · looking back`:`${cur?`Step <b>${m.cur+1} of ${m.steps.length}</b> · ${esc(listOf(cur.list).name)}`:''}${left?` · ${left} to do today`:''}`;
+  const pill=(on,attr,ic,lbl)=>on?`<button class="icon-btn fn-pill" ${attr} aria-label="${lbl}" title="${lbl}">${ic}</button>`:'';
+  $('fnIn').innerHTML=`${top}<div class="fn-head"><div>${fnDayNav()}<h1 class="ib-h wn-h">Funnel</h1><div class="pg-sum">${sum}</div></div>
+      <div class="fn-tools">${past?`<button class="fn-soft fn-today" data-fnday="0">Back to today</button>`:`<div class="segc fn-vsw" role="group" aria-label="View">${['funnel','focus'].map(v=>`<button data-fnview="${v}" class="${fnView===v?'on':''}" aria-pressed="${fnView===v}">${v==='funnel'?'Funnel':'Focus'}</button>`).join('')}</div>`}
+      <span class="fn-tr">${past?'':pill(typeof planOn==='function'&&planOn(),'data-fnplan',FN_SUN,'Plan the day')+pill(typeof journalOn==='function'&&journalOn(),'data-fnjr',FN_MOON,'Close the day')}
+      <button class="icon-btn fn-gear" data-fnedit aria-label="Edit steps">${FN_GEAR}</button></span></div></div>
+    ${fnView==='focus'&&!past?fnFocusHTML(m):`<div class="fn-grid"><div class="fn-l"><div class="fn-shape" id="fnShape">${m.steps.map((s,i)=>fnRow(s,i,m)).join('')}</div>${fnAsk?fnAskHTML(m):''}${fnTargetsHTML()}</div>${fnPanel(m)}</div>`}`;
   fnShape();pg.scrollTop=y}
 /* the one-piece funnel: a soft trapezoid clipped around the stacked rows, and each label kept inside its narrowing row */
 function fnShape(){const el=$('fnShape');if(!el)return;const w=el.offsetWidth,h=el.offsetHeight;if(!w||!h)return;const tip=.42,r=14,bx=(w-w*tip)/2;
@@ -123,7 +149,7 @@ function fnShape(){const el=$('fnShape');if(!el)return;const w=el.offsetWidth,h=
   [...el.children].forEach(row=>{const yc=row.offsetTop+row.offsetHeight/2,vis=Math.max(80,w-2*bx*(yc/h)-28);row.querySelector('.fn-rc').style.maxWidth=vis+'px'})}
 addEventListener('resize',()=>{if(fnOn)fnShape()});
 function openFunnel(){if(!funnelOn())return;if(typeof closeSearch==='function')closeSearch();
-  fnOn=true;fnEdit=false;fnAsk=null;fnShowDone=false;fnNote=null;fnView=S.cfg.fnView==='focus'?'focus':'funnel';$('funnelPg').classList.add('on');document.body.classList.add('ib-open');drawFunnel();$('funnelPg').scrollTop=0;haptic(5);
+  fnOn=true;fnEdit=false;fnAsk=null;fnShowDone=false;fnNote=null;fnDay=null;fnView=S.cfg.fnView==='focus'?'focus':'funnel';$('funnelPg').classList.add('on');document.body.classList.add('ib-open');drawFunnel();$('funnelPg').scrollTop=0;haptic(5);
   if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
 function closeFunnel(){if(!fnOn)return;fnOn=false;fnEdit=false;fnAsk=null;$('funnelPg').classList.remove('on');if(!document.querySelector('.inbox-pg.on'))document.body.classList.remove('ib-open');
   const a=document.activeElement;if(a&&a.closest&&a.closest('#funnelPg'))a.blur();if(typeof renderDesk==='function')renderDesk();try{drawTabs()}catch(e){}}
@@ -141,9 +167,15 @@ function fnTick(id){const t=S.tasks.find(x=>String(x.id)===String(id));if(!t)ret
   const m0=fnModel();commit(()=>setStage(t,on?'done':'today'),on?'Task done':'Back on today');
   if(on){haptic([8,30,12]);fnAfterTick(m0,fnModel())}
   drawFunnel()}
+/* the whole funnel done today: one Win in the jar (Wins mode), once a day */
+function fnWin(){const c=fnCfg(),sp=fnSpace();if(!c||!sp||c.won===today())return;c.won=today();
+  if(typeof winsOn==='function'&&winsOn()){S.wins=S.wins||[];const n=fnSteps().reduce((a,s)=>a+fnSum(fnDoneTasks(s.list)),0);S.wins.push({id:newId(),t:`Funnel done · ${sp.name}`,sub:`${n} finished across ${fnSteps().length} steps`,at:Date.now(),kind:'big'})}
+  save();try{sfx('done')}catch(e){}}
 /* after a tick: say quietly what changed (a step filled, the next one opened) and let the new step glow once */
 function fnAfterTick(m0,m1){const filled=m1.stats.findIndex((s,k)=>s.full&&m0.stats[k]&&!m0.stats[k].full),opened=m1.open.findIndex((o,k)=>o&&!m0.open[k]);
   const name=k=>listOf(m1.steps[k].list).name,parts=[];if(filled>=0)parts.push(`${name(filled)} done`);if(opened>0)parts.push(`${name(opened)} is open now`);
+  const won=m1.stats.some(s=>s.full)&&m1.stats.every(s=>s.full||!s.goal)&&!(m0.stats.some(s=>s.full)&&m0.stats.every(s=>s.full||!s.goal));
+  if(won){parts.length=0;parts.push('Funnel done. You won the day.');fnWin()}
   if(!parts.length)return;fnNote=parts.join(' · ');fnNoteT=Date.now();if(opened>0){fnFlash=m1.steps[opened].list;setTimeout(()=>{fnFlash=null;if(fnOn)drawFunnel()},1600)}
   setTimeout(()=>{if(fnOn&&Date.now()-fnNoteT>=4400)drawFunnel()},4600)}
 function fnAddTask(v){const m=fnModel(),st=m.steps[m.sel];if(!st||!v)return false;const t=newTask(v.slice(0,200),'today',st.list,S.cfg.defEst);
@@ -160,6 +192,10 @@ function fnAddStep(v){const steps=fnSteps(),sp=fnSpace();if(!sp||!v||steps.lengt
 $('funnelPg').addEventListener('click',e=>{const T=x=>e.target.closest(x);
   if(T('#fnBack')){if(fnEdit){fnEdit=false;return drawFunnel()}return closeFunnel()}
   const tp=T('[data-fntpl]');if(tp)return fnFromTpl(FN_TPL[+tp.dataset.fntpl]);
+  const dy=T('[data-fnday]');if(dy){const d=+dy.dataset.fnday;if(!d){fnDay=null}else{const x=new Date(fnKey()+'T12:00:00');x.setDate(x.getDate()+d);const k=dkey(x);fnDay=k>=today()?null:k}
+    fnAsk=null;fnShowDone=false;haptic(4);return drawFunnel()}
+  if(T('[data-fnplan]'))return openPlan();
+  if(T('[data-fnjr]'))return openJournal();
   const vw=T('[data-fnview]');if(vw){fnView=vw.dataset.fnview;fnAsk=null;haptic(4);return drawFunnel()}
   if(T('[data-fnedit]')){fnEdit=!fnEdit;haptic(4);drawFunnel();$('funnelPg').scrollTop=0;return}
   if(T('[data-fnfree]')){haptic(5);setCfg('fnFree',!S.cfg.fnFree);return drawFunnel()}
@@ -181,6 +217,7 @@ $('funnelPg').addEventListener('click',e=>{const T=x=>e.target.closest(x);
   /* editing steps */
   const tg=T('[data-fntg]');if(tg){const id=tg.closest('[data-fnes]').dataset.fnes,d=+tg.dataset.fntg;haptic(4);
     return fnSetCfg(c=>{const s=c.steps.find(x=>x.list===id);if(s)s.target=Math.max(0,Math.min(99,(+s.target||0)+d))})}
+  const tn=T('[data-fntgn]');if(tn){const kind=tn.closest('[data-fntge]').dataset.fntge,d=+tn.dataset.fntgn;haptic(4);return fnSetCfg(c=>{const g=c[kind];if(g)g.n=Math.max(1,Math.min(999,(+g.n||1)+d))})}
   const al=T('[data-fnalw]');if(al){const id=al.closest('[data-fnes]').dataset.fnes;haptic(4);return fnSetCfg(c=>{const s=c.steps.find(x=>x.list===id);if(s)s.open=!s.open})}
   const em=T('[data-fnem]');if(em){e.stopPropagation();const id=em.dataset.fnem,steps=fnSteps(),i=steps.findIndex(s=>s.list===id);
     const mv=d=>()=>{fnSetCfg(c=>{const a=c.steps,j=a.findIndex(s=>s.list===id),k=a.findIndex(s=>s.list===steps[i+d].list);[a[j],a[k]]=[a[k],a[j]]})};
@@ -191,12 +228,24 @@ $('funnelPg').addEventListener('keydown',e=>{
   if(e.target.id==='fnNewStep'&&e.key==='Enter'){e.preventDefault();return fnAddStep(e.target.value.trim())}
   if(e.target.matches('.fn-ename')&&e.key==='Enter'){e.preventDefault();e.target.blur()}
   if(e.target.matches('input')&&e.key==='Escape'){e.preventDefault();e.stopPropagation();e.target.blur()}});
-$('funnelPg').addEventListener('change',e=>{const n=e.target.closest('[data-fnname]');if(!n)return;const l=S.lists.find(x=>x.id===n.dataset.fnname),v=n.value.trim();if(!l)return;
+$('funnelPg').addEventListener('change',e=>{const tl=e.target.closest('[data-fntgl]');if(tl){const kind=tl.dataset.fntgl,v=tl.value;
+    return fnSetCfg(c=>{if(!v)c[kind]=null;else c[kind]={list:v,n:(c[kind]&&+c[kind].n>0)?c[kind].n:(kind==='daily'?2:5)}})}
+  const n=e.target.closest('[data-fnname]');if(!n)return;const l=S.lists.find(x=>x.id===n.dataset.fnname),v=n.value.trim();if(!l)return;
   if(!v){n.value=l.name;return}if(v!==l.name){commit(()=>{l.name=v.slice(0,24)},'Step renamed');try{renderDesk()}catch(err){}}});
 
 /* a repeating task's next copy keeps counting the same */
 const _fnStage=hkBelow('setStage','funnel',setStage__core);
 hkLayer('setStage','funnel',function(t){const r=_fnStage.apply(this,arguments);if(t&&t.amt>1&&t.spawned){const c=S.tasks.find(x=>x.id===t.spawned);if(c&&!c.amt)c.amt=t.amt}return r});
+
+/* ---------- Home: an optional small card with the task you are on (Settings → Modes → Funnel) ---------- */
+function fnHomeCard(){if(!funnelOn()||!S.cfg.fnHome||!fnReady())return '';
+  const keep=fnDay;fnDay=null;let m,t;try{m=fnModel();const st0=m.steps[m.cur];t=st0&&fnOpenTasks(st0.list)[0]}finally{fnDay=keep}   // Home is always about today
+  const st=m.steps[m.cur];if(!st||!t)return '';const s=m.stats[m.cur];
+  return `<div class="ci-home fn-home" data-fnhopen><span class="ci-hi">${FN_ICON}</span><span class="ci-ht"><b>${esc(t.title)}</b><small>Funnel · ${esc(listOf(st.list).name)}${s.goal?` ${s.c}/${s.goal}`:''}</small></span>
+    <button class="rv-go" data-fnhgo="${t.id}">Start</button></div>`}
+const _fnCi=hkBelow('ciCard','funnel',ciCard__core);hkLayer('ciCard','funnel',function(){return fnHomeCard()||_fnCi.apply(this,arguments)});
+document.addEventListener('click',e=>{const g=e.target.closest('[data-fnhgo]'),o=e.target.closest('[data-fnhopen]');if(!g&&!o)return;e.preventDefault();e.stopPropagation();
+  if(g){const t=S.tasks.find(x=>String(x.id)===g.dataset.fnhgo);if(t){haptic(8);startBlitz([t])}return}openFunnel()},true);
 
 /* ---------- keep things fresh ---------- */
 onRender('funnel-page',function(){if(fnOn){if(!funnelOn())closeFunnel();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#funnelPg input'))drawFunnel()}});
@@ -234,6 +283,7 @@ hkLayer('modesPage','funnel',function(){const h=_fnModes.apply(this,arguments),o
     ${on?`<div class="md-body"><p class="md-note">Steps like Prospects → Outreach → Replies. Finishing tasks fills each step, and the next one opens half way. ${sp?`Your funnel lives in the space <b>${esc(sp.name)}</b>, so its tasks also show in Today and search.`:'Open it to pick a starting shape.'}</p>
       <div class="md-sub"><span><b>Start in</b><small>The view the page opens with. You can switch on the page too.</small></span><div class="segc">${['funnel','focus'].map(v=>`<button data-fnsetview="${v}" class="${(S.cfg.fnView||'funnel')===v?'on':''}" aria-pressed="${(S.cfg.fnView||'funnel')===v}">${v==='funnel'?'Funnel':'Focus'}</button>`).join('')}</div></div>
       <div class="md-sub"><span><b>Open all steps</b><small>No locks: every step is open from the start.</small></span>${tg('fnFree')}</div>
+      <div class="md-sub"><span><b>Now card on Home</b><small>The task you are on, with Start.</small></span>${tg('fnHome')}</div>
       ${sp?`<button class="md-act" data-fnsetedit>Edit steps and targets</button>`:''}</div>`:''}</div>`;
   const i=h.indexOf('<div class="set-sec"><h3>Everyday');if(i<0)return h+card;const j=h.lastIndexOf('</div>',i);return h.slice(0,j)+card+h.slice(j)});
 $('setIn').addEventListener('click',e=>{const v=e.target.closest('[data-fnsetview]');if(!v)return;e.stopPropagation();haptic(5);setCfg('fnView',v.dataset.fnsetview)},true);

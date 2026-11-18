@@ -59,7 +59,8 @@ function modesRender(){
 }
 
 /* ---------- Home: evening check-in card, sidebar ---------- */
-function ciCard(){
+function ciCard(){return hkCall('ciCard',ciCard__core,this,arguments)}
+function ciCard__core(){
   if(!habitsOn()||C().hbCi===false||S.ciSkip===today())return '';
   const at=+C().hbCiAt;if(new Date().getHours()<(Number.isFinite(at)?at:19))return '';
   const n=hbOpenToday().length;if(!n)return '';

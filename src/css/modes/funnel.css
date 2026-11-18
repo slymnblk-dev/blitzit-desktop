@@ -140,3 +140,24 @@
 .fn-hb .gm-more{margin-left:auto}
 @media (prefers-reduced-motion:reduce){.fn-hero::before,.fn-note,.fn-row.flash,.fn-seg.flash{animation:none}}
 @media (max-width:1099px){#funnelPg .fn-head{flex-direction:column;align-items:stretch;gap:14px}#funnelPg .fn-tools{margin-bottom:0;justify-content:space-between}}
+
+/* ---------- 0.331: day nav, targets, Plan/Journal buttons, Home card, read-only past days ---------- */
+.fn-day{display:inline-flex;align-items:center;gap:4px;margin-left:-8px}
+.fn-dnb{width:28px;height:28px;border:0;border-radius:9px;background:none;color:var(--muted);font:inherit;font-size:20px;line-height:1;cursor:pointer}
+.fn-dnb:hover:not(:disabled){background:color-mix(in srgb,var(--text) 6%,transparent);color:var(--text)}
+.fn-dnb:disabled{opacity:.25;cursor:default}
+.fn-tr{display:flex;align-items:center;gap:6px}
+.fn-pill svg{width:18px;height:18px}
+.fn-today{min-height:36px;font-size:14px}
+.fn-tgts{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin-top:18px;font-size:13px;color:var(--muted)}
+.fn-fl .fn-tgts{justify-content:flex-start;margin:6px 4px 0}
+.fn-tgt{display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.fn-tgt b{color:var(--text);font-weight:600}
+.fn-tgt i{display:inline-block;width:64px;height:3px;border-radius:2px;background:var(--line);overflow:hidden;margin-left:4px}
+.fn-tgt i b{display:block;height:100%;background:var(--muted)}
+.fn-tgt.met i b{background:var(--today);opacity:.85}
+.fn-tgh{margin:14px 2px 2px}
+.fn-tge select{flex:1;min-width:0;border:0;border-radius:11px;padding:9px 10px;background:color-mix(in srgb,var(--text) 5%,transparent);color:var(--text);font:inherit;font-size:14px}
+.fn-tgk{flex:none;width:86px;font-size:14px;font-weight:600}
+.fn-task.ro .fn-tick{cursor:default}
+.fn-home{cursor:pointer}

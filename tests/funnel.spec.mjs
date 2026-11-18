@@ -229,3 +229,78 @@ test('Focus view on an empty step is calm and points to the next open step; work
   await expect(page.locator('.fn-seg.sel')).toContainText('Step 2');
   noErrors(errors);
 });
+
+// ---------- 0.331: optional targets, past days, Home card, funnel done → a Win, Plan/Journal buttons ----------
+test('daily and weekly targets count finished tasks in one step; none set = no line', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await on(page); await sales(page);
+  await page.evaluate(() => openFunnel());
+  await expect(page.locator('.fn-tgts')).toHaveCount(0);
+  const r = await page.evaluate(() => { const st = fnSteps(); S.cfg.fn.daily = { list: st[0].list, n: 2 }; S.cfg.fn.weekly = { list: st[0].list, n: 5 };
+    const t = fnOpenTasks(st[0].list)[0]; t.amt = 2; setStage(t, 'done');
+    const old = newTask('Earlier', 'done', st[0].list, 15); old.doneAt = Date.now() - 864e5; S.tasks.push(old);   // yesterday: counts for the week only if same week
+    drawFunnel(); return { d: fnTarget('daily'), w: fnTarget('weekly'), sameWeek: fnWeekStart(dkey(Date.now() - 864e5)) === fnWeekStart(today()) }; });
+  expect(r.d).toMatchObject({ c: 2, n: 2 });
+  expect(r.w.c).toBe(r.sameWeek ? 3 : 2);
+  await expect(page.locator('.fn-tgt')).toHaveCount(2);
+  await expect(page.locator('.fn-tgt').first()).toContainText('2/2 prospects');
+  noErrors(errors);
+});
+
+test('‹ past days ›: yesterday shows what was finished, read only; today has no "next"', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await on(page); await sales(page);
+  await page.evaluate(() => { const l = fnSteps()[0].list, t = newTask('Old prospect', 'done', l, 15); t.doneAt = Date.now() - 864e5; S.tasks.push(t); save(); fnSel = null; openFunnel(); });
+  await expect(page.locator('[data-fnday="1"]')).toBeDisabled();
+  await page.locator('[data-fnday="-1"]').click();
+  await expect(page.locator('.pg-sum')).toContainText('1 finished that day');
+  await expect(page.locator('.fn-task.ro')).toContainText('Old prospect');
+  await expect(page.locator('#fnNew')).toHaveCount(0);
+  await expect(page.locator('[data-fnview]')).toHaveCount(0);
+  await page.locator('[data-fnday="0"]').click();
+  await expect(page.locator('#fnNew')).toBeVisible();
+  noErrors(errors);
+});
+
+test('Home: the optional Now card shows the task you are on, and Start opens focus', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = await openApp(page);
+  await on(page); await sales(page);
+  await page.evaluate(() => { goHome(); render(); });
+  await expect(page.locator('.fn-home')).toHaveCount(0);                  // off by default
+  await page.evaluate(() => { S.cfg.fnHome = true; save(); window.__blitz = []; startBlitz = q => window.__blitz.push(q[0].title); render(); });
+  await expect(page.locator('.fn-home:visible')).toContainText('Research ICP accounts');
+  await page.locator('[data-fnhgo]:visible').click();
+  expect(await page.evaluate(() => window.__blitz)).toEqual(['Research ICP accounts']);
+  expect(await page.evaluate(() => hkLayers('ciCard'))).toContain('funnel');
+  noErrors(errors);
+});
+
+test('the whole funnel done → a quiet "You won the day" and one Win (once a day)', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await page.evaluate(() => { S.cfg.wins = true; });
+  await on(page); await page.evaluate(() => fnFromTpl(FN_TPL[3]));
+  await page.evaluate(() => { fnSteps().forEach(s => S.tasks.push(newTask('Do ' + listOf(s.list).name, 'today', s.list, 15))); save(); openFunnel(); });
+  const before = await page.evaluate(() => (S.wins || []).length);
+  for (let i = 0; i < 3; i++) { await page.locator(`.fn-row >> nth=${i}`).click(); await page.locator('.fn-task.now [data-fntick]').click(); }
+  await expect(page.locator('.fn-note')).toContainText('You won the day');
+  expect(await page.evaluate(() => S.wins.filter(w => w.t.startsWith('Funnel done')).length)).toBe(1);
+  expect(await page.evaluate(() => S.wins.length)).toBe(before + 1);
+  noErrors(errors);
+});
+
+test('Plan and Journal buttons show only when those modes are on, and open them', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await on(page); await sales(page);
+  await page.evaluate(() => openFunnel());
+  await expect(page.locator('[data-fnplan],[data-fnjr]')).toHaveCount(0);
+  await page.evaluate(() => { S.cfg.plan = true; S.cfg.journal = true; save(); applySettings(); render(); openFunnel(); });
+  await page.locator('[data-fnplan]').click();
+  await expect(page.locator('#funnelPg')).not.toHaveClass(/on/);
+  expect(await page.evaluate(() => pnOn)).toBe(true);
+  noErrors(errors);
+});

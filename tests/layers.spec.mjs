@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { openApp, noErrors } from './helpers.mjs';
 
-const LAYERED = { render: 27, renderDesk: 10, applySettings: 11, setStage: 4, tbGo: 10, tabNow: 7, tabsList: 8, rhythmSide: 9, modesPage: 8 };   // +1 each from Funnel (0.329)
+const LAYERED = { render: 27, renderDesk: 10, applySettings: 11, setStage: 4, tbGo: 10, tabNow: 7, tabsList: 8, rhythmSide: 9, modesPage: 8, ciCard: 3 };   // +1 each from Funnel (0.329); ciCard layered in 0.331
 
 test('every layered function runs through its named layers, nobody replaced it', async ({ page }) => {
   const errors = await openApp(page);

@@ -99,7 +99,7 @@ function cdCard(){
   return `<div class="ci-home cd-home"><span class="ci-hi cd-hi">${RH_ICON}</span><span class="ci-ht"><b>Close the day</b><small>${n?`${n} ${n===1?'habit':'habits'} left`:'Takes 30 seconds'}</small></span>
     <button class="rv-skip" data-cdlater>Later</button><button class="rv-go" data-cdopen>Start</button></div>`}
 /* the evening card: Close the day takes the place of the habits check-in when it's on */
-const _cdCi=ciCard;ciCard=function(){return C().closeDay?cdCard():_cdCi()};
+const _cdCi=hkBelow('ciCard','close-day',ciCard__core);hkLayer('ciCard','close-day',function(){return C().closeDay?cdCard():_cdCi()});
 /* Home shows one nudge at a time, the most timely first: tonight's check-in, then the weekly review, then the backup reminder */
 function homeNudge(){return ciCard()||reviewCard()||backupCard()}
 document.body.insertAdjacentHTML('beforeend','<div class="inbox-pg review-pg cd-pg" id="cdPg" role="dialog" aria-label="Close the day"><div class="ib-in" id="cdIn"></div></div>');

@@ -43,7 +43,7 @@ function rtHomeCard(){if(!routinesOn()||C().rtHome===false)return '';const r=rtN
   const now=rtNowHM(),soon=!r.at||(()=>{const [h,m]=r.at.split(':').map(Number),d=new Date();d.setHours(h,m-30,0,0);return Date.now()>=d.getTime()})();if(!soon)return '';
   return `<div class="ci-home rt-home"><span class="ci-hi">${RT_ICON}</span><span class="ci-ht"><b>${r.e?esc(r.e)+' ':''}${esc(r.name)}</b><small>${r.at&&r.at>now?`At ${r.at} · `:''}${r.steps.length} ${r.steps.length===1?'step':'steps'} · ${fmt(rtMins(r))}</small></span>
     <button class="rv-skip" data-rthlater="${r.id}">Later</button><button class="rv-go" data-rthstart="${r.id}">Start</button></div>`}
-const _rtCi=ciCard;ciCard=function(){return rtHomeCard()||_rtCi()};
+const _rtCi=hkBelow('ciCard','routines',ciCard__core);hkLayer('ciCard','routines',function(){return rtHomeCard()||_rtCi()});
 document.addEventListener('click',e=>{const s=e.target.closest('[data-rthstart]'),l=e.target.closest('[data-rthlater]');if(!s&&!l)return;e.preventDefault();e.stopPropagation();
   if(s)return rtPlayOpen(+s.dataset.rthstart);rtLater[+l.dataset.rthlater]=today();haptic(4);render()},true);
 

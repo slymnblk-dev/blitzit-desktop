@@ -21,18 +21,18 @@
 - Design options go on the Claude Design canvas (artifact "Habits & Goals pages"); re-read `project/canvas.json` from the artifact before publishing, the editor re-saves it.
 
 ## State
-- **dev = 0.330** (Funnel mode, releases 1–2 of 3; waiting for "go live"). Live (main) = 0.328. Check with `git ls-remote origin main dev`.
+- **dev = 0.331** (Funnel mode complete, releases 1–3; waiting for "go live"). Live (main) = 0.328. Live (main) = 0.328. Check with `git ls-remote origin main dev`.
 - Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/NQdsSMjFwxZzzZ54XdxCRD — republish `web/index.html` after every change.
 - Full suite at the last run (0.327): 233/235 passed; the 2 misses were a test race in new-menu.spec (read the result before the save finished), fixed with expect.poll and passing 24/24 under load.
 
 ## Code map (after the 0.322–0.327 cleanup — read first)
 - **Folders** (`src/js`, `src/css`): core · tasks · focus · home · shell (tabs, sidebar, motion, toast) · modes (inbox, habits, goals, metrics, wins, routines, plan, journal, vision, beta) · settings · sync · theme (themes, flow, polish). Load order = `ORDER.txt`; new files usually go at the end.
-- **Extending a shared function: never `fn=function(){}`.** Use `hkLayer('fn','my-feature',function(...){...})` and, inside it, `const _x=hkBelow('fn','my-feature',fn__core)` to run everything below. For redraws: `onRender('name', fn)` (runs after every draw, errors caught and logged). Layered: render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage. Console: `hkLayers('tbGo')`, `renderLayers()`.
+- **Extending a shared function: never `fn=function(){}`.** Use `hkLayer('fn','my-feature',function(...){...})` and, inside it, `const _x=hkBelow('fn','my-feature',fn__core)` to run everything below. For redraws: `onRender('name', fn)` (runs after every draw, errors caught and logged). Layered: render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage, ciCard (Home nudge card, 0.331). Console: `hkLayers('tbGo')`, `renderLayers()`.
 - **Full pages:** `regPage(name, [openers], isOn, close)`; `pagesWire()` at startup makes any opener (and goHome / openSpaceSide) close the other pages. Never add `window[fn]=function` loops again.
 - **Saving:** `save()` never fails silently: `saveWarn()` shows one warning when storage is full/blocked.
 - **Visual safety net for refactors:** `node tools/shots.mjs <dir>` (120 screenshots: phone/computer × Flow/Classic × light/dark) before and after, then `python3 tools/shots-diff.py before after` → must say `0 differ`.
 - **Guards (tests):** layers.spec, render-pipeline.spec, pages.spec, css-health.spec (brace balance, ORDER.txt), save-warn.spec.
-- Still patched the old way (1–2 wrappers each, fine as they are; convert to hkLayer if you touch them): ciCard, hbToggle, gSetWin, openRhythm, gMsToggle, openGoal, homeAlso, mxKpiForm, mxOkrForm, drawGoals, mxSave, mxClose, drawGoal, gMsMenu, mtKpiCard, mtOkrCard, mxBtns, setCfg, openSettings, drawTabs, openSpace, openDetail, mxHead, ibRow, renderFullWidth, homeSpaces, addKinds, drawKinds, closeSheets, settingsPage, pageSummary, openNw.
+- Still patched the old way (1–2 wrappers each, fine as they are; convert to hkLayer if you touch them): hbToggle, gSetWin, openRhythm, gMsToggle, openGoal, homeAlso, mxKpiForm, mxOkrForm, drawGoals, mxSave, mxClose, drawGoal, gMsMenu, mtKpiCard, mtOkrCard, mxBtns, setCfg, openSettings, drawTabs, openSpace, openDetail, mxHead, ibRow, renderFullWidth, homeSpaces, addKinds, drawKinds, closeSheets, settingsPage, pageSummary, openNw.
 - `!important`: ~212 left on purpose (removing them changes which style wins; not provable cheaply).
 
 ## What landed recently (newest first)
@@ -171,5 +171,5 @@
   Steps are lists in a normal space (`S.cfg.fn = {space, steps:[{list,target,open}], unl}`), so funnel tasks are ordinary tasks. `t.amt` = a task counting for more than one (repeat copies keep it, via a `setStage` layer).
   Progress = finished today ÷ target (no target: ÷ today's planned). Next step opens at 50%, or "always open", "Open anyway" (remembered for today) or `S.cfg.fnFree`. 3–8 steps; deleting a step moves its tasks to the step before.
   Templates: Sales (7 steps, Leadsomo targets + weekday tasks), Content, Job search, Start empty. Test: funnel.spec (11). Guard tests updated: layers/pages/beta/render-pipeline.
-  Still to do: release 3 (daily/weekly targets, past days, Home card, funnel done → Win, Plan/Journal pills).
 - 0.330: **Funnel release 2** — Focus view (thin step line + one calm hero card with a slow dim aurora; Start / Done; Up next), Funnel | Focus switch on the page, `S.cfg.fnView` = view it opens with (Settings → Modes → Funnel → Start in). After a tick: a quiet line ("Prospects done · Outreach is open now") and the newly opened step glows once, instead of a toast. Phone header puts the switch on its own row. Checked in Flow + Classic, dark + light. Test: funnel.spec (+4, now 15).
+- 0.331: **Funnel release 3** — optional whole-funnel targets `S.cfg.fn.daily/weekly = {list,n}` (one quiet line under the funnel / hero; week follows Settings week start); ‹ past days › up to 30 days back (read only, `fnDay`); optional Home Now card (`S.cfg.fnHome`, via a `ciCard` layer — ciCard is now layered: routines, close-day, funnel); whole funnel done → quiet "You won the day" + one Win (`kind:'big'`, once a day via `S.cfg.fn.won`); Plan ☀ / Journal ☾ buttons on the page when those modes are on. Test: funnel.spec (+5, now 20); layers.spec counts ciCard.
