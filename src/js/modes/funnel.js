@@ -126,7 +126,7 @@ function fnEditHTML(){const steps=fnSteps();
     <span class="pg-eye fn-tgh">Targets for the whole funnel · optional</span>
     ${['daily','weekly'].map(kind=>{const g=(fnCfg()||{})[kind]||{},has=+g.n>0&&steps.some(s=>s.list===g.list);
       return `<div class="fn-es fn-tge" data-fntge="${kind}"><b class="fn-tgk">${kind==='daily'?'Each day':'Each week'}</b>
-        <select data-fntgl="${kind}" aria-label="${kind==='daily'?'Daily':'Weekly'} target step"><option value="">No target</option>${steps.map(s=>`<option value="${s.list}"${has&&g.list===s.list?' selected':''}>${esc(listOf(s.list).name)}</option>`).join('')}</select>
+        <button class="fn-pick" data-fntgl="${kind}" aria-haspopup="menu" aria-label="${kind==='daily'?'Daily':'Weekly'} target step: ${has?fnEsc(listOf(g.list).name):'none'}"><span>${has?esc(listOf(g.list).name):'No target'}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         ${has?`<span class="fn-tg"><button data-fntgn="-1" aria-label="Fewer">−</button><b>${g.n}</b><button data-fntgn="1" aria-label="More">+</button></span>`:''}</div>`}).join('')}
     <div class="fn-free"><span><b>Open all steps</b><small>No locks: every step is open from the start.</small></span><button class="tg" data-fnfree aria-pressed="${!!S.cfg.fnFree}" aria-label="Open all steps"></button></div>
     <button class="fn-main fn-edone" data-fnedit>Done</button></div>`}
@@ -217,6 +217,10 @@ $('funnelPg').addEventListener('click',e=>{const T=x=>e.target.closest(x);
   /* editing steps */
   const tg=T('[data-fntg]');if(tg){const id=tg.closest('[data-fnes]').dataset.fnes,d=+tg.dataset.fntg;haptic(4);
     return fnSetCfg(c=>{const s=c.steps.find(x=>x.list===id);if(s)s.target=Math.max(0,Math.min(99,(+s.target||0)+d))})}
+  /* whole-funnel target: pick the step from Windaday's own menu (a native list is unreadable on Windows dark) */
+  const tp2=T('[data-fntgl]');if(tp2){e.stopPropagation();const kind=tp2.dataset.fntgl,cur=((fnCfg()||{})[kind]||{}).list;
+    const pick=v=>()=>fnSetCfg(c=>{if(!v)c[kind]=null;else c[kind]={list:v,n:(c[kind]&&+c[kind].n>0)?c[kind].n:(kind==='daily'?2:5)}});
+    return cxOpen(tp2,[{t:'No target',ic:cur?'':FN_TICK,act:pick('')},...fnSteps().map(s=>({t:listOf(s.list).name,ic:s.list===cur?FN_TICK:'',act:pick(s.list)}))])}
   const tn=T('[data-fntgn]');if(tn){const kind=tn.closest('[data-fntge]').dataset.fntge,d=+tn.dataset.fntgn;haptic(4);return fnSetCfg(c=>{const g=c[kind];if(g)g.n=Math.max(1,Math.min(999,(+g.n||1)+d))})}
   const al=T('[data-fnalw]');if(al){const id=al.closest('[data-fnes]').dataset.fnes;haptic(4);return fnSetCfg(c=>{const s=c.steps.find(x=>x.list===id);if(s)s.open=!s.open})}
   const em=T('[data-fnem]');if(em){e.stopPropagation();const id=em.dataset.fnem,steps=fnSteps(),i=steps.findIndex(s=>s.list===id);
@@ -228,9 +232,7 @@ $('funnelPg').addEventListener('keydown',e=>{
   if(e.target.id==='fnNewStep'&&e.key==='Enter'){e.preventDefault();return fnAddStep(e.target.value.trim())}
   if(e.target.matches('.fn-ename')&&e.key==='Enter'){e.preventDefault();e.target.blur()}
   if(e.target.matches('input')&&e.key==='Escape'){e.preventDefault();e.stopPropagation();e.target.blur()}});
-$('funnelPg').addEventListener('change',e=>{const tl=e.target.closest('[data-fntgl]');if(tl){const kind=tl.dataset.fntgl,v=tl.value;
-    return fnSetCfg(c=>{if(!v)c[kind]=null;else c[kind]={list:v,n:(c[kind]&&+c[kind].n>0)?c[kind].n:(kind==='daily'?2:5)}})}
-  const n=e.target.closest('[data-fnname]');if(!n)return;const l=S.lists.find(x=>x.id===n.dataset.fnname),v=n.value.trim();if(!l)return;
+$('funnelPg').addEventListener('change',e=>{const n=e.target.closest('[data-fnname]');if(!n)return;const l=S.lists.find(x=>x.id===n.dataset.fnname),v=n.value.trim();if(!l)return;
   if(!v){n.value=l.name;return}if(v!==l.name){commit(()=>{l.name=v.slice(0,24)},'Step renamed');try{renderDesk()}catch(err){}}});
 
 /* a repeating task's next copy keeps counting the same */

@@ -304,3 +304,16 @@ test('Plan and Journal buttons show only when those modes are on, and open them'
   expect(await page.evaluate(() => pnOn)).toBe(true);
   noErrors(errors);
 });
+
+test('0.332: whole-funnel targets are picked from the app menu (no native dropdown)', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const errors = await openApp(page);
+  await on(page); await sales(page);
+  await page.evaluate(() => { openFunnel(); fnEdit = true; drawFunnel(); });
+  await expect(page.locator('#funnelPg select')).toHaveCount(0);
+  await page.locator('[data-fntgl="daily"]').click();
+  await page.locator('.cx-it, .cx button, [role="menuitem"]').filter({ hasText: 'Conversations' }).first().click();
+  expect(await page.evaluate(() => listOf(S.cfg.fn.daily.list).name + ' ' + S.cfg.fn.daily.n)).toBe('Conversations 2');
+  await expect(page.locator('[data-fntgl="daily"]')).toContainText('Conversations');
+  noErrors(errors);
+});
