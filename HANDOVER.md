@@ -1,4 +1,4 @@
-# Windaday — handover (2026-11-17, after the code cleanup 0.322–0.327)
+# Windaday — handover (2026-11-20 · live 0.333: cleanup 0.322–0.328 + Funnel mode 0.329–0.333)
 
 ## Who / how
 - Owner: **Suly**. Not technical. Windows PC + Samsung Android phone.
@@ -18,15 +18,16 @@
 - Test copy for Suly: https://slymnblk-dev.github.io/blitzit-desktop/ (from `dev`).
 - **Go live** only when Suly says "go live": `gh workflow run pipeline.yml --ref dev -f go_live=true` (in a cloud session without `gh`: the GitHub Actions tool, workflow `pipeline.yml`, ref `dev`, input `go_live=true`), watch it (~12 min), then check `git ls-remote origin main dev` shows the same commit. Netlify charges credits **per deploy**: batch changes into one go-live (two steps would cost more, not less). The desktop app builds only when `src-tauri/` or `RELEASE_NOTES.md` changed (~8 min, publishes a GitHub release that installed apps pick up).
 - Don't touch the shared `AppData\Local\Blitzit` folder; don't change security settings on Suly's PC; never put secrets in code (GitHub secrets are Suly's).
-- Design options go on the Claude Design canvas (artifact "Habits & Goals pages"); re-read `project/canvas.json` from the artifact before publishing, the editor re-saves it.
+- Design options go on the Claude Design canvas **"Windaday UX Ideas"**: https://claude.ai/artifact/Wb4KJcRXCvYveW2YbAUh7r (slug ef9a5a45-…). Boards are `project/*.dc.html` + `project/canvas.json`. Suly edits/cleans the canvas herself: always `list_files` + re-read `canvas.json` right before publishing, publish in `patch` mode, never bring back boards she removed.
+- **Suly doesn't merge pull requests herself.** No PRs for her: when she says "go live", run the go-live pipeline (it tests and moves `dev` → `main`) and confirm with `git ls-remote`.
 
 ## State
-- **Live = dev = 0.333** (gone live 2026-11-18: Funnel settings fix + page polish). Live (main) = 0.328. Check with `git ls-remote origin main dev`.
+- **Live = 0.333** (main = 25761ab, gone live 2026-11-18). `dev` is one docs-only commit ahead (this handover). Check with `git ls-remote origin main dev`.
 - Preview artifact for Suly (built from `web/index.html`): https://claude.ai/artifact/NQdsSMjFwxZzzZ54XdxCRD — republish `web/index.html` after every change.
-- Full suite at the last run (0.327): 233/235 passed; the 2 misses were a test race in new-menu.spec (read the result before the save finished), fixed with expect.poll and passing 24/24 under load.
+- Full suite at the last go-live (0.333, GitHub pipeline): all passed. Funnel has 22 specs in `funnel.spec.mjs`.
 
 ## Code map (after the 0.322–0.327 cleanup — read first)
-- **Folders** (`src/js`, `src/css`): core · tasks · focus · home · shell (tabs, sidebar, motion, toast) · modes (inbox, habits, goals, metrics, wins, routines, plan, journal, vision, beta) · settings · sync · theme (themes, flow, polish). Load order = `ORDER.txt`; new files usually go at the end.
+- **Folders** (`src/js`, `src/css`): core · tasks · focus · home · shell (tabs, sidebar, motion, toast) · modes (inbox, habits, goals, metrics, wins, routines, plan, journal, vision, funnel, beta) · settings · sync · theme (themes, flow, polish). Load order = `ORDER.txt`; new files usually go at the end.
 - **Extending a shared function: never `fn=function(){}`.** Use `hkLayer('fn','my-feature',function(...){...})` and, inside it, `const _x=hkBelow('fn','my-feature',fn__core)` to run everything below. For redraws: `onRender('name', fn)` (runs after every draw, errors caught and logged). Layered: render, renderDesk, applySettings, setStage, tbGo, tabNow, tabsList, rhythmSide, modesPage, ciCard (Home nudge card, 0.331). Console: `hkLayers('tbGo')`, `renderLayers()`.
 - **Full pages:** `regPage(name, [openers], isOn, close)`; `pagesWire()` at startup makes any opener (and goHome / openSpaceSide) close the other pages. Never add `window[fn]=function` loops again.
 - **Saving:** `save()` never fails silently: `saveWarn()` shows one warning when storage is full/blocked.
@@ -34,6 +35,19 @@
 - **Guards (tests):** layers.spec, render-pipeline.spec, pages.spec, css-health.spec (brace balance, ORDER.txt), save-warn.spec.
 - Still patched the old way (1–2 wrappers each, fine as they are; convert to hkLayer if you touch them): hbToggle, gSetWin, openRhythm, gMsToggle, openGoal, homeAlso, mxKpiForm, mxOkrForm, drawGoals, mxSave, mxClose, drawGoal, gMsMenu, mtKpiCard, mtOkrCard, mxBtns, setCfg, openSettings, drawTabs, openSpace, openDetail, mxHead, ibRow, renderFullWidth, homeSpaces, addKinds, drawKinds, closeSheets, settingsPage, pageSummary, openNw.
 - `!important`: ~212 left on purpose (removing them changes which style wins; not provable cheaply).
+
+## Funnel mode (Beta) — quick map (0.329–0.333)
+- Files: `src/js/modes/funnel.js`, `src/css/modes/funnel.css`, spec `tests/funnel.spec.mjs` (22). Design: canvas sections "Funnel FINAL" and "Desktop polish" / "T4·A".
+- Idea from Suly's other app Leadsomo, but **Windaday's look only** (no Leadsomo fonts/colours). Keep Luck Surface, trends, playbooks Leadsomo-only.
+- Steps = lists in a normal visible space; tasks are ordinary tasks. `S.cfg.fn` = {space, steps[{list,target,open}], unl, daily, weekly, won}; `S.cfg.funnel` (mode), `fnFree` (no locks), `fnView` (funnel|focus), `fnHome` (Home card). `t.amt` = task counts as N.
+- Rules: next step opens at 50% of the step before (or always open / Open anyway for today / no locks). No target → goal = today's planned. 3–8 steps.
+- Views: Funnel (one clipped shape, rows fill left→right; goals as a Y-split under the tip) and Focus (step line + one calm hero card). Past days read only (30 days). Funnel done → quiet line + one Win.
+- Layers it adds: render, renderDesk, applySettings, setStage (keeps amt on repeat copies), tbGo, tabNow, tabsList, rhythmSide, modesPage, ciCard; `regPage('funnel')`.
+
+## Open ideas / not done
+- Mobile polish pass for the Funnel page (desktop got the 8-point polish; phone only got what came for free).
+- Leadsomo itself: separate repo `slymnblk-dev/Leadsomo` (private) — not touched from this project.
+- Squeeze page for Windaday (dark, early-access email): artifact https://claude.ai/artifact/KW6afuSRz2iHuVGYj7aQta — **signups are not stored anywhere yet**; needs a real store (Supabase table or Netlify Forms) before it goes on windaday.com. Landing page directions G–K on the canvas: Suly hasn't picked one.
 
 ## What landed recently (newest first)
 - 0.295 **Goals page redesign (A · Up next on every goal)** (`modes/goals/goals-page.js` → `gaDraw()`, called by `drawGoals()` in 08k so the Metrics switch wrapper in 08v still runs; `modes/goals/goals-page.css`). Same page on phone and computer: cards with progress, pace chip, and a NEXT row (Start = `startBlitz` for list tasks, otherwise opens the goal). Computer sidebar "Goals" is now one plain item that opens this page (the old fold with every goal is gone; 08q). Phone cards put days left on its own line. 0.293–0.294: Focus view fixes (Mark done for goal-only tasks, clearer card, finished milestone shows what you did).
