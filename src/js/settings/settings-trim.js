@@ -33,7 +33,8 @@ document.addEventListener('click',e=>{
 
 /* new tasks go to the list you used last: remember the list of the newest task you added */
 var trimSeen=0;
-onRender('last-used-list',function(d){let top=null;for(const t of S.tasks)if(t.list&&!t.inbox&&(!top||t.id>top.id))top=t;
+/* repeat copies waiting for a later day (showFrom) and tasks a template adds (they bump trimSeen) don't count as yours */
+onRender('last-used-list',function(d){let top=null;const td=today();for(const t of S.tasks)if(t.list&&!t.inbox&&!(t.showFrom&&t.showFrom>td)&&(!top||t.id>top.id))top=t;
   if(top&&top.id>trimSeen){if(trimSeen&&S.cfg.defList!==top.list){S.cfg.defList=top.list}trimSeen=top.id}});
 /* these stay on even if a synced older setting says otherwise */
 const _trimApply=hkBelow('applySettings','settings-trim',applySettings__core);

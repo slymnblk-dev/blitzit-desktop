@@ -171,7 +171,7 @@ function fnSetCfg(fn){S.cfg.fn=S.cfg.fn||{steps:[]};fn(S.cfg.fn);save();drawFunn
 function fnFromTpl(tp){const sp={id:'s'+newId(),name:tp.k==='empty'?'Funnel':tp.name,c:'#F5A35A',e:tp.e||'🎯'};
   const lists=tp.steps.map(([n])=>({id:'l'+newId(),name:n,c:sp.c,space:sp.id}));
   const tasks=(tp.tasks||[]).map(([i,title])=>({...newTask(title,'today',lists[i].id,S.cfg.defEst),repeat:'weekdays'}));
-  commit(()=>{S.spaces.push(sp);S.lists.push(...lists);S.tasks.push(...tasks);
+  commit(()=>{S.spaces.push(sp);S.lists.push(...lists);S.tasks.push(...tasks);if(typeof trimSeen==='number'&&tasks.length)trimSeen=Math.max(trimSeen,...tasks.map(t=>t.id)); // template tasks don't become your default list
     S.cfg.fn={space:sp.id,steps:lists.map((l,i)=>({list:l.id,target:tp.steps[i][1]||0,open:false})),unl:{d:today(),lists:[]}}},`${sp.name} funnel ready`);
   try{sfx('done')}catch(e){}fnSel=null;drawFunnel();try{renderDesk()}catch(e){}}
 function fnTick(id){const t=S.tasks.find(x=>String(x.id)===String(id));if(!t)return;const on=t.stage!=='done';

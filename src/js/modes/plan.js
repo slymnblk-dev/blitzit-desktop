@@ -199,7 +199,9 @@ function pnIcsImport(txt){if(!/BEGIN:VCALENDAR/.test(txt))return toast('That doe
 /* a task you placed for tomorrow from This week moves to Today when its day comes */
 let pnRollDay=null;
 function pnRoll(){if(pnRollDay===today()||!planOn())return;pnRollDay=today();const k=today();let n=0;
-  S.tasks.forEach(t=>{if(t.pl&&t.pl.d===k&&t.stage==='week'&&shown(t)){setStage(t,'today');n++}});if(n){save();setTimeout(()=>render(),0);toast(`${n} planned ${n===1?'task':'tasks'} moved to Today`)}}
+  /* planned for today, or for a day in the last week when the app wasn't opened (0.334); once only (pl.r), so moving it back to My week sticks */
+  const wk=dkey(Date.now()-7*864e5);
+  S.tasks.forEach(t=>{if(t.pl&&!t.pl.r&&t.pl.d<=k&&t.pl.d>=wk&&t.stage==='week'&&shown(t)){setStage(t,'today');t.pl.r=1;n++}});if(n){save();setTimeout(()=>render(),0);toast(`${n} planned ${n===1?'task':'tasks'} moved to Today`)}}
 
 /* ---------- keep it fresh: the now line moves, finished tasks fade ---------- */
 onRender('plan-page',function(d){pnRoll();if(pnOn){if(!planOn())closePlan();else if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest('#planPg .pn-form'))drawPlan()}});

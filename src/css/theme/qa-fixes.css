@@ -1,0 +1,12 @@
+/* QA pass 0.334 (phone + computer). One block per fix. */
+/* ① weekly review: a long space · list line ends in "…" instead of being cut mid-word */
+.rv-tt small{display:block;text-overflow:ellipsis}
+.rv-tt small i{display:inline-block;margin-right:6px;vertical-align:1px}
+/* ② goal Focus view: the milestone dots stay small but are easy to tap (bigger invisible hit area) */
+.gf-dot{position:relative}
+.gf-dot::after{content:'';position:absolute;inset:-14px -3px}
+/* ③ funnel: the round tick gets a bigger invisible hit area on touch screens */
+.fn-tick{position:relative}
+.fn-tick::after{content:'';position:absolute;inset:-8px;border-radius:50%}
+/* ④ tablets (600–1099px): the Journal month keeps calm 44px days instead of big squares */
+@media (min-width:600px) and (max-width:1099px){.jr-grid{gap:6px}.jr-c{aspect-ratio:auto;height:44px}}
